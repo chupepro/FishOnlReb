@@ -1030,7 +1030,251 @@ body {
   position:absolute; font-size:16px; pointer-events:none; z-index:400;
   animation:coinBurst 1s ease-out forwards;
 }
+
+/* ============================================================
+   FORTUNE WHEEL OVERLAY
+   ============================================================ */
+#fortune-overlay {
+  position:absolute; inset:0; background:rgba(0,0,0,.85); z-index:600;
+  display:none; align-items:center; justify-content:center; flex-direction:column;
+}
+#fortune-overlay.show { display:flex; }
+#fortune-wheel-wrap { position:relative; width:260px; height:260px; }
+#fortune-wheel-canvas { border-radius:50%; }
+#fortune-wheel-pointer {
+  position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:14px solid transparent; border-right:14px solid transparent;
+  border-top:30px solid #f0d040;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));
+}
+#fortune-spin-btn {
+  margin-top:16px; padding:10px 32px;
+  background:linear-gradient(135deg,#c04010,#801010);
+  border:2px solid #f0d040; border-radius:20px;
+  font-family:'Neucha',cursive; font-size:16px; color:#f0d040;
+  cursor:pointer; text-shadow:0 1px 3px rgba(0,0,0,.8);
+  box-shadow:0 4px 12px rgba(0,0,0,.6);
+}
+#fortune-spin-btn:active { transform:scale(.95); }
+#fortune-close-btn {
+  margin-top:10px; padding:6px 20px;
+  background:rgba(0,0,0,.4); border:1px solid #555; border-radius:12px;
+  font-family:'Neucha',cursive; font-size:13px; color:#aaa; cursor:pointer;
+}
+#fortune-title {
+  font-family:'UnifrakturMaguntia',cursive; font-size:24px; color:#f0d040;
+  text-shadow:0 0 20px rgba(240,200,50,.6); margin-bottom:12px;
+}
+#fortune-cost { font-family:'Neucha',cursive; font-size:12px; color:#a08040; margin-top:4px; }
+#fortune-result {
+  font-family:'Neucha',cursive; font-size:16px; color:#a0f060;
+  margin-top:10px; min-height:24px; text-align:center;
+}
+
+/* Fortune wheel button on fishing screen */
+#fortune-btn {
+  position:absolute; bottom:255px; left:10px;
+  background:linear-gradient(135deg,#8a3010,#501808);
+  border:2px solid #f0d040; border-radius:50%; width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+  cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.6);
+  animation:wheelPulse 2s ease-in-out infinite alternate;
+  z-index:30;
+}
+@keyframes wheelPulse {
+  0%{box-shadow:0 2px 8px rgba(0,0,0,.6)}
+  100%{box-shadow:0 2px 16px rgba(240,200,50,.5)}
+}
+
+/* ============================================================
+   POKEMON MAP OVERLAY / STYLE
+   ============================================================ */
+/* Pokemon mode — overlay on water */
+#poke-overlay {
+  position:absolute; inset:0; pointer-events:none; z-index:6;
+  transition:opacity .8s;
+}
+#poke-mode-badge {
+  position:absolute; top:56px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,#3050e0,#8040c0);
+  border:2px solid #f0f040; border-radius:12px; padding:3px 12px;
+  font-family:'Neucha',cursive; font-size:11px; color:#f0f040;
+  text-shadow:0 1px 2px rgba(0,0,0,.8); z-index:50; display:none;
+  animation:pokeBadgeGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes pokeBadgeGlow {
+  0%{box-shadow:0 0 6px rgba(100,100,255,.4)} 100%{box-shadow:0 0 18px rgba(255,100,255,.7)}
+}
+
+/* Pikachu coins display */
+#pika-coins-box {
+  position:absolute; right:26px; top:26px;
+  background:rgba(0,0,0,.5); border:1px solid #f0d040; border-radius:4px;
+  padding:3px 8px; font-family:'Neucha',cursive; font-size:12px; color:#f0e040;
+  display:none; align-items:center; gap:4px; text-shadow:0 1px 3px rgba(0,0,0,.8); z-index:5;
+}
+
+/* PikaBuffs shop section */
+.pikabufs-section {
+  background:linear-gradient(135deg,rgba(50,50,200,.15),rgba(150,50,200,.15));
+  border:2px solid rgba(150,100,255,.3); border-radius:12px;
+  padding:10px; margin-bottom:10px;
+}
+.pikabufs-title {
+  font-family:'UnifrakturMaguntia',cursive; font-size:16px; color:#c0a0ff;
+  text-align:center; margin-bottom:8px; text-shadow:0 0 10px rgba(150,100,255,.5);
+}
+
+/* ============================================================
+   MAP SELECTOR (Normal / Pokemon)
+   ============================================================ */
+#map-selector {
+  position:absolute; bottom:145px; left:10px;
+  background:rgba(0,0,0,.75); border:1px solid var(--wood-mid); border-radius:10px;
+  padding:5px 7px; z-index:30; display:flex; flex-direction:column; gap:5px;
+}
+.map-btn {
+  font-family:'Neucha',cursive; font-size:12px; padding:6px 10px;
+  border-radius:8px; cursor:pointer; border:2px solid;
+  transition:.2s; text-align:center; white-space:nowrap; min-width:80px;
+}
+.map-btn.active { background:rgba(200,160,30,.35); border-color:#d4a030; color:#f0d060; }
+.map-btn:not(.active) { background:rgba(0,0,0,.4); border-color:#555; color:#999; }
+.map-btn:active { transform:scale(.93); }
+
+/* ============================================================
+   LEADERBOARD SCREEN
+   ============================================================ */
+#leaderboard-screen {
+  background:linear-gradient(to bottom,#08081a 0%,#04040e 100%);
+  display:none; flex-direction:column; align-items:flex-start;
+  overflow:hidden; overflow-y:auto; top:0; padding-bottom:60px; padding-top:54px;
+}
+#leaderboard-screen.active { display:flex; }
+.lb-header {
+  width:100%; padding:12px 16px 6px;
+  font-family:'UnifrakturMaguntia',cursive; font-size:22px;
+  color:#f0d040; text-shadow:0 0 16px rgba(240,200,50,.7);
+}
+.lb-tabs {
+  display:flex; gap:8px; padding:0 16px 8px; width:100%;
+}
+.lb-tab {
+  flex:1; text-align:center; padding:6px 8px;
+  font-family:'Neucha',cursive; font-size:12px;
+  border-radius:10px; cursor:pointer; border:1.5px solid;
+  transition:.2s;
+}
+.lb-tab.active { background:rgba(240,200,50,.2); border-color:#f0d040; color:#f0d040; }
+.lb-tab:not(.active) { background:rgba(0,0,0,.3); border-color:#444; color:#888; }
+.lb-row {
+  width:90%; margin:4px auto; display:flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  border-radius:10px; padding:8px 14px;
+}
+.lb-rank { font-family:'Neucha',cursive; font-size:16px; color:#f0d040; width:28px; flex-shrink:0; }
+.lb-name { font-family:'Neucha',cursive; font-size:13px; color:#c0c0e0; flex:1; }
+.lb-val { font-family:'Neucha',cursive; font-size:14px; color:#80e080; }
+.lb-me { border-color:rgba(240,200,50,.4); background:rgba(240,200,50,.06); }
+
+/* ============================================================
+   ROAD CHOICE (Shop or Kiosk)
+   ============================================================ */
+#road-choice {
+  position:absolute; bottom:100px; left:50%; transform:translateX(-50%);
+  display:none; flex-direction:column; align-items:center; gap:10px; z-index:20;
+}
+.road-choice-btn {
+  padding:10px 24px; font-family:'Neucha',cursive; font-size:14px;
+  border-radius:14px; cursor:pointer; border:2px solid; text-align:center;
+  min-width:150px; box-shadow:0 3px 10px rgba(0,0,0,.5); transition:.15s;
+}
+.road-choice-btn:active { transform:scale(.95); }
+.road-choice-plant {
+  background:linear-gradient(135deg,#2a6010,#1a3808);
+  border-color:#4a8a18; color:#a0e040;
+}
+.road-choice-kiosk {
+  background:linear-gradient(135deg,#604010,#3a2008);
+  border-color:#c08020; color:#f0c040;
+}
+
+/* ============================================================
+   KIOSK SCREEN
+   ============================================================ */
+#gscene-kiosk {
+  background:linear-gradient(to bottom,#1a0a04 0%,#0e0604 100%);
+  display:none; flex-direction:column; align-items:center; overflow-y:auto; padding-bottom:70px; padding-top:54px;
+}
+#gscene-kiosk.active-scene { display:flex; }
+.kiosk-header {
+  width:94%; background:linear-gradient(to bottom,#7a4010,#3a1a04);
+  border-radius:8px; border:3px solid #2a0e04; padding:8px 12px;
+  margin-bottom:10px; display:flex; align-items:center; gap:8px;
+}
+.kiosk-title { font-family:'UnifrakturMaguntia',cursive; font-size:18px; color:#f0c840; }
+.kiosk-subtitle { font-family:'Neucha',cursive; font-size:11px; color:#a07040; margin-top:2px; }
+.kiosk-section-title {
+  font-family:'Neucha',cursive; font-size:12px; color:#a08040;
+  text-transform:uppercase; letter-spacing:1px; margin:8px 0 4px; width:94%;
+}
+.kiosk-my-listing {
+  width:94%; background:rgba(60,40,10,.6); border:2px solid #7a5010;
+  border-radius:10px; padding:10px; margin-bottom:8px; display:flex; align-items:center; gap:8px;
+}
+.kiosk-listing-icon { font-size:28px; }
+.kiosk-listing-info { flex:1; }
+.kiosk-listing-name { font-family:'Neucha',cursive; font-size:13px; color:#e0b060; }
+.kiosk-listing-price { font-family:'Neucha',cursive; font-size:12px; color:#f0c040; }
+.kiosk-listing-btn {
+  padding:6px 12px; font-family:'Neucha',cursive; font-size:11px;
+  border-radius:8px; cursor:pointer; border:1.5px solid; transition:.15s;
+}
+.kiosk-listing-btn:active { transform:scale(.93); }
+.btn-list { background:linear-gradient(135deg,#406010,#203008); border-color:#608020; color:#a0d040; }
+.btn-buy-listing { background:linear-gradient(135deg,#604010,#3a2008); border-color:#a06020; color:#e0a040; }
+.btn-cancel-listing { background:rgba(60,10,10,.6); border-color:#803030; color:#e06060; }
+.kiosk-price-input {
+  width:80px; background:rgba(30,20,5,.8); border:1.5px solid #7a5010;
+  border-radius:8px; padding:5px 8px; font-family:'Neucha',cursive; font-size:13px;
+  color:#e0b060; outline:none; text-align:center;
+}
+
+/* ============================================================
+   ROD VISUAL UPGRADE (color on fishing screen)
+   ============================================================ */
+#rod-body {
+  transition: filter .5s;
+}
+
+/* ============================================================
+   MULTIPLAYER ROD 2 IMPROVEMENTS
+   ============================================================ */
+#rod-wrapper2 {
+  transition:opacity .4s;
+}
+#rod-body2-inner {
+  width:100%; height:100%; position:relative;
+}
+
+/* ============================================================
+   SCORE POP & OTHER
+   ============================================================ */
+.score-pop {
+  position:absolute; pointer-events:none; z-index:300;
+  font-family:'Neucha',cursive; font-size:14px; color:#f0d040;
+  text-shadow:0 1px 3px rgba(0,0,0,.8);
+  animation:scorePop 1.8s ease-out forwards;
+}
+@keyframes scorePop {
+  0%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-50px) scale(1.3)}
+}
 </style>
+<!-- Firebase compat SDK v9 — reliable CDN URLs, no dynamic import() needed -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
 <div id="game-scale-wrapper">
@@ -1048,6 +1292,11 @@ body {
     <div id="coins-box">
       <span class="coin-spin">🪙</span>
       <span id="coins-display">150</span>
+    </div>
+    <!-- Pika coins (pokemon mode) -->
+    <div id="pika-coins-box">
+      <span>⚡</span>
+      <span id="pika-coins-display">0</span>
     </div>
   </div>
   <div id="energybar"><div id="energyfill"></div></div>
@@ -1202,6 +1451,18 @@ body {
     <!-- Hint -->
     <div id="cast-hint">Нажми на воду для заброса</div>
 
+    <!-- Pokemon mode badge -->
+    <div id="poke-mode-badge">⚡ ПОКЕМОН РЕЖИМ</div>
+
+    <!-- Fortune Wheel button -->
+    <div id="fortune-btn" onclick="openFortune()" title="Колесо Фортуны">🎡</div>
+
+    <!-- Map selector -->
+    <div id="map-selector">
+      <div class="map-btn active" id="map-btn-normal" onclick="setMap('normal')">🌊 Обычная</div>
+      <div class="map-btn" id="map-btn-pokemon" onclick="setMap('pokemon')">⚡ Покемон</div>
+    </div>
+
     <!-- Bite indicator -->
     <div id="bite-indicator"><div id="bite-plank">🎣 КЛЮЁТ! Подсекай!</div></div>
 
@@ -1264,6 +1525,7 @@ body {
       <div class="shop-tab" onclick="switchShopTab('bait',this)">🪱 Наживка</div>
       <div class="shop-tab" onclick="switchShopTab('lures',this)">🪝 Приманки</div>
       <div class="shop-tab" onclick="switchShopTab('upgrades',this)">⚡ Улучшения</div>
+      <div class="shop-tab" onclick="switchShopTab('pikabufs',this)">⚡ ПикаБаффы</div>
     </div>
     <div class="shop-body" id="shop-body"></div>
   </div>
@@ -1333,6 +1595,20 @@ body {
     <div class="multi-fish-parade" id="multi-parade"></div>
   </div>
 
+  <!-- ===== LEADERBOARD SCREEN ===== -->
+  <div id="leaderboard-screen" class="screen">
+    <div class="lb-header">🏆 Лидерборд</div>
+    <div class="lb-tabs">
+      <div class="lb-tab active" id="lb-tab-fish" onclick="switchLbTab('fish',this)">🐟 Рыбы</div>
+      <div class="lb-tab" id="lb-tab-pika" onclick="switchLbTab('pika',this)">⚡ Пикачу</div>
+      <div class="lb-tab" id="lb-tab-coins" onclick="switchLbTab('coins',this)">🪙 Монеты</div>
+    </div>
+    <div id="lb-list" style="width:100%;padding:0 8px;"></div>
+    <div style="font-family:'Neucha',cursive;font-size:10px;color:#3a3a6a;text-align:center;margin-top:8px;padding:0 16px;">
+      Лидерборд обновляется в реальном времени через Firebase
+    </div>
+  </div>
+
   <!-- ===== GARDEN SCREEN ===== -->
   <div id="garden-screen" class="screen">
     <!-- Scene: main garden view -->
@@ -1388,7 +1664,7 @@ body {
       <div class="road-flower" style="right:22%;top:52%;animation-delay:.5s;">🌺</div>
       <!-- Shop building: ROOF on top, WALLS below -->
       <div class="shop-building">
-        <div class="shop-sign">🌱 Лавка Семян</div>
+        <div class="shop-sign" id="road-building-sign">🌱 Лавка Семян</div>
         <!-- Chimney -->
         <div class="shop-chimney"></div>
         <!-- Roof SVG -->
@@ -1410,17 +1686,22 @@ body {
         <div class="shop-walls">
           <div class="shop-window left cross"></div>
           <div class="shop-window right cross"></div>
-          <div class="shop-door" id="shop-door" onclick="enterShop()"></div>
+          <div class="shop-door" id="shop-door" onclick="enterShopFromRoad()"></div>
         </div>
         <!-- Base/foundation -->
         <div class="shop-walls-base"></div>
       </div>
       <!-- Walker -->
       <div class="walker" id="walker" style="bottom:160px;">🚶</div>
+      <!-- Road choice (shown when arrived) -->
+      <div id="road-choice">
+        <div style="font-family:'Neucha',cursive;font-size:13px;color:rgba(240,210,140,.9);margin-bottom:6px;text-align:center;">Куда идём?</div>
+        <div class="road-choice-btn road-choice-plant" onclick="enterShop()">🌱 Магазин Растений</div>
+        <div class="road-choice-btn road-choice-kiosk" onclick="enterKiosk()">🛖 Киоск (торговля)</div>
+      </div>
       <!-- Hint -->
       <div style="position:absolute;bottom:72px;left:50%;transform:translateX(-50%);font-family:'Neucha',cursive;font-size:13px;color:rgba(220,200,140,.9);white-space:nowrap;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:10px;" id="road-hint">Идём в магазин...</div>
     </div>
-
     <!-- Scene: seed shop interior -->
     <div id="gscene-seedshop" class="garden-scene" style="display:none;">
       <div class="seedshop-counter">
@@ -1434,8 +1715,39 @@ body {
       <button onclick="leaveShop()" style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(60,30,5,.8);border:1.5px solid #5a3010;border-radius:10px;padding:8px 24px;font-family:'Neucha',cursive;font-size:13px;color:#c09040;cursor:pointer;">🚪 Выйти</button>
     </div>
 
+    <!-- Scene: kiosk (player marketplace) -->
+    <div id="gscene-kiosk" class="garden-scene" style="display:none;">
+      <div class="kiosk-header">
+        <div style="font-size:32px;">🛖</div>
+        <div>
+          <div class="kiosk-title">Рыбацкий Киоск</div>
+          <div class="kiosk-subtitle">Торгуй с настоящими игроками!</div>
+        </div>
+      </div>
+      <!-- Sell form -->
+      <div class="kiosk-section-title">📦 Выставить на продажу</div>
+      <div id="kiosk-sell-section" style="width:94%;margin-bottom:8px;"></div>
+      <!-- Market listings from other players -->
+      <div class="kiosk-section-title">🛒 Рынок игроков</div>
+      <div id="kiosk-market-list" style="width:94%;"></div>
+      <button onclick="leaveKiosk()" style="position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(60,30,5,.8);border:1.5px solid #5a3010;border-radius:10px;padding:8px 24px;font-family:'Neucha',cursive;font-size:13px;color:#c09040;cursor:pointer;">🚪 Выйти из киоска</button>
+    </div>
+
     <!-- Black fade overlay -->
     <div id="scene-fade"></div>
+  </div>
+
+  <!-- ===== FORTUNE WHEEL OVERLAY ===== -->
+  <div id="fortune-overlay">
+    <div id="fortune-title">🎡 Колесо Фортуны</div>
+    <div id="fortune-wheel-wrap">
+      <canvas id="fortune-wheel-canvas" width="260" height="260"></canvas>
+      <div id="fortune-wheel-pointer"></div>
+    </div>
+    <div id="fortune-result"></div>
+    <div id="fortune-cost">Стоимость: 50🪙 за вращение</div>
+    <button id="fortune-spin-btn" onclick="spinFortune()">🎲 Крутить!</button>
+    <div id="fortune-close-btn" onclick="closeFortune()">Закрыть</div>
   </div>
 
   <!-- ===== CATCH POPUP ===== -->
@@ -1456,6 +1768,7 @@ body {
         <path d="M 30,28 Q 40,24 50,28" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
         <path d="M 16,28 Q 18,32 21,28" stroke="#6a3808" stroke-width="1.5" fill="none"/>
       </svg>
+      <div id="catch-pokemon-emoji" style="display:none;font-size:58px;line-height:1;text-align:center;margin:4px 0;filter:drop-shadow(0 2px 8px rgba(100,80,255,.5));"></div>
       <div id="catch-name-txt">Карась</div>
       <div id="catch-weight-txt">0.5 кг • +10 очков</div>
       <div id="catch-rarity" class="rarity-common">Обычный</div>
@@ -1492,6 +1805,10 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><circle cx="15" cy="7" r="4"/><path d="M3 21v-2a7 7 0 0114 0v2"/></svg>
       Онлайн
       <div class="nav-player-dot" id="nav-multi-dot"></div>
+    </div>
+    <div class="navtab" id="nav-lb" onclick="switchScreen('leaderboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
+      Топ
     </div>
   </div>
 
@@ -1614,6 +1931,15 @@ function saveGame() {
     upgrades: UPGRADES.map(u=>({id:u.id,owned:u.owned||false})),
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e){}
+  // Save extended fields
+  try {
+    const extra = {
+      pikaCoins: gs.pikaCoins,
+      pikaCatchCount: gs.pikaCatchCount,
+      mapMode: gs.mapMode,
+    };
+    localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
+  } catch(e){}
 }
 
 function loadGame() {
@@ -2070,7 +2396,20 @@ function castTo(x, y) {
 function triggerBite() {
   if(gs.phase!=='waiting') return;
   gs.phase='bite';
-  // Weighted fish pool
+
+  // ── Pokemon mode ──
+  if(gs.mapMode === 'pokemon') {
+    const pool = getPokemonPool();
+    const poke = pool[Math.floor(Math.random()*pool.length)];
+    gs.currentCatch = {...poke, isPokemon:true, weight: (0.5 + Math.random()*2).toFixed(1)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([80,30,80,30,80]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // ── Normal mode ──
   const hasLucky = UPGRADES.find(u=>u.id==='lucky_charm')?.owned;
   const lureBonus = LURES.reduce((s,l)=>s+(l.qty>0?l.rareBonus:0),0);
   const pool=[];
@@ -2096,6 +2435,7 @@ function triggerBite() {
   }
 }
 
+
 function miss() {
   gs.phase='idle';
   biteEl.classList.remove('visible');
@@ -2116,26 +2456,35 @@ function catchFish() {
   setTimeout(()=>reelSvg.classList.remove('spinning'), 900);
   bobWrap.style.display='none'; bobWrap.style.animation='';
   lctx.clearRect(0,0,360,700);
+
+  // ── Pokemon mode ──
+  if(gs.mapMode === 'pokemon') {
+    catchPokemon(gs.currentCatch);
+    return;
+  }
+
+  // ── Normal mode ──
   const f=gs.currentCatch;
   gs.fishCount++;
   gs.score+=f.pts;
   document.getElementById('fish-count').textContent=gs.fishCount;
   document.getElementById('score-val').textContent=gs.score;
-  // Popup
   updateCatchPopupFish(f);
+  document.getElementById('catch-header').textContent = '🎉 Улов!';
   document.getElementById('catch-name-txt').textContent=f.name;
   document.getElementById('catch-weight-txt').textContent=`${f.weight} кг • +${f.pts} ★`;
   const rarEl=document.getElementById('catch-rarity');
   rarEl.textContent=f.label; rarEl.className=`rarity-${f.rar}`;
   const price=calcPrice(f);
   document.getElementById('popup-sell-price').textContent=' '+price;
+  document.getElementById('catch-sell-btn').style.display = '';
   document.getElementById('catch-popup').classList.add('show');
   showScorePop('+'+f.pts, gs.bobX, gs.bobY);
   makeRipple(gs.bobX, gs.bobY, 65);
-  // Bait consume
   const activeBaits=BAITS.filter(b=>b.qty>0);
   if(activeBaits.length>0) activeBaits[0].qty--;
   saveGame();
+  syncLeaderboard();
 }
 
 function calcPrice(f) {
@@ -2164,10 +2513,19 @@ function showScorePop(txt, x, y) {
 // ============================================================
 // KEEP / SELL (popup buttons)
 // ============================================================
+function resetCatchPopup() {
+  document.getElementById('catch-fish-svg').style.display = '';
+  document.getElementById('catch-pokemon-emoji').style.display = 'none';
+  document.getElementById('catch-pokemon-emoji').textContent = '';
+  document.getElementById('catch-sell-btn').style.display = '';
+}
+
 function keepFish() {
   document.getElementById('catch-popup').classList.remove('show');
+  resetCatchPopup();
   const f=gs.currentCatch;
   if(!f) return;
+  if(f.isPokemon) { afterCatch(); return; } // pokémon go to leaderboard only
   if(gs.inventory.length >= gs.maxInv) {
     showToast('🎒 Инвентарь полон! Продай рыбу.'); afterCatch(); return;
   }
@@ -2178,6 +2536,7 @@ function keepFish() {
 
 function sellFish() {
   document.getElementById('catch-popup').classList.remove('show');
+  resetCatchPopup();
   const f=gs.currentCatch;
   if(!f) return;
   const price=calcPrice(f);
@@ -2281,6 +2640,13 @@ function switchScreen(name) {
   gs.currentScreen=name;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
+  if(name === 'leaderboard') {
+    document.getElementById('leaderboard-screen').classList.add('active');
+    document.getElementById('nav-lb').classList.add('active');
+    renderLeaderboard();
+    updatePlayerLocation('leaderboard');
+    return;
+  }
   const map={fishing:'fishing-screen',shop:'shop-screen',inventory:'inventory-screen',multi:'multi-screen',garden:'garden-screen'};
   const navMap={fishing:'nav-fish',shop:'nav-shop',inventory:'nav-inv',multi:'nav-multi',garden:'nav-garden'};
   document.getElementById(map[name]).classList.add('active');
@@ -2307,10 +2673,11 @@ function switchShopTab(tab, el) {
 function renderShop() {
   const body=document.getElementById('shop-body');
   body.innerHTML='';
-  if(currentShopTab==='rods')     renderRods(body);
+  if(currentShopTab==='rods')          renderRods(body);
   else if(currentShopTab==='bait')     renderBaits(body);
   else if(currentShopTab==='lures')    renderLures(body);
   else if(currentShopTab==='upgrades') renderUpgrades(body);
+  else if(currentShopTab==='pikabufs') renderPikabufs(body);
 }
 
 function makeShopItem(iconHtml, name, desc, stats, priceHtml, btnHtml, extraClass) {
@@ -2438,6 +2805,7 @@ function equipRod(id) {
   document.getElementById('current-rod-name').textContent='Удочка: '+rod.name;
   renderShop();
   showToast(`🎣 Надета: ${rod.name}`); saveGame();
+  updateRodVisual();
 }
 
 function buyBait(id) {
@@ -2676,9 +3044,12 @@ function showGardenScene(name) {
   document.getElementById('gscene-garden').style.display='none';
   document.getElementById('gscene-road').style.display='none';
   document.getElementById('gscene-seedshop').style.display='none';
+  const kioskEl = document.getElementById('gscene-kiosk');
+  if(kioskEl) kioskEl.style.display='none';
   if(name==='garden')    document.getElementById('gscene-garden').style.display='block';
   if(name==='road')      document.getElementById('gscene-road').style.display='block';
   if(name==='seedshop')  document.getElementById('gscene-seedshop').style.display='flex';
+  if(name==='kiosk' && kioskEl) kioskEl.style.display='flex';
 }
 
 function walkToShop() {
@@ -2798,19 +3169,23 @@ async function initFirebase() {
   if(firebaseApp) return true;
   setConnectionStatus('connecting');
   try {
-    const [{initializeApp},{getDatabase,ref,set,onValue,get,update,remove,onDisconnect}] = await Promise.all([
-      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js")
-    ]);
-    firebaseApp=initializeApp(FIREBASE_CONFIG);
-    firebaseDB=getDatabase(firebaseApp);
-    window._fbRef=ref; window._fbSet=set; window._fbOnValue=onValue;
-    window._fbGet=get; window._fbUpdate=update; window._fbRemove=remove;
-    window._fbOnDisconnect=onDisconnect;
+    // Use compat SDK loaded via <script> tags — avoids dynamic import() CSP issues
+    if(typeof firebase === 'undefined') throw new Error('Firebase compat SDK not loaded');
+    // Reuse existing app if already initialized (e.g. hot reload)
+    firebaseApp = firebase.apps.length ? firebase.app() : firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseDB  = firebase.database();
+    // Map compat API to the same internal helpers the rest of the code uses
+    window._fbRef        = (db, path) => db.ref(path);
+    window._fbSet        = (ref, val) => ref.set(val);
+    window._fbOnValue    = (ref, cb)  => { ref.on('value', cb); return cb; };
+    window._fbGet        = (ref)      => ref.get();
+    window._fbUpdate     = (ref, val) => ref.update(val);
+    window._fbRemove     = (ref)      => ref.remove();
+    window._fbOnDisconnect = (ref)    => ref.onDisconnect();
     setConnectionStatus('online');
     return true;
   } catch(e){
-    console.warn('Firebase init failed',e);
+    console.warn('Firebase init failed', e);
     setConnectionStatus('offline');
     showToast('⚠️ Нет интернет-соединения');
     return false;
@@ -2892,8 +3267,11 @@ async function _joinRoomSetup(code) {
       updateMultiRodVisibility();
     }
     if(gs.fullMultiMode && data.lastSyncer!==myPlayerId) {
-      if(data.sharedCoins!==undefined&&data.sharedCoins!==gs.coins){gs.coins=data.sharedCoins;updateCoins();}
-      if(data.sharedFishCount!==undefined){gs.fishCount=data.sharedFishCount;document.getElementById('fish-count').textContent=gs.fishCount;}
+      // Only accept remote coins if they're different and more recent
+      if(data.sharedCoins!==undefined && data.sharedCoins!==gs.coins && data.lastSyncTime > (gs._lastLocalSync||0)){
+        gs.coins=data.sharedCoins;updateCoins();
+      }
+      if(data.sharedFishCount!==undefined && data.sharedFishCount!==gs.fishCount){gs.fishCount=data.sharedFishCount;document.getElementById('fish-count').textContent=gs.fishCount;}
       if(data.sharedInventory){try{gs.inventory=JSON.parse(data.sharedInventory);}catch(e){}}
       if(data.sharedGarden){try{const pg=JSON.parse(data.sharedGarden);gardenPlots=pg;if(gs.currentScreen==='garden')renderGardenPlots();}catch(e){}}
     }
@@ -2926,7 +3304,14 @@ async function toggleFullMulti(enabled) {
   document.getElementById('full-multi-note').style.display=enabled?'none':'block';
   document.getElementById('shared-stats-section').style.display=enabled?'block':'none';
   if(!currentRoomId){showToast('Сначала войди в комнату!');document.getElementById('full-multi-toggle').checked=false;gs.fullMultiMode=false;return;}
-  if(!enabled){await fairSplitAndDisable();return;}
+  if(!enabled){
+    clearTimeout(partner2Timer);
+    partnerPhase = 'idle';
+    const lctx2el = document.getElementById('linecanvas2');
+    if(lctx2el) lctx2el.getContext('2d').clearRect(0,0,360,700);
+    await fairSplitAndDisable();
+    return;
+  }
   try{
     await fb.upd(`rooms/${currentRoomId}`,{
       fullMulti:true,lastToggler:myPlayerId,
@@ -2935,6 +3320,7 @@ async function toggleFullMulti(enabled) {
     });
     updateMultiRodVisibility();
     showToast('👥 Полный мультиплеер включён!');
+    setTimeout(()=>{ simulatePartner2(); }, 2000);
   }catch(e){showToast('❌ Ошибка синхронизации');}
 }
 
@@ -2956,7 +3342,16 @@ function syncGardenToFirebase() {
 
 function syncFishingToFirebase() {
   if(!firebaseDB||!currentRoomId||!gs.fullMultiMode) return;
-  fb.upd(`rooms/${currentRoomId}`,{sharedCoins:gs.coins,sharedFishCount:gs.fishCount,sharedInventory:JSON.stringify(gs.inventory),lastSyncer:myPlayerId}).catch(()=>{});
+  gs._lastLocalSync = Date.now();
+  fb.upd(`rooms/${currentRoomId}`,{
+    sharedCoins:gs.coins,
+    sharedFishCount:gs.fishCount,
+    sharedInventory:JSON.stringify(gs.inventory),
+    lastSyncer:myPlayerId,
+    lastSyncTime: gs._lastLocalSync
+  }).catch(()=>{});
+  _lastSyncedCoins = gs.coins;
+  _lastSyncedFish = gs.fishCount;
 }
 
 function updatePlayerLocation(loc) {
@@ -3005,8 +3400,702 @@ function renderMultiScreen() {
   }
 }
 
+// ============================================================
+// POKEMON MAP MODE
+// ============================================================
+const POKEMON_DATA = [
+  {name:'Пикачу',    emoji:'⚡', pts:40,  coins:0, pikaCoins:20, rar:'common',  label:'Обычный',    col:'#f0d040', col2:'#c0a010'},
+  {name:'Бульбазавр',emoji:'🌿', pts:50,  coins:0, pikaCoins:25, rar:'common',  label:'Обычный',    col:'#40a040', col2:'#206020'},
+  {name:'Чармандер', emoji:'🔥', pts:50,  coins:0, pikaCoins:25, rar:'common',  label:'Обычный',    col:'#f06020', col2:'#a03010'},
+  {name:'Сквиртл',   emoji:'💧', pts:50,  coins:0, pikaCoins:25, rar:'common',  label:'Обычный',    col:'#4090f0', col2:'#2060c0'},
+  {name:'Маджикарп', emoji:'🐟', pts:10,  coins:0, pikaCoins:5,  rar:'common',  label:'Обычный',    col:'#f04040', col2:'#a01010'},
+  {name:'Псидак',    emoji:'🦆', pts:60,  coins:0, pikaCoins:30, rar:'rare',    label:'Редкий',     col:'#f0e040', col2:'#c0a010'},
+  {name:'Гастли',    emoji:'👻', pts:70,  coins:0, pikaCoins:35, rar:'rare',    label:'Редкий',     col:'#8040c0', col2:'#4010a0'},
+  {name:'Лапрас',    emoji:'🌊', pts:100, coins:0, pikaCoins:50, rar:'epic',    label:'Эпический',  col:'#4080c0', col2:'#2050a0'},
+  {name:'Генгар',    emoji:'😈', pts:120, coins:0, pikaCoins:60, rar:'epic',    label:'Эпический',  col:'#6030a0', col2:'#301060'},
+  {name:'Мьюту',     emoji:'🔮', pts:200, coins:0, pikaCoins:100,rar:'legend',  label:'Легендарный',col:'#c040c0', col2:'#801080'},
+  {name:'Мью',       emoji:'💗', pts:250, coins:0, pikaCoins:150,rar:'legend',  label:'Легендарный',col:'#f080c0', col2:'#c04090'},
+];
+
+const PIKABUFS = [
+  {id:'combo_x2',  name:'Пика-Комбо ×2', desc:'Следующие 5 покемонов дают x2 пикакоины',    price:30,  icon:'⚡×2', effect:'combo2'},
+  {id:'combo_x3',  name:'Пика-Комбо ×3', desc:'Следующие 3 покемона дают x3 пикакоины',     price:60,  icon:'⚡×3', effect:'combo3'},
+  {id:'rare_boost',name:'РарБуст',        desc:'Редкие покемоны появляются вдвое чаще',       price:80,  icon:'🌟',   effect:'rare'},
+  {id:'legend_call',name:'Зов Легенды',   desc:'Шанс поймать легендарного покемона',          price:150, icon:'🔮',   effect:'legend'},
+];
+
+gs.mapMode = 'normal'; // 'normal' | 'pokemon'
+gs.pikaCoins = 0;
+gs.pikaCatchCount = 0;
+gs.activePikaBuf = null;
+gs.pikaBufCount = 0;
+
+function setMap(mode) {
+  gs.mapMode = mode;
+  document.getElementById('map-btn-normal').classList.toggle('active', mode==='normal');
+  document.getElementById('map-btn-pokemon').classList.toggle('active', mode==='pokemon');
+  
+  const pokeBadge = document.getElementById('poke-mode-badge');
+  const pikaBox = document.getElementById('pika-coins-box');
+  
+  if(mode === 'pokemon') {
+    pokeBadge.style.display = 'block';
+    pikaBox.style.display = 'flex';
+    // Change sky colors to purple
+    document.documentElement.style.setProperty('--sky-top','#1a0828');
+    document.documentElement.style.setProperty('--sky-bot','#0a0418');
+    showToast('⚡ Покемон режим! Лови покемонов за ПикаКоины!');
+  } else {
+    pokeBadge.style.display = 'none';
+    pikaBox.style.display = 'none';
+    applyWeather(gs.weather, true);
+    showToast('🌊 Обычная карта — ловим рыбу!');
+  }
+}
+
+function getPokemonPool() {
+  const hasBuf = gs.activePikaBuf;
+  const pool = [];
+  POKEMON_DATA.forEach(p => {
+    let w = p.rar==='common'?60 : p.rar==='rare'?30 : p.rar==='epic'?8 : 2;
+    if(hasBuf?.effect==='rare' && p.rar!=='common') w*=2;
+    if(hasBuf?.effect==='legend' && p.rar==='legend') w*=3;
+    for(let i=0;i<Math.round(w);i++) pool.push(p);
+  });
+  return pool;
+}
+
+function updatePikaCoins() {
+  document.getElementById('pika-coins-display').textContent = gs.pikaCoins;
+}
+
+
+function catchPokemon(f) {
+  gs.fishCount++;
+  gs.pikaCatchCount++;
+  gs.score += f.pts;
+  document.getElementById('fish-count').textContent = gs.fishCount;
+  document.getElementById('score-val').textContent = gs.score;
+  
+  let earned = f.pikaCoins;
+  // Apply active buffs
+  if(gs.activePikaBuf?.effect === 'combo2') { earned *= 2; gs.pikaBufCount--; }
+  if(gs.activePikaBuf?.effect === 'combo3') { earned *= 3; gs.pikaBufCount--; }
+  if(gs.pikaBufCount <= 0) gs.activePikaBuf = null;
+  
+  gs.pikaCoins += earned;
+  updatePikaCoins();
+  
+  // Show popup with pokemon style
+  document.getElementById('catch-header').textContent = '⚡ Покемон!';
+  document.getElementById('catch-name-txt').textContent = f.name;
+  document.getElementById('catch-weight-txt').textContent = `+${f.pts} ★ • +${earned}⚡`;
+  const rarEl = document.getElementById('catch-rarity');
+  rarEl.textContent = f.label; rarEl.className = `rarity-${f.rar}`;
+  // Show pokemon emoji, hide fish SVG
+  document.getElementById('catch-fish-svg').style.display = 'none';
+  const pokeEmoji = document.getElementById('catch-pokemon-emoji');
+  pokeEmoji.textContent = f.emoji;
+  pokeEmoji.style.display = 'block';
+  document.getElementById('catch-sell-btn').style.display = 'none';
+  document.getElementById('catch-popup').classList.add('show');
+  showScorePop('+'+earned+'⚡', gs.bobX, gs.bobY);
+  makeRipple(gs.bobX, gs.bobY, 65);
+  saveGame();
+  // Sync leaderboard
+  syncLeaderboard();
+}
+
+
+
+// ============================================================
+// PIKABUFS SHOP
+// ============================================================
+function renderPikabufs(body) {
+  if(gs.mapMode !== 'pokemon') {
+    const note = document.createElement('div');
+    note.style.cssText='font-family:\'Neucha\',cursive;font-size:13px;color:#5050a0;padding:16px;text-align:center;';
+    note.textContent='⚡ Переключись на Покемон карту чтобы использовать ПикаБаффы!';
+    body.appendChild(note);
+    return;
+  }
+  const wrap = document.createElement('div'); wrap.className='pikabufs-section';
+  wrap.innerHTML=`<div class="pikabufs-title">⚡ ПикаБаффы</div><div style="font-family:'Neucha',cursive;font-size:10px;color:#8070a0;margin-bottom:8px;text-align:center;">Покупаются за ПикаКоины ⚡ • Дают Комбо!</div>`;
+  
+  const bal = document.createElement('div');
+  bal.style.cssText='font-family:\'Neucha\',cursive;font-size:13px;color:#f0d040;text-align:center;margin-bottom:10px;';
+  bal.textContent = `У тебя: ${gs.pikaCoins}⚡ ПикаКоинов`;
+  wrap.appendChild(bal);
+  
+  PIKABUFS.forEach(pb => {
+    const canBuy = gs.pikaCoins >= pb.price;
+    const active = gs.activePikaBuf?.id === pb.id;
+    const el = document.createElement('div');
+    el.className='shop-item';
+    if(active) el.style.borderColor='#f0d040';
+    el.innerHTML=`
+      <div class="shop-item-icon"><span style="font-size:36px;">${pb.icon}</span></div>
+      <div class="shop-item-info">
+        <div class="shop-item-name">${pb.name}</div>
+        <div class="shop-item-desc">${pb.desc}</div>
+        <div class="shop-item-price">⚡ ${pb.price} ПикаКоинов</div>
+      </div>
+      <button class="shop-item-btn ${active?'btn-equipped-shop':canBuy?'btn-buy-shop':'btn-owned-shop'}"
+        onclick="buyPikaBuf('${pb.id}')" ${active||!canBuy?'disabled':''}>
+        ${active?'✓ Активен':'Купить'}
+      </button>`;
+    wrap.appendChild(el);
+  });
+  body.appendChild(wrap);
+}
+
+function buyPikaBuf(id) {
+  const pb = PIKABUFS.find(p=>p.id===id);
+  if(!pb) return;
+  if(gs.pikaCoins < pb.price) { showToast(`❌ Нужно ${pb.price}⚡, у тебя ${gs.pikaCoins}⚡`); return; }
+  gs.pikaCoins -= pb.price;
+  updatePikaCoins();
+  gs.activePikaBuf = pb;
+  gs.pikaBufCount = pb.effect.startsWith('combo') ? parseInt(pb.effect.slice(-1))*2 : 10;
+  renderShop();
+  showToast(`⚡ ${pb.name} активирован!`);
+}
+
+// ============================================================
+// FORTUNE WHEEL
+// ============================================================
+const FORTUNE_PRIZES = [
+  {label:'50🪙',    color:'#c04010', type:'coins', val:50},
+  {label:'100🪙',   color:'#206040', type:'coins', val:100},
+  {label:'🐟 Рыба', color:'#2040a0', type:'fish',  val:1},
+  {label:'20🪙',    color:'#a02030', type:'coins', val:20},
+  {label:'200🪙',   color:'#806010', type:'coins', val:200},
+  {label:'⚡×10',   color:'#8020a0', type:'pika',  val:10},
+  {label:'30🪙',    color:'#204060', type:'coins', val:30},
+  {label:'🌱Семя',  color:'#1a5010', type:'seed',  val:1},
+  {label:'500🪙!',  color:'#a06010', type:'coins', val:500},
+  {label:'Ничего',  color:'#1a1a2a', type:'none',  val:0},
+  {label:'80🪙',    color:'#302050', type:'coins', val:80},
+  {label:'⚡×25',   color:'#6010a0', type:'pika',  val:25},
+];
+const FORTUNE_COST = 50;
+let fortuneSpinning = false;
+let fortuneAngle = 0;
+
+function openFortune() {
+  document.getElementById('fortune-overlay').classList.add('show');
+  drawFortuneWheel(fortuneAngle);
+  document.getElementById('fortune-result').textContent = '';
+}
+
+function closeFortune() {
+  if(fortuneSpinning) return;
+  document.getElementById('fortune-overlay').classList.remove('show');
+}
+
+function drawFortuneWheel(rotation) {
+  const canvas = document.getElementById('fortune-wheel-canvas');
+  const ctx = canvas.getContext('2d');
+  const cx = 130, cy = 130, r = 126;
+  const n = FORTUNE_PRIZES.length;
+  const arc = (Math.PI*2)/n;
+  ctx.clearRect(0,0,260,260);
+  // Outer ring
+  ctx.beginPath(); ctx.arc(cx,cy,r+4,0,Math.PI*2);
+  ctx.strokeStyle='#f0d040'; ctx.lineWidth=4; ctx.stroke();
+  
+  FORTUNE_PRIZES.forEach((p,i) => {
+    const start = rotation + i*arc - Math.PI/2;
+    const end   = start + arc;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
+    ctx.closePath();
+    ctx.fillStyle = p.color;
+    ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=1; ctx.stroke();
+    // Label
+    const mid = start + arc/2;
+    ctx.save();
+    ctx.translate(cx + Math.cos(mid)*r*.65, cy + Math.sin(mid)*r*.65);
+    ctx.rotate(mid + Math.PI/2);
+    ctx.fillStyle='#fff';
+    ctx.font='bold 11px Neucha,cursive';
+    ctx.textAlign='center';
+    ctx.fillText(p.label, 0, 0);
+    ctx.restore();
+  });
+  // Center
+  ctx.beginPath(); ctx.arc(cx,cy,18,0,Math.PI*2);
+  ctx.fillStyle='#2a1608'; ctx.fill();
+  ctx.strokeStyle='#f0d040'; ctx.lineWidth=2; ctx.stroke();
+}
+
+function spinFortune() {
+  if(fortuneSpinning) return;
+  if(gs.coins < FORTUNE_COST) { showToast(`❌ Нужно ${FORTUNE_COST}🪙 для вращения!`); return; }
+  gs.coins -= FORTUNE_COST;
+  updateCoins();
+  fortuneSpinning = true;
+  document.getElementById('fortune-spin-btn').style.opacity = '0.5';
+  document.getElementById('fortune-result').textContent = '🎡 Крутится...';
+  
+  const prizeIdx = Math.floor(Math.random()*FORTUNE_PRIZES.length);
+  const n = FORTUNE_PRIZES.length;
+  const arc = (Math.PI*2)/n;
+  // Target angle: spin 5-8 full rotations + land on prize
+  const targetOffset = -(prizeIdx * arc + arc/2);
+  const extraSpins = (5 + Math.floor(Math.random()*3)) * Math.PI * 2;
+  const finalAngle = targetOffset + extraSpins;
+  
+  let startTime = null;
+  const duration = 4000;
+  
+  function animate(ts) {
+    if(!startTime) startTime = ts;
+    const elapsed = ts - startTime;
+    const t = Math.min(1, elapsed/duration);
+    // Ease out cubic
+    const ease = 1 - Math.pow(1-t, 3);
+    const currentAngle = fortuneAngle + finalAngle * ease;
+    drawFortuneWheel(currentAngle);
+    if(t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      fortuneAngle = (fortuneAngle + finalAngle) % (Math.PI*2);
+      fortuneSpinning = false;
+      document.getElementById('fortune-spin-btn').style.opacity = '1';
+      const prize = FORTUNE_PRIZES[prizeIdx];
+      applyFortunePrize(prize);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function applyFortunePrize(prize) {
+  let msg = '';
+  if(prize.type === 'coins') { gs.coins += prize.val; updateCoins(); coinBurst(180,350); msg = `🎉 Выиграл ${prize.val}🪙!`; }
+  else if(prize.type === 'pika') { gs.pikaCoins += prize.val; updatePikaCoins(); msg = `⚡ Выиграл ${prize.val} ПикаКоинов!`; }
+  else if(prize.type === 'fish') { 
+    const f = FISH_DATA[Math.floor(Math.random()*5)];
+    gs.inventory.push({...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)});
+    msg = `🐟 Выиграл рыбу: ${f.name}!`;
+  }
+  else if(prize.type === 'seed') {
+    SEEDS[Math.floor(Math.random()*SEEDS.length)].owned++;
+    msg = '🌱 Выиграл семя!';
+  }
+  else { msg = '😅 Ничего... Попробуй ещё раз!'; }
+  
+  document.getElementById('fortune-result').textContent = msg;
+  showToast(msg);
+  saveGame();
+}
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+let lbTab = 'fish';
+
+function switchLbTab(tab, el) {
+  lbTab = tab;
+  document.querySelectorAll('.lb-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderLeaderboard();
+}
+
+async function renderLeaderboard() {
+  const list = document.getElementById('lb-list');
+  list.innerHTML = '<div style="font-family:\'Neucha\',cursive;font-size:12px;color:#4040a0;padding:16px;text-align:center;">⏳ Загрузка...</div>';
+  
+  // Try Firebase
+  const ok = await initFirebase();
+  if(!ok) {
+    list.innerHTML = '<div style="font-family:\'Neucha\',cursive;font-size:12px;color:#4040a0;padding:16px;text-align:center;">❌ Нужно интернет-соединение</div>';
+    return;
+  }
+  
+  // Push own data
+  await fb.upd(`leaderboard/${myPlayerId}`, {
+    name: myPlayerName,
+    fishCount: gs.fishCount,
+    pikaCount: gs.pikaCatchCount,
+    coins: gs.coins
+  }).catch(()=>{});
+  
+  const snap = await fb.get('leaderboard').catch(()=>null);
+  if(!snap || !snap.exists()) { list.innerHTML='<div style="font-family:\'Neucha\',cursive;font-size:12px;color:#4040a0;padding:16px;text-align:center;">Нет данных</div>'; return; }
+  
+  const data = snap.val();
+  let entries = Object.entries(data).map(([id,d])=>({id,...d}));
+  
+  const field = lbTab==='fish'?'fishCount': lbTab==='pika'?'pikaCount':'coins';
+  const icon  = lbTab==='fish'?'🐟': lbTab==='pika'?'⚡':'🪙';
+  entries.sort((a,b)=>(b[field]||0)-(a[field]||0));
+  entries = entries.slice(0,20);
+  
+  list.innerHTML = '';
+  const medals = ['🥇','🥈','🥉'];
+  entries.forEach((e,i)=>{
+    const isMe = e.id === myPlayerId;
+    const row = document.createElement('div');
+    row.className = 'lb-row' + (isMe?' lb-me':'');
+    row.innerHTML = `
+      <div class="lb-rank">${medals[i]||('#'+(i+1))}</div>
+      <div class="lb-name">${e.name||'Рыбак'}${isMe?' 👈':''}</div>
+      <div class="lb-val">${icon} ${e[field]||0}</div>`;
+    list.appendChild(row);
+  });
+}
+
+async function syncLeaderboard() {
+  if(!firebaseDB) return;
+  fb.upd(`leaderboard/${myPlayerId}`, {
+    name: myPlayerName,
+    fishCount: gs.fishCount,
+    pikaCount: gs.pikaCatchCount,
+    coins: gs.coins
+  }).catch(()=>{});
+}
+
+// ============================================================
+// KIOSK (Player Marketplace)
+// ============================================================
+let kioskListings = {}; // Local cache of market
+
+async function enterKiosk() {
+  const ok = await initFirebase();
+  showGardenScene('kiosk');
+  updatePlayerLocation('kiosk');
+  renderKiosk();
+  if(ok) listenKioskMarket();
+}
+
+function leaveKiosk() {
+  fadeScene(()=>{
+    showGardenScene('road');
+    document.getElementById('road-hint').textContent = 'Возвращаемся...';
+    const walker = document.getElementById('walker');
+    walker.style.bottom='580px'; walker.className='walker from-shop';
+    updatePlayerLocation('garden-road');
+    setTimeout(()=>{
+      fadeScene(()=>{ showGardenScene('garden'); renderGardenPlots(); updatePlayerLocation('garden'); });
+    }, 2100);
+  });
+}
+
+function renderKiosk() {
+  renderKioskSell();
+  renderKioskMarket();
+}
+
+function renderKioskSell() {
+  const sec = document.getElementById('kiosk-sell-section');
+  sec.innerHTML = '';
+  
+  // Fish from inventory
+  if(gs.inventory.length === 0 && SEEDS.every(s=>s.owned===0) && gs.pikaCatchCount === 0) {
+    sec.innerHTML = '<div style="font-family:\'Neucha\',cursive;font-size:12px;color:#6a5030;padding:8px;">Нет товаров для продажи</div>';
+    return;
+  }
+  
+  // List inventory fish
+  const uniqueFish = {};
+  gs.inventory.forEach((f,i)=>{
+    if(!uniqueFish[f.name]) uniqueFish[f.name] = {f, count:0, idx:[]};
+    uniqueFish[f.name].count++;
+    uniqueFish[f.name].idx.push(i);
+  });
+  
+  Object.values(uniqueFish).forEach(({f,count,idx})=>{
+    const defaultPrice = calcPrice(f);
+    const div = document.createElement('div');
+    div.className='kiosk-my-listing';
+    div.innerHTML=`
+      <div class="kiosk-listing-icon">🐟</div>
+      <div class="kiosk-listing-info">
+        <div class="kiosk-listing-name">${f.name} ×${count}</div>
+        <div class="kiosk-listing-price">Авто-цена: ${defaultPrice}🪙</div>
+      </div>
+      <input class="kiosk-price-input" id="price-${f.name}" type="number" value="${defaultPrice}" min="1" max="99999"/>
+      <button class="kiosk-listing-btn btn-list" onclick="listKioskItem('fish','${f.name}',${idx[0]})">📦 Выставить</button>`;
+    sec.appendChild(div);
+  });
+  
+  // Seeds
+  SEEDS.filter(s=>s.owned>0).forEach(s=>{
+    const div = document.createElement('div');
+    div.className='kiosk-my-listing';
+    div.innerHTML=`
+      <div class="kiosk-listing-icon">${s.bag}</div>
+      <div class="kiosk-listing-info">
+        <div class="kiosk-listing-name">${s.name} (семя) ×${s.owned}</div>
+        <div class="kiosk-listing-price">Рыночная цена: ${s.price}🪙</div>
+      </div>
+      <input class="kiosk-price-input" id="price-seed-${s.id}" type="number" value="${s.price}" min="1" max="99999"/>
+      <button class="kiosk-listing-btn btn-list" onclick="listKioskItem('seed','${s.id}',0)">📦 Выставить</button>`;
+    sec.appendChild(div);
+  });
+}
+
+async function listKioskItem(type, id, invIdx) {
+  const ok = await initFirebase();
+  if(!ok) { showToast('❌ Нет интернета'); return; }
+  
+  let price, name, icon;
+  if(type==='fish') {
+    const priceInput = document.getElementById('price-'+id);
+    price = parseInt(priceInput?.value)||10;
+    const f = gs.inventory[invIdx]; if(!f) return;
+    name = f.name; icon = '🐟';
+    gs.inventory.splice(invIdx, 1);
+    saveGame();
+  } else if(type==='seed') {
+    const priceInput = document.getElementById('price-seed-'+id);
+    price = parseInt(priceInput?.value)||10;
+    const s = SEEDS.find(x=>x.id===id); if(!s||s.owned<=0) return;
+    name = s.name+' (семя)'; icon = s.bag;
+    s.owned--;
+    saveGame();
+  }
+  
+  await fb.set(`kiosk/${myPlayerId}_${Date.now()}`, {
+    sellerId: myPlayerId, sellerName: myPlayerName,
+    type, id, price, name, icon, listedAt: Date.now()
+  });
+  showToast(`📦 ${name} выставлен за ${price}🪙!`);
+  renderKiosk();
+}
+
+function listenKioskMarket() {
+  fb.on('kiosk', snap=>{
+    kioskListings = snap.val() || {};
+    renderKioskMarket();
+  });
+}
+
+function renderKioskMarket() {
+  const list = document.getElementById('kiosk-market-list');
+  if(!list) return;
+  list.innerHTML = '';
+  const entries = Object.entries(kioskListings);
+  if(!entries.length) {
+    list.innerHTML='<div style="font-family:\'Neucha\',cursive;font-size:12px;color:#6a5030;padding:8px;">Рынок пуст. Стань первым продавцом!</div>';
+    return;
+  }
+  entries.sort((a,b)=>a[1].listedAt-b[1].listedAt).forEach(([key,item])=>{
+    const isOwn = item.sellerId === myPlayerId;
+    const canBuy = gs.coins >= item.price;
+    const div = document.createElement('div');
+    div.className='kiosk-my-listing';
+    div.innerHTML=`
+      <div class="kiosk-listing-icon">${item.icon}</div>
+      <div class="kiosk-listing-info">
+        <div class="kiosk-listing-name">${item.name}</div>
+        <div class="kiosk-listing-price">${isOwn?'Ты продаёшь':'От: '+item.sellerName} • ${item.price}🪙</div>
+      </div>
+      ${isOwn
+        ? `<button class="kiosk-listing-btn btn-cancel-listing" onclick="cancelKioskListing('${key}')">Отменить</button>`
+        : `<button class="kiosk-listing-btn btn-buy-listing" onclick="buyKioskListing('${key}')" ${canBuy?'':'style="opacity:.4"'}>${canBuy?'Купить':'Мало 🪙'}</button>`
+      }`;
+    list.appendChild(div);
+  });
+}
+
+async function buyKioskListing(key) {
+  const item = kioskListings[key];
+  if(!item) return;
+  if(gs.coins < item.price) { showToast('❌ Недостаточно монет!'); return; }
+  const ok = await initFirebase();
+  if(!ok) return;
+  // Check still exists
+  const snap = await fb.get(`kiosk/${key}`);
+  if(!snap.exists()) { showToast('❌ Товар уже продан!'); return; }
+  gs.coins -= item.price;
+  updateCoins();
+  // Add to inventory if fish
+  if(item.type === 'fish') {
+    const f = FISH_DATA.find(x=>x.name===item.id||x.name===item.name);
+    if(f) gs.inventory.push({...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)});
+  } else if(item.type==='seed') {
+    const s = SEEDS.find(x=>x.id===item.id);
+    if(s) s.owned++;
+  }
+  await fb.rm(`kiosk/${key}`);
+  // Give coins to seller via firebase
+  await fb.upd(`kiosk_payments/${item.sellerId}`, {pending: item.price}).catch(()=>{});
+  showToast(`✅ Куплено: ${item.name} за ${item.price}🪙!`);
+  saveGame(); renderKiosk();
+}
+
+async function cancelKioskListing(key) {
+  const item = kioskListings[key]; if(!item) return;
+  const ok = await initFirebase(); if(!ok) return;
+  await fb.rm(`kiosk/${key}`);
+  // Return item
+  if(item.type==='fish') {
+    const f = FISH_DATA.find(x=>x.name===item.id||x.name===item.name);
+    if(f) gs.inventory.push({...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)});
+  } else if(item.type==='seed') {
+    const s = SEEDS.find(x=>x.id===item.id);
+    if(s) s.owned++;
+  }
+  showToast('🔙 Товар возвращён!');
+  saveGame(); renderKiosk();
+}
+
+// ============================================================
+// ROD VISUAL — Change rod appearance on fishing screen
+// ============================================================
+const ROD_COLORS = {
+  wood:   {color:'#8b5e2a', glow:'none'},
+  bamboo: {color:'#6a9030', glow:'0 0 8px rgba(100,160,40,.5)'},
+  carbon: {color:'#405868', glow:'0 0 8px rgba(60,100,120,.6)'},
+  magic:  {color:'#9040c0', glow:'0 0 16px rgba(160,50,255,.8)'},
+  golden: {color:'#d4a020', glow:'0 0 20px rgba(255,200,30,.9)'},
+};
+
+function updateRodVisual() {
+  const rod = gs.currentRod;
+  const rc = ROD_COLORS[rod.id] || ROD_COLORS.wood;
+  const rodBody = document.getElementById('rod-body');
+  rodBody.style.background = `linear-gradient(to right, ${rc.color}80, ${rc.color}, ${rc.color}80)`;
+  rodBody.style.boxShadow = rc.glow;
+  // Update all rod rings color
+  document.querySelectorAll('#rod-body .rod-ring').forEach(r=>{
+    r.style.borderColor = rc.color;
+  });
+  document.getElementById('current-rod-name').textContent = '🎣 '+rod.name;
+  document.getElementById('current-rod-name').style.color = rc.color;
+}
+
+
+
+// ============================================================
+// MULTIPLAYER ROD 2 — Show partner's rod with animation
+// ============================================================
+// Second bobber for partner
+let bob2X = 180, bob2Y = 380;
+let partnerPhase = 'idle'; // 'idle' | 'waiting' | 'bite'
+let partner2Timer = null;
+
+function simulatePartner2() {
+  if(!gs.fullMultiMode || !currentRoomId) return;
+  // Find another player in the room
+  const others = Object.entries(playersData).filter(([pid])=>pid!==myPlayerId);
+  if(!others.length) return;
+  
+  const lctx2 = document.getElementById('linecanvas2').getContext('2d');
+  if(partnerPhase === 'idle') {
+    // Partner casts
+    bob2X = 60 + Math.random()*140;
+    bob2Y = 320 + Math.random()*120;
+    partnerPhase = 'waiting';
+    // Draw line from left rod
+    lctx2.clearRect(0,0,360,700);
+    lctx2.beginPath();
+    lctx2.moveTo(30, 90);
+    lctx2.quadraticCurveTo(bob2X-20, 60, bob2X, bob2Y);
+    lctx2.strokeStyle='rgba(180,170,140,.65)'; lctx2.lineWidth=1.2;
+    lctx2.setLineDash([4,3]); lctx2.stroke(); lctx2.setLineDash([]);
+    
+    // Random bite after 3-8 seconds
+    clearTimeout(partner2Timer);
+    partner2Timer = setTimeout(()=>{
+      if(!gs.fullMultiMode) return;
+      partnerPhase = 'bite';
+      // Flash the rod2
+      document.getElementById('rod-body2').style.filter = 'brightness(2)';
+      setTimeout(()=>{
+        document.getElementById('rod-body2').style.filter='';
+        partnerPhase = 'idle';
+        lctx2.clearRect(0,0,360,700);
+        setTimeout(simulatePartner2, 1000 + Math.random()*2000);
+      }, 1200);
+    }, 3000 + Math.random()*5000);
+  }
+}
+
+
+
 // Periodic sync every 8s
 setInterval(()=>{ if(gs.fullMultiMode&&currentRoomId) syncFishingToFirebase(); },8000);
+
+let _lastSyncedCoins = -1;
+let _lastSyncedFish = -1;
+
+function syncFishingToFirebase() {
+  if(!firebaseDB||!currentRoomId||!gs.fullMultiMode) return;
+  fb.upd(`rooms/${currentRoomId}`,{
+    sharedCoins:gs.coins,
+    sharedFishCount:gs.fishCount,
+    sharedInventory:JSON.stringify(gs.inventory),
+    lastSyncer:myPlayerId,
+    lastSyncTime:Date.now()
+  }).catch(()=>{});
+  _lastSyncedCoins = gs.coins;
+  _lastSyncedFish = gs.fishCount;
+}
+
+
+// ============================================================
+// GARDEN SCENE EXTENSION for kiosk - override first definition
+// ============================================================
+// This replaces the earlier showGardenScene to add kiosk support
+
+// Override walkToShop to show choice
+function walkToShop() {
+  fadeScene(()=>{
+    showGardenScene('road');
+    document.getElementById('road-hint').textContent='Идём...';
+    document.getElementById('road-choice').style.display='none';
+    const walker=document.getElementById('walker');
+    walker.className='walker to-shop';
+    walker.style.bottom='200px';
+    updatePlayerLocation('garden-road');
+    setTimeout(()=>{
+      document.getElementById('road-hint').textContent='Пришли! Куда идём?';
+      document.getElementById('road-choice').style.display='flex';
+    }, 2500);
+  });
+}
+
+function enterShopFromRoad() {
+  // Click on door = go to plant shop
+  if(document.getElementById('road-choice').style.display==='flex') {
+    enterShop();
+  }
+}
+
+// (switchScreen, renderShop, saveGame wrappers merged into originals above)
+
+// Load extra on startup
+(function loadExtra() {
+  try {
+    const raw = localStorage.getItem('fishing_reborn_extra');
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    gs.pikaCoins = d.pikaCoins || 0;
+    gs.pikaCatchCount = d.pikaCatchCount || 0;
+    if(d.mapMode) { gs.mapMode = d.mapMode; /* will be applied after DOM ready */ }
+  } catch(e){}
+})();
+
+// ============================================================
+// INIT — apply rod visual on load
+// ============================================================
+setTimeout(()=>{
+  updateRodVisual();
+  updatePikaCoins();
+  if(gs.mapMode === 'pokemon') setMap('pokemon');
+}, 100);
+
+// Leaderboard auto-refresh when on lb screen
+setInterval(()=>{
+  if(gs.currentScreen==='leaderboard') renderLeaderboard();
+}, 30000);
+
+
 
 
 
