@@ -687,9 +687,10 @@ body {
     repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.04) 18px,rgba(0,0,0,.04) 19px),
     linear-gradient(to bottom,rgba(90,50,15,.85),rgba(50,25,6,.95));
   border:2px solid var(--wood-dark); border-radius:8px;
-  padding:9px 10px; margin-bottom:9px; position:relative; overflow:hidden;
+  padding:9px 10px; margin-bottom:9px; position:relative; overflow:visible;
   box-shadow:0 2px 8px rgba(0,0,0,.5);
   animation:itemSlideIn .3s ease-out;
+  flex-wrap:nowrap;
 }
 @keyframes itemSlideIn { 0%{opacity:0;transform:translateX(-10px)} 100%{opacity:1;transform:translateX(0)} }
 .shop-item::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,rgba(200,160,60,.3),transparent); }
@@ -2520,6 +2521,11 @@ const RODS = [
   {id:'quantum',    name:'Квантовая',     desc:'Существует в нескольких измерениях одновременно',           price:200000, biteChance:20.0, catchMult:18.0, stats:'Клёв: x20 • x18 • 2 рыбы за раз!', special:'quantum'},
   {id:'celestial',  name:'Небесная',      desc:'Упала с небес. Ловит рыб из параллельных вселенных',        price:350000, biteChance:25.0, catchMult:22.0, stats:'Клёв: x25 • x22 • Только OG+Легенды', special:'celestial'},
   {id:'apocalypse', name:'Апокалипсис',   desc:'КОНЕЦ ВСЕМУ. Ломает реальность при каждом забросе',         price:999999, biteChance:50.0, catchMult:50.0, stats:'Клёв: x50 • x50 • ВСЁ СРАЗУ • Мгновенный клёв', special:'apocalypse'},
+  // ═══ УЛЬТРА УДОЧКИ ═══
+  {id:'mech',    name:'МехУдочка 9000',     desc:'Механический шедевр с шестерёнками, поршнями и ИИ-чипом.',        price:80000,  biteChance:15.0, catchMult:12.0, stats:'Клёв: x15 • Авто-прицел • OG+10% • Мех-подсечка',    detail:'Гипер-Детальная', owned:false, equipped:false},
+  {id:'cosmic',  name:'Космическая',         desc:'Сделана из метеорита. Искривляет пространство чтобы притянуть рыбу.', price:120000, biteChance:20.0, catchMult:15.0, stats:'Клёв: x20 • Гравитация рыбы • OG всегда • Космос',    detail:'Гипер-Детальная', owned:false, equipped:false},
+  {id:'demonic', name:'Демоническая',        desc:'Пропитана кровью тёмных существ. Только ЛЕГЕНДЫ и OG.',            price:200000, biteChance:25.0, catchMult:20.0, stats:'Клёв: x25 • Только OG/Легенды • +666🪙 за улов',       detail:'Гипер-Детальная', owned:false, equipped:false},
+  {id:'godly',   name:'Удочка Богов',        desc:'МАКСИМАЛЬНАЯ УДОЧКА. Создана самими богами рыбалки.',               price:500000, biteChance:50.0, catchMult:30.0, stats:'Клёв: x50 • x30 улов • ВСЕ РЫБЫ • БОГ РЫБАЛКИ',       detail:'БОГ-ТИЕР',        owned:false, equipped:false},
 ];
 
 // ============================================================
@@ -2647,15 +2653,17 @@ function loadGame() {
       gs.sharkSkins       = extra.sharkSkins       ?? 0;
     }
   } catch(e) { console.warn('Load extra failed', e); }
-  // КОМПЕНСАЦИЯ: +100 000 монет и все новые удочки (один раз)
-  if(!localStorage.getItem('fishing_rod_compensation_v1')) {
-    gs.coins = (gs.coins || 0) + 100000;
-    // Выдать все новые детальные удочки
-    ['mech','cosmic','demonic','godly'].forEach(id => {
-      const rod = RODS.find(r => r.id === id);
-      if(rod) rod.owned = true;
+  // КОМПЕНСАЦИЯ v2: +1 000 000 монет + все удочки (сбрасываем старый ключ)
+  const compDone = localStorage.getItem('fishing_rod_compensation_v2');
+  if(!compDone) {
+    gs.coins = (gs.coins || 0) + 1000000;
+    // Выдать ВСЕ удочки кроме акульей (требует крафт)
+    RODS.forEach(r => {
+      if(r.id !== 'shark') r.owned = true;
     });
-    localStorage.setItem('fishing_rod_compensation_v1', '1');
+    localStorage.setItem('fishing_rod_compensation_v2', '1');
+    localStorage.removeItem('fishing_rod_compensation_v1');
+    localStorage.removeItem('fishing_comp_toast_shown'); // показать тост заново
   }
 }
 
@@ -6911,55 +6919,8 @@ function usePokeballBoost(idx) {
 }
 
 // ════════════════════════════════════════════════════════════
-// 💀 НОВЫЕ ХАРДКОР УДОЧКИ — Hyper-Detailed SVG Rods
+// 💀 Ультра-удочки теперь в основном массиве RODS (выше loadGame)
 // ════════════════════════════════════════════════════════════
-
-// Extend RODS array with new ultra-detailed, ultra-expensive rods
-const HARDCORE_RODS = [
-  {
-    id:'mech',
-    name:'МехУдочка 9000',
-    desc:'Механический шедевр с шестерёнками, поршнями и ИИ-чипом.',
-    price:80000,
-    biteChance:15.0, catchMult:12.0,
-    stats:'Клёв: x15 • Авто-прицел • OG+10% • Механическая подсечка',
-    detail:'Гипер-Детальная',
-    owned:false, equipped:false
-  },
-  {
-    id:'cosmic',
-    name:'Космическая',
-    desc:'Сделана из метеорита. Искривляет пространство чтобы притянуть рыбу.',
-    price:120000,
-    biteChance:20.0, catchMult:15.0,
-    stats:'Клёв: x20 • Гравитация рыбы • OG всегда • Космос',
-    detail:'Гипер-Детальная',
-    owned:false, equipped:false
-  },
-  {
-    id:'demonic',
-    name:'Демоническая',
-    desc:'Пропитана кровью тёмных существ. Только ЛЕГЕНДЫ и OG.',
-    price:200000,
-    biteChance:25.0, catchMult:20.0,
-    stats:'Клёв: x25 • Только OG/Легенды • +666🪙 за улов',
-    detail:'Гипер-Детальная',
-    owned:false, equipped:false
-  },
-  {
-    id:'godly',
-    name:'Удочка Богов',
-    desc:'МАКСИМАЛЬНАЯ УДОЧКА. Создана самими богами рыбалки.',
-    price:999999,
-    biteChance:50.0, catchMult:30.0,
-    stats:'Клёв: x50 • x30 улов • ВСЕ РЫБЫ СРАЗУ • БОГ РЫБАЛКИ',
-    detail:'БОГ-ТИЕР',
-    owned:false, equipped:false
-  }
-];
-
-// Add to main RODS array
-HARDCORE_RODS.forEach(r => RODS.push(r));
 
 // Add colors for new rods
 ROD_COLORS.dragon  = {color:'#ff6020', glow:'0 0 40px rgba(255,80,0,1.0)'};
@@ -7884,7 +7845,7 @@ window.renderGarden = function() {
   // Показать тост о компенсации один раз
   if(!localStorage.getItem('fishing_comp_toast_shown')) {
     localStorage.setItem('fishing_comp_toast_shown','1');
-    setTimeout(()=>{ if(typeof showToast==='function') showToast('🎁 КОМПЕНСАЦИЯ: +100 000🪙 + МехУдочка + Космическая + Демоническая + Удочка Богов!'); }, 1500);
+    setTimeout(()=>{ if(typeof showToast==='function') showToast('🎁 КОМПЕНСАЦИЯ: +1 000 000🪙 + ВСЕ УДОЧКИ РАЗБЛОКИРОВАНЫ!'); }, 1500);
   }
 })();
 
