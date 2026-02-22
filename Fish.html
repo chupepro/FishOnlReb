@@ -1446,6 +1446,61 @@ body {
 }
 @keyframes ogRainbow{0%{background-position:0%}100%{background-position:300%}}
 
+/* ═══ ЦВЕТОЧНЫЕ РЫБЫ ═══ */
+.rarity-flower {
+  background: linear-gradient(135deg, #ff80c0, #c060ff, #ff80c0, #ffd060, #ff80c0);
+  background-size: 400% 400%;
+  animation: flowerRainbow 1.5s linear infinite;
+  color: #fff; font-weight: bold; text-shadow: 0 0 10px #ff80ff, 0 0 20px #fff;
+  padding: 2px 10px; border-radius: 8px; font-size: 12px;
+  box-shadow: 0 0 20px rgba(255,100,200,.9), 0 0 40px rgba(200,80,255,.5);
+}
+@keyframes flowerRainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* Цветочная рыба — анимации в попапе */
+@keyframes petalFloat    {0%{transform:translateY(0) rotate(-5deg) scale(1)}50%{transform:translateY(-8px) rotate(5deg) scale(1.08)}100%{transform:translateY(0) rotate(-5deg) scale(1)}}
+@keyframes lilyPulse     {0%{transform:scale(1);filter:drop-shadow(0 0 6px #c060ff)}50%{transform:scale(1.12);filter:drop-shadow(0 0 20px #e080ff)}100%{transform:scale(1);filter:drop-shadow(0 0 6px #c060ff)}}
+@keyframes daisySpin     {0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(10deg) scale(1.1)}100%{transform:rotate(0deg) scale(1)}}
+@keyframes rainbowShimmer{0%{filter:hue-rotate(0deg) drop-shadow(0 0 10px #ff4080)}100%{filter:hue-rotate(360deg) drop-shadow(0 0 20px #ff8000)}}
+@keyframes orchidGlow    {0%{filter:drop-shadow(0 0 8px #e040ff) brightness(1)}50%{filter:drop-shadow(0 0 30px #ff80ff) brightness(1.4)}100%{filter:drop-shadow(0 0 8px #e040ff) brightness(1)}}
+@keyframes sunflowerBlaze{0%{transform:scale(1) rotate(-3deg);filter:drop-shadow(0 0 12px #ffd700)}33%{transform:scale(1.15) rotate(3deg);filter:drop-shadow(0 0 30px #ff8800) brightness(1.5)}66%{transform:scale(1.05) rotate(-1deg);filter:drop-shadow(0 0 20px #ffd700)}100%{transform:scale(1) rotate(-3deg);filter:drop-shadow(0 0 12px #ffd700)}}
+
+/* Лепестки летят при поимке цветочной рыбы */
+@keyframes petalFly {
+  0%   {transform:translate(0,0) rotate(0deg) scale(1);   opacity:1;}
+  100% {transform:translate(var(--px),var(--py)) rotate(var(--pr)) scale(0.3); opacity:0;}
+}
+.flower-petal {
+  position:absolute; font-size:14px; pointer-events:none; z-index:10000;
+  animation: petalFly 1.2s ease-out forwards;
+}
+/* Цветочная удочка SVG в магазе */
+.rod-tier-flower {
+  background: linear-gradient(135deg,#ff60a0,#c040ff,#ff60a0);
+  background-size:200% 200%;
+  animation: flowerRainbow 1.5s linear infinite;
+  color:#fff; border:1px solid #ff80c0;
+  box-shadow: 0 0 8px rgba(255,100,200,.6);
+}
+@keyframes flowerRodGlow {
+  0%  {filter:drop-shadow(0 0 8px #ff80c0);}
+  50% {filter:drop-shadow(0 0 24px #ff40ff) brightness(1.3);}
+  100%{filter:drop-shadow(0 0 8px #ff80c0);}
+}
+/* Craft кнопка цветочной удочки */
+.craft-flower-btn {
+  font-family:'UnifrakturMaguntia',cursive; font-size:13px;
+  background: linear-gradient(135deg,#cc2080,#8020c0,#cc2080);
+  background-size:200% 200%;
+  animation: flowerRainbow 2s linear infinite;
+  border: 2px solid #ff80c0; border-radius:12px;
+  padding: 6px 12px; color:#fff; cursor:pointer;
+  box-shadow: 0 0 12px rgba(255,80,200,.6);
+  text-shadow: 0 1px 4px rgba(0,0,0,.8);
+}
+.craft-flower-btn:active{transform:scale(.94);}
+.craft-flower-btn:disabled{opacity:.4;cursor:default;animation:none;background:#442233;}
+
 /* ═══════════════════════════════════════════
    BOSS FIGHT OVERLAY
 ═══════════════════════════════════════════ */
@@ -2458,6 +2513,19 @@ const FISH_DATA = [
   {name:'Рыба Древности',   w:[4.0,15.0], pts:700,  coins:600,  rar:'og', label:'👑 OG', col:'#d4a820', col2:'#987020', og:true},
   {name:'Небесный Окунь',   w:[1.0,5.0],  pts:510,  coins:410,  rar:'og', label:'👑 OG', col:'#80c8ff', col2:'#3080c0', og:true},
   {name:'Вечная Рыбка',     w:[0.2,1.0],  pts:999,  coins:999,  rar:'og', label:'👑 OG МАКС', col:'#ffffff', col2:'#c0c0c0', og:true},
+  // ═══ ЦВЕТОЧНЫЕ РЫБЫ ═══ (эксклюзив Цветочной Удочки)
+  {name:'Розовый Карп',      w:[1.0,5.0],  pts:800,  coins:700,  rar:'flower', label:'🌸 Цветочная', col:'#ff80c0', col2:'#cc4080', og:true, flower:true,
+   flowerAnim:'petalFloat'},
+  {name:'Лилейная Щука',     w:[2.0,9.0],  pts:900,  coins:800,  rar:'flower', label:'🌸 Цветочная', col:'#c060ff', col2:'#8020c0', og:true, flower:true,
+   flowerAnim:'lilyPulse'},
+  {name:'Ромашковый Сом',    w:[3.0,14.0], pts:1000, coins:950,  rar:'flower', label:'🌸 Цветочная', col:'#fff060', col2:'#c0a000', og:true, flower:true,
+   flowerAnim:'daisySpin'},
+  {name:'Радужный Тюльпан',  w:[0.5,3.0],  pts:1100, coins:1000, rar:'flower', label:'🌸 Цветочная', col:'#ff4080', col2:'#ff8000', og:true, flower:true,
+   flowerAnim:'rainbowShimmer'},
+  {name:'Орхидея-Рыба',      w:[0.3,2.0],  pts:1200, coins:1100, rar:'flower', label:'🌸 Цветочная', col:'#e040ff', col2:'#8000c0', og:true, flower:true,
+   flowerAnim:'orchidGlow'},
+  {name:'Золотой Подсолнух',  w:[4.0,18.0], pts:1500, coins:1400, rar:'flower', label:'🌻 ЦВЕТОК ЛЕГЕНД', col:'#ffd700', col2:'#ff8800', og:true, flower:true,
+   flowerAnim:'sunflowerBlaze'},
 ];
 
 // ============================================================
@@ -2486,6 +2554,7 @@ const RODS = [
   {id:'cosmic',  name:'Космическая',         desc:'Сделана из метеорита. Искривляет пространство чтобы притянуть рыбу.', price:120000, biteChance:20.0, catchMult:15.0, stats:'Клёв: x20 • Гравитация рыбы • OG всегда • Космос',    detail:'Гипер-Детальная', owned:false, equipped:false},
   {id:'demonic', name:'Демоническая',        desc:'Пропитана кровью тёмных существ. Только ЛЕГЕНДЫ и OG.',            price:200000, biteChance:25.0, catchMult:20.0, stats:'Клёв: x25 • Только OG/Легенды • +666🪙 за улов',       detail:'Гипер-Детальная', owned:false, equipped:false},
   {id:'godly',   name:'Удочка Богов',        desc:'МАКСИМАЛЬНАЯ УДОЧКА. Создана самими богами рыбалки.',               price:500000, biteChance:50.0, catchMult:30.0, stats:'Клёв: x50 • x30 улов • ВСЕ РЫБЫ • БОГ РЫБАЛКИ',       detail:'БОГ-ТИЕР',        owned:false, equipped:false},
+  {id:'flower',  name:'Цветочная Удочка',    desc:'Создана из живых цветов. Ловит Цветочных Рыб и баффит сад при каждом улове!', price:0, biteChance:30.0, catchMult:25.0, stats:'Клёв: x30 • x25 • Цветочные Рыбы • Бафф Сада • Анимированные!', detail:'🌸 ЦВЕТОК', owned:false, equipped:false, craftable:true, craftType:'flower'},
 ];
 
 // ============================================================
@@ -5527,12 +5596,13 @@ function updateRodVisual() {
     cosmic:     'cosmicSpin 3s linear infinite',
     demonic:    'demonicPulse 1.2s ease-in-out infinite',
     godly:      'godlyShine 1.8s ease-in-out infinite',
+    flower:     'flowerRodGlow 1.5s ease-in-out infinite',
   };
   rodBody.style.animation = animMap[rod.id] || '';
   rodBody.style.boxShadow = rc.glow;
 
   // Градиент и ширина удочки — у крутых удочек толще
-  const fatRods = {mech:'#90e0f8,#4090b0,#90e0f8', cosmic:'#e060ff,#6020c0,#e060ff', demonic:'#ff1020,#800010,#ff1020', godly:'#fff8a0,#ffd700,#fff8a0'};
+  const fatRods = {mech:'#90e0f8,#4090b0,#90e0f8', cosmic:'#e060ff,#6020c0,#e060ff', demonic:'#ff1020,#800010,#ff1020', godly:'#fff8a0,#ffd700,#fff8a0', flower:'#ffb0e0,#ff60a0,#ffb0e0'};
   if(fatRods[rod.id]) {
     rodBody.style.background = `linear-gradient(to right, ${fatRods[rod.id]})`;
     rodBody.style.width = '10px';
@@ -5551,7 +5621,7 @@ function updateRodVisual() {
 
   // Иконка удочки — показываем у верхнего края удочки
   let existingBadge = document.getElementById('rod-icon-badge');
-  const ULTRA_ICONS = {mech:'⚙️', cosmic:'🌌', demonic:'💀', godly:'👑', void:'🌑', apocalypse:'💥', celestial:'✨', quantum:'⚛️', poseidon:'🔱', thunder:'⚡', crystal:'💎', shark:'🦈', dragon:'🔥', meteor:'☄️', magic:'✨', golden:'⭐', rubberduck:'🦆'};
+  const ULTRA_ICONS = {mech:'⚙️', cosmic:'🌌', demonic:'💀', godly:'👑', void:'🌑', apocalypse:'💥', celestial:'✨', quantum:'⚛️', poseidon:'🔱', thunder:'⚡', crystal:'💎', shark:'🦈', dragon:'🔥', meteor:'☄️', magic:'✨', golden:'⭐', rubberduck:'🦆', flower:'🌸'};
   if(ULTRA_ICONS[rod.id]) {
     if(!existingBadge) {
       existingBadge = document.createElement('div');
@@ -6787,8 +6857,207 @@ ROD_COLORS.mech    = {color:'#80c8e0', glow:'0 0 30px rgba(100,200,240,.9)'};
 ROD_COLORS.cosmic  = {color:'#c060ff', glow:'0 0 50px rgba(180,50,255,1.0)'};
 ROD_COLORS.demonic = {color:'#cc0020', glow:'0 0 50px rgba(200,0,30,1.0)'};
 ROD_COLORS.godly   = {color:'#ffd700', glow:'0 0 60px rgba(255,215,0,1.0)'};
+ROD_COLORS.flower  = {color:'#ff80c0', glow:'0 0 60px rgba(255,100,200,1.0)'};
 
-// SVG icons for hardcore rods
+// ════════════════════════════════════════════════════════════
+// 🌸 ЦВЕТОЧНАЯ УДОЧКА — SVG, крафт, логика
+// ════════════════════════════════════════════════════════════
+
+// SVG для Цветочной удочки (72×72)
+const FLOWER_ROD_SVG = `
+  <defs>
+    <linearGradient id="flG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb0e0"/>
+      <stop offset="30%" stop-color="#ff60a0"/>
+      <stop offset="60%" stop-color="#cc40ff"/>
+      <stop offset="100%" stop-color="#ff80c0"/>
+    </linearGradient>
+    <radialGradient id="flG2" cx="50%" cy="30%">
+      <stop offset="0%" stop-color="#fff0f8"/>
+      <stop offset="100%" stop-color="#ff80c0"/>
+    </radialGradient>
+    <filter id="flGlow"><feGaussianBlur stdDeviation="2.5"/></filter>
+  </defs>
+  <!-- Glow aura -->
+  <ellipse cx="28" cy="26" rx="20" ry="8" fill="rgba(255,100,200,.12)" transform="rotate(-42 28 26)"/>
+  <!-- Main stem -->
+  <line x1="42" y1="8" x2="12" y2="44" stroke="url(#flG)" stroke-width="6.5" stroke-linecap="round"/>
+  <!-- Petal decorations along stem -->
+  <g transform="translate(38,12) rotate(-45)">
+    <ellipse cx="0" cy="-4" rx="3" ry="5" fill="#ff80c0" opacity=".9"/>
+    <ellipse cx="4" cy="0"  rx="5" ry="3" fill="#ffb0e0" opacity=".8"/>
+    <ellipse cx="0" cy="4"  rx="3" ry="5" fill="#ff60a0" opacity=".9"/>
+    <ellipse cx="-4" cy="0" rx="5" ry="3" fill="#e060d0" opacity=".8"/>
+    <circle cx="0" cy="0" r="2.5" fill="#fff0f8"/>
+  </g>
+  <g transform="translate(28,23) rotate(-25)">
+    <ellipse cx="0" cy="-3" rx="2.5" ry="4" fill="#c060ff" opacity=".85"/>
+    <ellipse cx="3" cy="0"  rx="4" ry="2.5" fill="#e080ff" opacity=".75"/>
+    <ellipse cx="0" cy="3"  rx="2.5" ry="4" fill="#a040e0" opacity=".85"/>
+    <ellipse cx="-3" cy="0" rx="4" ry="2.5" fill="#d060ff" opacity=".75"/>
+    <circle cx="0" cy="0" r="2" fill="#fff0f8"/>
+  </g>
+  <g transform="translate(18,35) rotate(-10)">
+    <ellipse cx="0" cy="-3" rx="2" ry="3.5" fill="#ffd060" opacity=".9"/>
+    <ellipse cx="3" cy="0"  rx="3.5" ry="2" fill="#ff9020" opacity=".8"/>
+    <ellipse cx="0" cy="3"  rx="2" ry="3.5" fill="#ffc040" opacity=".9"/>
+    <ellipse cx="-3" cy="0" rx="3.5" ry="2" fill="#ffe080" opacity=".8"/>
+    <circle cx="0" cy="0" r="1.8" fill="#fff8e0"/>
+  </g>
+  <!-- Reel — floral design -->
+  <circle cx="16" cy="37" r="7" fill="rgba(80,0,40,.7)" stroke="#ff80c0" stroke-width="2"/>
+  <circle cx="16" cy="37" r="4.5" fill="#cc4080" stroke="#ffb0e0" stroke-width="1"/>
+  <circle cx="16" cy="37" r="2" fill="#fff0f8" opacity=".9"/>
+  <!-- Tiny flowers on reel -->
+  <circle cx="16" cy="31" r="1.2" fill="#ff80c0"/>
+  <circle cx="22" cy="37" r="1.2" fill="#ff80c0"/>
+  <circle cx="16" cy="43" r="1.2" fill="#ffd060"/>
+  <circle cx="10" cy="37" r="1.2" fill="#c060ff"/>
+  <!-- Line rings — flower-shaped -->
+  <circle cx="29" cy="25" r="3" fill="none" stroke="#ff80c0" stroke-width="1.5" opacity=".9"/>
+  <circle cx="35" cy="18" r="2.5" fill="none" stroke="#c060ff" stroke-width="1.3" opacity=".85"/>
+  <circle cx="39" cy="13" r="2" fill="none" stroke="#ffd060" stroke-width="1.2" opacity=".8"/>
+  <!-- Tip glow -->
+  <circle cx="42" cy="8" r="5" fill="rgba(255,100,200,.2)" filter="url(#flGlow)"/>
+  <circle cx="42" cy="8" r="3" fill="url(#flG2)" stroke="#ff80c0" stroke-width="1"/>
+  <!-- Sparkles -->
+  <text x="6"  y="12" font-size="8" opacity=".8">✨</text>
+  <text x="44" y="30" font-size="7" opacity=".7">🌸</text>
+  <text x="8"  y="46" font-size="7" opacity=".6">🌺</text>
+`;
+
+// Крафт Цветочной удочки
+function craftFlowerRod() {
+  const sunflower = SEEDS.find(s=>s.id==='sunflower');
+  const clover    = SEEDS.find(s=>s.id==='clover');
+  if(!sunflower || !clover) return;
+  if((sunflower.owned||0) < 3) { showToast('🌻 Нужно 3 Подсолнуха! (есть: '+sunflower.owned+')'); return; }
+  if((clover.owned||0) < 6)    { showToast('🍀 Нужно 6 Клевера! (есть: '+clover.owned+')');       return; }
+  const rod = RODS.find(r=>r.id==='flower');
+  if(!rod||rod.owned) { showToast('🌸 Цветочная Удочка уже есть!'); return; }
+  sunflower.owned -= 3;
+  clover.owned    -= 6;
+  rod.owned = true;
+  showToast('🌸 ЦВЕТОЧНАЯ УДОЧКА СОЗДАНА! Надевай в лавке!');
+  spawnPetals(180, 350, 30);
+  saveGame();
+  renderShop();
+}
+
+// Бафф случайного растения в саду при улове Цветочной удочкой
+function flowerRodGardenBuff() {
+  const ready = gardenPlots.filter(p=>p.state==='growing'||p.state==='seeded');
+  if(!ready.length) return;
+  const idx = Math.floor(Math.random()*ready.length);
+  const p = ready[idx];
+  const plotIdx = gardenPlots.indexOf(p);
+  // Ускорить рост — уменьшить plantedAt чтобы росло быстрее
+  gardenPlots[plotIdx].plantedAt -= 15000; // -15 сек
+  const seed = SEEDS.find(s=>s.id===p.seedId);
+  if(seed) showToast('🌸 Цветочный бафф: ' + seed.flower + ' ' + seed.name + ' растёт быстрее!');
+  else showToast('🌸 Цветочный бафф: растение в саду ускорено!');
+}
+
+// Spawn floating petals effect
+function spawnPetals(cx, cy, count) {
+  const emojis = ['🌸','🌺','🌼','🌷','🌻','💐'];
+  for(let i=0;i<count;i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className = 'flower-petal';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      const angle = Math.random()*Math.PI*2;
+      const dist = 60 + Math.random()*120;
+      el.style.setProperty('--px', Math.cos(angle)*dist+'px');
+      el.style.setProperty('--py', Math.sin(angle)*dist+'px');
+      el.style.setProperty('--pr', (Math.random()*720-360)+'deg');
+      el.style.left = (cx-10)+'px';
+      el.style.top  = (cy-10)+'px';
+      el.style.animationDuration = (0.8+Math.random()*0.8)+'s';
+      document.getElementById('fishing-screen').appendChild(el);
+      setTimeout(()=>el.remove(), 1600);
+    }, i*30);
+  }
+}
+
+// Патч updateCatchPopupFish — цветочные рыбы с анимацией
+(function patchFlowerFishPopup() {
+  const _orig = window.updateCatchPopupFish || updateCatchPopupFish;
+  window.updateCatchPopupFish = function(f) {
+    _orig(f);
+    const svg = document.getElementById('catch-fish-svg');
+    if(f.flower && svg) {
+      // Уникальная анимация для каждой цветочной рыбы
+      svg.style.animation = (f.flowerAnim||'petalFloat') + ' 0.8s ease-in-out infinite alternate';
+      // Радужный фильтр
+      svg.style.filter = 'drop-shadow(0 0 12px ' + f.col + ') drop-shadow(0 0 24px ' + f.col2 + ')';
+      // Окрасить рыбку цветком
+      const g = svg.querySelector('#fishG');
+      if(g) {
+        g.children[0].setAttribute('stop-color', f.col);
+        g.children[1].setAttribute('stop-color', f.col2);
+      }
+      // Запустить лепестки!
+      spawnPetals(180, 300, 20);
+    } else if(svg) {
+      svg.style.filter = '';
+    }
+  };
+})();
+
+// Патч catchFish — при Цветочной удочке: бафф сада + шанс цветочной рыбы
+(function patchFlowerRodCatch() {
+  const _orig = window.catchFish || catchFish;
+  // Патчим через triggerBite — добавляем цветочных рыб в пул
+  const _origTB = window.triggerBite;
+  window.triggerBite = function() {
+    if(gs.currentRod?.id === 'flower') {
+      if(gs.phase!=='waiting') return;
+      gs.phase = 'bite';
+      // 40% цветочная рыба, 40% OG, 20% легенда
+      const roll = Math.random();
+      let f;
+      const flowerFish = FISH_DATA.filter(x=>x.flower);
+      const ogFish     = FISH_DATA.filter(x=>x.og && !x.flower);
+      const legFish    = FISH_DATA.filter(x=>x.rar==='legend');
+      if(roll<0.40 && flowerFish.length)     f = flowerFish[Math.floor(Math.random()*flowerFish.length)];
+      else if(roll<0.80 && ogFish.length)    f = ogFish[Math.floor(Math.random()*ogFish.length)];
+      else if(legFish.length)                f = legFish[Math.floor(Math.random()*legFish.length)];
+      else                                   f = FISH_DATA[Math.floor(Math.random()*FISH_DATA.length)];
+      gs.fish = f;
+      gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+      bobWrap.style.animation='floatBite .9s ease-in-out 4';
+      biteEl.classList.add('visible');
+      if(navigator.vibrate) navigator.vibrate([80,40,80]);
+      gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+      return;
+    }
+    if(_origTB) _origTB();
+  };
+})();
+
+// Патч — при поимке цветочной рыбы баффим сад
+(function patchFlowerRodGardenBuff() {
+  const _origSell = window.sellFish;
+  window.sellFish = function() {
+    const f = gs.currentCatch;
+    if(_origSell) _origSell();
+    if(gs.currentRod?.id === 'flower') {
+      setTimeout(flowerRodGardenBuff, 200);
+      if(f && f.flower) {
+        setTimeout(()=>showToast('🌸 ЦВЕТОЧНАЯ: +' + f.coins + '🪙 за ' + f.name + '!'), 300);
+      }
+    }
+  };
+  const _origKeep = window.keepFish;
+  window.keepFish = function() {
+    const f = gs.currentCatch;
+    if(_origKeep) _origKeep();
+    if(gs.currentRod?.id === 'flower') {
+      setTimeout(flowerRodGardenBuff, 200);
+    }
+  };
+})();
 const HARDCORE_ROD_SVGS = {
   dragon: `
     <!-- Dragon Bone Rod -->
@@ -6942,7 +7211,9 @@ const HARDCORE_ROD_SVGS = {
     <!-- Legendary shine rings -->
     <circle cx="31" cy="23" r="3.5" fill="none" stroke="#ffd700" stroke-width="1.8" opacity=".9"/>
     <circle cx="37" cy="16" r="3" fill="none" stroke="#ffd700" stroke-width="1.6" opacity=".8"/>
-    <circle cx="26" cy="30" r="2.5" fill="none" stroke="#ffd700" stroke-width="1.4" opacity=".7"/>`
+    <circle cx="26" cy="30" r="2.5" fill="none" stroke="#ffd700" stroke-width="1.4" opacity=".7"/>`,
+
+  flower: FLOWER_ROD_SVG,
 };
 
 // Add SVG to ROD_COLORS specials map
@@ -6971,6 +7242,7 @@ const HARDCORE_ROD_SVGS = {
       cosmic:  { tier:'КОСМОС',    tierClass:'rod-tier-cosmic',   borderColor:'#c060ff', bgGrad:'rgba(20,0,60,.95),rgba(10,0,40,.9)',    anim:'cosmicSpin 3s linear infinite' },
       demonic: { tier:'ДЕМОН',     tierClass:'rod-tier-demonic',  borderColor:'#cc0020', bgGrad:'rgba(50,0,10,.95),rgba(30,0,5,.9)',     anim:'demonicPulse 1.2s ease-in-out infinite' },
       godly:   { tier:'БОГ-ТИЕР',  tierClass:'rod-tier-godly',    borderColor:'#ffd700', bgGrad:'rgba(50,35,0,.95),rgba(30,20,0,.9)',    anim:'godlyShine 1.8s ease-in-out infinite' },
+      flower:  { tier:'🌸 ЦВЕТОК', tierClass:'rod-tier-flower',   borderColor:'#ff80c0', bgGrad:'rgba(60,0,40,.97),rgba(30,0,25,.95)',   anim:'flowerRodGlow 1.5s ease-in-out infinite' },
     };
 
     RODS.forEach(rod=>{
@@ -6979,12 +7251,24 @@ const HARDCORE_ROD_SVGS = {
       let btnHtml;
 
       if(rod.craftable && !owned) {
-        const canCraft = (gs.sharkSkins||0) >= 1 && gs.coins >= 10000;
-        const bossKilled = !!localStorage.getItem(BOSS_KEY);
-        if(!bossKilled) {
-          btnHtml = `<button class="shop-item-btn btn-owned-shop" style="font-size:10px">🔒 Убей Акулу</button>`;
+        if(rod.craftType === 'flower') {
+          // Цветочная удочка — крафт из семян
+          const sunflower = SEEDS.find(s=>s.id==='sunflower');
+          const clover    = SEEDS.find(s=>s.id==='clover');
+          const hasSun = (sunflower?.owned||0) >= 3;
+          const hasClv = (clover?.owned||0) >= 6;
+          const canCraft = hasSun && hasClv;
+          const sunTxt = '🌻 '+(sunflower?.owned||0)+'/3';
+          const clvTxt = '🍀 '+(clover?.owned||0)+'/6';
+          btnHtml = `<button class="craft-flower-btn" onclick="craftFlowerRod()"${canCraft?'':' disabled'} title="Нужно: 3×🌻 и 6×🍀">🌸 Крафт<br><span style="font-size:9px">${sunTxt} • ${clvTxt}</span></button>`;
         } else {
-          btnHtml = `<button class="craft-rod-btn" onclick="craftSharkRod()" style="font-size:12px;padding:5px 10px"${canCraft?'':' disabled'}>🔨 Крафт (Кожа Акулы + 10к🪙)</button>`;
+          const canCraft = (gs.sharkSkins||0) >= 1 && gs.coins >= 10000;
+          const bossKilled = !!localStorage.getItem(BOSS_KEY);
+          if(!bossKilled) {
+            btnHtml = `<button class="shop-item-btn btn-owned-shop" style="font-size:10px">🔒 Убей Акулу</button>`;
+          } else {
+            btnHtml = `<button class="craft-rod-btn" onclick="craftSharkRod()" style="font-size:12px;padding:5px 10px"${canCraft?'':' disabled'}>🔨 Крафт (Кожа Акулы + 10к🪙)</button>`;
+          }
         }
       } else if(equipped) {
         btnHtml=`<button class="shop-item-btn btn-equipped-shop">✓ Надета</button>`;
