@@ -2683,16 +2683,14 @@ function loadGame() {
     }
   } catch(e) { console.warn('Load extra failed', e); }
   // КОМПЕНСАЦИЯ v2: +1 000 000 монет + все удочки (сбрасываем старый ключ)
-  const compDone = localStorage.getItem('fishing_rod_compensation_v2');
+  const compDone = localStorage.getItem('fishing_rod_compensation_v3');
   if(!compDone) {
     gs.coins = (gs.coins || 0) + 1000000;
-    // Выдать ВСЕ удочки кроме акульей (требует крафт)
-    RODS.forEach(r => {
-      if(r.id !== 'shark') r.owned = true;
-    });
-    localStorage.setItem('fishing_rod_compensation_v2', '1');
+    RODS.forEach(r => { if(r.id !== 'shark') r.owned = true; });
+    localStorage.setItem('fishing_rod_compensation_v3', '1');
+    localStorage.removeItem('fishing_rod_compensation_v2');
     localStorage.removeItem('fishing_rod_compensation_v1');
-    localStorage.removeItem('fishing_comp_toast_shown'); // показать тост заново
+    localStorage.removeItem('fishing_comp_toast_shown');
   }
 }
 
@@ -4086,23 +4084,6 @@ function plantSeed(plotIdx, seedId) {
   gardenPlots[plotIdx]={seedId,plantedAt:Date.now(),state:'seeded'};
   renderGardenPlots();
   showToast(`🌱 ${seed.name} посажена!`);
-  saveGame(); saveGarden();
-  if(gs.fullMultiMode) syncGardenToFirebase();
-}
-
-function harvestPlot(idx) {
-  const p=gardenPlots[idx];
-  const seed=SEEDS.find(s=>s.id===p.seedId);
-  if(!seed) return;
-  const price=seed.sellPrice;
-  gs.coins+=price;
-  gardenFlowersSold++;
-  gardenPlots[idx]={seedId:null,plantedAt:0,state:'empty'};
-  updateCoins();
-  renderGardenPlots();
-  coinBurst(180,350);
-  showToast(`${seed.flower} ${seed.name} продана за ${price}🪙!`);
-  if(seed.bonusEffect==='bite') showToast('🍀 Бонус клёва +10% на 60с!');
   saveGame(); saveGarden();
   if(gs.fullMultiMode) syncGardenToFirebase();
 }
@@ -6241,53 +6222,41 @@ function spawnMiniSharkOnScreen() {
 }
 
 // ============================================================
-// 🌺 ГИБРИД РАСТЕНИЯ — special harvest
-// ============================================================
-const _origHarvestPlot = window.harvestPlot;
-function harvestPlot(i) {
-  const p = gardenPlots[i];
+function harvestPlot(idx) {
+  const p = gardenPlots[idx];
   if(!p || p.state !== 'ready') return;
   const seed = SEEDS.find(s=>s.id===p.seedId);
+  if(!seed) return;
 
-  if(seed && seed.special === 'hybrid') {
-    // Special reward
+  // ═══ Гибрид — особая награда ═══
+  if(seed.special === 'hybrid') {
     const roll = Math.random();
     let bonus = '';
     if(roll < 0.33) {
-      gs.coins += 2000; updateCoins();
-      bonus = '💰 +2000 монет!';
+      gs.coins += 2000; updateCoins(); bonus = '💰 +2000 монет!';
     } else if(roll < 0.66) {
-      // OG lure: boost bite chance temporarily
-      gs._ogLureActive = Date.now() + 60000;
-      bonus = '🎣 OG Приманка на 60 сек (шанс OG рыб)!';
+      gs._ogLureActive = Date.now() + 60000; bonus = '🎣 OG Приманка на 60 сек!';
     } else {
-      // Give a shark skin
-      gs.sharkSkins = (gs.sharkSkins||0) + 1;
-      bonus = '🦈 +1 Кожа Акулы!';
+      gs.sharkSkins = (gs.sharkSkins||0) + 1; bonus = '🦈 +1 Кожа Акулы!';
     }
-    gardenFlowersSold += seed.sellPrice;
+    gardenFlowersSold++;
     p.state='empty'; p.seedId=null; p.plantedAt=0;
-    saveGame();
-    renderGardenPlots();
-    showToast('🌺 Гибрид Растения дало: ' + bonus);
+    updateCoins(); renderGardenPlots(); coinBurst(180,350);
+    showToast('🌺 Гибрид дал: ' + bonus);
+    saveGame(); saveGarden();
     return;
   }
 
-  // Fall through to original
-  if(_origHarvestPlot) return _origHarvestPlot(i);
-
-  // Inline original logic as fallback
-  if(!seed) return;
+  // ═══ Обычный урожай ═══
   const price = seed.sellPrice;
-  gardenFlowersSold += price;
-  gs.coins += price; updateCoins();
-  if(seed.bonusEffect==='bite') {
-    showToast('🍀 Клевер собран! +10% к клёву на 2 мин');
-  }
+  gs.coins += price;
+  gardenFlowersSold++;
   p.state='empty'; p.seedId=null; p.plantedAt=0;
-  saveGame();
-  renderGardenPlots();
-  showToast('🌸 ' + seed.name + ' продана за ' + price + '🪙!');
+  updateCoins(); renderGardenPlots(); coinBurst(180,350);
+  showToast(`${seed.flower} ${seed.name} продана за ${price}🪙!`);
+  if(seed.bonusEffect==='bite') showToast('🍀 Бонус клёва +10% на 60с!');
+  saveGame(); saveGarden();
+  if(gs.fullMultiMode) syncGardenToFirebase();
 }
 
 // ============================================================
@@ -7881,11 +7850,648 @@ window.renderGarden = function() {
   // Показать тост о компенсации один раз
   if(!localStorage.getItem('fishing_comp_toast_shown')) {
     localStorage.setItem('fishing_comp_toast_shown','1');
-    setTimeout(()=>{ if(typeof showToast==='function') showToast('🎁 КОМПЕНСАЦИЯ: +1 000 000🪙 + ВСЕ УДОЧКИ РАЗБЛОКИРОВАНЫ!'); }, 1500);
+    setTimeout(()=>{ if(typeof showToast==='function') showToast('🎁 +1 000 000🪙 + ВСЕ УДОЧКИ + 🌸 ЦВЕТОЧНАЯ УДОЧКА!'); }, 1500);
   }
 })();
 
 
 </script>
+
+<!-- ═══════════════════════════════════════════════════════
+     🌅 ПОСЛЕДНЯЯ ОБНОВА — ПРОЩАЛЬНАЯ СЦЕНА
+     ═══════════════════════════════════════════════════════ -->
+<style>
+/* Farewell overlay — full screen */
+#farewell-overlay {
+  position:absolute; inset:0; z-index:99999;
+  background:#000; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; overflow:hidden;
+  animation:farewellFadeIn 1.2s ease forwards;
+}
+@keyframes farewellFadeIn { from{opacity:0} to{opacity:1} }
+
+/* === SKY CANVAS === */
+#fw-sky {
+  position:absolute; inset:0;
+  background: linear-gradient(to bottom, #1a0520 0%, #3d1a00 35%, #c86820 65%, #ffa040 80%, #ffcc80 100%);
+  transition: background 4s;
+}
+
+/* Sun at horizon */
+#fw-sun {
+  position:absolute; bottom:38%; left:50%; transform:translateX(-50%);
+  width:60px; height:60px;
+  background:radial-gradient(circle at 40% 40%, #fff5a0, #ffcc30, #ff8820);
+  border-radius:50%;
+  box-shadow:0 0 60px 30px rgba(255,160,30,.5), 0 0 120px 60px rgba(255,100,0,.2);
+  animation:fwSunPulse 4s ease-in-out infinite alternate;
+  opacity:0; transition:opacity 3s;
+}
+@keyframes fwSunPulse{0%{box-shadow:0 0 50px 25px rgba(255,160,30,.4)}100%{box-shadow:0 0 80px 40px rgba(255,200,50,.7)}}
+
+/* Clouds */
+.fw-cloud {
+  position:absolute; border-radius:50%; filter:blur(8px);
+  background:rgba(255,200,160,.18);
+  animation:fwCloudDrift var(--cd,40s) linear infinite;
+  animation-delay:var(--cdelay,0s);
+}
+@keyframes fwCloudDrift {0%{transform:translateX(-120px)}100%{transform:translateX(500px)}}
+
+/* Ground */
+#fw-ground {
+  position:absolute; bottom:0; left:0; right:0; height:38%;
+  background:linear-gradient(to bottom, #1a2f0a 0%, #0e1a06 100%);
+  border-top:3px solid #2a4010;
+}
+/* Water/river */
+#fw-water {
+  position:absolute; bottom:38%; left:0; right:0; height:12%;
+  background:linear-gradient(to bottom, rgba(60,120,200,.7), rgba(20,60,120,.5));
+  border-top:1px solid rgba(100,200,255,.3);
+}
+.fw-water-line {
+  position:absolute; left:0; right:0; height:2px;
+  background:rgba(150,220,255,.2);
+  animation:fwWaterMove 3s linear infinite;
+}
+@keyframes fwWaterMove{0%{transform:translateX(0)}100%{transform:translateX(-40px)}}
+
+/* === FISH CHARACTER === */
+#fw-fish {
+  position:absolute; font-size:52px;
+  bottom: -80px; left: 35%;
+  filter:drop-shadow(0 4px 12px rgba(0,100,200,.6));
+  animation:fwFishRise 2s cubic-bezier(.34,1.56,.64,1) forwards;
+  animation-delay:0.5s;
+  z-index:10;
+}
+@keyframes fwFishRise {
+  0%  { bottom:-80px; transform:rotate(0deg); }
+  60% { bottom:32%; transform:rotate(-15deg); }
+  80% { bottom:29%; transform:rotate(5deg); }
+  100%{ bottom:30%; transform:rotate(0deg); }
+}
+
+/* Fish tears */
+.fw-tear {
+  position:absolute; width:5px; height:8px;
+  background:radial-gradient(ellipse at 50% 30%, rgba(100,200,255,.9), rgba(60,140,220,.7));
+  border-radius:50% 50% 60% 60%;
+  top:42px; left:calc(50% - 8px);
+  animation:fwTearFall var(--td,1.2s) ease-in infinite;
+  animation-delay:var(--tdelay,0s);
+  opacity:0;
+}
+@keyframes fwTearFall {
+  0%  {opacity:0; transform:translateY(0) scaleX(1);}
+  10% {opacity:1;}
+  80% {opacity:.8;}
+  100%{opacity:0; transform:translateY(30px) scaleX(.7);}
+}
+
+/* === PLAYER CHARACTER (человечек) === */
+#fw-player {
+  position:absolute; bottom:30%;
+  left:-80px; /* starts off screen */
+  z-index:11;
+  animation:fwPlayerWalk 2.5s ease-out forwards;
+  animation-delay:2.8s;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+@keyframes fwPlayerWalk {
+  0%  { left:-80px; }
+  100%{ left:48%; }
+}
+
+/* Player body (emoji + nick) */
+#fw-player-body { font-size:38px; position:relative; }
+#fw-player-nick {
+  position:absolute; top:-26px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,.65); border:1px solid #c0a040;
+  border-radius:8px; padding:1px 7px;
+  font-family:'Neucha',cursive; font-size:11px; color:#f0d060;
+  white-space:nowrap;
+}
+
+/* Player walk legs */
+.fw-walk-leg {
+  font-size:16px; animation:fwLegWalk .4s linear infinite alternate;
+}
+@keyframes fwLegWalk{0%{transform:rotate(-20deg)}100%{transform:rotate(20deg)}}
+
+/* === HUG === */
+#fw-hug-zone {
+  position:absolute; bottom:30%; left:35%;
+  z-index:12; display:none;
+  animation:fwHugPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes fwHugPop{0%{transform:scale(0)}100%{transform:scale(1)}}
+
+/* Hearts burst */
+.fw-heart {
+  position:absolute; font-size:18px;
+  animation:fwHeartFly var(--hd,1.8s) ease-out forwards infinite;
+  animation-delay:var(--hdelay,0s);
+  opacity:0;
+}
+@keyframes fwHeartFly{
+  0%{opacity:0; transform:translate(0,0) scale(.5);}
+  20%{opacity:1;}
+  100%{opacity:0; transform:translate(var(--hx,0px),var(--hy,-60px)) scale(1.3);}
+}
+
+/* === DIALOGUE BUBBLES === */
+.fw-bubble {
+  position:absolute; z-index:20;
+  background:rgba(10,6,2,.88); border:2px solid #c0a040;
+  border-radius:14px; padding:8px 14px;
+  font-family:'Neucha',cursive; font-size:14px; color:#f0e0b0;
+  max-width:170px; text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.7);
+  opacity:0; transform:scale(0); transform-origin:bottom center;
+  transition:opacity .4s, transform .4s cubic-bezier(.34,1.56,.64,1);
+  line-height:1.4;
+}
+.fw-bubble.show { opacity:1; transform:scale(1); }
+.fw-bubble::after {
+  content:''; position:absolute; bottom:-10px; left:30px;
+  border:5px solid transparent; border-top-color:#c0a040;
+}
+.fw-bubble.right::after { left:auto; right:30px; }
+
+/* === FADE TO BLACK === */
+#fw-darkness {
+  position:absolute; inset:0; background:#000; opacity:0; z-index:30;
+  transition:opacity 3s ease;
+  pointer-events:none;
+}
+#fw-darkness.darken { opacity:1; }
+
+/* === ROSE === */
+#fw-rose-screen {
+  position:absolute; inset:0; z-index:35; background:#000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  opacity:0; transition:opacity 2s;
+  pointer-events:none;
+}
+#fw-rose-screen.show { opacity:1; pointer-events:auto; }
+
+#fw-rose {
+  font-size:90px;
+  animation:fwRosePulse 3s ease-in-out infinite alternate;
+  filter:drop-shadow(0 0 30px rgba(200,20,50,.8));
+}
+@keyframes fwRosePulse{0%{filter:drop-shadow(0 0 20px rgba(200,20,50,.4))}100%{filter:drop-shadow(0 0 50px rgba(255,50,80,.9))}}
+
+/* Slides system - replaces eol-text */
+#fw-eol-text { display:none; }
+#fw-eol-line  { display:none; }
+
+#fw-slides {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:20px 24px 110px;
+  opacity:0; transition:opacity 1.5s;
+  pointer-events:none;
+  z-index:36;
+}
+#fw-slides.show { opacity:1; pointer-events:auto; }
+
+.fw-slide {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:30px 28px 120px;
+  opacity:0; transition:opacity 0.9s ease;
+  pointer-events:none;
+}
+.fw-slide.active { opacity:1; }
+
+.fw-slide-icon {
+  font-size:76px; margin-bottom:20px;
+  filter:drop-shadow(0 0 22px rgba(255,150,50,.5));
+  animation:fwSlideIconPulse 3s ease-in-out infinite alternate;
+}
+@keyframes fwSlideIconPulse{0%{transform:scale(1) rotate(-2deg)}100%{transform:scale(1.1) rotate(2deg)}}
+
+.fw-slide-title {
+  font-family:'UnifrakturMaguntia',cursive;
+  font-size:22px; color:#f0d060;
+  text-shadow:0 0 16px rgba(240,180,50,.7);
+  text-align:center; margin-bottom:14px; line-height:1.3;
+}
+.fw-slide-body {
+  font-family:'Neucha',cursive;
+  font-size:15px; color:#c0a880;
+  text-align:center; line-height:1.9; max-width:280px;
+}
+
+/* dot indicators */
+#fw-slide-dots {
+  position:absolute; bottom:88px; left:50%; transform:translateX(-50%);
+  display:flex; gap:9px; z-index:37;
+  opacity:0; transition:opacity 1s;
+}
+#fw-slide-dots.show { opacity:1; }
+.fw-dot {
+  width:9px; height:9px; border-radius:50%;
+  background:rgba(200,160,60,.25); border:1px solid #806030;
+  transition:background .4s, transform .4s;
+}
+.fw-dot.active { background:#f0d060; transform:scale(1.5); box-shadow:0 0 8px rgba(240,180,50,.7); }
+
+#fw-press-f {
+  font-family:'UnifrakturMaguntia',cursive; font-size:28px;
+  color:#f0d060; margin-top:18px;
+  text-shadow:0 0 20px rgba(255,200,50,.8);
+  animation:fwFBlink 1.5s ease-in-out infinite;
+  opacity:0; transition:opacity 1s;
+  cursor:pointer;
+}
+#fw-press-f.show { opacity:1; }
+@keyframes fwFBlink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* === MEMORIAL STATS SCREEN === */
+#fw-memorial {
+  position:absolute; inset:0; z-index:40; background:#000;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  padding:30px 20px 20px; overflow-y:auto;
+  opacity:0; transition:opacity 1.5s;
+}
+#fw-memorial.show { opacity:1; }
+
+.fw-mem-title {
+  font-family:'UnifrakturMaguntia',cursive; font-size:26px; color:#d4a030;
+  text-shadow:0 0 16px rgba(200,150,30,.7); margin-bottom:6px; text-align:center;
+}
+.fw-mem-sub {
+  font-family:'Neucha',cursive; font-size:12px; color:#806040; margin-bottom:24px; text-align:center;
+}
+
+.fw-stat-card {
+  width:100%; max-width:300px; background:linear-gradient(135deg,rgba(20,10,4,.95),rgba(40,20,8,.9));
+  border:2px solid #604020; border-radius:14px; padding:14px 18px; margin-bottom:12px;
+  font-family:'Neucha',cursive; text-align:center;
+  transform:translateY(40px); opacity:0; transition:all .6s ease;
+}
+.fw-stat-card.appear { transform:translateY(0); opacity:1; }
+.fw-stat-card .fw-stat-icon { font-size:36px; margin-bottom:4px; }
+.fw-stat-card .fw-stat-label { font-size:11px; color:#806040; margin-bottom:2px; }
+.fw-stat-card .fw-stat-value { font-size:28px; color:#f0d060; font-weight:bold; text-shadow:0 0 10px rgba(240,180,60,.5); }
+
+.fw-rod-card {
+  width:100%; max-width:300px; background:linear-gradient(135deg,rgba(30,15,5,.95),rgba(60,30,10,.9));
+  border:2px solid #a07020; border-radius:14px; padding:14px 18px; margin-bottom:12px;
+  font-family:'Neucha',cursive; text-align:center;
+  transform:translateY(40px); opacity:0; transition:all .6s ease;
+}
+.fw-rod-card.appear { transform:translateY(0); opacity:1; }
+.fw-rod-card .fw-rod-icon { font-size:44px; margin-bottom:4px; }
+.fw-rod-card .fw-rod-name { font-size:16px; color:#f0d060; margin-bottom:2px; }
+.fw-rod-card .fw-rod-label { font-size:11px; color:#a08040; }
+
+#fw-offline-notice {
+  width:100%; max-width:300px; background:rgba(20,5,5,.95); border:2px solid #801010;
+  border-radius:14px; padding:14px 18px; text-align:center; font-family:'Neucha',cursive;
+  transform:translateY(40px); opacity:0; transition:all .6s ease;
+  margin-top:8px;
+}
+#fw-offline-notice.appear { transform:translateY(0); opacity:1; }
+#fw-offline-notice .fw-off-title { font-size:16px; color:#ff6060; margin-bottom:6px; }
+#fw-offline-notice .fw-off-sub { font-size:12px; color:#a04040; line-height:1.5; }
+</style>
+
+<!-- FAREWELL HTML -->
+<div id="farewell-overlay">
+  <!-- Background sky / sunset -->
+  <div id="fw-sky">
+    <div class="fw-cloud" style="width:120px;height:45px;top:20%;left:10%;--cd:38s;--cdelay:-10s;"></div>
+    <div class="fw-cloud" style="width:80px;height:30px;top:35%;left:50%;--cd:52s;--cdelay:-25s;"></div>
+    <div class="fw-cloud" style="width:150px;height:50px;top:15%;left:60%;--cd:45s;--cdelay:-8s;"></div>
+  </div>
+  <div id="fw-sun"></div>
+
+  <!-- Water reflection strip -->
+  <div id="fw-water">
+    <div class="fw-water-line" style="top:20%;animation-delay:0s;"></div>
+    <div class="fw-water-line" style="top:50%;animation-delay:.7s;"></div>
+    <div class="fw-water-line" style="top:75%;animation-delay:1.4s;"></div>
+  </div>
+
+  <!-- Ground -->
+  <div id="fw-ground"></div>
+
+  <!-- Fish character -->
+  <div id="fw-fish">🐟</div>
+
+  <!-- Tears on fish -->
+  <div id="fw-fish-tears" style="position:absolute;bottom:calc(30% + 36px);left:calc(35% + 18px);z-index:11;display:none;">
+    <div class="fw-tear" style="--td:1.3s;--tdelay:0s;left:0px;"></div>
+    <div class="fw-tear" style="--td:1.5s;--tdelay:.4s;left:10px;"></div>
+    <div class="fw-tear" style="--td:1.2s;--tdelay:.8s;left:-6px;"></div>
+  </div>
+
+  <!-- Player walking character -->
+  <div id="fw-player">
+    <div id="fw-player-body">🧑
+      <div id="fw-player-nick" id="fw-nick-label">Рыбак</div>
+    </div>
+  </div>
+
+  <!-- Hug zone (replaces both chars) -->
+  <div id="fw-hug-zone">
+    <span style="font-size:52px;">🤗🐟</span>
+    <!-- Hearts -->
+    <div class="fw-heart" style="left:10px;top:-10px;--hd:2s;--hdelay:0s;--hx:-15px;--hy:-55px;">💙</div>
+    <div class="fw-heart" style="left:40px;top:-5px;--hd:1.8s;--hdelay:.3s;--hx:10px;--hy:-65px;">💜</div>
+    <div class="fw-heart" style="left:70px;top:-12px;--hd:2.2s;--hdelay:.6s;--hx:20px;--hy:-50px;">💙</div>
+    <div class="fw-heart" style="left:25px;top:-20px;--hd:1.6s;--hdelay:.9s;--hx:-5px;--hy:-70px;">❤️</div>
+  </div>
+
+  <!-- Dialogue: Fish speaks -->
+  <div class="fw-bubble" id="fw-bubble-fish" style="bottom:calc(30% + 105px); left:15%;">
+    Почему...
+  </div>
+
+  <!-- Dialogue: Player responds -->
+  <div class="fw-bubble right" id="fw-bubble-player" style="bottom:calc(30% + 115px); right:8%;">
+    Я не могу...<br>Прости 🙏
+  </div>
+
+  <!-- Fade darkness -->
+  <div id="fw-darkness"></div>
+
+  <!-- Rose / end of service screen -->
+  <div id="fw-rose-screen">
+    <!-- Slides container -->
+    <div id="fw-slides"></div>
+    <!-- Dot indicators -->
+    <div id="fw-slide-dots"></div>
+    <!-- Кнопка ИГРАТЬ -->
+    <div id="fw-play-btn" style="
+        position:absolute; bottom:22px; left:50%; transform:translateX(-50%);
+        z-index:38; cursor:pointer; user-select:none;
+        background:linear-gradient(135deg,#1a4a08,#2e7a10);
+        border:2px solid #5aaa20; border-radius:20px;
+        padding:18px 48px; text-align:center;
+        font-family:'UnifrakturMaguntia',cursive; font-size:26px; color:#a0e040;
+        box-shadow:0 0 24px rgba(60,180,20,.4);
+        opacity:0; transition:opacity 1s;
+        -webkit-tap-highlight-color:transparent;
+        white-space:nowrap; touch-action:manipulation;
+      ">
+      🎣 Играть
+    </div>
+  </div>
+
+  <!-- Memorial stats screen -->
+  <div id="fw-memorial">
+    <div class="fw-mem-title">🎣 Твоя Рыбалка</div>
+    <div class="fw-mem-sub">Спасибо за каждый заброс...</div>
+
+    <div class="fw-stat-card" id="fwc-fish">
+      <div class="fw-stat-icon">🐟</div>
+      <div class="fw-stat-label">Рыб поймано</div>
+      <div class="fw-stat-value" id="fwv-fish">0</div>
+    </div>
+
+    <div class="fw-stat-card" id="fwc-coins">
+      <div class="fw-stat-icon">🪙</div>
+      <div class="fw-stat-label">Монет собрано</div>
+      <div class="fw-stat-value" id="fwv-coins">0</div>
+    </div>
+
+    <div class="fw-stat-card" id="fwc-score">
+      <div class="fw-stat-icon">⭐</div>
+      <div class="fw-stat-label">Очков заработано</div>
+      <div class="fw-stat-value" id="fwv-score">0</div>
+    </div>
+
+    <div class="fw-stat-card" id="fwc-poke">
+      <div class="fw-stat-icon">⚡</div>
+      <div class="fw-stat-label">Покемонов поймано</div>
+      <div class="fw-stat-value" id="fwv-poke">0</div>
+    </div>
+
+    <div class="fw-rod-card" id="fwc-rod">
+      <div class="fw-rod-icon" id="fwv-rod-icon">🎣</div>
+      <div class="fw-rod-name" id="fwv-rod-name">Деревянная</div>
+      <div class="fw-rod-label">Любимая удочка</div>
+    </div>
+
+    <div id="fw-offline-notice">
+      <div class="fw-off-title">📡 Мультиплеер отключён</div>
+      <div class="fw-off-sub">
+        Онлайн функции, рейтинг и<br>
+        глобальный чат больше не работают.<br><br>
+        Твои сохранения остаются 💾<br><br>
+        Ну всё... 🌅
+      </div>
+    </div>
+
+    <div style="height:40px;"></div>
+
+    <!-- Enter game button -->
+    <div id="fw-enter-btn"
+      onclick="closeFarewellAndPlay()"
+      ontouchend="closeFarewellAndPlay()"
+      style="
+        width:100%;max-width:300px;
+        background:linear-gradient(135deg,#1a3a0a,#2a5010);
+        border:2px solid #4a8020; border-radius:16px;
+        padding:16px; text-align:center;
+        font-family:'Neucha',cursive; font-size:18px; color:#a0e040;
+        cursor:pointer; user-select:none;
+        opacity:0; transform:scale(.8);
+        transition:opacity .6s, transform .6s cubic-bezier(.34,1.56,.64,1);
+        box-shadow:0 0 20px rgba(60,160,20,.3);
+        -webkit-tap-highlight-color:rgba(80,200,30,.3);
+        margin-bottom:30px;
+      ">
+      🎣 Продолжить рыбалку<br>
+      <span style="font-size:12px;color:#608030;">(без онлайна)</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  🌅 FAREWELL ANIMATION CONTROLLER
+// ═══════════════════════════════════════════════════════
+(function initFarewell() {
+  // Make sure gs is loaded (might not be yet if DOMContentLoaded hasn't fired)
+  function getFarewellStats() {
+    try {
+      const raw = localStorage.getItem('fishing_reborn_v2') || localStorage.getItem('fishing_reborn');
+      const extra = localStorage.getItem('fishing_reborn_extra');
+      const d = raw ? JSON.parse(raw) : {};
+      const ex = extra ? JSON.parse(extra) : {};
+
+      // Current rod icon from RODS array
+      let rodIcon = '🎣', rodName = 'Деревянная';
+      if(typeof RODS !== 'undefined' && typeof gs !== 'undefined' && gs.currentRod) {
+        rodIcon = gs.currentRod.icon || '🎣';
+        rodName = gs.currentRod.name || 'Деревянная';
+      }
+
+      return {
+        fishCount:   (typeof gs !== 'undefined' ? gs.fishCount  : 0) || d.fishCount  || 0,
+        coins:       (typeof gs !== 'undefined' ? gs.coins       : 0) || d.coins      || 0,
+        score:       (typeof gs !== 'undefined' ? gs.score       : 0) || d.score      || 0,
+        pikaCount:   (typeof gs !== 'undefined' ? gs.pikaCatchCount : 0) || ex.pikaCatchCount || 0,
+        rodIcon, rodName,
+        playerName:  (typeof myPlayerName !== 'undefined' ? myPlayerName : '') || 'Рыбак',
+      };
+    } catch(e) {
+      return { fishCount:0, coins:0, score:0, pikaCount:0, rodIcon:'🎣', rodName:'Деревянная', playerName:'Рыбак' };
+    }
+  }
+
+  function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+  async function runFarewellScene() {
+    const stats = getFarewellStats();
+
+    // Set player nick
+    const nickEl = document.getElementById('fw-player-nick') || document.querySelector('#fw-player-body [id]');
+    if(nickEl) nickEl.textContent = stats.playerName;
+
+    // Sun rise fade in
+    await delay(400);
+    document.getElementById('fw-sun').style.opacity = '1';
+
+    // Fish tears appear after fish rises (2s animation + 0.5s delay = 2.5s)
+    await delay(2600);
+    document.getElementById('fw-fish-tears').style.display = 'block';
+
+    // Player walks in (starts at 2.8s delay in CSS, takes 2.5s)
+    await delay(3200);
+
+    // Hug — hide fish + player, show hug
+    await delay(2600); // after player walk finishes
+    document.getElementById('fw-fish').style.display = 'none';
+    document.getElementById('fw-player').style.display = 'none';
+    document.getElementById('fw-fish-tears').style.display = 'none';
+
+    const hugZone = document.getElementById('fw-hug-zone');
+    hugZone.style.display = 'block';
+
+    // Fish dialogue: "Почему..."
+    await delay(600);
+    document.getElementById('fw-bubble-fish').classList.add('show');
+
+    // Player response: "Я не могу... Прости"
+    await delay(2200);
+    document.getElementById('fw-bubble-player').classList.add('show');
+
+    // Look at sunset together — both bubbles stay for a bit
+    await delay(3000);
+
+    // Fade to black
+    document.getElementById('fw-bubble-fish').classList.remove('show');
+    document.getElementById('fw-bubble-player').classList.remove('show');
+    await delay(400);
+
+    const darkness = document.getElementById('fw-darkness');
+    darkness.style.pointerEvents = 'auto';
+    darkness.classList.add('darken');
+
+    await delay(3200);
+
+    // Катсцена кончилась — сразу в игру
+    closeFarewellAndPlay();
+  }
+
+  window.showMemorial = function() {
+    // prevent double-fire on mobile (touchend + click)
+    if(window._memShown) return;
+    window._memShown = true;
+
+    // Fill in stats
+    const stats = getFarewellStats();
+    document.getElementById('fwv-fish').textContent  = stats.fishCount.toLocaleString('ru');
+    document.getElementById('fwv-coins').textContent = stats.coins.toLocaleString('ru');
+    document.getElementById('fwv-score').textContent = stats.score.toLocaleString('ru');
+    document.getElementById('fwv-poke').textContent  = stats.pikaCount.toLocaleString('ru');
+    document.getElementById('fwv-rod-icon').textContent = stats.rodIcon;
+    document.getElementById('fwv-rod-name').textContent = stats.rodName;
+
+    // Hide rose, show memorial
+    document.getElementById('fw-rose-screen').classList.remove('show');
+    const mem = document.getElementById('fw-memorial');
+    mem.classList.add('show');
+
+    // Animate cards in one by one
+    const cards = mem.querySelectorAll('.fw-stat-card, .fw-rod-card, #fw-offline-notice');
+    cards.forEach((c, i) => {
+      setTimeout(() => c.classList.add('appear'), 300 + i * 350);
+    });
+
+    // Show "Enter game" button after all cards appeared
+    const lastDelay = 300 + cards.length * 350 + 500;
+    setTimeout(() => {
+      const btn = document.getElementById('fw-enter-btn');
+      if(btn) { btn.style.opacity='1'; btn.style.transform='scale(1)'; }
+    }, lastDelay);
+
+    // Disable multiplayer hint
+    setTimeout(() => {
+      if(typeof showToast === 'function') showToast('📡 Мультиплеер отключён навсегда...');
+    }, 2200);
+  };
+
+  window.closeFarewellAndPlay = function() {
+    if(window._farewellClosed) return;
+    window._farewellClosed = true;
+
+    // Kill all online
+    window.initFirebase = async function() { return false; };
+    window.syncLeaderboard = function() {};
+    window.firebaseDB = null;
+    try { if(window.fb && window.fb.off) window.fb.off('global_chat'); } catch(e){}
+
+    // Hide overlay with fade
+    const ov = document.getElementById('farewell-overlay');
+    ov.style.transition = 'opacity 0.8s';
+    ov.style.opacity = '0';
+    setTimeout(() => {
+      ov.style.display = 'none';
+      const multiTab = document.getElementById('nav-multi');
+      if(multiTab) {
+        multiTab.style.opacity = '.4';
+        multiTab.style.pointerEvents = 'none';
+      }
+      if(typeof showToast === 'function') {
+        showToast('📡 Поддержка игры закончилась. Удачной рыбалки! 🎣');
+      }
+    }, 800);
+  };
+
+  // Вешаем событие на кнопку через JS — самый надёжный способ для мобил
+  document.addEventListener('DOMContentLoaded', function() {
+    // кнопка может появиться позже, поэтому вешаем через делегирование на overlay
+    document.getElementById('farewell-overlay').addEventListener('touchstart', function(e) {
+      if(e.target.closest('#fw-play-btn')) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.closeFarewellAndPlay();
+      }
+    }, {passive: false});
+    document.getElementById('farewell-overlay').addEventListener('click', function(e) {
+      if(e.target.closest('#fw-play-btn')) {
+        window.closeFarewellAndPlay();
+      }
+    });
+  });
+
+  // Start scene after game loads
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(runFarewellScene, 800));
+  } else {
+    setTimeout(runFarewellScene, 800);
+  }
+})();
+</script>
+
 </body>
 </html>
