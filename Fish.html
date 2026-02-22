@@ -1613,6 +1613,64 @@ body {
 }
 .craft-rod-btn:active{transform:scale(.94);}
 .craft-rod-btn:disabled{opacity:.5;cursor:default;}
+/* ═══ Piranha ═══ */
+@keyframes piranhaShake{0%{transform:rotate(-10deg) scale(1.1)}50%{transform:rotate(10deg) scale(1.2)}100%{transform:rotate(-10deg) scale(1.1)}}
+@keyframes piranhaBtn{0%{box-shadow:0 0 10px rgba(255,0,0,.4)}100%{box-shadow:0 0 30px rgba(255,0,0,.9)}}
+
+/* ═══ Pokeball ═══ */
+@keyframes pokeballSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes pokeballFloat{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-10px) scale(1.05)}}
+
+/* ═══ Hardcore map badge ═══ */
+#hardcore-mode-badge {
+  display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,rgba(120,0,0,.9),rgba(40,0,0,.95));
+  border:2px solid #ff2020; border-radius:20px; padding:4px 14px;
+  font-family:'Neucha',cursive; font-size:12px; color:#ff6060;
+  text-shadow:0 0 10px #ff0000; z-index:50; white-space:nowrap;
+  animation:hardcoreGlow 1s ease-in-out infinite alternate;
+  box-shadow:0 0 14px rgba(255,0,0,.4);
+}
+@keyframes hardcoreGlow{0%{box-shadow:0 0 8px rgba(255,0,0,.3)}100%{box-shadow:0 0 22px rgba(255,0,0,.8)}}
+
+/* ═══ Bum map badge ═══ */
+#bum-mode-badge {
+  display:none; position:absolute; top:56px; left:50%; transform:translateX(-50%);
+  background:rgba(20,12,4,.95); border:2px solid #604010; border-radius:20px; padding:4px 14px;
+  font-family:'Neucha',cursive; font-size:12px; color:#a07040; z-index:50; white-space:nowrap;
+}
+
+/* ═══ Pokeball inventory item ═══ */
+.pokeball-inv-slot {
+  position:relative;
+  animation:pokeballFloat 2s ease-in-out infinite alternate;
+}
+.pokeball-inv-slot::after {
+  content:'⚡'; position:absolute; top:-4px; right:-4px;
+  font-size:10px; filter:drop-shadow(0 0 4px #ffd040);
+}
+
+/* ═══ Hardcore boss HP bar (in-game, not overlay) ═══ */
+#hc-boss-bar {
+  display:none; position:absolute; top:56px; left:10px; right:10px; z-index:60;
+  background:rgba(0,0,0,.7); border:2px solid #ff2020; border-radius:8px; padding:4px 8px;
+}
+#hc-boss-name { font-family:'Neucha',cursive; font-size:11px; color:#ff6060; margin-bottom:2px; }
+#hc-boss-hp-bg { height:10px; background:rgba(0,0,0,.5); border-radius:5px; overflow:hidden; }
+#hc-boss-hp-fill { height:100%; background:linear-gradient(to right,#ff0000,#ff8000); transition:.5s; }
+
+/* New detailed rod badge */
+.rod-detail-badge {
+  display:inline-block; font-size:9px; padding:1px 5px; border-radius:4px;
+  background:linear-gradient(135deg,#c0a020,#806010); color:#fff8d0;
+  vertical-align:middle; margin-left:4px; border:1px solid #ffd060;
+}
+@keyframes meteorPulse{0%{filter:drop-shadow(0 0 8px #ff6020)}100%{filter:drop-shadow(0 0 24px #ffaa00) brightness(1.2)}}
+@keyframes dragonBreathe{0%{filter:drop-shadow(0 0 10px #cc2200)}50%{filter:drop-shadow(0 0 30px #ff4000) brightness(1.3)}100%{filter:drop-shadow(0 0 10px #cc2200)}}
+@keyframes poseidonWave{0%{filter:drop-shadow(0 0 12px #0060ff)}100%{filter:drop-shadow(0 0 32px #40a0ff) brightness(1.2)}}
+@keyframes quantumFlicker{0%{filter:drop-shadow(0 0 10px #ff00ff) hue-rotate(0deg)}50%{filter:drop-shadow(0 0 20px #00ffff) hue-rotate(180deg)}100%{filter:drop-shadow(0 0 10px #ff00ff) hue-rotate(360deg)}}
+@keyframes celestialGlow{0%{filter:drop-shadow(0 0 15px #ffffff) brightness(1.2)}100%{filter:drop-shadow(0 0 40px #ffffc0) brightness(1.6)}}
+@keyframes apocalypseShake{0%{transform:translate(0,0) rotate(-2deg) scale(1)}33%{transform:translate(-2px,2px) rotate(2deg) scale(1.02)}66%{transform:translate(2px,-1px) rotate(-1deg) scale(0.99)}100%{transform:translate(0,0) rotate(0deg) scale(1)}}
 </style>
 <!-- Firebase compat SDK v9 — reliable CDN URLs, no dynamic import() needed -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -1796,6 +1854,13 @@ body {
     <!-- Pokemon mode badge -->
     <div id="poke-mode-badge">⚡ ПОКЕМОН РЕЖИМ</div>
     <div id="coast-mode-badge">🏖️ ПОБЕРЕЖЬЕ ЛЕГЕНДАРОК</div>
+    <div id="hardcore-mode-badge">💀 ХАРДКОР КАРТА — БОССЫ АТАКУЮТ!</div>
+    <div id="bum-mode-badge">🧟 БОМЖАТСКАЯ КАРТА — накопи 1000🪙 чтобы уйти!</div>
+    <!-- HC Boss bar (shown during hardcore boss encounter) -->
+    <div id="hc-boss-bar">
+      <div id="hc-boss-name">👹 ???</div>
+      <div id="hc-boss-hp-bg"><div id="hc-boss-hp-fill" style="width:100%"></div></div>
+    </div>
 
     <!-- СТАРТОВЫЙ ПОДАРОК (показывается один раз) -->
     <div id="gift-overlay" style="display:none;">
@@ -1828,6 +1893,9 @@ body {
       <div class="map-btn active" id="map-btn-normal" onclick="setMap('normal')">🌊 Обычная</div>
       <div class="map-btn" id="map-btn-pokemon" onclick="setMap('pokemon')">⚡ Покемон</div>
       <div class="map-btn" id="map-btn-coast" onclick="setMap('coast')" style="color:#60c0ff;border-color:#2080c0;">🏖️ Побережье</div>
+      <div class="map-btn" id="map-btn-hardcore" onclick="setMap('hardcore')" style="color:#ff4040;border-color:#aa0000;display:none;">💀 ХАРДКОР</div>
+      <div class="map-btn" id="map-btn-hobo" onclick="setMap('hobo')" style="color:#a08060;border-color:#604020;display:none;">🏚️ Бомжатня</div>
+      <div class="map-btn" id="map-btn-bum" onclick="tryLeaveBumMap()" style="color:#a06020;border-color:#604010;display:none;">🧟 Бомжатник</div>
     </div>
 
     <!-- Streak display -->
@@ -2207,6 +2275,35 @@ body {
   <!-- TOAST -->
   <div id="toast"></div>
 
+  <!-- ═══════════ 🐟 ПИРАНЬЯ АТАКА ═══════════ -->
+  <div id="piranha-overlay" style="display:none;position:absolute;inset:0;z-index:8000;background:rgba(180,0,0,.15);pointer-events:auto;">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);text-align:center;pointer-events:none">
+      <div style="font-size:52px;animation:piranhaShake 0.2s linear infinite">🦷</div>
+      <div id="piranha-label" style="font-family:UnifrakturMaguntia,cursive;font-size:22px;color:#ff2020;text-shadow:0 0 16px #ff0000;margin-top:6px">ПИРАНЬЯ ВЦЕПИЛАСЬ!</div>
+      <div id="piranha-sub" style="font-family:Neucha,cursive;font-size:13px;color:#ffaaaa;margin-top:4px">Трясите телефон или жмите МНОГО РАЗ!</div>
+    </div>
+    <div style="position:absolute;bottom:160px;left:20px;right:20px;text-align:center;">
+      <button id="piranha-shake-btn" onclick="piranhaHit()" style="font-family:UnifrakturMaguntia,cursive;font-size:20px;background:linear-gradient(to bottom,#cc0000,#660000);border:3px solid #ff4040;border-radius:14px;padding:12px 36px;color:#fff;cursor:pointer;box-shadow:0 0 20px rgba(255,0,0,.6);animation:piranhaBtn 0.5s ease-in-out infinite alternate;">💥 ТРЯСИ!</button>
+      <div id="piranha-hp-wrap" style="margin-top:12px;">
+        <div style="font-family:Neucha,cursive;font-size:11px;color:#ff8080;margin-bottom:3px">Прочность укуса:</div>
+        <div style="height:14px;background:rgba(0,0,0,.5);border:2px solid #ff4040;border-radius:7px;overflow:hidden">
+          <div id="piranha-hp-fill" style="height:100%;background:linear-gradient(to right,#ff0000,#ff8000);transition:width 0.2s"></div>
+        </div>
+      </div>
+      <div id="piranha-coins-txt" style="font-family:Neucha,cursive;font-size:13px;color:#ff8080;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ⚽ ПОКЕБОЛ С БУСТОМ ═══════════ -->
+  <div id="pokeball-catch-overlay" style="display:none;position:absolute;inset:0;z-index:7500;pointer-events:auto;background:rgba(0,0,0,.7);">
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+      <div id="pokeball-anim" style="font-size:70px;animation:pokeballSpin 0.6s linear infinite;display:inline-block">⚽</div>
+      <div style="font-family:UnifrakturMaguntia,cursive;font-size:22px;color:#f0e040;text-shadow:0 0 16px #f0c000;margin-top:8px">ПОКЕБОЛ ПОЙМАЛ БУСТ!</div>
+      <div id="pokeball-boost-txt" style="font-family:Neucha,cursive;font-size:15px;color:#c0f0ff;margin-top:6px"></div>
+      <button onclick="collectPokeball()" style="font-family:UnifrakturMaguntia,cursive;font-size:16px;background:linear-gradient(135deg,#cc0000,#880000);border:3px solid #ff8040;border-radius:14px;padding:10px 28px;color:#fff;cursor:pointer;margin-top:14px;box-shadow:0 0 16px rgba(255,100,0,.5)">🎯 Взять в инвентарь!</button>
+    </div>
+  </div>
+
   <!-- ═══════════════════════════════════
        🦈 BOSS FIGHT — ГИБРИД АКУЛА
   ═══════════════════════════════════ -->
@@ -2340,6 +2437,13 @@ const RODS = [
   {id:'thunder',    name:'Громовая',      desc:'Заряжена молнией — рыба не убежит',      price:12000, biteChance:6.0, catchMult:5.0, stats:'Клёв: x6 • Улов: x5 • Мгновенный клёв'},
   {id:'void',       name:'Бездны',        desc:'Из глубин где нет света',                price:25000, biteChance:8.0, catchMult:7.0, stats:'Клёв: x8 • Улов: x7 • Только легенды'},
   {id:'shark',      name:'Акулья',        desc:'Скрафтлена из Кожи Акулы! Пускает мини-акул на легендарки', price:0, biteChance:10.0, catchMult:9.0, stats:'Клёв: x10 • Мини-акулы ищут OG! • Всегда OG', special:'shark', craftable:true},
+  // ═══ ХАРДКОР УДОЧКИ ═══
+  {id:'meteor',     name:'Метеоритная',   desc:'Скована из упавшего метеорита. Чувствуется жар космоса',    price:50000,  biteChance:12.0, catchMult:10.0, stats:'Клёв: x12 • x10 улов • Огненные эффекты', special:'meteor'},
+  {id:'dragon',     name:'Драконья',      desc:'Выточена из кости дракона. Дышит огнём при забросе',        price:80000,  biteChance:15.0, catchMult:12.0, stats:'Клёв: x15 • x12 • Драко-улов (мега рыбы)', special:'dragon'},
+  {id:'poseidon',   name:'Трезубец Посейдона', desc:'Личное оружие бога морей. Рыбы сами прыгают на крючок',price:120000, biteChance:18.0, catchMult:15.0, stats:'Клёв: x18 • x15 • Авто-улов каждые 3 сек', special:'poseidon'},
+  {id:'quantum',    name:'Квантовая',     desc:'Существует в нескольких измерениях одновременно',           price:200000, biteChance:20.0, catchMult:18.0, stats:'Клёв: x20 • x18 • 2 рыбы за раз!', special:'quantum'},
+  {id:'celestial',  name:'Небесная',      desc:'Упала с небес. Ловит рыб из параллельных вселенных',        price:350000, biteChance:25.0, catchMult:22.0, stats:'Клёв: x25 • x22 • Только OG+Легенды', special:'celestial'},
+  {id:'apocalypse', name:'Апокалипсис',   desc:'КОНЕЦ ВСЕМУ. Ломает реальность при каждом забросе',         price:999999, biteChance:50.0, catchMult:50.0, stats:'Клёв: x50 • x50 • ВСЁ СРАЗУ • Мгновенный клёв', special:'apocalypse'},
 ];
 
 // ============================================================
@@ -2898,7 +3002,33 @@ function triggerBite() {
     return;
   }
 
-  // ── Normal mode (с учётом удочки) ──
+  // ── ХАРДКОР ──
+  if(gs.mapMode === 'hardcore') {
+    const hcPool = HARDCORE_FISH.concat(FISH_DATA.filter(f=>f.rar==='legend'||f.rar==='og'));
+    const f = hcPool[Math.floor(Math.random()*hcPool.length)];
+    gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+    // 40% chance piranha attacks!
+    if(Math.random() < 0.40) {
+      setTimeout(startPiranhaAttack, 500);
+    }
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 6000);
+    return;
+  }
+
+  // ── БОМЖАТНЯ ──
+  if(gs.mapMode === 'hobo') {
+    const hoboPool = HOBO_FISH;
+    const f = hoboPool[Math.floor(Math.random()*hoboPool.length)];
+    gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([50]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 4000);
+    return;
+  }
   const hasLucky = UPGRADES.find(u=>u.id==='lucky_charm')?.owned;
   const lureBonus = LURES.reduce((s,l)=>s+(l.qty>0?l.rareBonus:0),0);
   const pool=[];
@@ -3360,6 +3490,131 @@ function rodIconSVG(rod) {
       <circle cx="16" cy="26" r="3" fill="#001020" stroke="${c}" stroke-width="1"/>
       <path d="M10,31 L13,34 L16,31 L19,34 L22,31" stroke="#fff" stroke-width="1.5" fill="none"/>
       <text x="26" y="48" text-anchor="middle" font-size="9" fill="${c}" font-family="sans-serif">🦈</text>`,
+    // ═══ ХАРДКОР ═══
+    meteor: `
+      <!-- Meteor rod — glowing orange rock + trail -->
+      <ellipse cx="26" cy="26" rx="16" ry="16" fill="rgba(80,20,0,.8)" stroke="${c}" stroke-width="2"/>
+      <!-- Crater texture -->
+      <circle cx="20" cy="22" r="4" fill="rgba(0,0,0,.4)" stroke="rgba(255,80,0,.5)" stroke-width="1"/>
+      <circle cx="31" cy="30" r="3" fill="rgba(0,0,0,.3)" stroke="rgba(255,100,0,.4)" stroke-width="1"/>
+      <circle cx="24" cy="32" r="2.5" fill="rgba(0,0,0,.35)" stroke="rgba(255,80,0,.4)" stroke-width="1"/>
+      <!-- Glowing lava cracks -->
+      <path d="M18,18 L22,24 L18,28 L24,30" stroke="#ff6020" stroke-width="1.5" fill="none" opacity=".9"/>
+      <path d="M28,16 L32,20 L29,26" stroke="#ff8040" stroke-width="1.5" fill="none" opacity=".9"/>
+      <path d="M14,26 L20,28 L16,34" stroke="#ffa060" stroke-width="1.5" fill="none" opacity=".8"/>
+      <!-- Fire particles -->
+      <circle cx="10" cy="14" r="3" fill="#ff4000" opacity=".7"/>
+      <circle cx="42" cy="12" r="2" fill="#ffaa00" opacity=".6"/>
+      <circle cx="8" cy="38" r="2" fill="#ff6020" opacity=".5"/>
+      <!-- Handle with metal rings -->
+      <line x1="26" y1="42" x2="26" y2="50" stroke="#888" stroke-width="4" stroke-linecap="round"/>
+      <line x1="22" y1="44" x2="30" y2="44" stroke="${c}" stroke-width="2"/>
+      <line x1="22" y1="47" x2="30" y2="47" stroke="${c}" stroke-width="1.5"/>`,
+    dragon: `
+      <!-- Dragon bone rod — elaborate bone with scales -->
+      <line x1="38" y1="8" x2="14" y2="44" stroke="#c04020" stroke-width="6" stroke-linecap="round"/>
+      <line x1="38" y1="8" x2="14" y2="44" stroke="rgba(255,80,0,.3)" stroke-width="3" stroke-linecap="round"/>
+      <!-- Dragon scales along rod -->
+      <path d="M34,12 Q38,8 36,14" fill="#a03010" stroke="#cc2200" stroke-width="1"/>
+      <path d="M30,17 Q34,13 32,19" fill="#a03010" stroke="#cc2200" stroke-width="1"/>
+      <path d="M26,22 Q30,18 28,24" fill="#a03010" stroke="#cc2200" stroke-width="1"/>
+      <path d="M22,27 Q26,23 24,29" fill="#a03010" stroke="#cc2200" stroke-width="1"/>
+      <path d="M18,32 Q22,28 20,34" fill="#a03010" stroke="#cc2200" stroke-width="1"/>
+      <!-- Dragon skull tip -->
+      <circle cx="38" cy="8" r="6" fill="rgba(60,0,0,.8)" stroke="#cc2200" stroke-width="2"/>
+      <circle cx="36" cy="6" r="2" fill="#ff0000" opacity=".8"/>
+      <circle cx="40" cy="6" r="2" fill="#ff0000" opacity=".8"/>
+      <path d="M35,10 L37,12 L39,10 L41,12" stroke="#ff8040" stroke-width="1" fill="none"/>
+      <!-- Reel with dragon markings -->
+      <circle cx="14" cy="40" r="7" fill="rgba(0,0,0,.6)" stroke="#cc2200" stroke-width="2"/>
+      <circle cx="14" cy="40" r="4" fill="#601010" stroke="#aa2000" stroke-width="1"/>
+      <circle cx="14" cy="40" r="1.5" fill="#ff4040"/>
+      <!-- Fire breath effect -->
+      <path d="M40,4 Q46,2 44,8 Q50,6 46,12" stroke="#ff8020" stroke-width="1.5" fill="none" opacity=".7"/>`,
+    poseidon: `
+      <!-- Trident of Poseidon — three-pronged golden trident -->
+      <line x1="26" y1="44" x2="26" y2="18" stroke="#0060ff" stroke-width="5" stroke-linecap="round"/>
+      <line x1="26" y1="44" x2="26" y2="18" stroke="rgba(100,180,255,.4)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Three prongs -->
+      <line x1="26" y1="18" x2="26" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <line x1="20" y1="20" x2="18" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <line x1="32" y1="20" x2="34" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <!-- Prong tips -->
+      <polygon points="26,6 24,10 28,10" fill="${c}" stroke="#0040c0" stroke-width="1"/>
+      <polygon points="18,6 16,10 20,10" fill="${c}" stroke="#0040c0" stroke-width="1"/>
+      <polygon points="34,6 32,10 36,10" fill="${c}" stroke="#0040c0" stroke-width="1"/>
+      <!-- Cross piece -->
+      <line x1="18" y1="20" x2="34" y2="20" stroke="${c}" stroke-width="2.5"/>
+      <circle cx="18" cy="20" r="2.5" fill="${c}"/>
+      <circle cx="34" cy="20" r="2.5" fill="${c}"/>
+      <!-- Handle decorations -->
+      <line x1="24" y1="28" x2="28" y2="28" stroke="${c}" stroke-width="2"/>
+      <line x1="24" y1="33" x2="28" y2="33" stroke="${c}" stroke-width="2"/>
+      <line x1="24" y1="38" x2="28" y2="38" stroke="${c}" stroke-width="2"/>
+      <!-- Water droplets -->
+      <circle cx="8" cy="16" r="2.5" fill="rgba(0,100,255,.6)" stroke="${c}" stroke-width="1"/>
+      <circle cx="44" cy="22" r="2" fill="rgba(0,150,255,.5)" stroke="${c}" stroke-width="1"/>
+      <circle cx="6" cy="30" r="1.5" fill="rgba(0,120,255,.4)"/>`,
+    quantum: `
+      <!-- Quantum rod — multiple overlapping versions -->
+      <line x1="38" y1="10" x2="14" y2="42" stroke="${c}" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+      <line x1="40" y1="8" x2="16" y2="40" stroke="#ff00ff" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+      <line x1="36" y1="12" x2="12" y2="44" stroke="#00ffff" stroke-width="3" stroke-linecap="round" opacity=".4"/>
+      <!-- Quantum rings (superposition) -->
+      <circle cx="25" cy="26" r="8" fill="none" stroke="${c}" stroke-width="1.5" opacity=".9"/>
+      <circle cx="27" cy="24" r="8" fill="none" stroke="#ff00ff" stroke-width="1" opacity=".5"/>
+      <circle cx="23" cy="28" r="8" fill="none" stroke="#00ffff" stroke-width="1" opacity=".4"/>
+      <!-- Probability cloud -->
+      <circle cx="26" cy="26" r="4" fill="rgba(255,0,255,.3)" stroke="${c}" stroke-width="1"/>
+      <circle cx="26" cy="26" r="2" fill="${c}" opacity=".8"/>
+      <!-- Dimensional cracks -->
+      <path d="M10,10 L16,18 L12,24" stroke="#ff00ff" stroke-width="1" fill="none" opacity=".6"/>
+      <path d="M42,38 L36,30 L40,24" stroke="#00ffff" stroke-width="1" fill="none" opacity=".6"/>
+      <!-- Reel (blurred/multiple) -->
+      <circle cx="14" cy="40" r="6" fill="rgba(0,0,0,.5)" stroke="${c}" stroke-width="2" opacity=".9"/>
+      <circle cx="15" cy="39" r="5" fill="rgba(0,0,0,.3)" stroke="#ff00ff" stroke-width="1" opacity=".5"/>`,
+    celestial: `
+      <!-- Celestial rod — glowing white with stars and halos -->
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="${c}" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <!-- Holy rings / halos -->
+      <ellipse cx="26" cy="24" rx="14" ry="5" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".6"/>
+      <ellipse cx="26" cy="24" rx="18" ry="6" fill="none" stroke="${c}" stroke-width="1" opacity=".3"/>
+      <!-- Stars along rod -->
+      <polygon points="35,14 36,17 39,17 37,19 38,22 35,20 32,22 33,19 31,17 34,17" fill="#ffffff" opacity=".9" transform="scale(0.5) translate(35,4)"/>
+      <polygon points="35,14 36,17 39,17 37,19 38,22 35,20 32,22 33,19 31,17 34,17" fill="#ffffa0" opacity=".8" transform="scale(0.4) translate(28,28)"/>
+      <polygon points="35,14 36,17 39,17 37,19 38,22 35,20 32,22 33,19 31,17 34,17" fill="#a0c8ff" opacity=".7" transform="scale(0.35) translate(18,58)"/>
+      <!-- Glowing tip -->
+      <circle cx="38" cy="10" r="5" fill="rgba(255,255,255,.3)" stroke="#ffffff" stroke-width="2"/>
+      <circle cx="38" cy="10" r="2.5" fill="#ffffff" opacity=".9"/>
+      <!-- Light rays -->
+      <line x1="38" y1="4" x2="38" y2="6" stroke="#ffffff" stroke-width="1.5" opacity=".7"/>
+      <line x1="42" y1="7" x2="44" y2="7" stroke="#ffffff" stroke-width="1.5" opacity=".6"/>
+      <line x1="41" y1="4" x2="43" y2="3" stroke="#ffffff" stroke-width="1" opacity=".5"/>
+      <!-- Crystal reel -->
+      <circle cx="14" cy="40" r="7" fill="rgba(200,240,255,.2)" stroke="#ffffff" stroke-width="2"/>
+      <circle cx="14" cy="40" r="4" fill="rgba(255,255,255,.4)" stroke="#c0e8ff" stroke-width="1"/>`,
+    apocalypse: `
+      <!-- Apocalypse rod — reality is breaking -->
+      <!-- Broken world background -->
+      <circle cx="26" cy="26" r="22" fill="rgba(60,0,0,.8)" stroke="#ff0000" stroke-width="2"/>
+      <!-- Cracks in reality -->
+      <path d="M4,4 L15,16 L10,26 L20,22 L26,26 L34,18 L42,26 L48,14" stroke="#ff0000" stroke-width="2" fill="none"/>
+      <path d="M8,42 L18,32 L22,38 L30,28 L36,34 L44,22 L50,30" stroke="#ff4000" stroke-width="1.5" fill="none" opacity=".8"/>
+      <!-- The rod itself — barely visible -->
+      <line x1="38" y1="8" x2="14" y2="44" stroke="#ff0000" stroke-width="6" stroke-linecap="round" opacity=".9"/>
+      <line x1="38" y1="8" x2="14" y2="44" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+      <!-- Eye of chaos -->
+      <ellipse cx="26" cy="24" rx="8" ry="5" fill="rgba(0,0,0,.9)" stroke="#ff0000" stroke-width="2"/>
+      <ellipse cx="26" cy="24" rx="4" ry="3" fill="#ff0000"/>
+      <ellipse cx="26" cy="24" rx="2" ry="2" fill="#ffffff" opacity=".8"/>
+      <!-- Explosion rings -->
+      <circle cx="26" cy="26" r="10" fill="none" stroke="#ff4000" stroke-width="1" opacity=".7"/>
+      <circle cx="26" cy="26" r="15" fill="none" stroke="#ff8000" stroke-width="0.8" opacity=".5"/>
+      <!-- Blood drips -->
+      <path d="M20,40 L19,44 L20,48" stroke="#cc0000" stroke-width="2" fill="none"/>
+      <path d="M28,42 L27,46" stroke="#cc0000" stroke-width="2" fill="none"/>
+      <circle cx="19" cy="49" r="2" fill="#cc0000"/>`,
   };
 
   // Общий шаблон удочки с кольцами и катушкой
@@ -4132,18 +4387,27 @@ gs.pikaBufCount = 0;
 
 function setMap(mode) {
   gs.mapMode = mode;
-  ['normal','pokemon','coast'].forEach(m=>{
+  ['normal','pokemon','coast','hardcore','hobo'].forEach(m=>{
     const btn = document.getElementById('map-btn-'+m);
     if(btn) btn.classList.toggle('active', mode===m);
   });
   const pokeBadge = document.getElementById('poke-mode-badge');
   const pikaBox   = document.getElementById('pika-coins-box');
   const coastBadge = document.getElementById('coast-mode-badge');
+  const hcBadge   = document.getElementById('hardcore-mode-badge');
+  const bumBadge  = document.getElementById('bum-mode-badge');
+  const hcBar     = document.getElementById('hc-boss-bar');
 
   // Reset all badges
   if(pokeBadge) pokeBadge.style.display='none';
   if(pikaBox)   pikaBox.style.display='none';
   if(coastBadge) coastBadge.style.display='none';
+  if(hcBadge)  hcBadge.style.display='none';
+  if(bumBadge) bumBadge.style.display='none';
+  if(hcBar)    hcBar.style.display='none';
+  // Stop piranha and boss loops if switching
+  stopPiranhaAttack();
+  stopHcBossLoop();
 
   if(mode === 'pokemon') {
     if(pokeBadge) pokeBadge.style.display='block';
@@ -4160,6 +4424,23 @@ function setMap(mode) {
     document.documentElement.style.setProperty('--water-top','#003878');
     document.documentElement.style.setProperty('--water-bot','#001840');
     showToast('🏖️ Побережье Легендарок! Только ЛЕГЕНДЫ! Жми много раз для подсечки!');
+  } else if(mode === 'hardcore') {
+    if(hcBadge) hcBadge.style.display='block';
+    document.documentElement.style.setProperty('--sky-top','#1a0000');
+    document.documentElement.style.setProperty('--sky-bot','#0a0000');
+    document.documentElement.style.setProperty('--water-top','#3a0000');
+    document.documentElement.style.setProperty('--water-bot','#180000');
+    startHcBossLoop();
+    showToast('💀 ХАРДКОР КАРТА! Боссы! Пираньи! Осторожно!');
+  } else if(mode === 'hobo') {
+    if(bumBadge) bumBadge.style.display='block';
+    document.documentElement.style.setProperty('--sky-top','#0e0c08');
+    document.documentElement.style.setProperty('--sky-bot','#181410');
+    document.documentElement.style.setProperty('--water-top','#0e1208');
+    document.documentElement.style.setProperty('--water-bot','#060804');
+    showToast('🧟 Бомжатня! Только гнилая рыба... Накопи 1000🪙 чтобы сбежать!');
+    // Shop becomes rotten
+    renderShop();
   } else {
     applyWeather(gs.weather, true);
     showToast('🌊 Обычная карта — ловим рыбу!');
@@ -4199,26 +4480,22 @@ function catchPokemon(f) {
   gs.pikaCoins += earned;
   updatePikaCoins();
   
-  // Show popup with pokemon style
-  document.getElementById('catch-header').textContent = '⚡ Покемон!';
-  document.getElementById('catch-name-txt').textContent = f.name;
-  document.getElementById('catch-weight-txt').textContent = `+${f.pts} ★ • +${earned}⚡`;
-  const rarEl = document.getElementById('catch-rarity');
-  rarEl.textContent = f.label; rarEl.className = `rarity-${f.rar}`;
-  // Show pokemon emoji, hide fish SVG
-  document.getElementById('catch-fish-svg').style.display = 'none';
-  const pokeEmoji = document.getElementById('catch-pokemon-emoji');
-  pokeEmoji.textContent = f.emoji;
-  pokeEmoji.style.display = 'block';
-  document.getElementById('catch-sell-btn').style.display = 'none';
-  document.getElementById('catch-popup').classList.add('show');
-  showScorePop('+'+earned+'⚡', gs.bobX, gs.bobY);
-  makeRipple(gs.bobX, gs.bobY, 65);
+  // 🔴 POKEBALL BOOST — show pokeball catch overlay first!
+  const boostRoll = Math.random();
+  let boost = null;
+  if(boostRoll < 0.25) boost = {id:'pb_coins',  icon:'💰', name:'Монетный Буст',   desc:'+500 монет мгновенно!',     effect:'coins',  val:500};
+  else if(boostRoll < 0.45) boost = {id:'pb_bite',    icon:'🎣', name:'Рыболовный Буст', desc:'Клёв x3 на 45 сек!',       effect:'bite_x3',val:45000};
+  else if(boostRoll < 0.60) boost = {id:'pb_xp',      icon:'⬆️', name:'XP Буст',        desc:'+200 XP мгновенно!',        effect:'xp',     val:200};
+  else if(boostRoll < 0.72) boost = {id:'pb_legend',  icon:'⭐', name:'Легенда Буст',   desc:'Следующая рыба — ЛЕГЕНДА!', effect:'next_legend',val:1};
+  else if(boostRoll < 0.82) boost = {id:'pb_og',      icon:'👑', name:'OG Буст',        desc:'Следующая рыба — OG!',      effect:'next_og',val:1};
+  else if(boostRoll < 0.90) boost = {id:'pb_shield',  icon:'🛡️', name:'Пиранья Щит',   desc:'Следующая пиранья = пропуск',effect:'pirana_shield',val:1};
+  else boost = {id:'pb_jackpot', icon:'🎰', name:'ДЖЕКПОТ',       desc:'+2000 монет + x5 PikaCoins!',  effect:'jackpot',val:2000};
+
+  showPokeballCatch(f, earned, boost);
   addXP(30 + f.pts/5);
   updateQuestProgress('pokemon');
   checkAchievements();
   saveGame();
-  // Sync leaderboard
   syncLeaderboard();
 }
 
@@ -5143,6 +5420,12 @@ const ROD_COLORS = {
   thunder:    {color:'#f0f040', glow:'0 0 28px rgba(255,255,50,1.0)'},
   void:       {color:'#3010a0', glow:'0 0 30px rgba(80,0,200,.9)'},
   shark:      {color:'#40c8e0', glow:'0 0 35px rgba(0,200,230,1.0)'},
+  meteor:     {color:'#ff6020', glow:'0 0 35px rgba(255,80,0,1.0)'},
+  dragon:     {color:'#cc2200', glow:'0 0 40px rgba(220,30,0,1.0)'},
+  poseidon:   {color:'#0060ff', glow:'0 0 45px rgba(0,100,255,1.0)'},
+  quantum:    {color:'#ff00ff', glow:'0 0 50px rgba(255,0,255,1.0)'},
+  celestial:  {color:'#ffffff', glow:'0 0 60px rgba(255,255,255,1.0)'},
+  apocalypse: {color:'#ff0000', glow:'0 0 80px rgba(255,0,0,1.0)'},
 };
 
 function updateRodVisual() {
@@ -5155,6 +5438,12 @@ function updateRodVisual() {
     crystal:    'crystalShimmer 2s ease-in-out infinite',
     thunder:    'thunderZap 3s steps(1) infinite',
     void:       'voidPulse 2s ease-in-out infinite',
+    meteor:     'meteorPulse 1.5s ease-in-out infinite alternate',
+    dragon:     'dragonBreathe 2s ease-in-out infinite',
+    poseidon:   'poseidonWave 1.8s ease-in-out infinite alternate',
+    quantum:    'quantumFlicker 0.8s steps(2) infinite',
+    celestial:  'celestialGlow 2.5s ease-in-out infinite alternate',
+    apocalypse: 'apocalypseShake 0.3s steps(3) infinite',
   };
   rodBody.style.animation = animMap[rod.id] || '';
   rodBody.style.background = `linear-gradient(to right, ${rc.color}80, ${rc.color}, ${rc.color}80)`;
@@ -5907,6 +6196,1577 @@ setTimeout(()=>{
   // Check if boss should appear (first time seeing this update)
   checkBossFirstVisit();
 }, 1500);
+
+// ============================================================
+// 🔴 HARDCORE MAP DATA
+// ============================================================
+const HARDCORE_FISH = [
+  {name:'Мутант Карась',   w:[3,15],  pts:200, coins:150, rar:'epic',   label:'💀 Хардкор', col:'#c04040', col2:'#801010'},
+  {name:'Пираний Сом',     w:[8,35],  pts:400, coins:300, rar:'legend', label:'💀 Хардкор', col:'#802020', col2:'#401010'},
+  {name:'Огненный Краб',   w:[5,20],  pts:350, coins:250, rar:'legend', label:'💀 Хардкор', col:'#ff4020', col2:'#c02010'},
+  {name:'Кровавый Лещ',    w:[2,12],  pts:280, coins:200, rar:'epic',   label:'💀 Хардкор', col:'#c00000', col2:'#800000'},
+  {name:'Адский Сазан',    w:[10,50], pts:600, coins:500, rar:'og',     label:'💀 OG Хардкор', col:'#ff2020', col2:'#aa0000', og:true},
+  {name:'Дьявольский Карп',w:[6,25],  pts:450, coins:350, rar:'og',     label:'💀 OG Хардкор', col:'#ff0040', col2:'#880020', og:true},
+];
+
+const HOBO_FISH = [
+  {name:'Гнилая Рыба',    w:[.1,.5],  pts:2,  coins:3,  rar:'common', label:'🧟 Гнилая',   col:'#608040', col2:'#304020', rotten:true},
+  {name:'Ржавая Рыбка',   w:[.05,.3], pts:1,  coins:2,  rar:'common', label:'🧟 Гнилая',   col:'#806030', col2:'#503010', rotten:true},
+  {name:'Дохлый Карась',  w:[.2,.8],  pts:3,  coins:4,  rar:'common', label:'🧟 Гнилая',   col:'#707050', col2:'#404030', rotten:true},
+  {name:'Сгнивший Окунь', w:[.3,1.2], pts:5,  coins:6,  rar:'rare',   label:'🧟 Редкая Гниль',col:'#506040', col2:'#304020', rotten:true},
+  {name:'Удача Бомжа',    w:[.1,.4],  pts:15, coins:50, rar:'rare',   label:'🍀 Редкая удача!',col:'#40c060', col2:'#206040'},
+];
+
+// ============================================================
+// 💀 HARDCORE MAP — BOSS LOOP
+// ============================================================
+const HC_BOSSES_V1 = [
+  {name:'Гигантская Пиранья', emoji:'🦷', hp:300,  reward:{coins:2000,  xp:300},  special:'piranha_boss'},
+  {name:'Рыба-Монстр',        emoji:'👹', hp:500,  reward:{coins:3500,  xp:500},  special:'monster'},
+  {name:'Кракен',             emoji:'🐙', hp:800,  reward:{coins:6000,  xp:800},  special:'kraken'},
+  {name:'Хозяин Хардкора',    emoji:'👑', hp:1500, reward:{coins:15000, xp:2000}, special:'hc_master'},
+];
+
+let hcBossStateV1 = {
+  active: false,
+  current: null,
+  hp: 0,
+  maxHp: 0,
+  bossIdx: 0,
+  loopTimer: null,
+  attackTimer: null,
+};
+
+function startHcBossLoop() {
+  stopHcBossLoop();
+  hcBossStateV1.bossIdx = 0;
+  scheduleNextHcBoss();
+}
+
+function stopHcBossLoop() {
+  clearTimeout(hcBossStateV1.loopTimer);
+  clearInterval(hcBossStateV1.attackTimer);
+  hcBossStateV1.active = false;
+  const bar = document.getElementById('hc-boss-bar');
+  if(bar) bar.style.display='none';
+}
+
+function scheduleNextHcBoss() {
+  if(gs.mapMode !== 'hardcore') return;
+  const delay = 15000 + Math.random()*15000; // 15-30 сек
+  hcBossStateV1.loopTimer = setTimeout(spawnHcBoss, delay);
+}
+
+function spawnHcBoss() {
+  if(gs.mapMode !== 'hardcore') return;
+  const boss = HC_BOSSES_V1[hcBossStateV1.bossIdx % HC_BOSSES_V1.length];
+  hcBossStateV1.active = true;
+  hcBossStateV1.current = boss;
+  hcBossStateV1.hp = boss.hp;
+  hcBossStateV1.maxHp = boss.hp;
+
+  const bar = document.getElementById('hc-boss-bar');
+  const nameEl = document.getElementById('hc-boss-name');
+  const fillEl = document.getElementById('hc-boss-hp-fill');
+  if(bar) bar.style.display='block';
+  if(nameEl) nameEl.textContent = boss.emoji + ' ' + boss.name + ' появился!';
+  if(fillEl) fillEl.style.width = '100%';
+
+  shakeScreen();
+  showToast(`💀 ${boss.emoji} ${boss.name} ПОЯВИЛСЯ! Лови рыбу чтобы его убить!`);
+  if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+
+  // Auto-deal damage when fish is caught (in catchFish we'll check this)
+  // Also boss attacks every 20 sec if not killed
+  hcBossStateV1.attackTimer = setInterval(()=>{
+    if(!hcBossStateV1.active || gs.mapMode!=='hardcore') { clearInterval(hcBossStateV1.attackTimer); return; }
+    // Boss attacks — take coins
+    const steal = 500 + Math.floor(Math.random()*500);
+    gs.coins = Math.max(0, gs.coins - steal);
+    updateCoins();
+    shakeScreen();
+    showToast(`💀 ${boss.emoji} атакует! -${steal}🪙!`);
+    if(navigator.vibrate) navigator.vibrate([300,100,300]);
+    // Check bankruptcy
+    if(gs.coins <= 0) triggerHcBankruptcy();
+  }, 20000);
+}
+
+function damageHcBoss(dmg) {
+  if(!hcBossStateV1.active) return;
+  hcBossStateV1.hp -= dmg;
+  const pct = Math.max(0, hcBossStateV1.hp / hcBossStateV1.maxHp * 100);
+  const fillEl = document.getElementById('hc-boss-hp-fill');
+  if(fillEl) fillEl.style.width = pct + '%';
+
+  if(hcBossStateV1.hp <= 0) {
+    killHcBoss();
+  }
+}
+
+function killHcBoss() {
+  clearInterval(hcBossStateV1.attackTimer);
+  const boss = hcBossStateV1.current;
+  hcBossStateV1.active = false;
+
+  gs.coins += boss.reward.coins;
+  updateCoins();
+  addXP(boss.reward.xp);
+
+  const bar = document.getElementById('hc-boss-bar');
+  if(bar) bar.style.display='none';
+
+  shakeScreen(); setTimeout(shakeScreen, 200);
+  for(let i=0;i<5;i++) setTimeout(()=>coinBurst(100+Math.random()*160, 200+Math.random()*100), i*150);
+  showToast(`🏆 ${boss.emoji} ${boss.name} УБИТ! +${boss.reward.coins}🪙 +${boss.reward.xp}XP!`);
+
+  hcBossStateV1.bossIdx++;
+  scheduleNextHcBoss();
+}
+
+function triggerHcBankruptcy() {
+  if(gs.mapMode !== 'hardcore') return;
+  // Хозяин прогоняет на бомжатню
+  stopHcBossLoop();
+  document.getElementById('boss-overlay').classList.add('active');
+  const cs = document.getElementById('boss-cutscene');
+  cs.innerHTML = `
+    <div class="boss-cs-text" style="color:#ff4040">👑 ХОЗЯИН ХАРДКОРА</div>
+    <div style="font-size:64px;animation:sharkFloat 1s ease-in-out infinite alternate">👑</div>
+    <div class="boss-cs-sub">ТЫ ПОТРАТИЛ ВСЕ ДЕНЬГИ! УБИРАЙСЯ С ХАРДКОРА!</div>`;
+  document.getElementById('boss-hp-wrap').style.display='none';
+  document.getElementById('boss-attack-zone').style.display='none';
+  shakeScreen(); setTimeout(shakeScreen,300); setTimeout(shakeScreen,600);
+
+  setTimeout(()=>{
+    document.getElementById('boss-overlay').classList.remove('active');
+    setMap('hobo');
+    // Show hobo map button, hide hardcore
+    const hbtn = document.getElementById('map-btn-hobo');
+    if(hbtn) hbtn.style.display='';
+    saveGame();
+    showToast('🏚️ Тебя выгнали на Бомжатню... накопи 1000🪙 чтобы сбежать!');
+  }, 4000);
+}
+
+// ============================================================
+// 🏚️ HOBO MAP — Escape mechanism
+// ============================================================
+function checkHoboEscape() {
+  if(gs.mapMode !== 'hobo') return;
+  if(gs.coins >= 1000) {
+    showToast('🎉 Ты накопил 1000🪙! Можешь вернуться на нормальную карту!');
+    // Show escape button
+    const bumBadge = document.getElementById('bum-mode-badge');
+    if(bumBadge) {
+      bumBadge.innerHTML = '🧟 БОМЖАТНЯ — <button onclick="hoboEscape()" style="font-family:Neucha,cursive;font-size:11px;background:#406020;border:1px solid #80c040;color:#c0ff60;padding:2px 8px;border-radius:6px;cursor:pointer;">СБЕЖАТЬ (1000🪙)</button>';
+    }
+  }
+}
+
+function hoboEscape() {
+  if(gs.coins < 1000) { showToast('Нужно 1000🪙!'); return; }
+  gs.coins -= 1000;
+  updateCoins();
+  setMap('normal');
+  showToast('🎉 Ты вырвался из Бомжатни! Удачной рыбалки!');
+  saveGame();
+}
+
+// ============================================================
+// 🦷 ПИРАНЬЯ — Piranha attack system
+// ============================================================
+let piranhaStateV1 = {
+  active: false,
+  hp: 100,
+  lossTimer: null,
+  shakeInterval: null,
+};
+
+function startPiranhaAttack() {
+  if(piranhaStateV1.active) return;
+  // Check shield
+  if(gs._piranhaShield) {
+    gs._piranhaShield = false;
+    showToast('🛡️ Щит Пираньи сработал! Атака отбита!');
+    return;
+  }
+  piranhaStateV1.active = true;
+  piranhaStateV1.hp = 100;
+  gs.phase = 'piranha'; // freeze fishing
+
+  const overlay = document.getElementById('piranha-overlay');
+  if(overlay) overlay.style.display = 'flex';
+  updatePiranhaHp();
+
+  if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+  showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ В УДОЧКУ!');
+
+  // Shake detection
+  let lastX=0, lastY=0, lastZ=0;
+  if(window.DeviceMotionEvent) {
+    window._piranhaShakeListener = (e) => {
+      if(!piranhaStateV1.active) return;
+      const acc = e.accelerationIncludingGravity;
+      if(!acc) return;
+      const dx = Math.abs((acc.x||0) - lastX);
+      const dy = Math.abs((acc.y||0) - lastY);
+      const dz = Math.abs((acc.z||0) - lastZ);
+      lastX=acc.x||0; lastY=acc.y||0; lastZ=acc.z||0;
+      if(dx+dy+dz > 15) piranhaHit();
+    };
+    window.addEventListener('devicemotion', window._piranhaShakeListener);
+  }
+
+  // Drain money if not removed in time
+  piranhaStateV1.lossTimer = setInterval(()=>{
+    if(!piranhaStateV1.active) { clearInterval(piranhaStateV1.lossTimer); return; }
+    const loss = 1000;
+    gs.coins = Math.max(0, gs.coins - loss);
+    updateCoins();
+    const txt = document.getElementById('piranha-coins-txt');
+    if(txt) txt.textContent = `🦷 Пиранья ест монеты! -${loss}🪙! Осталось: ${gs.coins}🪙`;
+    if(navigator.vibrate) navigator.vibrate(200);
+    // Check bankruptcy on any map
+    if(gs.coins <= 0 && gs.mapMode === 'hardcore') {
+      stopPiranhaAttack();
+      triggerHcBankruptcy();
+    }
+    if(gs.coins <= 0 && gs.mapMode !== 'hardcore') {
+      stopPiranhaAttack();
+      setMap('hobo');
+      const hbtn = document.getElementById('map-btn-hobo');
+      if(hbtn) hbtn.style.display='';
+      showToast('🏚️ Пиранья съела ВСЕ деньги! Бомжатня...');
+    }
+  }, 10000);
+}
+
+function piranhaHit() {
+  if(!piranhaStateV1.active) return;
+  piranhaStateV1.hp -= 20 + Math.random()*15;
+  if(navigator.vibrate) navigator.vibrate(50);
+  updatePiranhaHp();
+  if(piranhaStateV1.hp <= 0) {
+    stopPiranhaAttack(true);
+  }
+}
+
+function updatePiranhaHp() {
+  const fill = document.getElementById('piranha-hp-fill');
+  if(fill) fill.style.width = Math.max(0,piranhaStateV1.hp) + '%';
+}
+
+function stopPiranhaAttack(success) {
+  if(!piranhaStateV1.active && !success) return;
+  piranhaStateV1.active = false;
+  clearInterval(piranhaStateV1.lossTimer);
+  if(window._piranhaShakeListener) {
+    window.removeEventListener('devicemotion', window._piranhaShakeListener);
+    window._piranhaShakeListener = null;
+  }
+  const overlay = document.getElementById('piranha-overlay');
+  if(overlay) overlay.style.display='none';
+  if(success) {
+    showToast('✅ ПИРАНЬЯ СБРОШЕНА! Продолжай рыбалку!');
+  }
+  // Resume fishing
+  if(gs.phase === 'piranha') gs.phase = 'idle';
+}
+
+// ============================================================
+// 🔴 POKEBALL BOOST SYSTEM — Revorked
+// ============================================================
+gs.pokeballInventory = gs.pokeballInventory || [];
+
+function showPokeballCatch(pokemon, earned, boost) {
+  const overlay = document.getElementById('pokeball-catch-overlay');
+  if(!overlay) {
+    // Fallback to old popup
+    showOldPokemonPopup(pokemon, earned);
+    return;
+  }
+  overlay.style.display = 'flex';
+
+  // Animate pokeball spin
+  const ballEl = document.getElementById('pokeball-anim');
+  if(ballEl) {
+    ballEl.style.animation = 'pokeballSpin 0.6s linear infinite';
+    // After spin, show opening
+    setTimeout(()=>{
+      if(ballEl) ballEl.textContent = boost ? '✨' : '⚽';
+      if(ballEl) ballEl.style.animation = 'pokeballFloat 1s ease-in-out infinite alternate';
+    }, 1200);
+  }
+
+  // Show pokemon name
+  const nameEl = document.querySelector('#pokeball-catch-overlay [id="pokeball-poke-name"]') ||
+                 document.getElementById('pokeball-poke-name');
+  if(nameEl) nameEl.textContent = pokemon.emoji + ' ' + pokemon.name + ' поймал! +' + earned + '⚡';
+
+  // Show boost
+  const boostEl = document.getElementById('pokeball-boost-txt');
+  if(boostEl && boost) {
+    boostEl.innerHTML = `
+      <div style="font-size:22px">${boost.icon}</div>
+      <div style="color:#ffd060;font-weight:bold">${boost.name}</div>
+      <div style="color:#80e8ff;font-size:12px">${boost.desc}</div>`;
+  }
+
+  // Apply boost after delay
+  setTimeout(()=>{
+    if(boost) applyPokeballBoost(boost);
+    closePokeballOverlay(pokemon, earned);
+  }, 2500);
+}
+
+function showOldPokemonPopup(f, earned) {
+  document.getElementById('catch-header').textContent = '⚡ Покемон!';
+  document.getElementById('catch-name-txt').textContent = f.name;
+  document.getElementById('catch-weight-txt').textContent = `+${f.pts} ★ • +${earned}⚡`;
+  const rarEl = document.getElementById('catch-rarity');
+  rarEl.textContent = f.label; rarEl.className = `rarity-${f.rar}`;
+  document.getElementById('catch-fish-svg').style.display = 'none';
+  const pokeEmoji = document.getElementById('catch-pokemon-emoji');
+  pokeEmoji.textContent = f.emoji; pokeEmoji.style.display = 'block';
+  document.getElementById('catch-sell-btn').style.display = 'none';
+  document.getElementById('catch-popup').classList.add('show');
+  showScorePop('+'+earned+'⚡', gs.bobX, gs.bobY);
+  makeRipple(gs.bobX, gs.bobY, 65);
+}
+
+function closePokeballOverlay(pokemon, earned) {
+  const overlay = document.getElementById('pokeball-catch-overlay');
+  if(overlay) overlay.style.display='none';
+
+  // Show standard catch popup too
+  document.getElementById('catch-header').textContent = '⚡ Покемон!';
+  document.getElementById('catch-name-txt').textContent = pokemon.name;
+  document.getElementById('catch-weight-txt').textContent = `+${pokemon.pts} ★ • +${earned}⚡`;
+  const rarEl = document.getElementById('catch-rarity');
+  rarEl.textContent = pokemon.label; rarEl.className = `rarity-${pokemon.rar}`;
+  document.getElementById('catch-fish-svg').style.display = 'none';
+  const pokeEmoji = document.getElementById('catch-pokemon-emoji');
+  pokeEmoji.textContent = pokemon.emoji; pokeEmoji.style.display = 'block';
+  document.getElementById('catch-sell-btn').style.display = 'none';
+  document.getElementById('catch-popup').classList.add('show');
+  showScorePop('+'+earned+'⚡', gs.bobX, gs.bobY);
+  makeRipple(gs.bobX, gs.bobY, 65);
+}
+
+function applyPokeballBoost(boost) {
+  // Save boost to inventory (shown as pokeball item)
+  gs.pokeballInventory.push({...boost, obtainedAt: Date.now()});
+
+  switch(boost.effect) {
+    case 'coins':
+      gs.coins += boost.val;
+      updateCoins();
+      coinBurst(180, 300);
+      showToast(`💰 Покебол Буст: +${boost.val}🪙!`);
+      break;
+    case 'bite_x3':
+      gs._pokeBoostBite = Date.now() + boost.val;
+      showToast(`🎣 Покебол Буст: Клёв x3 на 45 сек!`);
+      break;
+    case 'xp':
+      addXP(boost.val);
+      showToast(`⬆️ Покебол Буст: +${boost.val} XP!`);
+      break;
+    case 'next_legend':
+      gs._pokeNextLegend = true;
+      showToast(`⭐ Покебол Буст: Следующая рыба — ЛЕГЕНДА!`);
+      break;
+    case 'next_og':
+      gs._pokeNextOg = true;
+      showToast(`👑 Покебол Буст: Следующая рыба — OG!`);
+      break;
+    case 'pirana_shield':
+      gs._piranhaShield = true;
+      showToast(`🛡️ Покебол Буст: Следующая пиранья = пропуск!`);
+      break;
+    case 'jackpot':
+      gs.coins += boost.val;
+      updateCoins();
+      gs.pikaCoins = Math.floor(gs.pikaCoins * 5);
+      updatePikaCoins();
+      for(let i=0;i<8;i++) setTimeout(()=>coinBurst(50+Math.random()*260,100+Math.random()*200), i*100);
+      showToast(`🎰 ДЖЕКПОТ! +${boost.val}🪙 + PikaCoins x5!`);
+      break;
+  }
+  saveGame();
+  renderInventory(); // Refresh to show pokeball
+}
+
+// ============================================================
+// PATCH — Apply poke boosts to fish picks (at catchFish level)
+// ============================================================
+// We hook gs.currentCatch right before it's used
+// by patching the catchFish poke boost checks inline
+const _catchFishOrigPoke = catchFish;
+window.catchFish = function() {
+  // Apply pokeball next-fish boosts
+  if(gs._pokeNextOg && gs.currentCatch && !gs.currentCatch.isPokemon) {
+    gs._pokeNextOg = false;
+    const ogFish = FISH_DATA.filter(f=>f.og);
+    if(ogFish.length) {
+      const f = ogFish[Math.floor(Math.random()*ogFish.length)];
+      gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    }
+  }
+  if(gs._pokeNextLegend && gs.currentCatch && !gs.currentCatch.isPokemon) {
+    gs._pokeNextLegend = false;
+    const legFish = FISH_DATA.filter(f=>f.rar==='legend');
+    if(legFish.length) {
+      const f = legFish[Math.floor(Math.random()*legFish.length)];
+      gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    }
+  }
+  _catchFishOrigPoke();
+};
+
+// ============================================================
+// 🏚️ ROTTEN SHOP — Hobo mode shop modifier
+// ============================================================
+const _renderShopOriginalRef = renderShop; // capture before override
+const _renderShopHoboWrapper = function() {
+  if(gs.mapMode === 'hobo') {
+    const body = document.getElementById('shop-body');
+    if(body && document.getElementById('shop-screen').classList.contains('active')) {
+      body.innerHTML = `<div style="text-align:center;padding:20px;font-family:Neucha,cursive;color:#a08060">
+        <div style="font-size:48px">🧟</div>
+        <div style="font-size:16px;color:#c0a060;margin-bottom:8px">БОМЖАТНЯ ЛАВКА</div>
+        <div style="font-size:12px;color:#706040">Все товары сгнили... Накопи 1000🪙 и сбеги!</div>
+        <div style="margin-top:12px;font-size:13px;color:#80c040">У тебя: ${gs.coins}🪙 / 1000🪙</div>
+        ${gs.coins>=1000?'<button onclick="hoboEscape()" style="margin-top:12px;font-family:Neucha,cursive;font-size:14px;background:linear-gradient(#406020,#204010);border:2px solid #80c040;color:#c0ff60;padding:8px 20px;border-radius:10px;cursor:pointer;">🏃 СБЕЖАТЬ!</button>':''}
+      </div>`;
+      const rottenSeeds = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px">
+        ${SEEDS.map(s=>`<div style="background:rgba(40,30,10,.8);border:1px solid #604020;border-radius:8px;padding:8px;text-align:center;opacity:.6">
+          <div style="font-size:24px">🍂</div>
+          <div style="font-family:Neucha,cursive;font-size:11px;color:#806040;">Сгнившее: ${s.name}</div>
+          <div style="font-family:Neucha,cursive;font-size:10px;color:#504030">Цена: ${Math.floor(s.price*0.1)}🪙 (сгнившее)</div>
+        </div>`).join('')}
+      </div>`;
+      body.innerHTML += rottenSeeds;
+      return;
+    }
+  }
+  _renderShopOriginalRef();
+};
+// Override renderShop globally
+window.renderShop = _renderShopHoboWrapper;
+// Also make the local renderShop reference point to the wrapper when called from switchScreen
+const _patchSwitchScreenForHoboShop = true;
+
+// ============================================================
+// HARDCORE — Unlock button
+// ============================================================
+function unlockHardcoreMap() {
+  // Unlock after boss fight or if they have enough coins
+  const btn = document.getElementById('map-btn-hardcore');
+  if(btn) {
+    btn.style.display = '';
+    showToast('💀 ХАРДКОР КАРТА разблокирована! Осторожно!');
+  }
+}
+
+// Unlock hardcore if boss was killed
+setTimeout(()=>{
+  if(localStorage.getItem('fishing_boss_defeated_v1')) {
+    const btn = document.getElementById('map-btn-hardcore');
+    if(btn) btn.style.display='';
+  }
+}, 200);
+
+// ============================================================
+// HOBO ESCAPE CHECK — Run periodically on hobo map
+// ============================================================
+setInterval(()=>{
+  if(gs.mapMode==='hobo') checkHoboEscape();
+}, 5000);
+
+// ============================================================
+// HC BOSS DAMAGE — When fish caught on hardcore map
+// ============================================================
+const _addXPOrig = addXP;
+window.addXP = function(amount) {
+  if(gs.mapMode==='hardcore' && hcBossState.active) {
+    const bossDmg = Math.floor(amount * 0.5) + 20;
+    damageHcBoss(bossDmg);
+  }
+  _addXPOrig(amount);
+};
+
+const _updateCoinsOrig = updateCoins;
+window.updateCoins = function() {
+  _updateCoinsOrig();
+  if(gs.mapMode==='hobo') checkHoboEscape();
+};
+
+// ============================================================
+// EXTRA NEW ROD ANIMATIONS IN updateRodVisual
+// ============================================================
+const _updateRodVisualOrigRef = updateRodVisual;
+window.updateRodVisual = function() {
+  _updateRodVisualOrigRef();
+  const rod = gs.currentRod;
+  if(rod.id === 'apocalypse') shakeScreen();
+  if(rod.id === 'poseidon') {
+    clearInterval(gs._poseidonInterval);
+    gs._poseidonInterval = setInterval(()=>{
+      if(gs.currentScreen!=='fishing') return;
+      if(gs.phase==='waiting') {
+        showToast('🔱 Посейдон: рыба сама прыгнула!');
+        triggerBite();
+      }
+    }, 3000);
+  } else {
+    clearInterval(gs._poseidonInterval);
+  }
+  gs._quantumDouble = rod.id === 'quantum';
+  gs._celestialMode = rod.id === 'celestial';
+  gs._apocalypseMode = rod.id === 'apocalypse';
+};
+
+// ============================================================
+// PATCH — Special rod effects in the fish pool (Normal mode)
+// ============================================================
+// We override part of normal mode fish pick to check rod specials
+// This is done by patching the existing pool filter section
+// The key patch: add celestial and apocalypse rod handling to existing
+// triggerBite normal mode section after isShark check
+
+// Patch via flag checks in the existing pool building code:
+// (Already handled in the earlier mod - isShark returns early)
+// For celestial/apocalypse we'll intercept at triggerBite by adding
+// a pre-hook:
+const _triggerBiteOrigBase = triggerBite;
+window.triggerBite = function() {
+  if(gs.currentRod?.id === 'apocalypse') {
+    // Always OG, instant
+    if(gs.phase!=='waiting') return;
+    gs.phase='bite';
+    const ogFish = FISH_DATA.filter(f=>f.og);
+    gs.fish = ogFish[Math.floor(Math.random()*ogFish.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    shakeScreen();
+    // Instant catch
+    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, 300);
+    return;
+  }
+  if(gs.currentRod?.id === 'celestial') gs._celestialMode = true;
+  _triggerBiteOrigBase();
+  gs._celestialMode = false;
+};
+
+// Also add quantum double-catch at keepFish:
+const _keepFishOrigRef = keepFish;
+window.keepFish = function() {
+  _keepFishOrigRef();
+  if(gs._quantumDouble && Math.random() < 0.5) {
+    const pool2 = FISH_DATA.filter(f=>!f.coastal && (f.rar==='rare'||f.rar==='epic'||f.rar==='legend'||f.rar==='og'));
+    if(pool2.length && gs.inventory.length < gs.maxInv) {
+      const f2 = pool2[Math.floor(Math.random()*pool2.length)];
+      const fish2 = {...f2, weight:(f2.w[0]+Math.random()*(f2.w[1]-f2.w[0])).toFixed(2)};
+      gs.inventory.push(fish2);
+      showToast(`⚛️ Квантум: +${fish2.name} (двойной улов)!`);
+      saveGame();
+    }
+  }
+};
+
+// ============================================================
+// POKEBALL — Show in inventory
+// ============================================================
+const _renderInventoryOrigRef = renderInventory;
+window.renderInventory = function() {
+  _renderInventoryOrigRef();
+  // Add pokeball items to inventory display
+  if(!gs.pokeballInventory || !gs.pokeballInventory.length) return;
+  const body = document.getElementById('inv-body') || document.querySelector('.inv-body');
+  if(!body) return;
+  gs.pokeballInventory.forEach((pb, idx)=>{
+    const slot = document.createElement('div');
+    slot.className = 'inv-slot pokeball-inv-slot';
+    slot.style.cssText = 'border-color:#ff4040;background:radial-gradient(circle at 50% 40%,rgba(255,50,50,.3),rgba(0,0,0,.8))';
+    slot.innerHTML = `
+      <div style="font-size:32px;animation:pokeballFloat 2s ease-in-out infinite alternate">⚽</div>
+      <div class="inv-fish-name" style="color:#ff8080">${pb.name}</div>
+      <div class="inv-fish-weight" style="color:#c06060;font-size:9px">${pb.desc}</div>
+      <div style="font-family:Neucha,cursive;font-size:10px;color:#ffd060;margin-top:2px;cursor:pointer" onclick="usePokeballBoost(${idx})">📦 Использовать</div>`;
+    body.appendChild(slot);
+  });
+};
+
+function usePokeballBoost(idx) {
+  const pb = gs.pokeballInventory[idx];
+  if(!pb) return;
+  applyPokeballBoost(pb);
+  gs.pokeballInventory.splice(idx, 1);
+  saveGame();
+  renderInventory();
+}
+
+// ════════════════════════════════════════════════════════════
+// 💀 НОВЫЕ ХАРДКОР УДОЧКИ — Hyper-Detailed SVG Rods
+// ════════════════════════════════════════════════════════════
+
+// Extend RODS array with new ultra-detailed, ultra-expensive rods
+const HARDCORE_RODS = [
+  {
+    id:'dragon',
+    name:'Драконья Кость',
+    desc:'Скована из костей дракона. Испускает огненные искры при забросе.',
+    price:50000,
+    biteChance:12.0, catchMult:10.0,
+    stats:'Клёв: x12 • Улов: x10 • Огненные искры • Редк.x3',
+    detail:'Гипер-Детальная',
+    owned:false, equipped:false
+  },
+  {
+    id:'mech',
+    name:'МехУдочка 9000',
+    desc:'Механический шедевр с шестерёнками, поршнями и ИИ-чипом.',
+    price:80000,
+    biteChance:15.0, catchMult:12.0,
+    stats:'Клёв: x15 • Авто-прицел • OG+10% • Механическая подсечка',
+    detail:'Гипер-Детальная',
+    owned:false, equipped:false
+  },
+  {
+    id:'cosmic',
+    name:'Космическая',
+    desc:'Сделана из метеорита. Искривляет пространство чтобы притянуть рыбу.',
+    price:120000,
+    biteChance:20.0, catchMult:15.0,
+    stats:'Клёв: x20 • Гравитация рыбы • OG всегда • Космос',
+    detail:'Гипер-Детальная',
+    owned:false, equipped:false
+  },
+  {
+    id:'demonic',
+    name:'Демоническая',
+    desc:'Пропитана кровью тёмных существ. Только ЛЕГЕНДЫ и OG.',
+    price:200000,
+    biteChance:25.0, catchMult:20.0,
+    stats:'Клёв: x25 • Только OG/Легенды • +666🪙 за улов',
+    detail:'Гипер-Детальная',
+    owned:false, equipped:false
+  },
+  {
+    id:'godly',
+    name:'Удочка Богов',
+    desc:'МАКСИМАЛЬНАЯ УДОЧКА. Создана самими богами рыбалки.',
+    price:999999,
+    biteChance:50.0, catchMult:30.0,
+    stats:'Клёв: x50 • x30 улов • ВСЕ РЫБЫ СРАЗУ • БОГ РЫБАЛКИ',
+    detail:'БОГ-ТИЕР',
+    owned:false, equipped:false
+  }
+];
+
+// Add to main RODS array
+HARDCORE_RODS.forEach(r => RODS.push(r));
+
+// Add colors for new rods
+ROD_COLORS.dragon  = {color:'#ff6020', glow:'0 0 40px rgba(255,80,0,1.0)'};
+ROD_COLORS.mech    = {color:'#80c8e0', glow:'0 0 30px rgba(100,200,240,.9)'};
+ROD_COLORS.cosmic  = {color:'#c060ff', glow:'0 0 50px rgba(180,50,255,1.0)'};
+ROD_COLORS.demonic = {color:'#cc0020', glow:'0 0 50px rgba(200,0,30,1.0)'};
+ROD_COLORS.godly   = {color:'#ffd700', glow:'0 0 60px rgba(255,215,0,1.0)'};
+
+// SVG icons for hardcore rods
+const HARDCORE_ROD_SVGS = {
+  dragon: `
+    <!-- Dragon Bone Rod -->
+    <defs>
+      <radialGradient id="drG" cx="50%" cy="30%"><stop offset="0%" stop-color="#ff9050"/><stop offset="100%" stop-color="#8a2000"/></radialGradient>
+      <filter id="drF"><feGaussianBlur stdDeviation="2" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+    </defs>
+    <!-- Dragon bones body -->
+    <line x1="40" y1="8" x2="12" y2="44" stroke="url(#drG)" stroke-width="7" stroke-linecap="round" filter="url(#drF)"/>
+    <line x1="40" y1="8" x2="12" y2="44" stroke="rgba(255,180,100,.4)" stroke-width="2"/>
+    <!-- Bone segments -->
+    <ellipse cx="36" cy="14" rx="4" ry="3" fill="#ff7030" stroke="#802010" stroke-width="1" transform="rotate(-45 36 14)"/>
+    <ellipse cx="30" cy="21" rx="3.5" ry="2.5" fill="#ff6020" stroke="#802010" stroke-width="1" transform="rotate(-45 30 21)"/>
+    <ellipse cx="24" cy="30" rx="3" ry="2" fill="#e05010" stroke="#702010" stroke-width="1" transform="rotate(-45 24 30)"/>
+    <!-- Dragon head top -->
+    <path d="M42,6 Q46,2 50,6 Q47,10 42,8Z" fill="#ff4010" stroke="#c02000" stroke-width="1"/>
+    <circle cx="44" cy="5" r="1.5" fill="#ffd020"/>
+    <!-- Flames at tip -->
+    <path d="M48,4 Q52,-2 54,4 Q50,6 48,4Z" fill="#ff8000" opacity=".8"/>
+    <path d="M49,2 Q53,-4 55,2 Q51,4 49,2Z" fill="#ffd000" opacity=".6"/>
+    <!-- Reel -->
+    <circle cx="18" cy="36" r="6" fill="rgba(0,0,0,.5)" stroke="#ff4010" stroke-width="2"/>
+    <circle cx="18" cy="36" r="3" fill="#c03010" stroke="#ff6020" stroke-width="1"/>
+    <!-- Rings -->
+    <circle cx="27" cy="27" r="3" fill="none" stroke="#ff5020" stroke-width="1.5"/>
+    <circle cx="33" cy="20" r="2.5" fill="none" stroke="#ff5020" stroke-width="1.3"/>
+    <circle cx="37" cy="14" r="2" fill="none" stroke="#ff5020" stroke-width="1.2"/>
+    <!-- Fire glow -->
+    <circle cx="40" cy="8" r="6" fill="rgba(255,100,0,.15)"/>`,
+
+  mech: `
+    <!-- Mech Rod 9000 -->
+    <defs>
+      <linearGradient id="mG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#90e0f8"/><stop offset="50%" stop-color="#4090b0"/><stop offset="100%" stop-color="#2060a0"/></linearGradient>
+    </defs>
+    <!-- Main shaft (machined metal) -->
+    <line x1="42" y1="9" x2="10" y2="44" stroke="url(#mG)" stroke-width="6" stroke-linecap="round"/>
+    <!-- Rivets -->
+    <circle cx="38" cy="13" r="1.8" fill="#c0e8f8" stroke="#2080a0" stroke-width="1"/>
+    <circle cx="30" cy="23" r="1.8" fill="#c0e8f8" stroke="#2080a0" stroke-width="1"/>
+    <circle cx="22" cy="33" r="1.8" fill="#c0e8f8" stroke="#2080a0" stroke-width="1"/>
+    <!-- Pistons / hydraulics -->
+    <rect x="26" y="27" width="6" height="10" rx="2" fill="#1a6080" stroke="#40c0e0" stroke-width="1.2" transform="rotate(-45 29 32)"/>
+    <!-- AI Chip -->
+    <rect x="34" y="14" width="8" height="6" rx="1" fill="#001830" stroke="#40c0e0" stroke-width="1.5"/>
+    <line x1="35" y1="15" x2="41" y2="15" stroke="#00f8ff" stroke-width=".6"/>
+    <line x1="35" y1="17" x2="41" y2="17" stroke="#00f8ff" stroke-width=".6"/>
+    <line x1="35" y1="19" x2="41" y2="19" stroke="#00f8ff" stroke-width=".6"/>
+    <!-- Gears -->
+    <circle cx="16" cy="38" r="6" fill="rgba(0,0,0,.5)" stroke="#40c0e0" stroke-width="2"/>
+    <circle cx="16" cy="38" r="3.5" fill="#1a4060" stroke="#40c0e0" stroke-width="1"/>
+    <!-- Gear teeth -->
+    <polygon points="16,32 17,33 16,34 15,33" fill="#40c0e0"/>
+    <polygon points="16,42 17,43 16,44 15,43" fill="#40c0e0"/>
+    <polygon points="10,38 11,39 12,38 11,37" fill="#40c0e0"/>
+    <polygon points="20,38 21,39 22,38 21,37" fill="#40c0e0"/>
+    <!-- Targeting reticle at tip -->
+    <circle cx="43" cy="9" r="4" fill="none" stroke="#00f8ff" stroke-width="1" opacity=".8"/>
+    <line x1="43" y1="5" x2="43" y2="7" stroke="#00f8ff" stroke-width="1"/>
+    <line x1="43" y1="11" x2="43" y2="13" stroke="#00f8ff" stroke-width="1"/>
+    <line x1="39" y1="9" x2="41" y2="9" stroke="#00f8ff" stroke-width="1"/>
+    <line x1="45" y1="9" x2="47" y2="9" stroke="#00f8ff" stroke-width="1"/>`,
+
+  cosmic: `
+    <!-- Cosmic Rod -->
+    <defs>
+      <linearGradient id="cosG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e060ff"/><stop offset="40%" stop-color="#6020c0"/><stop offset="100%" stop-color="#200840"/></linearGradient>
+      <filter id="cosGlow"><feGaussianBlur stdDeviation="3"/></filter>
+    </defs>
+    <!-- Glowing nebula around rod -->
+    <ellipse cx="28" cy="28" rx="20" ry="8" fill="rgba(160,60,255,.1)" transform="rotate(-45 28 28)"/>
+    <!-- Rod body with space cracks -->
+    <line x1="42" y1="8" x2="12" y2="44" stroke="url(#cosG)" stroke-width="6" stroke-linecap="round"/>
+    <!-- Space crack lines -->
+    <path d="M38,12 L34,16 L38,18" stroke="rgba(200,100,255,.6)" stroke-width="1" fill="none"/>
+    <path d="M26,26 L22,30 L26,32" stroke="rgba(200,100,255,.6)" stroke-width="1" fill="none"/>
+    <!-- Stars along rod -->
+    <circle cx="36" cy="14" r="1.5" fill="#e0c0ff"/>
+    <circle cx="28" cy="24" r="1.2" fill="#e0c0ff"/>
+    <circle cx="20" cy="36" r="1" fill="#e0c0ff"/>
+    <!-- Meteor tip -->
+    <circle cx="43" cy="8" r="5" fill="rgba(180,60,255,.3)" filter="url(#cosGlow)"/>
+    <circle cx="43" cy="8" r="3" fill="#8020d0" stroke="#d060ff" stroke-width="1.5"/>
+    <circle cx="42" cy="7" r="1" fill="#fff" opacity=".9"/>
+    <!-- Orbital rings -->
+    <ellipse cx="43" cy="8" rx="8" ry="3" fill="none" stroke="rgba(200,100,255,.5)" stroke-width="1" transform="rotate(-30 43 8)"/>
+    <!-- Black hole reel -->
+    <circle cx="18" cy="37" r="7" fill="rgba(0,0,0,.8)" stroke="#8020d0" stroke-width="2"/>
+    <circle cx="18" cy="37" r="4" fill="#100020" stroke="rgba(200,100,255,.4)" stroke-width="1"/>
+    <circle cx="18" cy="37" r="2" fill="#c060ff" opacity=".8"/>
+    <!-- Planet dots around reel -->
+    <circle cx="12" cy="37" r="1.5" fill="#6040c0"/>
+    <circle cx="18" cy="31" r="1.5" fill="#4060c0"/>
+    <circle cx="24" cy="37" r="1.5" fill="#8040c0"/>`,
+
+  demonic: `
+    <!-- Demonic Rod -->
+    <defs>
+      <linearGradient id="demG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff1020"/><stop offset="50%" stop-color="#800010"/><stop offset="100%" stop-color="#300008"/></linearGradient>
+    </defs>
+    <!-- Dark veins -->
+    <path d="M38,12 Q36,20 34,20" stroke="rgba(200,0,20,.4)" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M28,24 Q26,32 24,32" stroke="rgba(200,0,20,.4)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Main cursed rod -->
+    <line x1="42" y1="8" x2="12" y2="44" stroke="url(#demG)" stroke-width="6.5" stroke-linecap="round"/>
+    <!-- Blood drips -->
+    <circle cx="34" cy="18" r="2" fill="#cc0010" opacity=".8"/>
+    <circle cx="26" cy="28" r="1.8" fill="#cc0010" opacity=".8"/>
+    <!-- Skull ornaments -->
+    <circle cx="40" cy="10" r="4" fill="#1a0008" stroke="#cc0010" stroke-width="1.5"/>
+    <circle cx="38" cy="9" r="1" fill="#cc0010"/>
+    <circle cx="42" cy="9" r="1" fill="#cc0010"/>
+    <path d="M38,12 Q40,14 42,12" stroke="#cc0010" stroke-width="1" fill="none"/>
+    <!-- Demonic runes -->
+    <text x="28" y="26" font-size="6" fill="rgba(200,0,20,.7)" font-family="serif" transform="rotate(-45 28 26)">ꝏ</text>
+    <!-- Hellfire reel -->
+    <circle cx="17" cy="37" r="7" fill="rgba(80,0,0,.9)" stroke="#cc0010" stroke-width="2"/>
+    <circle cx="17" cy="37" r="4" fill="#400008" stroke="#ff2020" stroke-width="1"/>
+    <circle cx="17" cy="37" r="1.5" fill="#ff4020" opacity=".9"/>
+    <!-- Rings of blood -->
+    <circle cx="29" cy="25" r="3" fill="none" stroke="#cc0020" stroke-width="1.5"/>
+    <circle cx="35" cy="18" r="2.5" fill="none" stroke="#cc0020" stroke-width="1.3"/>`,
+
+  godly: `
+    <!-- Rod of Gods -->
+    <defs>
+      <linearGradient id="godG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff8a0"/><stop offset="30%" stop-color="#ffd700"/><stop offset="60%" stop-color="#ff8800"/><stop offset="100%" stop-color="#ffd700"/></linearGradient>
+      <filter id="godF"><feGaussianBlur stdDeviation="3" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+    </defs>
+    <!-- Divine aura -->
+    <ellipse cx="26" cy="26" rx="22" ry="22" fill="rgba(255,215,0,.06)" filter="url(#godF)"/>
+    <!-- Main golden rod -->
+    <line x1="42" y1="8" x2="12" y2="44" stroke="url(#godG)" stroke-width="7.5" stroke-linecap="round" filter="url(#godF)"/>
+    <!-- Diamond cross-sections -->
+    <polygon points="39,11 42,8 45,11 42,14" fill="#fff8a0" stroke="#c09000" stroke-width="1"/>
+    <polygon points="27,24 30,21 33,24 30,27" fill="#fff8a0" stroke="#c09000" stroke-width="1"/>
+    <!-- Sun corona at tip -->
+    <circle cx="42" cy="8" r="5" fill="rgba(255,215,0,.4)" filter="url(#godF)"/>
+    <circle cx="42" cy="8" r="3.5" fill="#ffd700" stroke="#fff8a0" stroke-width="1.5"/>
+    <!-- Sun rays -->
+    <line x1="42" y1="2" x2="42" y2="4" stroke="#ffd700" stroke-width="1.5"/>
+    <line x1="46" y1="4" x2="44.5" y2="5.5" stroke="#ffd700" stroke-width="1.5"/>
+    <line x1="48" y1="8" x2="46" y2="8" stroke="#ffd700" stroke-width="1.5"/>
+    <line x1="38" y1="2" x2="39.5" y2="3.5" stroke="#ffd700" stroke-width="1.5"/>
+    <!-- Crown on reel -->
+    <circle cx="17" cy="37" r="7" fill="rgba(60,40,0,.9)" stroke="#ffd700" stroke-width="2"/>
+    <polygon points="12,34 14,30 17,34 20,30 22,34" fill="#ffd700" stroke="#c09000" stroke-width="0.8"/>
+    <circle cx="14" cy="30" r="1.5" fill="#fff8a0"/>
+    <circle cx="17" cy="29" r="1.5" fill="#fff8a0"/>
+    <circle cx="20" cy="30" r="1.5" fill="#fff8a0"/>
+    <!-- Legendary shine rings -->
+    <circle cx="31" cy="23" r="3.5" fill="none" stroke="#ffd700" stroke-width="1.8" opacity=".9"/>
+    <circle cx="37" cy="16" r="3" fill="none" stroke="#ffd700" stroke-width="1.6" opacity=".8"/>
+    <circle cx="26" cy="30" r="2.5" fill="none" stroke="#ffd700" stroke-width="1.4" opacity=".7"/>`
+};
+
+// Add SVG to ROD_COLORS specials map
+(function patchRodIconSVG(){
+  const _origRodIcon = window.rodIconSVG;
+  window.rodIconSVG = function(rod) {
+    if(HARDCORE_ROD_SVGS[rod.id]) {
+      const RC = ROD_COLORS[rod.id] || {color:'#ffd700', glow:'none'};
+      const glowStyle = RC.glow !== 'none' ? `filter:drop-shadow(0 0 12px ${RC.color});` : '';
+      return `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="${glowStyle}width:52px;height:52px">
+        <circle cx="26" cy="26" r="24" fill="rgba(0,0,0,.6)" stroke="${RC.color}" stroke-width="2.5"/>
+        ${HARDCORE_ROD_SVGS[rod.id]}
+      </svg>`;
+    }
+    return _origRodIcon(rod);
+  };
+})();
+
+// Override renderRods to show detail badge and handle new rods
+(function patchRenderRodsHardcore(){
+  const _prev = window.renderRods;
+  window.renderRods = function(body) {
+    RODS.forEach(rod=>{
+      const owned=rod.owned||false;
+      const equipped=rod.equipped||false;
+      let btnHtml;
+
+      if(rod.craftable && !owned) {
+        const canCraft = (gs.sharkSkins||0) >= 1 && gs.coins >= 10000;
+        const bossKilled = !!localStorage.getItem(BOSS_KEY);
+        if(!bossKilled) {
+          btnHtml = `<button class="shop-item-btn btn-owned-shop" style="font-size:10px">🔒 Убей Акулу</button>`;
+        } else {
+          btnHtml = `<button class="craft-rod-btn" onclick="craftSharkRod()" style="font-size:12px;padding:5px 10px"${canCraft?'':' disabled'}>🔨 Крафт (Кожа Акулы + 10к🪙)</button>`;
+        }
+      } else if(equipped) {
+        btnHtml=`<button class="shop-item-btn btn-equipped-shop">✓ Надета</button>`;
+      } else if(owned) {
+        btnHtml=`<button class="shop-item-btn btn-equip-shop" onclick="equipRod('${rod.id}')">Надеть</button>`;
+      } else {
+        const canBuy = gs.coins >= (rod.price||0);
+        btnHtml=`<button class="shop-item-btn btn-buy-shop" onclick="buyRod('${rod.id}')"${canBuy?'':' style="opacity:.5"'}>Купить</button>`;
+      }
+
+      const cls=equipped?'equipped':owned?'owned':'';
+      let nameHtml = rod.name;
+      if(rod.detail) nameHtml += `<span class="rod-detail-badge">${rod.detail}</span>`;
+
+      const el=makeShopItem(
+        rodIconSVG(rod), nameHtml, rod.desc, rod.stats,
+        (owned||rod.craftable)?'':rod.price, btnHtml, cls
+      );
+      // Fix: name might have HTML so we set innerHTML for the name element
+      const nameEl = el.querySelector('.shop-item-name');
+      if(nameEl && rod.detail) nameEl.innerHTML = nameHtml;
+      body.appendChild(el);
+    });
+  };
+})();
+
+// Handle new rod catch behavior
+(function patchHardcoreRodCatch(){
+  // Patch bite logic for new rods in setInterval-friendly way
+  const _prevCheckPickFish = window.pickFishPatched;
+  window.pickFishPatched = function() {
+    const rod = gs.currentRod;
+    // Demonic rod: only OG/legend + bonus coins
+    if(rod.id==='demonic') {
+      const pool = FISH_DATA.filter(f=>f.og||f.rar==='legend'||f.rar==='coastal_legend');
+      const f = pool[Math.floor(Math.random()*pool.length)];
+      gs._demonicBonus = true;
+      return f;
+    }
+    // Godly: literally any fish, heavily weighted OG
+    if(rod.id==='godly') {
+      const pool = [];
+      FISH_DATA.filter(f=>!f.coastal).forEach(f=>{
+        const w = f.og ? 50 : f.rar==='legend' ? 20 : f.rar==='epic' ? 10 : 1;
+        for(let i=0;i<w;i++) pool.push(f);
+      });
+      return pool[Math.floor(Math.random()*pool.length)];
+    }
+    if(_prevCheckPickFish) return _prevCheckPickFish();
+    return null;
+  };
+})();
+
+// ════════════════════════════════════════════════════════════
+// 💀 ХАРДКОР КАРТА
+// ════════════════════════════════════════════════════════════
+
+const HC_BOSSES = [
+  {id:'kraken',    name:'🐙 Кракен',        hp:500,  reward:3000, icon:'🐙'},
+  {id:'leviathan', name:'🐍 Левиафан',       hp:800,  reward:5000, icon:'🐍'},
+  {id:'siren',     name:'🧜 Сирена Смерти',  hp:1000, reward:8000, icon:'🧜'},
+  {id:'neptune',   name:'🔱 Нептун',         hp:1500, reward:15000, icon:'🔱'},
+  {id:'abyss',     name:'🌑 Бездна',         hp:3000, reward:50000, icon:'🌑'},
+];
+
+let hcBossState = {
+  active: false,
+  bossIdx: 0,
+  hp: 0,
+  maxHp: 0,
+  tapCount: 0,
+  tapNeeded: 0,
+};
+let hcBossTimer = null;
+
+function unlockHardcoreMap() {
+  gs.hardcoreUnlocked = true;
+  const btn = document.getElementById('map-btn-hardcore');
+  if(btn) btn.style.display='';
+  showToast('💀 ХАРДКОР КАРТА разблокирована! Иди туда если не боишься!');
+  saveGame();
+}
+
+function setHardcoreMap() {
+  // Called from setMap when mode=hardcore
+  const badge = document.getElementById('hardcore-mode-badge');
+  if(badge) badge.style.display='block';
+  document.documentElement.style.setProperty('--sky-top','#100000');
+  document.documentElement.style.setProperty('--sky-bot','#1a0000');
+  document.documentElement.style.setProperty('--water-top','#300000');
+  document.documentElement.style.setProperty('--water-bot','#100000');
+  // Start boss spawning
+  scheduleHCBoss();
+  showToast('💀 ХАРДКОР КАРТА! Боссы атакуют! Пираньи охотятся! Удачи...');
+}
+
+function scheduleHCBoss() {
+  clearTimeout(hcBossTimer);
+  if(gs.mapMode !== 'hardcore') return;
+  hcBossTimer = setTimeout(()=>{
+    if(gs.mapMode !== 'hardcore') return;
+    spawnHCBoss();
+  }, 15000 + Math.random()*20000); // 15-35 sec between bosses
+}
+
+function spawnHCBoss() {
+  if(hcBossState.active) return;
+  const boss = HC_BOSSES[hcBossState.bossIdx % HC_BOSSES.length];
+  hcBossState.active = true;
+  hcBossState.hp = boss.hp;
+  hcBossState.maxHp = boss.hp;
+  hcBossState.tapNeeded = boss.hp;
+  hcBossState.tapCount = 0;
+
+  const nameEl = document.getElementById('hc-boss-name');
+  const barEl = document.getElementById('hc-boss-bar');
+  if(nameEl) nameEl.textContent = boss.name + ' — Тапай чтобы победить!';
+  if(barEl) barEl.style.display='block';
+  updateHCBossBar();
+
+  showToast('💀 БОСС ПОЯВИЛСЯ: ' + boss.name + '! Тапай воду быстро!');
+  shakeScreen();
+}
+
+function updateHCBossBar() {
+  const pct = Math.max(0, hcBossState.hp / hcBossState.maxHp * 100);
+  const fill = document.getElementById('hc-boss-hp-fill');
+  if(fill) fill.style.width = pct + '%';
+}
+
+function tapHCBoss() {
+  if(!hcBossState.active) return;
+  hcBossState.hp -= 15 + Math.floor(Math.random()*20);
+  updateHCBossBar();
+  if(hcBossState.hp <= 0) {
+    hcBossState.hp = 0;
+    hcBossState.active = false;
+    const boss = HC_BOSSES[hcBossState.bossIdx % HC_BOSSES.length];
+    gs.coins += boss.reward;
+    updateCoins();
+    document.getElementById('hc-boss-bar').style.display='none';
+    showToast('🏆 БОСС УБИТ: ' + boss.name + '! +' + boss.reward.toLocaleString() + '🪙!');
+    hcBossState.bossIdx++;
+    addXP(500);
+    coinBurst(180, 350);
+    scheduleHCBoss();
+    saveGame();
+  }
+}
+
+// Patch water click for hardcore boss tapping
+const _origWaterClickHC = fishingScreen.onclick;
+fishingScreen.addEventListener('click', function() {
+  if(gs.mapMode==='hardcore' && hcBossState.active) tapHCBoss();
+});
+
+// Patch setMap to handle hardcore
+const _origSetMap = window.setMap;
+window.setMap = function(mode) {
+  // Clear hardcore-specific state
+  clearTimeout(hcBossTimer);
+  hcBossState.active = false;
+  document.getElementById('hc-boss-bar').style.display='none';
+  document.getElementById('hardcore-mode-badge').style.display='none';
+  document.getElementById('bum-mode-badge').style.display='none';
+  document.getElementById('map-btn-bum').style.display='none';
+
+  if(mode === 'hardcore') {
+    if(!gs.hardcoreUnlocked) {
+      showToast('🔒 Хардкор карта заблокирована! Сначала победи Гибрид Акулу!');
+      return;
+    }
+    gs.mapMode = 'hardcore';
+    ['normal','pokemon','coast','hardcore','bum'].forEach(m=>{
+      const btn = document.getElementById('map-btn-'+m);
+      if(btn) btn.classList.toggle('active', m==='hardcore');
+    });
+    setHardcoreMap();
+    return;
+  }
+  if(mode === 'bum') {
+    // Can't leave directly — handled by tryLeaveBumMap
+    return;
+  }
+  _origSetMap(mode);
+};
+
+// Unlock hardcore when boss is killed
+const _origCloseBoss = window.closeBossFight;
+window.closeBossFight = function() {
+  _origCloseBoss();
+  unlockHardcoreMap();
+};
+
+// ════════════════════════════════════════════════════════════
+// 🦷 ПИРАНЬЯ МЕХАНИКА
+// ════════════════════════════════════════════════════════════
+
+let piranhaState = {
+  active: false,
+  hp: 100,
+  drainTimer: null,
+  shakeTimer: null,
+};
+
+function spawnPiranha() {
+  if(piranhaState.active) return;
+  if(gs.mapMode !== 'hardcore' && gs.mapMode !== 'normal') return; // Only on these maps
+  if(Math.random() > (gs.mapMode==='hardcore' ? 0.4 : 0.08)) return; // HC: 40%, normal: 8%
+
+  piranhaState.active = true;
+  piranhaState.hp = 100;
+  gs.phase = 'piranha'; // Block fishing while fighting piranha
+
+  const overlay = document.getElementById('piranha-overlay');
+  overlay.style.display='block';
+  updatePiranhaHp();
+
+  showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ В УДОЧКУ! Тряси телефон или жми!');
+  shakeScreen();
+  if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+
+  // Start coin drain
+  piranhaState.drainTimer = setInterval(()=>{
+    if(!piranhaState.active) { clearInterval(piranhaState.drainTimer); return; }
+    if(gs.coins > 0) {
+      const drain = Math.min(gs.coins, 1000);
+      gs.coins -= drain;
+      updateCoins();
+      document.getElementById('piranha-coins-txt').textContent = '💸 Пиранья съела -' + drain + '🪙! Осталось: ' + gs.coins + '🪙';
+      if(gs.coins <= 0) {
+        clearInterval(piranhaState.drainTimer);
+        piranhaState.active = false;
+        overlay.style.display='none';
+        gs.phase='idle';
+        setTimeout(triggerBumMap, 500);
+      }
+      saveGame();
+    }
+  }, 10000); // 1000 coins per 10 seconds
+
+  // DevicMotion shake detection
+  if(window.DeviceMotionEvent) {
+    window._piranhaShakeHandler = function(e) {
+      if(!piranhaState.active) return;
+      const acc = e.acceleration || e.accelerationIncludingGravity;
+      if(!acc) return;
+      const total = Math.abs(acc.x||0)+Math.abs(acc.y||0)+Math.abs(acc.z||0);
+      if(total > 20) piranhaHit();
+    };
+    window.addEventListener('devicemotion', window._piranhaShakeHandler);
+  }
+}
+
+function piranhaHit() {
+  if(!piranhaState.active) return;
+  piranhaState.hp -= 8 + Math.floor(Math.random()*12);
+  updatePiranhaHp();
+  if(piranhaState.hp <= 0) {
+    // Piranha defeated!
+    clearInterval(piranhaState.drainTimer);
+    if(window._piranhaShakeHandler) window.removeEventListener('devicemotion', window._piranhaShakeHandler);
+    piranhaState.active = false;
+    document.getElementById('piranha-overlay').style.display='none';
+    gs.phase='idle';
+    showToast('✅ Пиранья побеждена! Удочка спасена!');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+  }
+}
+
+function updatePiranhaHp() {
+  const fill = document.getElementById('piranha-hp-fill');
+  if(fill) fill.style.width = Math.max(0,piranhaState.hp) + '%';
+}
+
+// Schedule piranha attacks on hardcore map
+setInterval(()=>{
+  if(gs.mapMode==='hardcore' || gs.mapMode==='normal') {
+    if(gs.phase==='idle') spawnPiranha();
+  }
+}, 20000 + Math.random()*15000);
+
+// ════════════════════════════════════════════════════════════
+// 🧟 БОМЖАТСКАЯ КАРТА
+// ════════════════════════════════════════════════════════════
+
+const BUM_FISH = [
+  {name:'Сгнивший Карась',   w:[0.1,0.5], pts:2,  coins:2,  rar:'common', label:'💀 Сгнивший', col:'#604030', col2:'#302018', bum:true},
+  {name:'Тухлый Окунь',      w:[0.2,0.8], pts:3,  coins:3,  rar:'common', label:'💀 Тухлый',   col:'#504028', col2:'#282010', bum:true},
+  {name:'Гнилая Щука',       w:[0.3,2.0], pts:5,  coins:5,  rar:'rare',   label:'💀 Гнилая',   col:'#404020', col2:'#202010', bum:true},
+  {name:'Проклятый Лещ',     w:[0.5,3.0], pts:8,  coins:8,  rar:'rare',   label:'💀 Проклятый',col:'#503818', col2:'#281808', bum:true},
+  {name:'Сгнивший Баффер',   w:[0.1,0.3], pts:20, coins:40, rar:'rare',   label:'🟡 Баффер+',  col:'#c0a020', col2:'#806010', buff:true, bum:true},
+];
+
+function triggerBumMap() {
+  gs.mapMode = 'bum';
+  gs.bumCoins = gs.coins;
+  // Clear all map buttons active state
+  ['normal','pokemon','coast','hardcore','bum'].forEach(m=>{
+    const btn = document.getElementById('map-btn-'+m);
+    if(btn) btn.classList.toggle('active', m==='bum');
+  });
+  const bumBtn = document.getElementById('map-btn-bum');
+  if(bumBtn) bumBtn.style.display='';
+  document.getElementById('bum-mode-badge').style.display='block';
+
+  // Apocalyptic water colors
+  document.documentElement.style.setProperty('--sky-top','#0e0c06');
+  document.documentElement.style.setProperty('--sky-bot','#1a160a');
+  document.documentElement.style.setProperty('--water-top','#1e1608');
+  document.documentElement.style.setProperty('--water-bot','#0a0804');
+
+  // Show "boss" arrival
+  showBumBossArrival();
+  saveGame();
+}
+
+function showBumBossArrival() {
+  // Re-use boss overlay briefly for the arrival cutscene
+  const overlay = document.getElementById('boss-overlay');
+  overlay.classList.add('active');
+  const cs = document.getElementById('boss-cutscene');
+  document.getElementById('boss-hp-wrap').style.display='none';
+  document.getElementById('boss-attack-zone').style.display='none';
+  document.getElementById('boss-victory').classList.remove('show');
+
+  cs.innerHTML = `
+    <div class="boss-cs-text" style="color:#c08020;text-shadow:0 0 20px #c08020">💀 БАНКРОТ!</div>
+    <div class="boss-cs-sub" style="color:#a07030">Пираньи всё съели... Хозяин Хардкор Карты<br>ЛИЧНО выгоняет тебя на Бомжатник!</div>
+    <div style="font-size:60px;animation:sharkFloat 1s ease-in-out infinite alternate;margin:10px 0">👹</div>
+    <div class="boss-cs-sub" style="color:#ff8040">«ВОН ОТСЮДА, НИЩЕБРОД!»</div>`;
+
+  setTimeout(()=>{
+    overlay.classList.remove('active');
+    showToast('💀 Добро пожаловать в БОМЖАТНИК! Собери 1000🪙 чтобы уйти!');
+  }, 3500);
+}
+
+function tryLeaveBumMap() {
+  if(gs.mapMode !== 'bum') return;
+  if(gs.coins >= 1000) {
+    gs.mapMode = 'normal';
+    document.getElementById('bum-mode-badge').style.display='none';
+    document.getElementById('map-btn-bum').style.display='none';
+    setMap('normal');
+    showToast('🎉 Ты выбрался из Бомжатника! Теперь береги монеты!');
+    saveGame();
+  } else {
+    const need = 1000 - gs.coins;
+    showToast('💸 Нужно ещё ' + need + '🪙 чтобы покинуть Бомжатник!');
+  }
+}
+
+// Patch setMap to handle bum map fish
+const _origPickBumFish = true;
+// Patch the bite/catch sequence to use bum fish when in bum map
+// We override the bite behavior trigger for bum map
+const _origBiteCheck = window.onBite;
+
+// ════════════════════════════════════════════════════════════
+// 🌿 БУМ МАП РЫБЫ в обычной подсечке
+// ════════════════════════════════════════════════════════════
+// Intercept the bite phase to inject bum map fish
+(function patchBumMapFish(){
+  // We patch at the pool-building level inside the existing bite listener
+  // by overriding setMap to inject bum fish into FISH_DATA temporarily
+  const bumFishIds = BUM_FISH.map(f=>f.name);
+
+  // Remove bum fish if added before
+  function removeBumFishFromData() {
+    const idx = FISH_DATA.findIndex(f=>f.bum);
+    while(FISH_DATA.findIndex(f=>f.bum) !== -1) {
+      FISH_DATA.splice(FISH_DATA.findIndex(f=>f.bum), 1);
+    }
+  }
+
+  const _prevSetMap2 = window.setMap;
+  window.setMap = function(mode) {
+    removeBumFishFromData();
+    if(mode === 'bum') {
+      // Add bum fish
+      BUM_FISH.forEach(f=>FISH_DATA.push({...f}));
+    }
+    _prevSetMap2(mode);
+  };
+
+  // Also patch the fish pool builder for bum map
+  const _origBiteLogic = window.triggerBiteAttempt || null;
+  // We handle bum map fish by patching the cast/bite logic
+  // The pool builder already checks gs.mapMode so we inject through that
+})();
+
+// Patch coastal pool builder to handle bum map
+const _origFishPickPool = null;
+// Direct approach: patch the fishing screen click to inject bum map logic
+(function patchBumMapPickFish(){
+  const _prevPickPatched = window.pickFishPatched;
+  window.pickFishPatched = function() {
+    if(gs.mapMode === 'bum') {
+      // Only bum fish
+      const bumPool = FISH_DATA.filter(f=>f.bum);
+      if(bumPool.length) {
+        const f = bumPool[Math.floor(Math.random()*bumPool.length)];
+        return {...f};
+      }
+    }
+    if(_prevPickPatched) return _prevPickPatched();
+    return null;
+  };
+})();
+
+// ════════════════════════════════════════════════════════════
+// ⚽ ПОКЕБОЛ РЕФВОРК — При любом улове шанс поймать бонус в Покебол
+// ════════════════════════════════════════════════════════════
+
+const POKEBALL_BOOSTS = [
+  {id:'coin_rain',   name:'Монетный Дождь',  icon:'💰', desc:'+3000 монет',        type:'coins',   value:3000},
+  {id:'og_lure',     name:'OG Приманка',     icon:'👑', desc:'OG рыбы 60 сек',     type:'og_lure', value:60000},
+  {id:'xp_boost',    name:'XP x3',           icon:'⚡', desc:'XP x3 на 90 сек',    type:'xp',      value:90000},
+  {id:'bite_god',    name:'Клёв-БОГ',        icon:'🎣', desc:'Клёв x10 на 30 сек', type:'bite',    value:30000},
+  {id:'legend_pull', name:'Зов Легенды',     icon:'🌟', desc:'Только легенды 45сек',type:'legend',  value:45000},
+  {id:'shark_skin',  name:'Кожа Акулы',      icon:'🦈', desc:'+1 Кожа Акулы',      type:'shark_skin',value:1},
+  {id:'mega_coins',  name:'МЕГА-МОНЕТЫ',     icon:'💎', desc:'+10000 монет',        type:'coins',   value:10000},
+  {id:'pika_ultra',  name:'Ультра-Пикачу',   icon:'⚡⚡',desc:'+200 ПикаКоинов',  type:'pika',    value:200},
+];
+
+let pendingPokeballBoost = null;
+
+function trySpawnPokeball() {
+  // 15% chance on any catch
+  if(Math.random() > 0.15) return;
+  const boost = POKEBALL_BOOSTS[Math.floor(Math.random()*POKEBALL_BOOSTS.length)];
+  pendingPokeballBoost = boost;
+
+  // Show pokeball animation overlay
+  const overlay = document.getElementById('pokeball-catch-overlay');
+  document.getElementById('pokeball-boost-txt').textContent = boost.icon + ' ' + boost.name + ': ' + boost.desc;
+  overlay.style.display='block';
+  if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+}
+
+function collectPokeball() {
+  if(!pendingPokeballBoost) return;
+  const boost = pendingPokeballBoost;
+  pendingPokeballBoost = null;
+  document.getElementById('pokeball-catch-overlay').style.display='none';
+
+  // Add to inventory as a special pokeball item
+  const pokeballItem = {
+    name: 'Покебол: ' + boost.name,
+    label: '⚽ Покебол-Буст',
+    rar: 'pokeball',
+    weight: '—',
+    pts: 0,
+    coins: 0,
+    col: '#cc2020',
+    col2: '#881010',
+    pokeballBoost: boost,
+    _isPokeball: true,
+  };
+
+  if(gs.inventory.length < gs.maxInv) {
+    gs.inventory.push(pokeballItem);
+    renderInventory();
+    showToast('⚽ Покебол с ' + boost.icon + ' ' + boost.name + ' добавлен в инвентарь!');
+  } else {
+    showToast('🎒 Инвентарь полон! Покебол потерян!');
+  }
+  saveGame();
+}
+
+function activatePokeballBoost(idx) {
+  const item = gs.inventory[idx];
+  if(!item || !item._isPokeball || !item.pokeballBoost) return;
+  const boost = item.pokeballBoost;
+  gs.inventory.splice(idx, 1);
+
+  switch(boost.type) {
+    case 'coins':
+      gs.coins += boost.value; updateCoins(); coinBurst(180,350);
+      showToast(boost.icon + ' ' + boost.name + ': +' + boost.value + '🪙!');
+      break;
+    case 'og_lure':
+      gs._ogLureActive = Date.now() + boost.value;
+      showToast(boost.icon + ' OG Приманка активна ' + (boost.value/1000) + ' сек!');
+      break;
+    case 'xp':
+      gs._xpBoostEnd = Date.now() + boost.value;
+      showToast(boost.icon + ' XP x3 на ' + (boost.value/1000) + ' сек!');
+      break;
+    case 'bite':
+      gs._biteBoostEnd = Date.now() + boost.value;
+      showToast(boost.icon + ' Клёв x10 на ' + (boost.value/1000) + ' сек!');
+      break;
+    case 'legend':
+      gs._legendOnlyEnd = Date.now() + boost.value;
+      showToast(boost.icon + ' Только легенды ' + (boost.value/1000) + ' сек!');
+      break;
+    case 'shark_skin':
+      gs.sharkSkins = (gs.sharkSkins||0) + boost.value;
+      showToast(boost.icon + ' +' + boost.value + ' Кожа Акулы!');
+      break;
+    case 'pika':
+      gs.pikaCoins += boost.value; updatePikaCoins();
+      showToast(boost.icon + ' +' + boost.value + ' ПикаКоинов!');
+      break;
+  }
+  renderInventory();
+  saveGame();
+}
+
+// Patch catchFish/catchPokemon to try spawn pokeball
+const _prevCatchPokemon = window.catchPokemon;
+window.catchPokemon = function(f) {
+  _prevCatchPokemon(f);
+  setTimeout(trySpawnPokeball, 800);
+};
+
+// Patch inventory render to show pokeball items with activate button
+const _origRenderInventory = window.renderInventory;
+window.renderInventory = function() {
+  _origRenderInventory();
+  // After original render, patch pokeball slots
+  const inv = document.getElementById('inv-body');
+  if(!inv) return;
+  const slots = inv.querySelectorAll('.inv-slot:not(.empty)');
+  slots.forEach((slot, i) => {
+    if(gs.inventory[i] && gs.inventory[i]._isPokeball) {
+      slot.classList.add('pokeball-inv-slot');
+      slot.style.border = '2px solid #cc2020';
+      slot.style.background = 'radial-gradient(circle,rgba(80,0,0,.5),rgba(20,0,0,.8))';
+      // Override click
+      slot.onclick = () => activatePokeballBoost(i);
+      // Update display
+      const nameEl = slot.querySelector('.inv-fish-name');
+      if(nameEl) {
+        nameEl.textContent = gs.inventory[i].name.replace('Покебол: ','');
+        nameEl.style.color = '#ff8080';
+      }
+      const weightEl = slot.querySelector('.inv-fish-weight');
+      if(weightEl) weightEl.textContent = '⚽ Тап = активировать!';
+    }
+  });
+};
+
+// Pokeball SVG in inventory
+const _origUpdateCatchPopup = window.updateCatchPopupFish;
+// Pokeball rarity display
+const _origRarEl2 = document.getElementById('catch-rarity');
+
+// ════════════════════════════════════════════════════════════
+// РЕФВОРК ПИКАЧУ — ИМБА ПИКАЧУ В ЛЮБОЙ КАРТЕ
+// ════════════════════════════════════════════════════════════
+
+// New imba Pokemon that appear on ANY map
+const IMBA_POKEMON = [
+  {name:'Мега-Пикачу',    emoji:'⚡⚡', pts:500,  coins:300, pikaCoins:500, rar:'og', label:'👑 ИМБА', col:'#ffd700', col2:'#c09000', imba:true},
+  {name:'Гигантский Мью', emoji:'💫',  pts:600,  coins:400, pikaCoins:600, rar:'og', label:'👑 ИМБА', col:'#ff80ff', col2:'#c040c0', imba:true},
+  {name:'Прото-Мьюту',    emoji:'🔮',  pts:800,  coins:500, pikaCoins:800, rar:'og', label:'👑 ИМБА', col:'#c040ff', col2:'#8010c0', imba:true},
+  {name:'Пикачу Омега',   emoji:'⚡👑',pts:1000, coins:1000,pikaCoins:1000,rar:'og', label:'👑 OMEGA',col:'#ffffff', col2:'#c0c0c0', imba:true},
+];
+IMBA_POKEMON.forEach(p=>POKEMON_DATA.push(p));
+
+// On any catch (on any map), 5% chance to spawn imba pokemon in pokeball
+function trySpawnImbaPokemon() {
+  if(Math.random() > 0.05) return;
+  const p = IMBA_POKEMON[Math.floor(Math.random()*IMBA_POKEMON.length)];
+  pendingPokeballBoost = {
+    id: 'imba_pokemon',
+    name: p.name,
+    icon: p.emoji,
+    desc: '+' + p.pikaCoins + '⚡ и +' + p.pts + '★',
+    type: 'pika',
+    value: p.pikaCoins,
+    _pokemon: p,
+  };
+
+  const overlay = document.getElementById('pokeball-catch-overlay');
+  const ballEl = document.getElementById('pokeball-anim');
+  ballEl.textContent = '🔴⚪'; // Pokeball look
+  document.getElementById('pokeball-boost-txt').textContent = '✨ ИМБА ПОКЕМОН: ' + p.emoji + ' ' + p.name + '! (+' + p.pikaCoins + '⚡ +' + p.pts + '★)';
+  overlay.style.display='block';
+  if(navigator.vibrate) navigator.vibrate([200,100,200,100,400]);
+}
+
+// Patch trySpawnPokeball to also try imba
+const _prevTrySpawn = trySpawnPokeball;
+// Already defined trySpawnPokeball — add imba attempt at catch time
+// Hook into the main catch popup show moment
+const _origCatchFishFinal = window.onCatchComplete;
+
+// Patch: after any fish catch (not pokemon), also try pokeball + imba
+// We hook into the 'keepFish' and 'sellFish' calls as those happen after catch popup
+const _origKeepFish = window.keepFish;
+window.keepFish = function() {
+  if(_origKeepFish) _origKeepFish();
+  // Try pokeball spawn after keeping fish
+  setTimeout(()=>{
+    trySpawnPokeball();
+    if(Math.random() < 0.03) trySpawnImbaPokemon();
+  }, 300);
+};
+
+const _origSellFishFn = window.sellFish;
+window.sellFish = function() {
+  if(_origSellFishFn) _origSellFishFn();
+  setTimeout(()=>{
+    trySpawnPokeball();
+    if(Math.random() < 0.03) trySpawnImbaPokemon();
+  }, 300);
+};
+
+// ════════════════════════════════════════════════════════════
+// БУМ МАП — Сгнившие растения в магазине
+// ════════════════════════════════════════════════════════════
+const BUM_SEEDS_OVERLAY = [
+  {id:'rotten_flower',  name:'🥀 Сгнивший Цветок', bag:'🥀', seed:'💀', flower:'🥀', color:'#604030',
+   desc:'Гнилое. Воняет. Но хоть что-то...',
+   flowerDesc:'Мутировавший гнилой цветок. Продаётся дёшево но кому нужна гниль?',
+   growTime:30000, price:3, sellPrice:5, owned:0, bum:true},
+  {id:'cursed_plant',   name:'☠️ Проклятое Растение',bag:'☠️',seed:'💀',flower:'☠️',color:'#402010',
+   desc:'Проклято. Растёт быстро. Случайный эффект.',
+   flowerDesc:'Проклятое растение с непредсказуемым эффектом при сборе. Иногда ворует монеты!',
+   growTime:20000, price:1, sellPrice:2, owned:0, bum:true},
+];
+
+// Patch garden shop to show bum seeds when in bum map
+const _origRenderShopSeeds = window.renderShopSeeds;
+
+// Patch renderGarden to tint everything rotten when in bum map
+const _origRenderGarden = window.renderGarden;
+window.renderGarden = function() {
+  if(_origRenderGarden) _origRenderGarden();
+  // Add bum seeds to SEEDS temporarily
+  if(gs.mapMode === 'bum') {
+    BUM_SEEDS_OVERLAY.forEach(s=>{
+      if(!SEEDS.find(x=>x.id===s.id)) SEEDS.push({...s});
+    });
+  } else {
+    BUM_SEEDS_OVERLAY.forEach(s=>{
+      const idx = SEEDS.findIndex(x=>x.id===s.id);
+      if(idx!==-1) SEEDS.splice(idx,1);
+    });
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+// SAVE EXTENDED v3 — save all new fields
+// ════════════════════════════════════════════════════════════
+(function patchSaveForHardcore(){
+  const _prev = window.saveGame;
+  window.saveGame = function() {
+    const data = {
+      coins: gs.coins, score: gs.score, fishCount: gs.fishCount, energy: gs.energy,
+      inventory: gs.inventory, maxInv: gs.maxInv, currentRodId: gs.currentRod.id,
+      rods: RODS.map(r=>({id:r.id,owned:r.owned||false,equipped:r.equipped||false})),
+      baits: BAITS.map(b=>({id:b.id,qty:b.qty})),
+      lures: LURES.map(l=>({id:l.id,qty:l.qty})),
+      upgrades: UPGRADES.map(u=>({id:u.id,owned:u.owned||false})),
+    };
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e){}
+    try {
+      const extra = {
+        pikaCoins:gs.pikaCoins, pikaCatchCount:gs.pikaCatchCount,
+        mapMode: gs.mapMode==='bum'?'normal':gs.mapMode, // don't save bum map
+        coastUnlocked:gs.coastUnlocked||false,
+        hardcoreUnlocked:gs.hardcoreUnlocked||false,
+        caughtPokemon:gs.caughtPokemon||[],
+        xp:gs.xp||0, achievements:gs.achievements||{},
+        catchStreak:gs.catchStreak||0,
+        _caughtLegend:gs._caughtLegend||false,
+        _coastCatch:gs._coastCatch||false,
+        _duckCatches:gs._duckCatches||0,
+        _soldAll:gs._soldAll||false,
+        sharkSkins:gs.sharkSkins||0,
+      };
+      localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
+    } catch(e){}
+  };
+})();
+
+// Load hardcoreUnlocked on startup
+(function loadHardcoreFlag(){
+  try {
+    const raw = localStorage.getItem('fishing_reborn_extra');
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    gs.hardcoreUnlocked = d.hardcoreUnlocked || false;
+    if(gs.hardcoreUnlocked) {
+      const btn = document.getElementById('map-btn-hardcore');
+      if(btn) btn.style.display='';
+    }
+  } catch(e){}
+  // Also unlock if boss was killed
+  if(localStorage.getItem(BOSS_KEY)) {
+    gs.hardcoreUnlocked = true;
+    const btn = document.getElementById('map-btn-hardcore');
+    if(btn) btn.style.display='';
+  }
+})();
+
 
 </script>
 </body>
