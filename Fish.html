@@ -1271,6 +1271,164 @@ body {
   0%{opacity:1;transform:translateY(0) scale(1)}
   100%{opacity:0;transform:translateY(-50px) scale(1.3)}
 }
+
+
+/* ── ГЕЙМПЛЕЙ ОБНОВА ── */
+@keyframes levelUpPop {
+  0%{opacity:0;transform:translateX(-50%) scale(.5) translateY(0)}
+  20%{opacity:1;transform:translateX(-50%) scale(1.3) translateY(-10px)}
+  80%{opacity:1;transform:translateX(-50%) scale(1) translateY(-20px)}
+  100%{opacity:0;transform:translateX(-50%) scale(.8) translateY(-40px)}
+}
+@keyframes achieveIn {
+  from{transform:translateX(-50%) translateY(-30px) scale(.8);opacity:0}
+  to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
+}
+@keyframes streakGlow {
+  0%,100%{text-shadow:0 0 6px #ff6020}
+  50%{text-shadow:0 0 18px #ff9040}
+}
+/* Streak indicator */
+#streak-display {
+  position:absolute;top:56px;right:8px;
+  font-family:'Neucha',cursive;font-size:11px;
+  background:rgba(0,0,0,.5);border-radius:8px;padding:2px 7px;
+  display:none;
+}
+#streak-display.active {display:block;animation:streakGlow 1s ease-in-out infinite;color:#ff8040;}
+/* Xp pop */
+.xp-pop {
+  position:absolute;font-family:'Neucha',cursive;font-size:13px;
+  color:#80ff80;pointer-events:none;z-index:300;
+  animation:scorePop 1.5s ease forwards;font-weight:bold;
+  text-shadow:0 1px 4px rgba(0,100,0,.8);
+}
+
+/* ── ГЛОБАЛЬНЫЙ ЧАТ ── */
+#global-chat {
+  position:absolute; bottom:135px; right:10px; z-index:80;
+}
+#chat-toggle {
+  background:linear-gradient(135deg,#1a3060,#0a1830);
+  border:2px solid #4090f0; border-radius:50%; width:42px; height:42px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  cursor:pointer; box-shadow:0 2px 10px rgba(40,100,255,.5);
+  animation:chatPulse 2.5s ease-in-out infinite alternate;
+}
+@keyframes chatPulse {
+  0%{box-shadow:0 2px 10px rgba(40,100,255,.3)}
+  100%{box-shadow:0 2px 20px rgba(80,150,255,.8)}
+}
+#chat-unread {
+  position:absolute;top:-4px;right:-4px;background:#f04040;border-radius:50%;
+  font-size:10px;color:#fff;width:16px;height:16px;display:none;
+  align-items:center;justify-content:center;font-family:'Neucha',cursive;
+}
+#chat-box {
+  position:absolute; bottom:50px; right:0;
+  width:230px; background:rgba(5,10,30,.92);
+  border:1.5px solid #3060a0; border-radius:12px; overflow:hidden;
+  box-shadow:0 4px 20px rgba(0,0,80,.7);
+}
+#chat-messages {
+  height:160px; overflow-y:auto; padding:8px;
+  font-family:'Neucha',cursive; font-size:11px; color:#c0d8f0;
+  display:flex; flex-direction:column; gap:3px;
+}
+#chat-messages::-webkit-scrollbar{width:4px}
+#chat-messages::-webkit-scrollbar-thumb{background:#3060a0;border-radius:2px}
+.chat-msg { line-height:1.3; word-break:break-word; }
+.chat-msg .chat-name { color:#60b0ff; font-weight:bold; }
+.chat-msg .chat-time { color:#405070; font-size:10px; }
+#chat-input-row {
+  display:flex; border-top:1px solid #2040608;
+  background:rgba(0,10,30,.8);
+}
+#chat-input {
+  flex:1; background:transparent; border:none; outline:none;
+  font-family:'Neucha',cursive; font-size:12px; color:#c0d8f0;
+  padding:6px 8px;
+}
+#chat-input::placeholder { color:#304060; }
+#chat-send {
+  background:#1a3880; border:none; color:#60b0ff; padding:6px 10px;
+  font-size:16px; cursor:pointer; transition:.15s;
+}
+#chat-send:active { background:#2050c0; }
+
+/* ── ПОБЕРЕЖЬЕ БЕЙДЖ ── */
+#coast-mode-badge {
+  position:absolute; top:56px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,#003060,#001840);
+  border:2px solid #4090f0; border-radius:12px; padding:3px 12px;
+  font-family:'Neucha',cursive; font-size:11px; color:#60c0ff;
+  text-shadow:0 1px 2px rgba(0,0,0,.8); z-index:50; display:none;
+  animation:coastGlow 1.8s ease-in-out infinite alternate;
+}
+@keyframes coastGlow {
+  0%{box-shadow:0 0 8px rgba(0,80,200,.4)} 100%{box-shadow:0 0 22px rgba(60,150,255,.8)}
+}
+
+/* ── СТАРТОВЫЙ ПОДАРОК ── */
+#gift-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:9999;
+  display:flex; align-items:center; justify-content:center;
+}
+#gift-box {
+  background:linear-gradient(160deg,#1a0a30,#0a0518);
+  border:3px solid #d4a030; border-radius:20px;
+  padding:24px 20px; width:310px; text-align:center;
+  box-shadow:0 0 60px rgba(200,150,30,.4);
+  animation:giftAppear .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes giftAppear {
+  from{transform:scale(.5) rotate(-10deg);opacity:0}
+  to{transform:scale(1) rotate(0deg);opacity:1}
+}
+#gift-title {
+  font-family:'UnifrakturMaguntia',cursive; font-size:22px; color:#f0d060;
+  text-shadow:0 0 15px rgba(255,200,50,.6); margin-bottom:8px;
+}
+#gift-subtitle {
+  font-family:'Neucha',cursive; font-size:13px; color:#c0a060;
+  margin-bottom:16px; line-height:1.4;
+}
+#gift-items { list-style:none; margin:0 0 18px 0; padding:0; }
+.gift-item {
+  font-family:'Neucha',cursive; font-size:13px; color:#e0c880;
+  background:rgba(200,150,30,.1); border:1px solid rgba(200,150,30,.3);
+  border-radius:8px; padding:6px 10px; margin-bottom:6px;
+  display:flex; align-items:center; gap:8px; text-align:left;
+  animation:giftItemIn .4s ease backwards;
+}
+@keyframes giftItemIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+#gift-claim-btn {
+  background:linear-gradient(135deg,#c08010,#806000);
+  border:2px solid #f0c040; border-radius:12px; padding:10px 32px;
+  font-family:'Neucha',cursive; font-size:16px; color:#ffe060;
+  cursor:pointer; box-shadow:0 3px 15px rgba(200,150,0,.4);
+  transition:.2s; width:100%;
+}
+#gift-claim-btn:active{transform:scale(.97);}
+
+/* ── НОВЫЕ ROD АНИМАЦИИ ── */
+@keyframes duckWobble {
+  0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)}
+}
+@keyframes crystalShimmer {
+  0%{filter:brightness(1) drop-shadow(0 0 4px #a0e8ff)}
+  50%{filter:brightness(1.4) drop-shadow(0 0 12px #a0e8ff)}
+  100%{filter:brightness(1) drop-shadow(0 0 4px #a0e8ff)}
+}
+@keyframes thunderZap {
+  0%,90%,100%{filter:brightness(1)}
+  92%{filter:brightness(2.5) drop-shadow(0 0 16px #ffff50)}
+}
+@keyframes voidPulse {
+  0%{filter:drop-shadow(0 0 6px #3010a0)}
+  50%{filter:drop-shadow(0 0 18px #6020e0)}
+  100%{filter:drop-shadow(0 0 6px #3010a0)}
+}
 </style>
 <!-- Firebase compat SDK v9 — reliable CDN URLs, no dynamic import() needed -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -1453,16 +1611,43 @@ body {
 
     <!-- Pokemon mode badge -->
     <div id="poke-mode-badge">⚡ ПОКЕМОН РЕЖИМ</div>
+    <div id="coast-mode-badge">🏖️ ПОБЕРЕЖЬЕ ЛЕГЕНДАРОК</div>
+
+    <!-- СТАРТОВЫЙ ПОДАРОК (показывается один раз) -->
+    <div id="gift-overlay" style="display:none;">
+      <div id="gift-box">
+        <div id="gift-title">🎁 Добро пожаловать!</div>
+        <div id="gift-subtitle">Спасибо что играете в нашу игру!<br>Получите стартовый подарок:</div>
+        <ul id="gift-items">
+          <li class="gift-item" style="animation-delay:.1s">🦆 Удочка: <b>Резиновая Утка</b></li>
+          <li class="gift-item" style="animation-delay:.2s">🌊 Покемон: <b>Мабой</b> пойман!</li>
+          <li class="gift-item" style="animation-delay:.3s">🏖️ Карта: <b>Побережье легендарок</b> открыта!</li>
+          <li class="gift-item" style="animation-delay:.4s" id="gift-bot-item">🤖 Бот купил вещь за <b>4000🪙</b> — забери в киоске!</li>
+        </ul>
+        <button id="gift-claim-btn" onclick="claimGift()">✨ Забрать подарки!</button>
+      </div>
+    </div>
 
     <!-- Fortune Wheel button -->
     <div id="fortune-btn" onclick="openFortune()" title="Колесо Фортуны">🎡</div>
+    <!-- Quest button -->
+    <div id="quest-btn" onclick="toggleQuestPanel()" title="Задания дня" style="position:absolute;bottom:310px;left:10px;background:linear-gradient(135deg,#1a2a10,#0a1808);border:2px solid #60c040;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 2px 10px rgba(60,180,40,.4);z-index:30;">📋</div>
+    <!-- Quest panel -->
+    <div id="quest-panel" style="display:none;position:absolute;bottom:360px;left:10px;width:180px;background:rgba(5,15,5,.92);border:1.5px solid #3a6020;border-radius:12px;padding:8px;z-index:80;box-shadow:0 4px 20px rgba(0,60,0,.7);"></div>
+    <!-- Achievement button -->
+    <div id="achieve-btn" onclick="showAchievements()" title="Достижения" style="position:absolute;bottom:365px;right:10px;background:linear-gradient(135deg,#2a1a00,#1a0a00);border:2px solid #c0a030;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 2px 10px rgba(200,160,0,.4);z-index:30;">🏅</div>
+    <!-- Achievement popup -->
+    <div id="achieve-popup" style="display:none;position:absolute;top:54px;left:8px;right:8px;background:rgba(5,5,20,.95);border:2px solid #c0a030;border-radius:14px;padding:10px;z-index:200;max-height:400px;overflow-y:auto;"></div>
 
     <!-- Map selector -->
     <div id="map-selector">
       <div class="map-btn active" id="map-btn-normal" onclick="setMap('normal')">🌊 Обычная</div>
       <div class="map-btn" id="map-btn-pokemon" onclick="setMap('pokemon')">⚡ Покемон</div>
+      <div class="map-btn" id="map-btn-coast" onclick="setMap('coast')" style="color:#60c0ff;border-color:#2080c0;">🏖️ Побережье</div>
     </div>
 
+    <!-- Streak display -->
+    <div id="streak-display"></div>
     <!-- Bite indicator -->
     <div id="bite-indicator"><div id="bite-plank">🎣 КЛЮЁТ! Подсекай!</div></div>
 
@@ -1513,6 +1698,17 @@ body {
             <path d="M 22,32 Q 25,28 28,32 Q 31,36 34,32 Q 37,28 40,32" stroke="#7a3818" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>
           </g>
         </svg>
+      </div>
+    </div>
+    <!-- ОБЩИЙ ЧАТ -->
+    <div id="global-chat">
+      <div id="chat-toggle" onclick="toggleChat()">💬 <span id="chat-unread"></span></div>
+      <div id="chat-box" style="display:none;">
+        <div id="chat-messages"></div>
+        <div id="chat-input-row">
+          <input id="chat-input" maxlength="80" placeholder="Написать..."/>
+          <button id="chat-send" onclick="sendChatMsg()">➤</button>
+        </div>
       </div>
     </div>
   </div><!-- /fishing-screen -->
@@ -1596,7 +1792,15 @@ body {
   </div>
 
   <!-- ===== LEADERBOARD SCREEN ===== -->
-  <div id="leaderboard-screen" class="screen">
+  <div id="achievements-screen" class="screen" style="background:linear-gradient(to bottom,#08080a,#04040a);overflow-y:auto;padding:54px 8px 70px;">
+  <div style="font-family:'UnifrakturMaguntia',cursive;font-size:22px;color:#f0c840;text-align:center;padding:10px 0 8px;">🏅 Достижения</div>
+  <div id="achievements-list" style="padding:0 2px;"></div>
+  <div style="font-family:'UnifrakturMaguntia',cursive;font-size:18px;color:#60a060;text-align:center;padding:12px 0 6px;">📋 Задания дня</div>
+  <div id="quest-panel-screen" style="padding:0 4px;"></div>
+  <div style="font-family:'UnifrakturMaguntia',cursive;font-size:18px;color:#4090f0;text-align:center;padding:12px 0 6px;">📊 Статистика</div>
+  <div id="stats-panel" style="font-family:'Neucha',cursive;font-size:13px;color:#c0d0e0;background:rgba(0,0,0,.3);border-radius:12px;padding:10px;margin:0 2px;"></div>
+</div>
+<div id="leaderboard-screen" class="screen">
     <div class="lb-header">🏆 Лидерборд</div>
     <div class="lb-tabs">
       <div class="lb-tab active" id="lb-tab-fish" onclick="switchLbTab('fish',this)">🐟 Рыбы</div>
@@ -1806,6 +2010,10 @@ body {
       Онлайн
       <div class="nav-player-dot" id="nav-multi-dot"></div>
     </div>
+    <div class="navtab" id="nav-achieve" onclick="switchScreen('achievements')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      Успехи
+    </div>
     <div class="navtab" id="nav-lb" onclick="switchScreen('leaderboard')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
       Топ
@@ -1866,6 +2074,21 @@ const FISH_DATA = [
   {name:'Стерлядь',     w:[.5,3.0],  pts:90, coins:70,  rar:'legend',  label:'Легендарный', col:'#a09060', col2:'#706040'},
   {name:'Сазан',        w:[1.5,10.], pts:85, coins:65,  rar:'legend',  label:'Легендарный', col:'#c0801a', col2:'#905010'},
   {name:'Золотая Рыбка',w:[.1,.5],   pts:200,coins:200, rar:'legend',  label:'Легендарный!',col:'#ffd030', col2:'#c08010'},
+  // === НОВЫЕ ОБЫЧНЫЕ ===
+  {name:'Уклейка',       w:[.05,.25], pts:5,  coins:2,   rar:'common',  label:'Обычный',     col:'#b8d0e0', col2:'#7898a8'},
+  {name:'Пескарь',       w:[.05,.2],  pts:5,  coins:2,   rar:'common',  label:'Обычный',     col:'#c8b870', col2:'#887838'},
+  {name:'Верховка',      w:[.03,.15], pts:4,  coins:1,   rar:'common',  label:'Обычный',     col:'#d0c898', col2:'#908858'},
+  // === НОВЫЕ РЕДКИЕ ===
+  {name:'Жирный Карп',   w:[1.0,8.0], pts:40, coins:25,  rar:'rare',    label:'Редкий',      col:'#b08040', col2:'#705020'},
+  {name:'Налим Тёмный',  w:[0.8,5.0], pts:38, coins:22,  rar:'rare',    label:'Редкий',      col:'#304858', col2:'#182838'},
+  // === НОВЫЕ ЭПИЧЕСКИЕ ===
+  {name:'Белуга Малая',  w:[2.0,9.0], pts:80, coins:60,  rar:'epic',    label:'Эпический',   col:'#d0d0c0', col2:'#909088'},
+  {name:'Тайменёнок',    w:[1.5,7.0], pts:75, coins:55,  rar:'epic',    label:'Эпический',   col:'#c06030', col2:'#803010'},
+  // === ЛЕГЕНДЫ ПОБЕРЕЖЬЯ (только на карте "Побережье легендарок") ===
+  {name:'Морской Дракон',w:[3.0,15.], pts:300,coins:120, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#2060a0', col2:'#103060', coastal:true},
+  {name:'Акула-Призрак', w:[5.0,20.], pts:350,coins:130, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#607080', col2:'#303848', coastal:true},
+  {name:'Левиафан',      w:[10.,40.], pts:500,coins:150, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#1a4020', col2:'#0a2010', coastal:true},
+  {name:'Кракен-Рыба',   w:[8.0,30.], pts:450,coins:140, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#601060', col2:'#300830', coastal:true},
 ];
 
 // ============================================================
@@ -1876,7 +2099,11 @@ const RODS = [
   {id:'bamboo', name:'Бамбуковая',  desc:'Легче и гибче',             price:80,   biteChance:1.2, catchMult:1.1, stats:'Клёв: +20%'},
   {id:'carbon', name:'Карбоновая',  desc:'Современный материал',      price:250,  biteChance:1.5, catchMult:1.3, stats:'Клёв: +50% • Улов: +30%'},
   {id:'magic',  name:'Волшебная',   desc:'Из чего она сделана?',      price:800,  biteChance:2.5, catchMult:2.0, stats:'Клёв: x2.5 • Улов: x2'},
-  {id:'golden', name:'Золотая',     desc:'Легенда среди удочек',      price:2000, biteChance:4.0, catchMult:3.0, stats:'Клёв: x4 • Улов: x3'},
+  {id:'golden',    name:'Золотая',        desc:'Легенда среди удочек',                  price:2000,  biteChance:4.0, catchMult:3.0, stats:'Клёв: x4 • Улов: x3'},
+  {id:'rubberduck', name:'Резиновая Утка', desc:'Странная... но работает!',               price:5000,  biteChance:3.5, catchMult:2.5, stats:'Клёв: x3.5 • Только ЭПИКИ+ • +1-100🪙/улов', special:'duck'},
+  {id:'crystal',    name:'Кристальная',   desc:'Из чистейшего горного хрусталя',         price:8000,  biteChance:5.0, catchMult:4.0, stats:'Клёв: x5 • Улов: x4 • Редк. x2'},
+  {id:'thunder',    name:'Громовая',      desc:'Заряжена молнией — рыба не убежит',      price:12000, biteChance:6.0, catchMult:5.0, stats:'Клёв: x6 • Улов: x5 • Мгновенный клёв'},
+  {id:'void',       name:'Бездны',        desc:'Из глубин где нет света',                price:25000, biteChance:8.0, catchMult:7.0, stats:'Клёв: x8 • Улов: x7 • Только легенды'},
 ];
 
 // ============================================================
@@ -1937,6 +2164,15 @@ function saveGame() {
       pikaCoins: gs.pikaCoins,
       pikaCatchCount: gs.pikaCatchCount,
       mapMode: gs.mapMode,
+      coastUnlocked: gs.coastUnlocked || false,
+      caughtPokemon: gs.caughtPokemon || [],
+      xp: gs.xp || 0,
+      achievements: gs.achievements || {},
+      catchStreak: gs.catchStreak || 0,
+      _caughtLegend: gs._caughtLegend || false,
+      _coastCatch: gs._coastCatch || false,
+      _duckCatches: gs._duckCatches || 0,
+      _soldAll: gs._soldAll || false,
     };
     localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
   } catch(e){}
@@ -2381,6 +2617,7 @@ function castTo(x, y) {
     bobWrap.style.animation='floatBob 2.2s ease-in-out infinite';
     makeRipple(x, y, 40);
     const weatherBonus = gs.weatherBiteBonus || 1.0;
+    const eventMult    = getEventBiteMult();
     const rodMult      = gs.currentRod.biteChance;
     const upgBonus     = UPGRADES.find(u=>u.id==='fast_bite')?.owned ? 2 : 1;
     const activeBait   = BAITS.reduce((s,b)=>s+(b.qty>0?b.biteBonus:0), 0);
@@ -2409,16 +2646,39 @@ function triggerBite() {
     return;
   }
 
-  // ── Normal mode ──
+  // ── Побережье легендарок ──
+  if(gs.mapMode === 'coast') {
+    const coastPool = FISH_DATA.filter(f=>f.coastal);
+    const f = coastPool[Math.floor(Math.random()*coastPool.length)];
+    gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+    // Прибрежные рыбы нужно много раз тыкать
+    gs.coastTapNeeded = 5 + Math.floor(Math.random()*6); // 5-10 тапов
+    gs.coastTapCount = 0;
+    showCoastTapBar();
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite'){ hideCoastTapBar(); miss(); } }, 7000);
+    return;
+  }
+
+  // ── Normal mode (с учётом удочки) ──
   const hasLucky = UPGRADES.find(u=>u.id==='lucky_charm')?.owned;
   const lureBonus = LURES.reduce((s,l)=>s+(l.qty>0?l.rareBonus:0),0);
   const pool=[];
-  FISH_DATA.forEach(f=>{
+  const legendOnly = isLegendOnlyEvent();
+  const isDuck = gs.currentRod.id === 'rubberduck';
+  const isVoid = gs.currentRod.id === 'void';
+  FISH_DATA.filter(f=>!f.coastal).forEach(f=>{
     let w = f.rar==='common'?60 : f.rar==='rare'?30 : f.rar==='epic'?8 : 2;
+    if(isDuck && (f.rar==='common'||f.rar==='rare')) w=0; // утка — только эпики+
+    if(legendOnly && f.rar!=='legend') w=0; // событие легенд
+    if(isVoid && f.rar!=='legend') w=0; // бездна — только легенды
     if(f.rar==='legend' && hasLucky) w*=1.5;
     if(f.rar!=='common') w *= (1+lureBonus);
     for(let i=0;i<Math.round(w);i++) pool.push(f);
   });
+  if(pool.length===0) FISH_DATA.filter(f=>!f.coastal && f.rar==='epic').forEach(f=>pool.push(f));
   gs.fish = pool[Math.floor(Math.random()*pool.length)];
   gs.currentCatch = {
     ...gs.fish,
@@ -2428,8 +2688,9 @@ function triggerBite() {
   biteEl.classList.add('visible');
   if(navigator.vibrate) navigator.vibrate([100,50,100]);
   const autoReel = UPGRADES.find(u=>u.id==='auto_reel')?.owned;
-  if(autoReel) {
-    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, 1200);
+  const isThunder = gs.currentRod.id === 'thunder';
+  if(autoReel || isThunder) {
+    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, isThunder ? 200 : 1200);
   } else {
     gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
   }
@@ -2438,6 +2699,8 @@ function triggerBite() {
 
 function miss() {
   gs.phase='idle';
+  gs.catchStreak = 0; // сброс серии при промахе
+  updateStreakUI();
   biteEl.classList.remove('visible');
   bobWrap.style.display='none'; bobWrap.style.animation='';
   hint.style.display='block'; hint.textContent='Ушла... Забросить снова?';
@@ -2447,7 +2710,40 @@ function miss() {
 // ============================================================
 // CATCH FISH
 // ============================================================
+function showCoastTapBar() {
+  let bar = document.getElementById('coast-tap-bar');
+  if(!bar) {
+    bar = document.createElement('div');
+    bar.id = 'coast-tap-bar';
+    bar.style.cssText='position:absolute;bottom:145px;left:50%;transform:translateX(-50%);background:rgba(0,20,60,.85);border:2px solid #4090f0;border-radius:12px;padding:8px 18px;z-index:100;font-family:Neucha,cursive;color:#60c0ff;font-size:13px;text-align:center;pointer-events:none;';
+    document.getElementById('fishing-screen').appendChild(bar);
+  }
+  bar.style.display='block';
+  updateCoastTapBar();
+}
+function updateCoastTapBar() {
+  const bar = document.getElementById('coast-tap-bar');
+  if(!bar) return;
+  const left = (gs.coastTapNeeded||0) - (gs.coastTapCount||0);
+  const filled = '▓'.repeat(Math.max(0,(gs.coastTapCount||0)));
+  const empty  = '░'.repeat(Math.max(0,left));
+  bar.innerHTML = `🏖️ Подсекай! ${filled}${empty}<br><span style="font-size:11px;color:#90d0ff;">Осталось нажатий: ${left}</span>`;
+}
+function hideCoastTapBar() {
+  const bar = document.getElementById('coast-tap-bar');
+  if(bar) bar.style.display='none';
+}
+
 function catchFish() {
+  // Побережье — нужно много тапов
+  if(gs.mapMode === 'coast' && gs.phase === 'bite') {
+    gs.coastTapCount = (gs.coastTapCount||0) + 1;
+    updateCoastTapBar();
+    if(navigator.vibrate) navigator.vibrate(30);
+    if(gs.coastTapCount < gs.coastTapNeeded) return; // ещё тапы нужны
+    hideCoastTapBar();
+    // Достаточно тапов — ловим
+  }
   if(gs.phase!=='bite') return;
   clearTimeout(gs.biteTimeout);
   gs.phase='idle';
@@ -2463,6 +2759,22 @@ function catchFish() {
     return;
   }
 
+  // ── Побережье легендарок ──
+  if(gs.mapMode === 'coast') {
+    const coastPool = FISH_DATA.filter(f=>f.coastal);
+    const f = coastPool[Math.floor(Math.random()*coastPool.length)];
+    gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+    // Прибрежные рыбы нужно много раз тыкать
+    gs.coastTapNeeded = 5 + Math.floor(Math.random()*6); // 5-10 тапов
+    gs.coastTapCount = 0;
+    showCoastTapBar();
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite'){ hideCoastTapBar(); miss(); } }, 7000);
+    return;
+  }
+
   // ── Normal mode ──
   const f=gs.currentCatch;
   gs.fishCount++;
@@ -2474,15 +2786,44 @@ function catchFish() {
   document.getElementById('catch-name-txt').textContent=f.name;
   document.getElementById('catch-weight-txt').textContent=`${f.weight} кг • +${f.pts} ★`;
   const rarEl=document.getElementById('catch-rarity');
-  rarEl.textContent=f.label; rarEl.className=`rarity-${f.rar}`;
-  const price=calcPrice(f);
-  document.getElementById('popup-sell-price').textContent=' '+price;
+  rarEl.textContent=f.label;
+  rarEl.className = f.rar==='coastal_legend' ? 'rarity-legend' : `rarity-${f.rar}`;
+  const price=Math.round(calcPrice(f) * getEventCoinMult());
+  document.getElementById('popup-sell-price').textContent=' '+price+(getEventCoinMult()>1?' 🌅x2':'');
   document.getElementById('catch-sell-btn').style.display = '';
   document.getElementById('catch-popup').classList.add('show');
   showScorePop('+'+f.pts, gs.bobX, gs.bobY);
   makeRipple(gs.bobX, gs.bobY, 65);
   const activeBaits=BAITS.filter(b=>b.qty>0);
   if(activeBaits.length>0) activeBaits[0].qty--;
+  // Резиновая утка: бонус монеты 1-100 за каждый улов
+  if(gs.currentRod.id === 'rubberduck') {
+    const bonus = 1 + Math.floor(Math.random()*100);
+    gs.coins += bonus;
+    updateCoins();
+    showToast('🦆 Утиный магнит: +'+bonus+'🪙!');
+  }
+  // Удочка Бездны: только легенды
+  if(gs.currentRod.id === 'void' && f.rar !== 'legend' && f.rar !== 'coastal_legend') {
+    gs.inventory.pop(); // убрать если не легенда
+    showToast('🌀 Удочка Бездны выбросила не-легенду обратно!');
+  }
+  // XP и прогресс заданий
+  const xpBase = f.rar==='legend'||f.rar==='coastal_legend' ? 80 : f.rar==='epic' ? 40 : f.rar==='rare' ? 20 : 10;
+  const xpEarned = xpBase * getEventXPMult();
+  addXP(xpEarned);
+  showXPPop(xpEarned, gs.bobX, gs.bobY);
+  gs.catchStreak = (gs.catchStreak||0) + 1;
+  updateStreakUI();
+  gs._caughtLegend = gs._caughtLegend || (f.rar==='legend');
+  gs._coastCatch = gs._coastCatch || (gs.mapMode==='coast');
+  if(gs.currentRod.id==='rubberduck') gs._duckCatches = (gs._duckCatches||0)+1;
+  updateQuestProgress('fish');
+  if(f.rar==='epic') updateQuestProgress('epic');
+  if(f.rar==='legend'||f.rar==='coastal_legend') { updateQuestProgress('legend'); updateQuestProgress('epic'); }
+  updateQuestProgress('streak', 0); // check streak
+  if((gs.catchStreak||0)>=5) updateQuestProgress('no_miss_5',0);
+  checkAchievements();
   saveGame();
   syncLeaderboard();
 }
@@ -2508,6 +2849,23 @@ function showScorePop(txt, x, y) {
   p.textContent=txt; p.style.left=x+'px'; p.style.top=(y-20)+'px';
   fishingScreen.appendChild(p);
   setTimeout(()=>p.remove(), 1800);
+}
+function showXPPop(xp, x, y) {
+  const p=document.createElement('div'); p.className='xp-pop';
+  p.textContent='+'+xp+' XP'; p.style.left=x+'px'; p.style.top=(y-40)+'px';
+  fishingScreen.appendChild(p);
+  setTimeout(()=>p.remove(), 1500);
+}
+function updateStreakUI() {
+  const el = document.getElementById('streak-display');
+  if(!el) return;
+  const s = gs.catchStreak||0;
+  if(s >= 3) {
+    el.textContent = '🔥 Серия: ' + s;
+    el.classList.add('active');
+  } else {
+    el.classList.remove('active');
+  }
 }
 
 // ============================================================
@@ -2543,7 +2901,11 @@ function sellFish() {
   gs.coins+=price;
   updateCoins();
   coinBurst(180, 350);
-  showToast(`💰 Продано: ${f.name} за ${price}🪙`);
+  addXP(15);
+  updateQuestProgress('sell');
+  updateQuestProgress('coins', price);
+  checkAchievements();
+  showToast(`💰 Продано: ${f.name} за ${price}🪙 (+15 XP)`);
   afterCatch(); saveGame();
 }
 
@@ -2640,6 +3002,15 @@ function switchScreen(name) {
   gs.currentScreen=name;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
+  if(name === 'achievements') {
+    gs.currentScreen = 'achievements';
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('achievements-screen').classList.add('active');
+    document.getElementById('nav-achieve').classList.add('active');
+    renderAchievementsScreen();
+    return;
+  }
   if(name === 'leaderboard') {
     document.getElementById('leaderboard-screen').classList.add('active');
     document.getElementById('nav-lb').classList.add('active');
@@ -2649,8 +3020,10 @@ function switchScreen(name) {
   }
   const map={fishing:'fishing-screen',shop:'shop-screen',inventory:'inventory-screen',multi:'multi-screen',garden:'garden-screen'};
   const navMap={fishing:'nav-fish',shop:'nav-shop',inventory:'nav-inv',multi:'nav-multi',garden:'nav-garden'};
-  document.getElementById(map[name]).classList.add('active');
-  document.getElementById(navMap[name]).classList.add('active');
+  const screenEl = document.getElementById(map[name]);
+  const navEl = document.getElementById(navMap[name]);
+  if(screenEl) screenEl.classList.add('active');
+  if(navEl) navEl.classList.add('active');
   if(name==='shop')      renderShop();
   if(name==='inventory') renderInventory();
   if(name==='garden')    renderGarden();
@@ -2697,17 +3070,65 @@ function makeShopItem(iconHtml, name, desc, stats, priceHtml, btnHtml, extraClas
 }
 
 function rodIconSVG(rod) {
-  const colors={wood:'#8b5e2a',bamboo:'#6a9030',carbon:'#405868',magic:'#9040c0',golden:'#d4a020'};
-  const c=colors[rod.id]||'#8b5e2a';
-  const glow=rod.id==='magic'?'filter:drop-shadow(0 0 6px rgba(160,50,255,.8));':'';
-  return `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="${glow}">
-    <circle cx="26" cy="26" r="24" fill="rgba(0,0,0,.35)" stroke="${c}" stroke-width="2.5"/>
-    <line x1="40" y1="12" x2="12" y2="40" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="19" cy="33" r="5" fill="none" stroke="#888" stroke-width="2"/>
-    <circle cx="19" cy="33" r="2" fill="#888"/>
-    <line x1="40" y1="12" x2="45" y2="30" stroke="rgba(220,210,180,.5)" stroke-width="1" stroke-dasharray="2,2"/>
-    ${rod.id==='golden'?'<polygon points="26,8 28,15 35,15 30,19 32,26 26,22 20,26 22,19 17,15 24,15" fill="rgba(255,220,30,.3)" stroke="rgba(255,200,20,.5)" stroke-width="0.5"/>':''}
-    ${rod.id==='magic'?'<circle cx="40" cy="12" r="4" fill="rgba(180,80,255,.5)" stroke="rgba(200,100,255,.8)" stroke-width="1"/>':''}
+  const RC = ROD_COLORS[rod.id] || ROD_COLORS.wood;
+  const c = RC.color;
+  const glowStyle = RC.glow !== 'none' ? `filter:drop-shadow(0 0 8px ${c});` : '';
+
+  // Специальные иконки для каждой удочки
+  const specials = {
+    rubberduck: `<circle cx="26" cy="24" r="14" fill="#f0d820" stroke="#c0a010" stroke-width="2"/>
+      <circle cx="26" cy="20" r="7" fill="#f0d820" stroke="#c0a010" stroke-width="1.5"/>
+      <circle cx="29" cy="18" r="1.5" fill="#1a1008"/>
+      <path d="M30,19 Q34,17 33,21" stroke="#e05020" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M20,30 Q26,38 32,30" stroke="#c0a010" stroke-width="1.5" fill="rgba(240,200,10,.3)"/>`,
+    crystal: `<polygon points="26,6 34,20 26,46 18,20" fill="rgba(160,232,255,.35)" stroke="${c}" stroke-width="1.5"/>
+      <polygon points="26,6 34,20 26,28 18,20" fill="rgba(200,245,255,.5)" stroke="${c}" stroke-width="1"/>
+      <line x1="26" y1="6" x2="26" y2="46" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
+      <circle cx="26" cy="20" r="4" fill="rgba(200,245,255,.8)" stroke="${c}" stroke-width="1"/>`,
+    thunder: `<polygon points="32,6 22,27 28,27 20,46 36,22 28,22" fill="#f8f040" stroke="#c0b010" stroke-width="1.5"/>
+      <circle cx="26" cy="26" r="3" fill="white" opacity=".7"/>
+      <line x1="10" y1="26" x2="16" y2="26" stroke="${c}" stroke-width="2" stroke-dasharray="2,2"/>
+      <line x1="36" y1="26" x2="42" y2="26" stroke="${c}" stroke-width="2" stroke-dasharray="2,2"/>`,
+    void: `<circle cx="26" cy="26" r="18" fill="rgba(20,0,60,.9)" stroke="${c}" stroke-width="2"/>
+      <circle cx="26" cy="26" r="10" fill="rgba(60,0,160,.5)" stroke="${c}" stroke-width="1"/>
+      <circle cx="26" cy="26" r="4" fill="${c}" opacity=".9"/>
+      <line x1="26" y1="8" x2="26" y2="44" stroke="${c}" stroke-width="1" opacity=".5"/>
+      <line x1="8" y1="26" x2="44" y2="26" stroke="${c}" stroke-width="1" opacity=".5"/>`,
+  };
+
+  // Общий шаблон удочки с кольцами и катушкой
+  function defaultRod(extraDecor) {
+    return `
+      <line x1="40" y1="10" x2="12" y2="42" stroke="${c}" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="40" y1="10" x2="12" y2="42" stroke="rgba(255,255,255,.18)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="18" cy="36" r="6.5" fill="rgba(0,0,0,.5)" stroke="#aaa" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#888" stroke="#555" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#ccc"/>
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="${c}" stroke-width="1.5" opacity=".8"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="${c}" stroke-width="1.3" opacity=".7"/>
+      <circle cx="36" cy="17" r="2" fill="none" stroke="${c}" stroke-width="1.2" opacity=".6"/>
+      <line x1="40" y1="10" x2="46" y2="30" stroke="rgba(220,210,180,.45)" stroke-width="1" stroke-dasharray="2,3"/>
+      ${extraDecor}`;
+  }
+
+  const extraByRod = {
+    wood:   '<rect x="14" y="38" width="6" height="3" rx="1" fill="#6a3808" opacity=".7"/>',
+    bamboo: '<line x1="20" y1="34" x2="38" y2="14" stroke="rgba(150,220,80,.3)" stroke-width="3" stroke-dasharray="4,4"/>',
+    carbon: '<line x1="26" y1="28" x2="38" y2="16" stroke="rgba(100,160,200,.4)" stroke-width="2" stroke-dasharray="3,3"/>',
+    magic:  '<circle cx="40" cy="10" r="5" fill="rgba(180,80,255,.6)" stroke="rgba(220,130,255,.9)" stroke-width="1.5"/><circle cx="40" cy="10" r="2" fill="white" opacity=".8"/>',
+    golden: '<polygon points="40,4 41.5,8 46,8 42.5,11 44,15 40,12 36,15 37.5,11 34,8 38.5,8" fill="rgba(255,220,30,.8)" stroke="#c09010" stroke-width="0.5"/>',
+  };
+
+  if(specials[rod.id]) {
+    return `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="${glowStyle}width:52px;height:52px">
+      <circle cx="26" cy="26" r="24" fill="rgba(0,0,0,.4)" stroke="${c}" stroke-width="2"/>
+      ${specials[rod.id]}
+    </svg>`;
+  }
+
+  return `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="${glowStyle}width:52px;height:52px">
+    <circle cx="26" cy="26" r="24" fill="rgba(0,0,0,.4)" stroke="${c}" stroke-width="2"/>
+    ${defaultRod(extraByRod[rod.id]||'')}
   </svg>`;
 }
 
@@ -3414,7 +3835,16 @@ const POKEMON_DATA = [
   {name:'Лапрас',    emoji:'🌊', pts:100, coins:0, pikaCoins:50, rar:'epic',    label:'Эпический',  col:'#4080c0', col2:'#2050a0'},
   {name:'Генгар',    emoji:'😈', pts:120, coins:0, pikaCoins:60, rar:'epic',    label:'Эпический',  col:'#6030a0', col2:'#301060'},
   {name:'Мьюту',     emoji:'🔮', pts:200, coins:0, pikaCoins:100,rar:'legend',  label:'Легендарный',col:'#c040c0', col2:'#801080'},
-  {name:'Мью',       emoji:'💗', pts:250, coins:0, pikaCoins:150,rar:'legend',  label:'Легендарный',col:'#f080c0', col2:'#c04090'},
+  {name:'Мью',         emoji:'💗', pts:250, coins:0, pikaCoins:150,rar:'legend',  label:'Легендарный',  col:'#f080c0', col2:'#c04090'},
+  // === НОВЫЕ ПОКЕМОНЫ ===
+  {name:'Иви',          emoji:'🦊', pts:35,  coins:0, pikaCoins:18, rar:'common',  label:'Обычный',      col:'#d09050', col2:'#906030'},
+  {name:'Мяут',         emoji:'😸', pts:30,  coins:0, pikaCoins:15, rar:'common',  label:'Обычный',      col:'#f0f0e0', col2:'#c0c0b0'},
+  {name:'Пикачу Сёрф',  emoji:'🏄', pts:80,  coins:0, pikaCoins:45, rar:'rare',    label:'Редкий',       col:'#f0d040', col2:'#c0a010'},
+  {name:'Лоптан',       emoji:'🌀', pts:90,  coins:0, pikaCoins:50, rar:'rare',    label:'Редкий',       col:'#6080f0', col2:'#4050c0'},
+  {name:'Мабой',        emoji:'🌊', pts:110, coins:0, pikaCoins:65, rar:'epic',    label:'Эпический',    col:'#40c0f0', col2:'#2080c0'},
+  {name:'Драгонит',     emoji:'🐲', pts:150, coins:0, pikaCoins:90, rar:'epic',    label:'Эпический',    col:'#40a040', col2:'#206020'},
+  {name:'Луга',         emoji:'🌙', pts:300, coins:0, pikaCoins:180,rar:'legend',  label:'Легендарный',  col:'#8060c0', col2:'#503090'},
+  {name:'Хоу-Ох',       emoji:'🦅', pts:350, coins:0, pikaCoins:200,rar:'legend',  label:'Легендарный',  col:'#f08020', col2:'#c05010'},
 ];
 
 const PIKABUFS = [
@@ -3432,22 +3862,35 @@ gs.pikaBufCount = 0;
 
 function setMap(mode) {
   gs.mapMode = mode;
-  document.getElementById('map-btn-normal').classList.toggle('active', mode==='normal');
-  document.getElementById('map-btn-pokemon').classList.toggle('active', mode==='pokemon');
-  
+  ['normal','pokemon','coast'].forEach(m=>{
+    const btn = document.getElementById('map-btn-'+m);
+    if(btn) btn.classList.toggle('active', mode===m);
+  });
   const pokeBadge = document.getElementById('poke-mode-badge');
-  const pikaBox = document.getElementById('pika-coins-box');
-  
+  const pikaBox   = document.getElementById('pika-coins-box');
+  const coastBadge = document.getElementById('coast-mode-badge');
+
+  // Reset all badges
+  if(pokeBadge) pokeBadge.style.display='none';
+  if(pikaBox)   pikaBox.style.display='none';
+  if(coastBadge) coastBadge.style.display='none';
+
   if(mode === 'pokemon') {
-    pokeBadge.style.display = 'block';
-    pikaBox.style.display = 'flex';
-    // Change sky colors to purple
+    if(pokeBadge) pokeBadge.style.display='block';
+    if(pikaBox)   pikaBox.style.display='flex';
     document.documentElement.style.setProperty('--sky-top','#1a0828');
     document.documentElement.style.setProperty('--sky-bot','#0a0418');
+    document.documentElement.style.setProperty('--water-top','#180830');
+    document.documentElement.style.setProperty('--water-bot','#0a0418');
     showToast('⚡ Покемон режим! Лови покемонов за ПикаКоины!');
+  } else if(mode === 'coast') {
+    if(coastBadge) coastBadge.style.display='block';
+    document.documentElement.style.setProperty('--sky-top','#003060');
+    document.documentElement.style.setProperty('--sky-bot','#001830');
+    document.documentElement.style.setProperty('--water-top','#003878');
+    document.documentElement.style.setProperty('--water-bot','#001840');
+    showToast('🏖️ Побережье Легендарок! Только ЛЕГЕНДЫ! Жми много раз для подсечки!');
   } else {
-    pokeBadge.style.display = 'none';
-    pikaBox.style.display = 'none';
     applyWeather(gs.weather, true);
     showToast('🌊 Обычная карта — ловим рыбу!');
   }
@@ -3501,6 +3944,9 @@ function catchPokemon(f) {
   document.getElementById('catch-popup').classList.add('show');
   showScorePop('+'+earned+'⚡', gs.bobX, gs.bobY);
   makeRipple(gs.bobX, gs.bobY, 65);
+  addXP(30 + f.pts/5);
+  updateQuestProgress('pokemon');
+  checkAchievements();
   saveGame();
   // Sync leaderboard
   syncLeaderboard();
@@ -3763,18 +4209,465 @@ async function syncLeaderboard() {
 // ============================================================
 let kioskListings = {}; // Local cache of market
 
-async function claimKioskPayments() {
-  try {
-    const snap = await fb.get(`kiosk_payments/${myPlayerId}/pending`);
-    if(!snap.exists()) return;
-    const amount = snap.val() || 0;
-    if(amount <= 0) return;
-    gs.coins += amount;
-    updateCoins();
-    await fb.set(`kiosk_payments/${myPlayerId}/pending`, 0);
-    saveGame();
-    showToast(`U0001F4B0 Получено от продаж в киоске: +${amount}U0001F9B8!`);
-  } catch(e) {}
+
+// ============================================================
+// 🎁 СТАРТОВЫЙ ПОДАРОК
+// ============================================================
+function checkAndShowGift() {
+  if(localStorage.getItem('fishing_gift_claimed')) return;
+  // Показать через 600мс после загрузки
+  setTimeout(()=>{
+    // Определить рандомную вещь из инвентаря для бота
+    const soldItem = gs.inventory.length > 0
+      ? gs.inventory[Math.floor(Math.random()*gs.inventory.length)]
+      : {name:'Карась'};
+    document.getElementById('gift-bot-item').innerHTML =
+      '🤖 Бот купил <b>' + soldItem.name + '</b> за <b>4000🪙</b> — забери в киоске!';
+    gs._giftBotItem = soldItem;
+    document.getElementById('gift-overlay').style.display='flex';
+  }, 600);
+}
+
+function claimGift() {
+  localStorage.setItem('fishing_gift_claimed','1');
+  document.getElementById('gift-overlay').style.display='none';
+
+  // 1. Выдать удочку Резиновая Утка
+  const duck = RODS.find(r=>r.id==='rubberduck');
+  if(duck) { duck.owned=true; }
+
+  // 2. Добавить покемона Мабой в список «пойманных» (показываем в инвентаре как трофей)
+  gs.caughtPokemon = gs.caughtPokemon || [];
+  const maboi = POKEMON_DATA.find(p=>p.name==='Мабой');
+  if(maboi) gs.caughtPokemon.push({...maboi, weight:'1.5'});
+
+  // 3. Открыть карту Побережье
+  gs.coastUnlocked = true;
+  const coastBtn = document.getElementById('map-btn-coast');
+  if(coastBtn) coastBtn.style.display='';
+
+  // 4. Бот купил вещь — добавить 4000 монет в киоск-платёж
+  initFirebase().then(ok=>{
+    if(ok) {
+      fb.get('kiosk_payments/' + myPlayerId + '/pending').then(snap=>{
+        const cur = snap.exists() ? (snap.val()||0) : 0;
+        fb.set('kiosk_payments/' + myPlayerId + '/pending', cur + 4000);
+      }).catch(()=>{
+        // Офлайн — просто добавить монеты сразу
+        gs.coins += 4000; updateCoins();
+        showToast('🤖 Бот заплатил 4000🪙 за вашу рыбу!');
+      });
+    } else {
+      gs.coins += 4000; updateCoins();
+      showToast('🤖 Бот заплатил 4000🪙!');
+    }
+  });
+
+  saveGame();
+  showToast('🎁 Стартовый пак получен! Удачной рыбалки!');
+  // Применить анимацию удочки
+  setTimeout(updateRodVisual, 300);
+}
+
+// ============================================================
+// 💬 ГЛОБАЛЬНЫЙ ЧАТ
+// ============================================================
+let chatOpen = false;
+let chatUnreadCount = 0;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chat-box').style.display = chatOpen ? 'block' : 'none';
+  if(chatOpen) {
+    chatUnreadCount = 0;
+    const u = document.getElementById('chat-unread');
+    u.style.display='none'; u.textContent='';
+    setTimeout(()=>{
+      const msgs = document.getElementById('chat-messages');
+      msgs.scrollTop = msgs.scrollHeight;
+      document.getElementById('chat-input').focus();
+    }, 50);
+  }
+}
+
+function sendChatMsg() {
+  const inp = document.getElementById('chat-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  initFirebase().then(ok=>{
+    if(!ok){ showToast('❌ Нет соединения для чата'); return; }
+    const msg = {
+      name: myPlayerName,
+      text: text,
+      ts: Date.now()
+    };
+    fb.set('global_chat/' + Date.now() + '_' + myPlayerId.slice(-4), msg).catch(()=>{});
+  });
+}
+
+function startChatListener() {
+  initFirebase().then(ok=>{
+    if(!ok) return;
+    // Слушаем последние 50 сообщений
+    const ref = fb.r('global_chat');
+    // Compat: .limitToLast
+    firebaseDB.ref('global_chat').limitToLast(50).on('child_added', snap=>{
+      const msg = snap.val();
+      if(!msg) return;
+      appendChatMsg(msg);
+      if(!chatOpen) {
+        chatUnreadCount++;
+        const u = document.getElementById('chat-unread');
+        u.textContent = chatUnreadCount > 9 ? '9+' : chatUnreadCount;
+        u.style.display = 'flex';
+      }
+    });
+  });
+}
+
+function appendChatMsg(msg) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg';
+  const t = new Date(msg.ts);
+  const time = t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');
+  const isMe = msg.name === myPlayerName;
+  div.innerHTML = '<span class="chat-time">' + time + '</span> '
+    + '<span class="chat-name"' + (isMe?' style="color:#f0d060"':'') + '>' + escapeHtml(msg.name) + '</span>: '
+    + escapeHtml(msg.text);
+  const msgs = document.getElementById('chat-messages');
+  msgs.appendChild(div);
+  // Ограничить 100 сообщений в DOM
+  while(msgs.children.length > 100) msgs.removeChild(msgs.firstChild);
+  if(chatOpen) msgs.scrollTop = msgs.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Enter для отправки
+document.addEventListener('DOMContentLoaded', ()=>{
+  const inp = document.getElementById('chat-input');
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') sendChatMsg(); });
+});
+
+
+
+// ============================================================
+// 🏆 СИСТЕМА УРОВНЕЙ
+// ============================================================
+const LEVEL_THRESHOLDS = [0,100,250,500,900,1500,2500,4000,6000,9000,13000,18000,25000,35000,50000,70000,100000,140000,200000,999999];
+const LEVEL_TITLES = ['Новичок','Рыбачок','Удильщик','Умелец','Мастер','Знаток','Рыбарь','Бывалый','Ветеран','Легенда','Морской Волк','Капитан','Адмирал','Нептун','Бог Рыбалки','Древний','Мифический','Вечный','Бессмертный','МАКСИМУМ'];
+
+function getLevel(xp) {
+  if(typeof LEVEL_THRESHOLDS === 'undefined') return 1;
+  for(let i=LEVEL_THRESHOLDS.length-1;i>=0;i--) if(xp>=LEVEL_THRESHOLDS[i]) return i+1;
+  return 1;
+}
+function getXpForNext(xp) {
+  const lv = getLevel(xp);
+  return lv < LEVEL_THRESHOLDS.length ? LEVEL_THRESHOLDS[lv] : LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length-1];
+}
+function addXP(amount) {
+  const prevLv = getLevel(gs.xp||0);
+  gs.xp = (gs.xp||0) + amount;
+  const newLv = getLevel(gs.xp);
+  updateLevelUI();
+  if(newLv > prevLv) {
+    onLevelUp(newLv);
+  }
+}
+function updateLevelUI() {
+  const lv = getLevel(gs.xp||0);
+  const xp = gs.xp||0;
+  const nextXp = getXpForNext(xp);
+  const prevXp = LEVEL_THRESHOLDS[lv-1]||0;
+  const pct = Math.min(100, Math.round((xp-prevXp)/(nextXp-prevXp)*100));
+  const el = document.getElementById('level-display');
+  if(el) el.textContent = 'Ур.' + lv;
+  const bar = document.getElementById('xp-bar-fill');
+  if(bar) bar.style.width = pct+'%';
+  const title = document.getElementById('level-title');
+  if(title) title.textContent = LEVEL_TITLES[lv-1]||'';
+}
+function onLevelUp(lv) {
+  // Бонус за левел-ап
+  const bonusCoins = lv * 50;
+  gs.coins += bonusCoins;
+  updateCoins();
+  // Анимация
+  const el = document.getElementById('levelup-anim');
+  if(el) {
+    el.textContent = '⬆️ УРОВЕНЬ ' + lv + '!';
+    el.style.display = 'block';
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = 'levelUpPop 2.5s ease forwards';
+    setTimeout(()=>{ el.style.display='none'; }, 2500);
+  }
+  showToast('🎉 Уровень ' + lv + '! +' + bonusCoins + '🪙 бонус! Ты: ' + LEVEL_TITLES[lv-1]);
+  saveGame();
+}
+
+// ============================================================
+// 🏅 ДОСТИЖЕНИЯ
+// ============================================================
+const ACHIEVEMENTS = [
+  {id:'first_fish',   name:'Первый улов',      icon:'🐟', desc:'Поймай первую рыбу',              cond:g=>g.fishCount>=1},
+  {id:'fish_10',      name:'Рыбак',            icon:'🎣', desc:'Поймай 10 рыб',                   cond:g=>g.fishCount>=10},
+  {id:'fish_100',     name:'Заядлый рыбак',    icon:'🏆', desc:'Поймай 100 рыб',                  cond:g=>g.fishCount>=100},
+  {id:'fish_500',     name:'Профессионал',      icon:'🌊', desc:'Поймай 500 рыб',                  cond:g=>g.fishCount>=500},
+  {id:'coins_1000',   name:'Копилка',           icon:'💰', desc:'Накопи 1000 монет',               cond:g=>g.coins>=1000},
+  {id:'coins_10000',  name:'Богач',             icon:'💎', desc:'Накопи 10000 монет',              cond:g=>g.coins>=10000},
+  {id:'legend_catch', name:'Охотник за легендами',icon:'⭐',desc:'Поймай легендарную рыбу',        cond:g=>g.inventory.some(f=>f.rar==='legend')||g.fishCount>0&&(g._caughtLegend||false)},
+  {id:'pokemon_10',   name:'Покемастер',        icon:'⚡', desc:'Поймай 10 покемонов',             cond:g=>g.pikaCatchCount>=10},
+  {id:'pokemon_50',   name:'Покемон-чемпион',   icon:'🔮', desc:'Поймай 50 покемонов',             cond:g=>g.pikaCatchCount>=50},
+  {id:'level_5',      name:'Опытный',           icon:'📈', desc:'Достигни 5 уровня',               cond:g=>getLevel(g.xp||0)>=5},
+  {id:'level_10',     name:'Мастер уровней',    icon:'🌟', desc:'Достигни 10 уровня',              cond:g=>getLevel(g.xp||0)>=10},
+  {id:'sell_all',     name:'Торгаш',            icon:'💱', desc:'Продай всё из инвентаря',         cond:g=>(g._soldAll||false)},
+  {id:'coast_catch',  name:'Морской охотник',   icon:'🏖️', desc:'Поймай рыбу на Побережье',       cond:g=>(g._coastCatch||false)},
+  {id:'duck_rod',     name:'Утиный магнат',     icon:'🦆', desc:'Поймай 20 рыб удочкой Утка',    cond:g=>(g._duckCatches||0)>=20},
+  {id:'streak_5',     name:'Серия',             icon:'🔥', desc:'5 уловов подряд без промаха',     cond:g=>(g.catchStreak||0)>=5},
+  {id:'streak_10',    name:'Огонь!',            icon:'🔥🔥',desc:'10 уловов подряд без промаха',   cond:g=>(g.catchStreak||0)>=10},
+];
+
+gs.achievements = gs.achievements || {};
+gs.catchStreak = gs.catchStreak || 0;
+
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a=>{
+    if(gs.achievements[a.id]) return;
+    if(a.cond(gs)) {
+      gs.achievements[a.id] = Date.now();
+      showAchievementToast(a);
+      addXP(200);
+      saveGame();
+    }
+  });
+}
+
+function showAchievementToast(a) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1a0a00,#3a1a00);border:2px solid #f0c040;border-radius:14px;padding:10px 18px;font-family:Neucha,cursive;font-size:13px;color:#f0d060;z-index:9999;text-align:center;box-shadow:0 4px 20px rgba(200,150,0,.5);animation:achieveIn .4s cubic-bezier(.34,1.56,.64,1) forwards;';
+  el.innerHTML = '<div style="font-size:22px">' + a.icon + '</div><div style="font-weight:bold">' + a.name + '</div><div style="font-size:11px;color:#c0a040">' + a.desc + '</div><div style="font-size:11px;color:#80ff80;margin-top:2px">+200 XP</div>';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
+}
+
+
+// ============================================================
+// 📋 ЕЖЕДНЕВНЫЕ ЗАДАНИЯ
+// ============================================================
+const QUEST_POOL = [
+  {id:'catch_5',    name:'Утренний улов',      icon:'🌅', desc:'Поймай 5 рыб',           type:'fish',    target:5,    reward:{coins:200,  xp:100}},
+  {id:'catch_15',   name:'Большая рыбалка',    icon:'🎣', desc:'Поймай 15 рыб',          type:'fish',    target:15,   reward:{coins:500,  xp:250}},
+  {id:'catch_epic', name:'Охота на эпиков',    icon:'💜', desc:'Поймай 3 эпических рыбы', type:'epic',    target:3,    reward:{coins:400,  xp:200}},
+  {id:'catch_legend',name:'Охота на легенды',  icon:'⭐', desc:'Поймай легендарную рыбу', type:'legend',  target:1,    reward:{coins:800,  xp:400}},
+  {id:'earn_coins', name:'Торговый день',       icon:'💰', desc:'Заработай 500 монет',    type:'coins',   target:500,  reward:{coins:300,  xp:150}},
+  {id:'pokemon_5',  name:'Покемон-охота',       icon:'⚡', desc:'Поймай 5 покемонов',     type:'pokemon', target:5,    reward:{coins:0,    xp:200, pikaCoins:50}},
+  {id:'no_miss_5',  name:'Точная подсечка',     icon:'🎯', desc:'5 уловов без промаха',   type:'streak',  target:5,    reward:{coins:350,  xp:180}},
+  {id:'sell_3',     name:'Рыбный рынок',        icon:'💱', desc:'Продай 3 рыбы',          type:'sell',    target:3,    reward:{coins:250,  xp:120}},
+];
+
+function getDailyQuests() {
+  const today = new Date().toDateString();
+  const saved = JSON.parse(localStorage.getItem('fishing_daily_quests')||'{}');
+  if(saved.date === today && saved.quests) return saved.quests;
+  // Генерировать 3 задания на день
+  const shuffled = [...QUEST_POOL].sort(()=>Math.random()-.5);
+  const quests = shuffled.slice(0,3).map(q=>({...q, progress:0, done:false}));
+  localStorage.setItem('fishing_daily_quests', JSON.stringify({date:today, quests}));
+  return quests;
+}
+
+function saveDailyQuests(quests) {
+  const today = new Date().toDateString();
+  localStorage.setItem('fishing_daily_quests', JSON.stringify({date:today, quests}));
+}
+
+function updateQuestProgress(type, amount=1) {
+  const quests = getDailyQuests();
+  let changed = false;
+  quests.forEach(q=>{
+    if(q.done) return;
+    if(q.type !== type) return;
+    q.progress = Math.min(q.target, (q.progress||0) + amount);
+    if(q.progress >= q.target) {
+      q.done = true;
+      claimQuestReward(q);
+      changed = true;
+    }
+    changed = true;
+  });
+  if(changed) {
+    saveDailyQuests(quests);
+    if(gs.currentScreen==='fishing') renderQuestPanel();
+  }
+}
+
+function claimQuestReward(q) {
+  if(q.reward.coins) { gs.coins += q.reward.coins; updateCoins(); }
+  if(q.reward.xp)    { addXP(q.reward.xp); }
+  if(q.reward.pikaCoins) { gs.pikaCoins += q.reward.pikaCoins; updatePikaCoins(); }
+  showToast('✅ Задание выполнено: ' + q.name + '! +' + (q.reward.coins||'') + (q.reward.coins?'🪙 ':'') + '+' + q.reward.xp + 'XP');
+  saveGame();
+}
+
+function renderQuestPanel() {
+  const panel = document.getElementById('quest-panel');
+  if(!panel) return;
+  const quests = getDailyQuests();
+  panel.innerHTML = '<div style="font-family:UnifrakturMaguntia,cursive;font-size:14px;color:#f0c840;margin-bottom:6px;text-align:center;">📋 Задания дня</div>';
+  quests.forEach(q=>{
+    const pct = Math.min(100, Math.round((q.progress||0)/q.target*100));
+    const done = q.done;
+    const bc = done?'#40c040':'#3a3020';
+    const tc = done?'#80ff80':'#d0b060';
+    const fc = done?'#40c040':'#c08020';
+    panel.innerHTML += '<div style="margin-bottom:5px;background:rgba(0,0,0,.3);border-radius:8px;padding:5px 7px;border:1px solid '+bc+'">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;">'
+      + '<span style="font-family:Neucha,cursive;font-size:11px;color:'+tc+'">'+q.icon+' '+q.name+'</span>'
+      + '<span style="font-family:Neucha,cursive;font-size:10px;color:#a08040">'+(q.progress||0)+'/'+q.target+'</span>'
+      + '</div>'
+      + '<div style="height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:3px">'
+      + '<div style="height:100%;width:'+pct+'%;background:'+fc+';border-radius:2px;transition:.3s"></div>'
+      + '</div></div>';
+  });
+}
+
+let questPanelOpen = false;
+function toggleQuestPanel() {
+  questPanelOpen = !questPanelOpen;
+  const panel = document.getElementById('quest-panel');
+  if(panel) {
+    panel.style.display = questPanelOpen ? 'block' : 'none';
+    if(questPanelOpen) renderQuestPanel();
+  }
+}
+
+
+function showAchievements() {
+  const popup = document.getElementById('achieve-popup');
+  if(popup.style.display !== 'none') { popup.style.display='none'; return; }
+  const total = ACHIEVEMENTS.length;
+  const earned = Object.keys(gs.achievements||{}).length;
+  popup.innerHTML = '<div style="font-family:UnifrakturMaguntia,cursive;font-size:16px;color:#f0c840;text-align:center;margin-bottom:8px;">🏅 Достижения ' + earned + '/' + total + '</div>';
+  ACHIEVEMENTS.forEach(a=>{
+    const done = !!(gs.achievements||{})[a.id];
+    popup.innerHTML += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:5px 8px;background:rgba(0,0,0,.3);border-radius:8px;border:1px solid '+(done?'#c0a030':'#2a2a1a')+';opacity:'+(done?'1':'.5')+'">'
+      + '<span style="font-size:20px">' + a.icon + '</span>'
+      + '<div><div style="font-family:Neucha,cursive;font-size:12px;color:'+(done?'#f0d060':'#808060')+'">' + a.name + '</div>'
+      + '<div style="font-family:Neucha,cursive;font-size:10px;color:#707050">' + a.desc + '</div></div>'
+      + (done ? '<span style="margin-left:auto;color:#80ff80;font-size:14px">✓</span>' : '') + '</div>';
+  });
+  popup.style.display = 'block';
+}
+
+// Закрыть достижения при клике вне
+document.addEventListener('click', e=>{
+  const popup = document.getElementById('achieve-popup');
+  const btn = document.getElementById('achieve-btn');
+  if(popup && !popup.contains(e.target) && btn && !btn.contains(e.target)) {
+    popup.style.display = 'none';
+  }
+  // Закрыть квест-панель
+  const qp = document.getElementById('quest-panel');
+  const qb = document.getElementById('quest-btn');
+  if(qp && qp.style.display !== 'none' && !qp.contains(e.target) && qb && !qb.contains(e.target)) {
+    qp.style.display = 'none';
+    questPanelOpen = false;
+  }
+});
+
+
+// ============================================================
+// 🌟 ОСОБЫЕ РЫБАЛОЧНЫЕ СОБЫТИЯ
+// ============================================================
+const SPECIAL_EVENTS = [
+  {id:'golden_hour',  name:'Золотой час!',    icon:'🌅', desc:'Монеты x2 на 60 сек',      duration:60000, effect:'coins_x2'},
+  {id:'fish_frenzy',  name:'Рыбный бум!',     icon:'🐠', desc:'Клёв x3 на 45 сек',        duration:45000, effect:'bite_x3'},
+  {id:'legend_moon',  name:'Луна Легенд!',    icon:'🌕', desc:'Только легенды 30 сек',     duration:30000, effect:'legend_only'},
+  {id:'xp_surge',     name:'XP Вспышка!',     icon:'⚡', desc:'XP x3 на 60 сек',          duration:60000, effect:'xp_x3'},
+  {id:'coin_rain',    name:'Дождь монет!',     icon:'💰', desc:'+500 монет бонус!',         duration:0,     effect:'instant_coins'},
+];
+
+gs.activeEvent = null;
+gs.eventEndTime = 0;
+
+function triggerRandomEvent() {
+  if(gs.activeEvent) return; // событие уже идёт
+  const ev = SPECIAL_EVENTS[Math.floor(Math.random()*SPECIAL_EVENTS.length)];
+  gs.activeEvent = ev.effect;
+  gs.eventEndTime = Date.now() + ev.duration;
+
+  if(ev.effect === 'instant_coins') {
+    gs.coins += 500; updateCoins(); coinBurst(180,350);
+    gs.activeEvent = null;
+    showEventBanner(ev, 0);
+    return;
+  }
+  showEventBanner(ev, ev.duration);
+  setTimeout(()=>{
+    gs.activeEvent = null;
+    gs.eventEndTime = 0;
+    hideEventBanner();
+  }, ev.duration);
+}
+
+function showEventBanner(ev, dur) {
+  let banner = document.getElementById('event-banner');
+  if(!banner) {
+    banner = document.createElement('div');
+    banner.id = 'event-banner';
+    banner.style.cssText = 'position:absolute;top:54px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,rgba(60,30,0,.95),rgba(100,60,0,.95));border:2px solid #f0c040;border-radius:12px;padding:6px 14px;font-family:Neucha,cursive;color:#f0d060;z-index:150;text-align:center;box-shadow:0 4px 16px rgba(200,140,0,.5);cursor:pointer;';
+    banner.onclick = ()=> hideEventBanner();
+    document.getElementById('fishing-screen').appendChild(banner);
+  }
+  const secs = Math.round(dur/1000);
+  banner.innerHTML = '<div style="font-size:18px">' + ev.icon + '</div><div style="font-size:13px;font-weight:bold">' + ev.name + '</div><div style="font-size:10px;color:#c0a040">' + ev.desc + (dur>0?' ('+secs+'с)':'') + '</div>';
+  banner.style.display = 'block';
+  if(dur > 0) setTimeout(()=>hideEventBanner(), dur);
+}
+
+function hideEventBanner() {
+  const b = document.getElementById('event-banner');
+  if(b) b.style.display='none';
+}
+
+// Событие каждые 2-5 минут
+function scheduleNextEvent() {
+  const delay = 120000 + Math.random()*180000; // 2-5 мин
+  setTimeout(()=>{
+    triggerRandomEvent();
+    scheduleNextEvent();
+  }, delay);
+}
+
+// Учёт событий в геймплее
+function getEventCoinMult()  { return gs.activeEvent==='coins_x2' ? 2 : 1; }
+function getEventBiteMult()  { return gs.activeEvent==='bite_x3' ? 3 : 1; }
+function getEventXPMult()    { return gs.activeEvent==='xp_x3' ? 3 : 1; }
+function isLegendOnlyEvent() { return gs.activeEvent==='legend_only'; }
+
+
+
+// Realtime listener — fires immediately when payment arrives, wherever seller is
+let _kioskPayListener = false;
+function startKioskPaymentListener() {
+  if(_kioskPayListener) return;
+  _kioskPayListener = true;
+  fb.on(`kiosk_payments/${myPlayerId}/pending`, snap => {
+    try {
+      const amount = snap.exists() ? (snap.val() || 0) : 0;
+      if(amount <= 0) return;
+      gs.coins += amount;
+      updateCoins();
+      fb.set(`kiosk_payments/${myPlayerId}/pending`, 0).catch(()=>{});
+      saveGame();
+      showToast('💰 Продажа в киоске: +' + amount + '🪙!');
+    } catch(e) {}
+  });
 }
 
 async function enterKiosk() {
@@ -3784,7 +4677,7 @@ async function enterKiosk() {
   renderKiosk();
   if(ok) {
     listenKioskMarket();
-    claimKioskPayments();
+    startKioskPaymentListener();
   }
 }
 
@@ -3939,12 +4832,13 @@ async function buyKioskListing(key) {
     if(s) s.owned++;
   }
   await fb.rm(`kiosk/${key}`);
-  // Give coins to seller — accumulate pending payment in Firebase
+  // Give coins to seller via Firebase — listener on seller's side will pick this up instantly
   try {
-    const paySnap = await fb.get(`kiosk_payments/${item.sellerId}/pending`);
+    const payRef = fb.r(`kiosk_payments/${item.sellerId}/pending`);
+    const paySnap = await window._fbGet(payRef);
     const cur = paySnap.exists() ? (paySnap.val() || 0) : 0;
-    await fb.set(`kiosk_payments/${item.sellerId}/pending`, cur + item.price);
-  } catch(e) {}
+    await window._fbSet(payRef, cur + item.price);
+  } catch(e) { console.warn('Payment write failed', e); }
   showToast(`✅ Куплено: ${item.name} за ${item.price}🪙!`);
   saveGame(); renderKiosk();
 }
@@ -3969,17 +4863,29 @@ async function cancelKioskListing(key) {
 // ROD VISUAL — Change rod appearance on fishing screen
 // ============================================================
 const ROD_COLORS = {
-  wood:   {color:'#8b5e2a', glow:'none'},
-  bamboo: {color:'#6a9030', glow:'0 0 8px rgba(100,160,40,.5)'},
-  carbon: {color:'#405868', glow:'0 0 8px rgba(60,100,120,.6)'},
-  magic:  {color:'#9040c0', glow:'0 0 16px rgba(160,50,255,.8)'},
-  golden: {color:'#d4a020', glow:'0 0 20px rgba(255,200,30,.9)'},
+  wood:       {color:'#8b5e2a', glow:'none'},
+  bamboo:     {color:'#6a9030', glow:'0 0 8px rgba(100,160,40,.5)'},
+  carbon:     {color:'#405868', glow:'0 0 8px rgba(60,100,120,.6)'},
+  magic:      {color:'#9040c0', glow:'0 0 16px rgba(160,50,255,.8)'},
+  golden:     {color:'#d4a020', glow:'0 0 20px rgba(255,200,30,.9)'},
+  rubberduck: {color:'#f0d020', glow:'0 0 14px rgba(255,220,0,.7)'},
+  crystal:    {color:'#a0e8ff', glow:'0 0 22px rgba(100,220,255,.9)'},
+  thunder:    {color:'#f0f040', glow:'0 0 28px rgba(255,255,50,1.0)'},
+  void:       {color:'#3010a0', glow:'0 0 30px rgba(80,0,200,.9)'},
 };
 
 function updateRodVisual() {
   const rod = gs.currentRod;
   const rc = ROD_COLORS[rod.id] || ROD_COLORS.wood;
   const rodBody = document.getElementById('rod-body');
+  // Применить анимацию по типу удочки
+  const animMap = {
+    rubberduck: 'duckWobble 1.2s ease-in-out infinite',
+    crystal:    'crystalShimmer 2s ease-in-out infinite',
+    thunder:    'thunderZap 3s steps(1) infinite',
+    void:       'voidPulse 2s ease-in-out infinite',
+  };
+  rodBody.style.animation = animMap[rod.id] || '';
   rodBody.style.background = `linear-gradient(to right, ${rc.color}80, ${rc.color}, ${rc.color}80)`;
   rodBody.style.boxShadow = rc.glow;
   // Update all rod rings color
@@ -4098,7 +5004,16 @@ function enterShopFromRoad() {
     const d = JSON.parse(raw);
     gs.pikaCoins = d.pikaCoins || 0;
     gs.pikaCatchCount = d.pikaCatchCount || 0;
-    if(d.mapMode) { gs.mapMode = d.mapMode; /* will be applied after DOM ready */ }
+    if(d.mapMode) { gs.mapMode = d.mapMode; }
+    gs.coastUnlocked = d.coastUnlocked || false;
+    gs.caughtPokemon = d.caughtPokemon || [];
+    gs.xp = d.xp || 0;
+    gs.achievements = d.achievements || {};
+    gs.catchStreak = d.catchStreak || 0;
+    gs._caughtLegend = d._caughtLegend || false;
+    gs._coastCatch = d._coastCatch || false;
+    gs._duckCatches = d._duckCatches || 0;
+    gs._soldAll = d._soldAll || false;
   } catch(e){}
 })();
 
@@ -4108,9 +5023,20 @@ function enterShopFromRoad() {
 setTimeout(()=>{
   updateRodVisual();
   updatePikaCoins();
+  updateLevelUI();
+  updateStreakUI();
   if(gs.mapMode === 'pokemon') setMap('pokemon');
+  if(gs.mapMode === 'coast') setMap('coast');
+  // Побережье: кнопку показывать только если разблокирована
+  if(!gs.coastUnlocked) {
+    const cb = document.getElementById('map-btn-coast');
+    if(cb) cb.style.display='none';
+  }
   // Check for pending kiosk payments on startup (sold while offline)
-  initFirebase().then(ok=>{ if(ok) claimKioskPayments(); });
+  initFirebase().then(ok=>{ if(ok) { startKioskPaymentListener(); startChatListener(); } });
+  scheduleNextEvent();
+  // Показать подарок при первом запуске
+  checkAndShowGift();
 }, 100);
 
 // Leaderboard auto-refresh when on lb screen
