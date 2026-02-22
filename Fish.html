@@ -370,13 +370,15 @@ body {
   position:absolute; bottom:60px; right:18px;
   width:35px; height:85%; z-index:15; pointer-events:none;
   transform-origin:bottom center;
+  overflow:visible;
 }
 #rod-body {
   position:absolute; bottom:0; right:6px; width:7px; height:93%;
   background:linear-gradient(to right,#2e1804,#7a4e20,#4e2e10,#2e1804);
   border-radius:3px 2px 0 0; transform-origin:bottom center;
   box-shadow:2px 0 4px rgba(0,0,0,.5);
-  transition:transform .3s ease-out;
+  transition:transform .3s ease-out, background .3s, box-shadow .3s;
+  overflow:visible;
 }
 #rod-body.casting { animation:rodCast .55s ease-out forwards; }
 @keyframes rodCast {
@@ -1671,6 +1673,59 @@ body {
 @keyframes quantumFlicker{0%{filter:drop-shadow(0 0 10px #ff00ff) hue-rotate(0deg)}50%{filter:drop-shadow(0 0 20px #00ffff) hue-rotate(180deg)}100%{filter:drop-shadow(0 0 10px #ff00ff) hue-rotate(360deg)}}
 @keyframes celestialGlow{0%{filter:drop-shadow(0 0 15px #ffffff) brightness(1.2)}100%{filter:drop-shadow(0 0 40px #ffffc0) brightness(1.6)}}
 @keyframes apocalypseShake{0%{transform:translate(0,0) rotate(-2deg) scale(1)}33%{transform:translate(-2px,2px) rotate(2deg) scale(1.02)}66%{transform:translate(2px,-1px) rotate(-1deg) scale(0.99)}100%{transform:translate(0,0) rotate(0deg) scale(1)}}
+@keyframes mechPulse{0%{filter:drop-shadow(0 0 6px #40c0e0)}50%{filter:drop-shadow(0 0 20px #00f8ff) brightness(1.3)}100%{filter:drop-shadow(0 0 6px #40c0e0)}}
+@keyframes cosmicSpin{0%{filter:drop-shadow(0 0 10px #c060ff) hue-rotate(0deg)}100%{filter:drop-shadow(0 0 30px #e090ff) hue-rotate(60deg)}}
+@keyframes demonicPulse{0%{filter:drop-shadow(0 0 8px #cc0020) brightness(1)}50%{filter:drop-shadow(0 0 28px #ff0030) brightness(1.4) saturate(1.5)}100%{filter:drop-shadow(0 0 8px #cc0020) brightness(1)}}
+@keyframes godlyShine{0%{filter:drop-shadow(0 0 16px #ffd700) brightness(1.2)}50%{filter:drop-shadow(0 0 50px #fff8a0) brightness(1.8) saturate(1.2)}100%{filter:drop-shadow(0 0 16px #ffd700) brightness(1.2)}}
+/* Big rod cards for ultra rods */
+.shop-item.ultra-rod {
+  background: linear-gradient(135deg, rgba(20,10,5,.95) 0%, rgba(40,20,10,.9) 100%);
+  border-width: 2px;
+  padding: 10px 10px 10px 8px;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.shop-item.ultra-rod::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 60%, rgba(255,200,50,.06));
+  pointer-events: none;
+}
+.shop-item.ultra-rod .shop-item-icon {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+.shop-item.ultra-rod .shop-item-icon svg {
+  width: 72px !important;
+  height: 72px !important;
+}
+.shop-item.ultra-rod .shop-item-name {
+  font-size: 15px;
+  font-weight: bold;
+  text-shadow: 0 0 8px currentColor;
+}
+.shop-item.ultra-rod .shop-item-stats {
+  font-size: 10px;
+  color: #a0d070;
+}
+.rod-tier-badge {
+  display: inline-block;
+  font-size: 8px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  vertical-align: middle;
+  margin-left: 4px;
+  font-family: 'Neucha', cursive;
+  letter-spacing: 0.5px;
+  font-weight: bold;
+}
+.rod-tier-mech    { background: linear-gradient(135deg,#1a6080,#40c0e0); color:#ffffff; border:1px solid #00f8ff; }
+.rod-tier-cosmic  { background: linear-gradient(135deg,#200840,#8040d0); color:#e0c0ff; border:1px solid #c060ff; }
+.rod-tier-demonic { background: linear-gradient(135deg,#300010,#880020); color:#ffaaaa; border:1px solid #cc0030; }
+.rod-tier-godly   { background: linear-gradient(135deg,#402000,#c08000); color:#fff8a0; border:1px solid #ffd700; box-shadow:0 0 6px rgba(255,215,0,.4); }
 </style>
 <!-- Firebase compat SDK v9 — reliable CDN URLs, no dynamic import() needed -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -2276,21 +2331,42 @@ body {
   <div id="toast"></div>
 
   <!-- ═══════════ 🐟 ПИРАНЬЯ АТАКА ═══════════ -->
-  <div id="piranha-overlay" style="display:none;position:absolute;inset:0;z-index:8000;background:rgba(180,0,0,.15);pointer-events:auto;">
-    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);text-align:center;pointer-events:none">
-      <div style="font-size:52px;animation:piranhaShake 0.2s linear infinite">🦷</div>
-      <div id="piranha-label" style="font-family:UnifrakturMaguntia,cursive;font-size:22px;color:#ff2020;text-shadow:0 0 16px #ff0000;margin-top:6px">ПИРАНЬЯ ВЦЕПИЛАСЬ!</div>
-      <div id="piranha-sub" style="font-family:Neucha,cursive;font-size:13px;color:#ffaaaa;margin-top:4px">Трясите телефон или жмите МНОГО РАЗ!</div>
-    </div>
-    <div style="position:absolute;bottom:160px;left:20px;right:20px;text-align:center;">
-      <button id="piranha-shake-btn" onclick="piranhaHit()" style="font-family:UnifrakturMaguntia,cursive;font-size:20px;background:linear-gradient(to bottom,#cc0000,#660000);border:3px solid #ff4040;border-radius:14px;padding:12px 36px;color:#fff;cursor:pointer;box-shadow:0 0 20px rgba(255,0,0,.6);animation:piranhaBtn 0.5s ease-in-out infinite alternate;">💥 ТРЯСИ!</button>
-      <div id="piranha-hp-wrap" style="margin-top:12px;">
-        <div style="font-family:Neucha,cursive;font-size:11px;color:#ff8080;margin-bottom:3px">Прочность укуса:</div>
-        <div style="height:14px;background:rgba(0,0,0,.5);border:2px solid #ff4040;border-radius:7px;overflow:hidden">
-          <div id="piranha-hp-fill" style="height:100%;background:linear-gradient(to right,#ff0000,#ff8000);transition:width 0.2s"></div>
+  <div id="piranha-overlay" style="display:none;position:absolute;inset:0;z-index:9000;background:rgba(120,0,0,.7);backdrop-filter:blur(2px);">
+    <!-- Центральная панель пираньи -->
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;text-align:center;background:linear-gradient(180deg,rgba(80,0,0,.97),rgba(40,0,0,.97));border:3px solid #ff2020;border-radius:20px;padding:20px 16px 24px;box-shadow:0 0 40px rgba(255,0,0,.8),inset 0 0 30px rgba(0,0,0,.5);">
+      <!-- Пиранья иконка -->
+      <div style="font-size:64px;animation:piranhaShake 0.15s linear infinite;line-height:1;margin-bottom:8px;filter:drop-shadow(0 0 16px #ff0000)">🦷</div>
+      <!-- Заголовок -->
+      <div id="piranha-label" style="font-family:UnifrakturMaguntia,cursive;font-size:24px;color:#ff2020;text-shadow:0 0 20px #ff0000,0 0 40px #ff0000;margin-bottom:4px">ПИРАНЬЯ!</div>
+      <!-- Подсказка -->
+      <div id="piranha-sub" style="font-family:Neucha,cursive;font-size:14px;color:#ffcccc;margin-bottom:16px">Жми кнопку МНОГО РАЗ!</div>
+      <!-- Шкала прогресса -->
+      <div id="piranha-hp-wrap" style="margin-bottom:14px;">
+        <div id="piranha-bar-label" style="font-family:Neucha,cursive;font-size:12px;color:#ff9080;margin-bottom:5px">Сила отпора — заполни до 100%!</div>
+        <div style="height:20px;background:rgba(0,0,0,.6);border:2px solid #ff4040;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(255,0,0,.4)">
+          <div id="piranha-hp-fill" style="height:100%;width:0%;background:linear-gradient(to right,#ff2000,#ff8000,#ffcc00);transition:width 0.1s;box-shadow:0 0 8px #ff4000"></div>
         </div>
       </div>
-      <div id="piranha-coins-txt" style="font-family:Neucha,cursive;font-size:13px;color:#ff8080;margin-top:8px"></div>
+      <!-- Счётчик -->
+      <div id="piranha-coins-txt" style="font-family:Neucha,cursive;font-size:13px;color:#ffaaaa;min-height:18px;margin-bottom:14px"></div>
+      <!-- ОГРОМНАЯ КНОПКА -->
+      <button id="piranha-shake-btn" onclick="piranhaHit()" style="
+        font-family:UnifrakturMaguntia,cursive;
+        font-size:28px;
+        background:linear-gradient(180deg,#ff2020,#880000);
+        border:4px solid #ff6060;
+        border-radius:18px;
+        padding:18px 0;
+        width:100%;
+        color:#fff;
+        cursor:pointer;
+        box-shadow:0 0 30px rgba(255,0,0,.8),0 6px 0 #440000;
+        animation:piranhaBtn 0.4s ease-in-out infinite alternate;
+        letter-spacing:2px;
+        text-shadow:0 2px 8px rgba(0,0,0,.8);
+        -webkit-tap-highlight-color:transparent;
+        touch-action:manipulation;
+      ">💥 БЕЙ!</button>
     </div>
   </div>
 
@@ -2491,20 +2567,20 @@ function saveGame() {
     energy: gs.energy,
     inventory: gs.inventory,
     maxInv: gs.maxInv,
-    currentRodId: gs.currentRod.id,
+    currentRodId: gs.currentRod ? gs.currentRod.id : 'wood',
     rods: RODS.map(r=>({id:r.id,owned:r.owned||false,equipped:r.equipped||false})),
     baits: BAITS.map(b=>({id:b.id,qty:b.qty})),
     lures: LURES.map(l=>({id:l.id,qty:l.qty})),
     upgrades: UPGRADES.map(u=>({id:u.id,owned:u.owned||false})),
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e){}
-  // Save extended fields
   try {
     const extra = {
-      pikaCoins: gs.pikaCoins,
-      pikaCatchCount: gs.pikaCatchCount,
-      mapMode: gs.mapMode,
+      pikaCoins: gs.pikaCoins || 0,
+      pikaCatchCount: gs.pikaCatchCount || 0,
+      mapMode: (gs.mapMode==='bum') ? 'normal' : (gs.mapMode || 'normal'),
       coastUnlocked: gs.coastUnlocked || false,
+      hardcoreUnlocked: gs.hardcoreUnlocked || false,
       caughtPokemon: gs.caughtPokemon || [],
       xp: gs.xp || 0,
       achievements: gs.achievements || {},
@@ -2513,6 +2589,7 @@ function saveGame() {
       _coastCatch: gs._coastCatch || false,
       _duckCatches: gs._duckCatches || 0,
       _soldAll: gs._soldAll || false,
+      sharkSkins: gs.sharkSkins || 0,
     };
     localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
   } catch(e){}
@@ -2529,7 +2606,8 @@ function loadGame() {
     gs.energy   = data.energy   ?? 65;
     gs.inventory= data.inventory?? [];
     gs.maxInv   = data.maxInv   ?? 20;
-    // Rods
+    // Rods — сначала сбросить все флаги, потом загрузить
+    RODS.forEach(r=>{ r.owned=false; r.equipped=false; });
     if(data.rods) data.rods.forEach(dr=>{ const r=RODS.find(x=>x.id===dr.id); if(r){r.owned=dr.owned;r.equipped=dr.equipped;} });
     // Baits
     if(data.baits) data.baits.forEach(db=>{ const b=BAITS.find(x=>x.id===db.id); if(b) b.qty=db.qty; });
@@ -2537,13 +2615,48 @@ function loadGame() {
     if(data.lures) data.lures.forEach(dl=>{ const l=LURES.find(x=>x.id===dl.id); if(l) l.qty=dl.qty; });
     // Upgrades
     if(data.upgrades) data.upgrades.forEach(du=>{ const u=UPGRADES.find(x=>x.id===du.id); if(u) u.owned=du.owned; });
-    // Current rod
-    const equippedRod = RODS.find(r=>r.equipped) || RODS[0];
+    // Current rod — по equipped, потом по currentRodId, потом первая
+    let equippedRod = RODS.find(r=>r.equipped);
+    if(!equippedRod && data.currentRodId) equippedRod = RODS.find(r=>r.id===data.currentRodId);
+    if(!equippedRod) equippedRod = RODS[0];
+    equippedRod.equipped = true;
+    equippedRod.owned = true;
     gs.currentRod = equippedRod;
-    if(!RODS[0].owned) RODS[0].owned = true;
+    RODS[0].owned = true;
     // Apply upgrade effects silently
     if(UPGRADES.find(u=>u.id==='bigger_bag')?.owned) gs.maxInv=30;
   } catch(e) { console.warn('Load failed', e); }
+  // Загрузить extra поля
+  try {
+    const rawExtra = localStorage.getItem('fishing_reborn_extra');
+    if(rawExtra) {
+      const extra = JSON.parse(rawExtra);
+      gs.pikaCoins        = extra.pikaCoins       ?? 0;
+      gs.pikaCatchCount   = extra.pikaCatchCount   ?? 0;
+      gs.mapMode          = extra.mapMode          ?? 'normal';
+      gs.coastUnlocked    = extra.coastUnlocked    ?? false;
+      gs.hardcoreUnlocked = extra.hardcoreUnlocked ?? false;
+      gs.caughtPokemon    = extra.caughtPokemon    ?? [];
+      gs.xp               = extra.xp               ?? 0;
+      gs.achievements     = extra.achievements     ?? {};
+      gs.catchStreak      = extra.catchStreak      ?? 0;
+      gs._caughtLegend    = extra._caughtLegend    ?? false;
+      gs._coastCatch      = extra._coastCatch      ?? false;
+      gs._duckCatches     = extra._duckCatches     ?? 0;
+      gs._soldAll         = extra._soldAll         ?? false;
+      gs.sharkSkins       = extra.sharkSkins       ?? 0;
+    }
+  } catch(e) { console.warn('Load extra failed', e); }
+  // КОМПЕНСАЦИЯ: +100 000 монет и все новые удочки (один раз)
+  if(!localStorage.getItem('fishing_rod_compensation_v1')) {
+    gs.coins = (gs.coins || 0) + 100000;
+    // Выдать все новые детальные удочки
+    ['mech','cosmic','demonic','godly'].forEach(id => {
+      const rod = RODS.find(r => r.id === id);
+      if(rod) rod.owned = true;
+    });
+    localStorage.setItem('fishing_rod_compensation_v1', '1');
+  }
 }
 
 // Auto-save every 15 seconds
@@ -5444,16 +5557,51 @@ function updateRodVisual() {
     quantum:    'quantumFlicker 0.8s steps(2) infinite',
     celestial:  'celestialGlow 2.5s ease-in-out infinite alternate',
     apocalypse: 'apocalypseShake 0.3s steps(3) infinite',
+    mech:       'mechPulse 1.5s ease-in-out infinite',
+    cosmic:     'cosmicSpin 3s linear infinite',
+    demonic:    'demonicPulse 1.2s ease-in-out infinite',
+    godly:      'godlyShine 1.8s ease-in-out infinite',
   };
   rodBody.style.animation = animMap[rod.id] || '';
-  rodBody.style.background = `linear-gradient(to right, ${rc.color}80, ${rc.color}, ${rc.color}80)`;
   rodBody.style.boxShadow = rc.glow;
-  // Update all rod rings color
+
+  // Градиент и ширина удочки — у крутых удочек толще
+  const fatRods = {mech:'#90e0f8,#4090b0,#90e0f8', cosmic:'#e060ff,#6020c0,#e060ff', demonic:'#ff1020,#800010,#ff1020', godly:'#fff8a0,#ffd700,#fff8a0'};
+  if(fatRods[rod.id]) {
+    rodBody.style.background = `linear-gradient(to right, ${fatRods[rod.id]})`;
+    rodBody.style.width = '10px';
+    rodBody.style.borderRadius = '5px 3px 0 0';
+  } else {
+    rodBody.style.background = `linear-gradient(to right, ${rc.color}80, ${rc.color}, ${rc.color}80)`;
+    rodBody.style.width = '';
+    rodBody.style.borderRadius = '';
+  }
+
+  // Обновить кольца
   document.querySelectorAll('#rod-body .rod-ring').forEach(r=>{
-    r.style.borderColor = rc.color;
+    r.style.background = `linear-gradient(to right, ${rc.color}88, ${rc.color}, ${rc.color}88)`;
+    r.style.boxShadow = rc.glow !== 'none' ? `0 0 6px ${rc.color}` : '';
   });
+
+  // Иконка удочки — показываем у верхнего края удочки
+  let existingBadge = document.getElementById('rod-icon-badge');
+  const ULTRA_ICONS = {mech:'⚙️', cosmic:'🌌', demonic:'💀', godly:'👑', void:'🌑', apocalypse:'💥', celestial:'✨', quantum:'⚛️', poseidon:'🔱', thunder:'⚡', crystal:'💎', shark:'🦈', dragon:'🔥', meteor:'☄️', magic:'✨', golden:'⭐', rubberduck:'🦆'};
+  if(ULTRA_ICONS[rod.id]) {
+    if(!existingBadge) {
+      existingBadge = document.createElement('div');
+      existingBadge.id = 'rod-icon-badge';
+      existingBadge.style.cssText = 'position:absolute;top:-2px;right:-14px;font-size:18px;line-height:1;pointer-events:none;z-index:25;filter:drop-shadow(0 0 4px currentColor);';
+      rodBody.appendChild(existingBadge);
+    }
+    existingBadge.textContent = ULTRA_ICONS[rod.id];
+    existingBadge.style.animation = animMap[rod.id] || 'iconFloat 2s ease-in-out infinite alternate';
+  } else if(existingBadge) {
+    existingBadge.remove();
+  }
+
   document.getElementById('current-rod-name').textContent = '🎣 '+rod.name;
   document.getElementById('current-rod-name').style.color = rc.color;
+  document.getElementById('current-rod-name').style.textShadow = rc.glow !== 'none' ? `0 0 8px ${rc.color}` : '';
 }
 
 
@@ -6140,54 +6288,7 @@ function upgradeToOgIfActive(fish) {
 }
 
 // ============================================================
-// SAVE EXTENDED — include sharkSkins
-// ============================================================
-const _origSaveGame = saveGame;
-function saveGame() {
-  // Call original first (already defined above, this is a redefinition)
-  const data = {
-    coins: gs.coins,
-    score: gs.score,
-    fishCount: gs.fishCount,
-    energy: gs.energy,
-    inventory: gs.inventory,
-    maxInv: gs.maxInv,
-    currentRodId: gs.currentRod.id,
-    rods: RODS.map(r=>({id:r.id,owned:r.owned||false,equipped:r.equipped||false})),
-    baits: BAITS.map(b=>({id:b.id,qty:b.qty})),
-    lures: LURES.map(l=>({id:l.id,qty:l.qty})),
-    upgrades: UPGRADES.map(u=>({id:u.id,owned:u.owned||false})),
-  };
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e){}
-  try {
-    const extra = {
-      pikaCoins: gs.pikaCoins,
-      pikaCatchCount: gs.pikaCatchCount,
-      mapMode: gs.mapMode,
-      coastUnlocked: gs.coastUnlocked || false,
-      caughtPokemon: gs.caughtPokemon || [],
-      xp: gs.xp || 0,
-      achievements: gs.achievements || {},
-      catchStreak: gs.catchStreak || 0,
-      _caughtLegend: gs._caughtLegend || false,
-      _coastCatch: gs._coastCatch || false,
-      _duckCatches: gs._duckCatches || 0,
-      _soldAll: gs._soldAll || false,
-      sharkSkins: gs.sharkSkins || 0,
-    };
-    localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
-  } catch(e){}
-}
-
-// Load sharkSkins
-(function loadSharkSkins() {
-  try {
-    const raw = localStorage.getItem('fishing_reborn_extra');
-    if(!raw) return;
-    const d = JSON.parse(raw);
-    gs.sharkSkins = d.sharkSkins || 0;
-  } catch(e){}
-})();
+// saveGame and extra loading handled by main saveGame/loadGame functions
 
 // ============================================================
 // TRIGGER BOSS ON STARTUP (first visit to this update)
@@ -6397,7 +6498,7 @@ function startPiranhaAttack() {
 
   const overlay = document.getElementById('piranha-overlay');
   if(overlay) overlay.style.display = 'flex';
-  updatePiranhaHp();
+  updatePiranhaHpV1();
 
   if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
   showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ В УДОЧКУ!');
@@ -6413,7 +6514,7 @@ function startPiranhaAttack() {
       const dy = Math.abs((acc.y||0) - lastY);
       const dz = Math.abs((acc.z||0) - lastZ);
       lastX=acc.x||0; lastY=acc.y||0; lastZ=acc.z||0;
-      if(dx+dy+dz > 15) piranhaHit();
+      if(dx+dy+dz > 15) piranhaHitV1();
     };
     window.addEventListener('devicemotion', window._piranhaShakeListener);
   }
@@ -6442,17 +6543,17 @@ function startPiranhaAttack() {
   }, 10000);
 }
 
-function piranhaHit() {
+function piranhaHitV1() {
   if(!piranhaStateV1.active) return;
   piranhaStateV1.hp -= 20 + Math.random()*15;
   if(navigator.vibrate) navigator.vibrate(50);
-  updatePiranhaHp();
+  updatePiranhaHpV1();
   if(piranhaStateV1.hp <= 0) {
     stopPiranhaAttack(true);
   }
 }
 
-function updatePiranhaHp() {
+function updatePiranhaHpV1() {
   const fill = document.getElementById('piranha-hp-fill');
   if(fill) fill.style.width = Math.max(0,piranhaStateV1.hp) + '%';
 }
@@ -6816,16 +6917,6 @@ function usePokeballBoost(idx) {
 // Extend RODS array with new ultra-detailed, ultra-expensive rods
 const HARDCORE_RODS = [
   {
-    id:'dragon',
-    name:'Драконья Кость',
-    desc:'Скована из костей дракона. Испускает огненные искры при забросе.',
-    price:50000,
-    biteChance:12.0, catchMult:10.0,
-    stats:'Клёв: x12 • Улов: x10 • Огненные искры • Редк.x3',
-    detail:'Гипер-Детальная',
-    owned:false, equipped:false
-  },
-  {
     id:'mech',
     name:'МехУдочка 9000',
     desc:'Механический шедевр с шестерёнками, поршнями и ИИ-чипом.',
@@ -7050,10 +7141,18 @@ const HARDCORE_ROD_SVGS = {
   };
 })();
 
-// Override renderRods to show detail badge and handle new rods
+// Override renderRods to show beautiful ultra-detailed cards for new rods
 (function patchRenderRodsHardcore(){
   const _prev = window.renderRods;
   window.renderRods = function(body) {
+    // Config for ultra rods
+    const ULTRA_RODS = {
+      mech:    { tier:'МЕХТИР',    tierClass:'rod-tier-mech',    borderColor:'#40c0e0', bgGrad:'rgba(0,40,60,.95),rgba(0,20,40,.9)',    anim:'mechPulse 1.5s ease-in-out infinite' },
+      cosmic:  { tier:'КОСМОС',    tierClass:'rod-tier-cosmic',   borderColor:'#c060ff', bgGrad:'rgba(20,0,60,.95),rgba(10,0,40,.9)',    anim:'cosmicSpin 3s linear infinite' },
+      demonic: { tier:'ДЕМОН',     tierClass:'rod-tier-demonic',  borderColor:'#cc0020', bgGrad:'rgba(50,0,10,.95),rgba(30,0,5,.9)',     anim:'demonicPulse 1.2s ease-in-out infinite' },
+      godly:   { tier:'БОГ-ТИЕР',  tierClass:'rod-tier-godly',    borderColor:'#ffd700', bgGrad:'rgba(50,35,0,.95),rgba(30,20,0,.9)',    anim:'godlyShine 1.8s ease-in-out infinite' },
+    };
+
     RODS.forEach(rod=>{
       const owned=rod.owned||false;
       const equipped=rod.equipped||false;
@@ -7076,18 +7175,50 @@ const HARDCORE_ROD_SVGS = {
         btnHtml=`<button class="shop-item-btn btn-buy-shop" onclick="buyRod('${rod.id}')"${canBuy?'':' style="opacity:.5"'}>Купить</button>`;
       }
 
-      const cls=equipped?'equipped':owned?'owned':'';
-      let nameHtml = rod.name;
-      if(rod.detail) nameHtml += `<span class="rod-detail-badge">${rod.detail}</span>`;
+      const ultra = ULTRA_RODS[rod.id];
 
-      const el=makeShopItem(
-        rodIconSVG(rod), nameHtml, rod.desc, rod.stats,
-        (owned||rod.craftable)?'':rod.price, btnHtml, cls
-      );
-      // Fix: name might have HTML so we set innerHTML for the name element
-      const nameEl = el.querySelector('.shop-item-name');
-      if(nameEl && rod.detail) nameEl.innerHTML = nameHtml;
-      body.appendChild(el);
+      if(ultra) {
+        // ═══ ULTRA ROD — big beautiful card ═══
+        const RC = ROD_COLORS[rod.id] || {color:'#ffd700'};
+        const svgContent = HARDCORE_ROD_SVGS[rod.id] || '';
+        const bigSvg = `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg"
+          style="width:72px;height:72px;filter:drop-shadow(0 0 12px ${RC.color});animation:${ultra.anim}">
+          <circle cx="26" cy="26" r="24" fill="rgba(0,0,0,.7)" stroke="${RC.color}" stroke-width="2.5"/>
+          ${svgContent}
+        </svg>`;
+
+        const nameWithBadge = `${rod.name}<span class="rod-tier-badge ${ultra.tierClass}">${ultra.tier}</span>`;
+        const cls = (equipped?'equipped':owned?'owned':'') + ' ultra-rod';
+        const el = makeShopItem(bigSvg, nameWithBadge, rod.desc, rod.stats,
+          owned?'':rod.price, btnHtml, cls);
+
+        // Apply custom border and bg
+        el.style.borderColor = ultra.borderColor;
+        el.style.boxShadow = `0 0 12px ${ultra.borderColor}55, inset 0 0 20px rgba(0,0,0,.3)`;
+        el.style.background = `linear-gradient(135deg, ${ultra.bgGrad})`;
+        if(equipped) el.style.boxShadow = `0 0 20px ${ultra.borderColor}aa, 0 0 40px ${ultra.borderColor}44`;
+
+        // Fix innerHTML for name badge
+        const nameEl = el.querySelector('.shop-item-name');
+        if(nameEl) {
+          nameEl.innerHTML = nameWithBadge;
+          nameEl.style.color = RC.color;
+          nameEl.style.textShadow = `0 0 10px ${RC.color}`;
+        }
+        body.appendChild(el);
+      } else {
+        // Normal rod card
+        const cls=equipped?'equipped':owned?'owned':'';
+        let nameHtml = rod.name;
+        if(rod.detail) nameHtml += `<span class="rod-detail-badge">${rod.detail}</span>`;
+        const el=makeShopItem(
+          rodIconSVG(rod), nameHtml, rod.desc, rod.stats,
+          (owned||rod.craftable)?'':rod.price, btnHtml, cls
+        );
+        const nameEl = el.querySelector('.shop-item-name');
+        if(nameEl && rod.detail) nameEl.innerHTML = nameHtml;
+        body.appendChild(el);
+      }
     });
   };
 })();
@@ -7266,48 +7397,60 @@ window.closeBossFight = function() {
 
 let piranhaState = {
   active: false,
-  hp: 100,
+  progress: 0,   // 0..100, надо заполнить до 100 кликами
   drainTimer: null,
   shakeTimer: null,
 };
 
 function spawnPiranha() {
   if(piranhaState.active) return;
-  if(gs.mapMode !== 'hardcore' && gs.mapMode !== 'normal') return; // Only on these maps
-  if(Math.random() > (gs.mapMode==='hardcore' ? 0.4 : 0.08)) return; // HC: 40%, normal: 8%
+  if(gs.mapMode !== 'hardcore' && gs.mapMode !== 'normal') return;
+  if(Math.random() > (gs.mapMode==='hardcore' ? 0.4 : 0.08)) return;
 
   piranhaState.active = true;
-  piranhaState.hp = 100;
-  gs.phase = 'piranha'; // Block fishing while fighting piranha
+  piranhaState.progress = 0;
+  gs.phase = 'piranha';
 
   const overlay = document.getElementById('piranha-overlay');
   overlay.style.display='block';
-  updatePiranhaHp();
 
-  showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ В УДОЧКУ! Тряси телефон или жми!');
+  // Обновить подпись — теперь шкала заполняется
+  const sub = document.getElementById('piranha-sub');
+  if(sub) sub.textContent = 'Жми МНОГО РАЗ чтобы заполнить шкалу и отбиться!';
+  const label = document.getElementById('piranha-hp-wrap');
+  if(label) {
+    const txt = label.querySelector('div');
+    if(txt) txt.textContent = 'Сила отпора:';
+  }
+  document.getElementById('piranha-coins-txt').textContent = '';
+
+  updatePiranhaHp();
+  showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ! Жми кнопку МНОГО РАЗ чтобы отбиться!');
   shakeScreen();
   if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
 
-  // Start coin drain
+  // Шкала медленно убывает если не кликать (пиранья давит)
   piranhaState.drainTimer = setInterval(()=>{
     if(!piranhaState.active) { clearInterval(piranhaState.drainTimer); return; }
-    if(gs.coins > 0) {
-      const drain = Math.min(gs.coins, 1000);
-      gs.coins -= drain;
+    piranhaState.progress = Math.max(0, piranhaState.progress - 3);
+    updatePiranhaHp();
+    if(piranhaState.progress <= 0) {
+      // Проигрыш — пиранья укусила, теряем монеты
+      clearInterval(piranhaState.drainTimer);
+      if(window._piranhaShakeHandler) window.removeEventListener('devicemotion', window._piranhaShakeHandler);
+      piranhaState.active = false;
+      overlay.style.display='none';
+      gs.phase='idle';
+      const lose = Math.min(gs.coins, 2000 + Math.floor(Math.random()*3000));
+      gs.coins = Math.max(0, gs.coins - lose);
       updateCoins();
-      document.getElementById('piranha-coins-txt').textContent = '💸 Пиранья съела -' + drain + '🪙! Осталось: ' + gs.coins + '🪙';
-      if(gs.coins <= 0) {
-        clearInterval(piranhaState.drainTimer);
-        piranhaState.active = false;
-        overlay.style.display='none';
-        gs.phase='idle';
-        setTimeout(triggerBumMap, 500);
-      }
+      showToast('💸 Пиранья укусила! Потеряно ' + lose + '🪙!');
+      if(navigator.vibrate) navigator.vibrate([500,100,500]);
       saveGame();
     }
-  }, 10000); // 1000 coins per 10 seconds
+  }, 800); // каждые 0.8 сек шкала падает если не кликать
 
-  // DevicMotion shake detection
+  // Shake detection
   if(window.DeviceMotionEvent) {
     window._piranhaShakeHandler = function(e) {
       if(!piranhaState.active) return;
@@ -7322,26 +7465,37 @@ function spawnPiranha() {
 
 function piranhaHit() {
   if(!piranhaState.active) return;
-  piranhaState.hp -= 8 + Math.floor(Math.random()*12);
+  // Каждый клик добавляет прогресс (нужно ~15-20 нажатий)
+  piranhaState.progress += 6 + Math.floor(Math.random()*4);
+  if(piranhaState.progress > 100) piranhaState.progress = 100;
   updatePiranhaHp();
-  if(piranhaState.hp <= 0) {
-    // Piranha defeated!
+
+  // Показываем счётчик
+  const coinsEl = document.getElementById('piranha-coins-txt');
+  if(coinsEl) coinsEl.textContent = '💥 ' + Math.floor(piranhaState.progress) + '% — ЖМИ ЕЩЁ!';
+
+  if(piranhaState.progress >= 100) {
+    // Победа!
     clearInterval(piranhaState.drainTimer);
     if(window._piranhaShakeHandler) window.removeEventListener('devicemotion', window._piranhaShakeHandler);
     piranhaState.active = false;
     document.getElementById('piranha-overlay').style.display='none';
     gs.phase='idle';
-    showToast('✅ Пиранья побеждена! Удочка спасена!');
-    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    const bonus = 500 + Math.floor(Math.random()*1000);
+    gs.coins += bonus;
+    updateCoins();
+    showToast('✅ Пиранья отогнана! +' + bonus + '🪙 за храбрость!');
+    if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
+    saveGame();
   }
 }
 
 function updatePiranhaHp() {
   const fill = document.getElementById('piranha-hp-fill');
-  if(fill) fill.style.width = Math.max(0,piranhaState.hp) + '%';
+  if(fill) fill.style.width = Math.max(0, piranhaState.progress) + '%';
 }
 
-// Schedule piranha attacks on hardcore map
+// Schedule piranha attacks
 setInterval(()=>{
   if(gs.mapMode==='hardcore' || gs.mapMode==='normal') {
     if(gs.phase==='idle') spawnPiranha();
@@ -7712,58 +7866,25 @@ window.renderGarden = function() {
   }
 };
 
-// ════════════════════════════════════════════════════════════
-// SAVE EXTENDED v3 — save all new fields
-// ════════════════════════════════════════════════════════════
-(function patchSaveForHardcore(){
-  const _prev = window.saveGame;
-  window.saveGame = function() {
-    const data = {
-      coins: gs.coins, score: gs.score, fishCount: gs.fishCount, energy: gs.energy,
-      inventory: gs.inventory, maxInv: gs.maxInv, currentRodId: gs.currentRod.id,
-      rods: RODS.map(r=>({id:r.id,owned:r.owned||false,equipped:r.equipped||false})),
-      baits: BAITS.map(b=>({id:b.id,qty:b.qty})),
-      lures: LURES.map(l=>({id:l.id,qty:l.qty})),
-      upgrades: UPGRADES.map(u=>({id:u.id,owned:u.owned||false})),
-    };
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e){}
-    try {
-      const extra = {
-        pikaCoins:gs.pikaCoins, pikaCatchCount:gs.pikaCatchCount,
-        mapMode: gs.mapMode==='bum'?'normal':gs.mapMode, // don't save bum map
-        coastUnlocked:gs.coastUnlocked||false,
-        hardcoreUnlocked:gs.hardcoreUnlocked||false,
-        caughtPokemon:gs.caughtPokemon||[],
-        xp:gs.xp||0, achievements:gs.achievements||{},
-        catchStreak:gs.catchStreak||0,
-        _caughtLegend:gs._caughtLegend||false,
-        _coastCatch:gs._coastCatch||false,
-        _duckCatches:gs._duckCatches||0,
-        _soldAll:gs._soldAll||false,
-        sharkSkins:gs.sharkSkins||0,
-      };
-      localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
-    } catch(e){}
-  };
-})();
-
-// Load hardcoreUnlocked on startup
-(function loadHardcoreFlag(){
-  try {
-    const raw = localStorage.getItem('fishing_reborn_extra');
-    if(!raw) return;
-    const d = JSON.parse(raw);
-    gs.hardcoreUnlocked = d.hardcoreUnlocked || false;
-    if(gs.hardcoreUnlocked) {
-      const btn = document.getElementById('map-btn-hardcore');
-      if(btn) btn.style.display='';
-    }
-  } catch(e){}
-  // Also unlock if boss was killed
-  if(localStorage.getItem(BOSS_KEY)) {
+// 🎮 Применить флаги после загрузки
+(function applyLoadedFlags(){
+  if(gs.hardcoreUnlocked || localStorage.getItem(BOSS_KEY)) {
     gs.hardcoreUnlocked = true;
     const btn = document.getElementById('map-btn-hardcore');
     if(btn) btn.style.display='';
+  }
+  if(gs.coastUnlocked) {
+    const btn = document.getElementById('map-btn-coast');
+    if(btn) btn.style.display='';
+  }
+  if(gs.currentRod) {
+    const el = document.getElementById('current-rod-name');
+    if(el) el.textContent = 'Удочка: ' + gs.currentRod.name;
+  }
+  // Показать тост о компенсации один раз
+  if(!localStorage.getItem('fishing_comp_toast_shown')) {
+    localStorage.setItem('fishing_comp_toast_shown','1');
+    setTimeout(()=>{ if(typeof showToast==='function') showToast('🎁 КОМПЕНСАЦИЯ: +100 000🪙 + МехУдочка + Космическая + Демоническая + Удочка Богов!'); }, 1500);
   }
 })();
 
