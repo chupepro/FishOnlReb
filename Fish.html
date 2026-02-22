@@ -3763,12 +3763,29 @@ async function syncLeaderboard() {
 // ============================================================
 let kioskListings = {}; // Local cache of market
 
+async function claimKioskPayments() {
+  try {
+    const snap = await fb.get(`kiosk_payments/${myPlayerId}/pending`);
+    if(!snap.exists()) return;
+    const amount = snap.val() || 0;
+    if(amount <= 0) return;
+    gs.coins += amount;
+    updateCoins();
+    await fb.set(`kiosk_payments/${myPlayerId}/pending`, 0);
+    saveGame();
+    showToast(`U0001F4B0 Получено от продаж в киоске: +${amount}U0001F9B8!`);
+  } catch(e) {}
+}
+
 async function enterKiosk() {
   const ok = await initFirebase();
   showGardenScene('kiosk');
   updatePlayerLocation('kiosk');
   renderKiosk();
-  if(ok) listenKioskMarket();
+  if(ok) {
+    listenKioskMarket();
+    claimKioskPayments();
+  }
 }
 
 function leaveKiosk() {
@@ -3922,8 +3939,12 @@ async function buyKioskListing(key) {
     if(s) s.owned++;
   }
   await fb.rm(`kiosk/${key}`);
-  // Give coins to seller via firebase
-  await fb.upd(`kiosk_payments/${item.sellerId}`, {pending: item.price}).catch(()=>{});
+  // Give coins to seller — accumulate pending payment in Firebase
+  try {
+    const paySnap = await fb.get(`kiosk_payments/${item.sellerId}/pending`);
+    const cur = paySnap.exists() ? (paySnap.val() || 0) : 0;
+    await fb.set(`kiosk_payments/${item.sellerId}/pending`, cur + item.price);
+  } catch(e) {}
   showToast(`✅ Куплено: ${item.name} за ${item.price}🪙!`);
   saveGame(); renderKiosk();
 }
@@ -4088,6 +4109,8 @@ setTimeout(()=>{
   updateRodVisual();
   updatePikaCoins();
   if(gs.mapMode === 'pokemon') setMap('pokemon');
+  // Check for pending kiosk payments on startup (sold while offline)
+  initFirebase().then(ok=>{ if(ok) claimKioskPayments(); });
 }, 100);
 
 // Leaderboard auto-refresh when on lb screen
