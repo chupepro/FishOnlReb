@@ -1617,8 +1617,6 @@ body {
 .craft-rod-btn:active{transform:scale(.94);}
 .craft-rod-btn:disabled{opacity:.5;cursor:default;}
 /* ═══ Piranha ═══ */
-@keyframes piranhaShake{0%{transform:rotate(-10deg) scale(1.1)}50%{transform:rotate(10deg) scale(1.2)}100%{transform:rotate(-10deg) scale(1.1)}}
-@keyframes piranhaBtn{0%{box-shadow:0 0 10px rgba(255,0,0,.4)}100%{box-shadow:0 0 30px rgba(255,0,0,.9)}}
 
 /* ═══ Pokeball ═══ */
 @keyframes pokeballSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
@@ -2332,44 +2330,6 @@ body {
   <div id="toast"></div>
 
   <!-- ═══════════ 🐟 ПИРАНЬЯ АТАКА ═══════════ -->
-  <div id="piranha-overlay" style="display:none;position:absolute;inset:0;z-index:9000;background:rgba(120,0,0,.7);backdrop-filter:blur(2px);">
-    <!-- Центральная панель пираньи -->
-    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;text-align:center;background:linear-gradient(180deg,rgba(80,0,0,.97),rgba(40,0,0,.97));border:3px solid #ff2020;border-radius:20px;padding:20px 16px 24px;box-shadow:0 0 40px rgba(255,0,0,.8),inset 0 0 30px rgba(0,0,0,.5);">
-      <!-- Пиранья иконка -->
-      <div style="font-size:64px;animation:piranhaShake 0.15s linear infinite;line-height:1;margin-bottom:8px;filter:drop-shadow(0 0 16px #ff0000)">🦷</div>
-      <!-- Заголовок -->
-      <div id="piranha-label" style="font-family:UnifrakturMaguntia,cursive;font-size:24px;color:#ff2020;text-shadow:0 0 20px #ff0000,0 0 40px #ff0000;margin-bottom:4px">ПИРАНЬЯ!</div>
-      <!-- Подсказка -->
-      <div id="piranha-sub" style="font-family:Neucha,cursive;font-size:14px;color:#ffcccc;margin-bottom:16px">Жми кнопку МНОГО РАЗ!</div>
-      <!-- Шкала прогресса -->
-      <div id="piranha-hp-wrap" style="margin-bottom:14px;">
-        <div id="piranha-bar-label" style="font-family:Neucha,cursive;font-size:12px;color:#ff9080;margin-bottom:5px">Сила отпора — заполни до 100%!</div>
-        <div style="height:20px;background:rgba(0,0,0,.6);border:2px solid #ff4040;border-radius:10px;overflow:hidden;box-shadow:0 0 8px rgba(255,0,0,.4)">
-          <div id="piranha-hp-fill" style="height:100%;width:0%;background:linear-gradient(to right,#ff2000,#ff8000,#ffcc00);transition:width 0.1s;box-shadow:0 0 8px #ff4000"></div>
-        </div>
-      </div>
-      <!-- Счётчик -->
-      <div id="piranha-coins-txt" style="font-family:Neucha,cursive;font-size:13px;color:#ffaaaa;min-height:18px;margin-bottom:14px"></div>
-      <!-- ОГРОМНАЯ КНОПКА -->
-      <button id="piranha-shake-btn" onclick="piranhaHit()" style="
-        font-family:UnifrakturMaguntia,cursive;
-        font-size:28px;
-        background:linear-gradient(180deg,#ff2020,#880000);
-        border:4px solid #ff6060;
-        border-radius:18px;
-        padding:18px 0;
-        width:100%;
-        color:#fff;
-        cursor:pointer;
-        box-shadow:0 0 30px rgba(255,0,0,.8),0 6px 0 #440000;
-        animation:piranhaBtn 0.4s ease-in-out infinite alternate;
-        letter-spacing:2px;
-        text-shadow:0 2px 8px rgba(0,0,0,.8);
-        -webkit-tap-highlight-color:transparent;
-        touch-action:manipulation;
-      ">💥 БЕЙ!</button>
-    </div>
-  </div>
 
   <!-- ═══════════ ⚽ ПОКЕБОЛ С БУСТОМ ═══════════ -->
   <div id="pokeball-catch-overlay" style="display:none;position:absolute;inset:0;z-index:7500;pointer-events:auto;background:rgba(0,0,0,.7);">
@@ -3131,7 +3091,6 @@ function triggerBite() {
     bobWrap.style.animation='floatBite .9s ease-in-out 4';
     biteEl.classList.add('visible');
     if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
-    // 40% chance piranha attacks!
     if(Math.random() < 0.40) {
       setTimeout(startPiranhaAttack, 500);
     }
@@ -4527,7 +4486,6 @@ function setMap(mode) {
   if(bumBadge) bumBadge.style.display='none';
   if(hcBar)    hcBar.style.display='none';
   // Stop piranha and boss loops if switching
-  stopPiranhaAttack();
   stopHcBossLoop();
 
   if(mode === 'pokemon') {
@@ -6485,104 +6443,6 @@ function hoboEscape() {
 // ============================================================
 // 🦷 ПИРАНЬЯ — Piranha attack system
 // ============================================================
-let piranhaStateV1 = {
-  active: false,
-  hp: 100,
-  lossTimer: null,
-  shakeInterval: null,
-};
-
-function startPiranhaAttack() {
-  if(piranhaStateV1.active) return;
-  // Check shield
-  if(gs._piranhaShield) {
-    gs._piranhaShield = false;
-    showToast('🛡️ Щит Пираньи сработал! Атака отбита!');
-    return;
-  }
-  piranhaStateV1.active = true;
-  piranhaStateV1.hp = 100;
-  gs.phase = 'piranha'; // freeze fishing
-
-  const overlay = document.getElementById('piranha-overlay');
-  if(overlay) overlay.style.display = 'flex';
-  updatePiranhaHpV1();
-
-  if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
-  showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ В УДОЧКУ!');
-
-  // Shake detection
-  let lastX=0, lastY=0, lastZ=0;
-  if(window.DeviceMotionEvent) {
-    window._piranhaShakeListener = (e) => {
-      if(!piranhaStateV1.active) return;
-      const acc = e.accelerationIncludingGravity;
-      if(!acc) return;
-      const dx = Math.abs((acc.x||0) - lastX);
-      const dy = Math.abs((acc.y||0) - lastY);
-      const dz = Math.abs((acc.z||0) - lastZ);
-      lastX=acc.x||0; lastY=acc.y||0; lastZ=acc.z||0;
-      if(dx+dy+dz > 15) piranhaHitV1();
-    };
-    window.addEventListener('devicemotion', window._piranhaShakeListener);
-  }
-
-  // Drain money if not removed in time
-  piranhaStateV1.lossTimer = setInterval(()=>{
-    if(!piranhaStateV1.active) { clearInterval(piranhaStateV1.lossTimer); return; }
-    const loss = 1000;
-    gs.coins = Math.max(0, gs.coins - loss);
-    updateCoins();
-    const txt = document.getElementById('piranha-coins-txt');
-    if(txt) txt.textContent = `🦷 Пиранья ест монеты! -${loss}🪙! Осталось: ${gs.coins}🪙`;
-    if(navigator.vibrate) navigator.vibrate(200);
-    // Check bankruptcy on any map
-    if(gs.coins <= 0 && gs.mapMode === 'hardcore') {
-      stopPiranhaAttack();
-      triggerHcBankruptcy();
-    }
-    if(gs.coins <= 0 && gs.mapMode !== 'hardcore') {
-      stopPiranhaAttack();
-      setMap('hobo');
-      const hbtn = document.getElementById('map-btn-hobo');
-      if(hbtn) hbtn.style.display='';
-      showToast('🏚️ Пиранья съела ВСЕ деньги! Бомжатня...');
-    }
-  }, 10000);
-}
-
-function piranhaHitV1() {
-  if(!piranhaStateV1.active) return;
-  piranhaStateV1.hp -= 20 + Math.random()*15;
-  if(navigator.vibrate) navigator.vibrate(50);
-  updatePiranhaHpV1();
-  if(piranhaStateV1.hp <= 0) {
-    stopPiranhaAttack(true);
-  }
-}
-
-function updatePiranhaHpV1() {
-  const fill = document.getElementById('piranha-hp-fill');
-  if(fill) fill.style.width = Math.max(0,piranhaStateV1.hp) + '%';
-}
-
-function stopPiranhaAttack(success) {
-  if(!piranhaStateV1.active && !success) return;
-  piranhaStateV1.active = false;
-  clearInterval(piranhaStateV1.lossTimer);
-  if(window._piranhaShakeListener) {
-    window.removeEventListener('devicemotion', window._piranhaShakeListener);
-    window._piranhaShakeListener = null;
-  }
-  const overlay = document.getElementById('piranha-overlay');
-  if(overlay) overlay.style.display='none';
-  if(success) {
-    showToast('✅ ПИРАНЬЯ СБРОШЕНА! Продолжай рыбалку!');
-  }
-  // Resume fishing
-  if(gs.phase === 'piranha') gs.phase = 'idle';
-}
-
 // ============================================================
 // 🔴 POKEBALL BOOST SYSTEM — Revorked
 // ============================================================
@@ -6691,7 +6551,6 @@ function applyPokeballBoost(boost) {
       showToast(`👑 Покебол Буст: Следующая рыба — OG!`);
       break;
     case 'pirana_shield':
-      gs._piranhaShield = true;
       showToast(`🛡️ Покебол Буст: Следующая пиранья = пропуск!`);
       break;
     case 'jackpot':
@@ -7355,113 +7214,6 @@ window.closeBossFight = function() {
 // ════════════════════════════════════════════════════════════
 // 🦷 ПИРАНЬЯ МЕХАНИКА
 // ════════════════════════════════════════════════════════════
-
-let piranhaState = {
-  active: false,
-  progress: 0,   // 0..100, надо заполнить до 100 кликами
-  drainTimer: null,
-  shakeTimer: null,
-};
-
-function spawnPiranha() {
-  if(piranhaState.active) return;
-  if(gs.mapMode !== 'hardcore' && gs.mapMode !== 'normal') return;
-  if(Math.random() > (gs.mapMode==='hardcore' ? 0.4 : 0.08)) return;
-
-  piranhaState.active = true;
-  piranhaState.progress = 0;
-  gs.phase = 'piranha';
-
-  const overlay = document.getElementById('piranha-overlay');
-  overlay.style.display='block';
-
-  // Обновить подпись — теперь шкала заполняется
-  const sub = document.getElementById('piranha-sub');
-  if(sub) sub.textContent = 'Жми МНОГО РАЗ чтобы заполнить шкалу и отбиться!';
-  const label = document.getElementById('piranha-hp-wrap');
-  if(label) {
-    const txt = label.querySelector('div');
-    if(txt) txt.textContent = 'Сила отпора:';
-  }
-  document.getElementById('piranha-coins-txt').textContent = '';
-
-  updatePiranhaHp();
-  showToast('🦷 ПИРАНЬЯ ВЦЕПИЛАСЬ! Жми кнопку МНОГО РАЗ чтобы отбиться!');
-  shakeScreen();
-  if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
-
-  // Шкала медленно убывает если не кликать (пиранья давит)
-  piranhaState.drainTimer = setInterval(()=>{
-    if(!piranhaState.active) { clearInterval(piranhaState.drainTimer); return; }
-    piranhaState.progress = Math.max(0, piranhaState.progress - 3);
-    updatePiranhaHp();
-    if(piranhaState.progress <= 0) {
-      // Проигрыш — пиранья укусила, теряем монеты
-      clearInterval(piranhaState.drainTimer);
-      if(window._piranhaShakeHandler) window.removeEventListener('devicemotion', window._piranhaShakeHandler);
-      piranhaState.active = false;
-      overlay.style.display='none';
-      gs.phase='idle';
-      const lose = Math.min(gs.coins, 2000 + Math.floor(Math.random()*3000));
-      gs.coins = Math.max(0, gs.coins - lose);
-      updateCoins();
-      showToast('💸 Пиранья укусила! Потеряно ' + lose + '🪙!');
-      if(navigator.vibrate) navigator.vibrate([500,100,500]);
-      saveGame();
-    }
-  }, 800); // каждые 0.8 сек шкала падает если не кликать
-
-  // Shake detection
-  if(window.DeviceMotionEvent) {
-    window._piranhaShakeHandler = function(e) {
-      if(!piranhaState.active) return;
-      const acc = e.acceleration || e.accelerationIncludingGravity;
-      if(!acc) return;
-      const total = Math.abs(acc.x||0)+Math.abs(acc.y||0)+Math.abs(acc.z||0);
-      if(total > 20) piranhaHit();
-    };
-    window.addEventListener('devicemotion', window._piranhaShakeHandler);
-  }
-}
-
-function piranhaHit() {
-  if(!piranhaState.active) return;
-  // Каждый клик добавляет прогресс (нужно ~15-20 нажатий)
-  piranhaState.progress += 6 + Math.floor(Math.random()*4);
-  if(piranhaState.progress > 100) piranhaState.progress = 100;
-  updatePiranhaHp();
-
-  // Показываем счётчик
-  const coinsEl = document.getElementById('piranha-coins-txt');
-  if(coinsEl) coinsEl.textContent = '💥 ' + Math.floor(piranhaState.progress) + '% — ЖМИ ЕЩЁ!';
-
-  if(piranhaState.progress >= 100) {
-    // Победа!
-    clearInterval(piranhaState.drainTimer);
-    if(window._piranhaShakeHandler) window.removeEventListener('devicemotion', window._piranhaShakeHandler);
-    piranhaState.active = false;
-    document.getElementById('piranha-overlay').style.display='none';
-    gs.phase='idle';
-    const bonus = 500 + Math.floor(Math.random()*1000);
-    gs.coins += bonus;
-    updateCoins();
-    showToast('✅ Пиранья отогнана! +' + bonus + '🪙 за храбрость!');
-    if(navigator.vibrate) navigator.vibrate([100,50,100,50,100]);
-    saveGame();
-  }
-}
-
-function updatePiranhaHp() {
-  const fill = document.getElementById('piranha-hp-fill');
-  if(fill) fill.style.width = Math.max(0, piranhaState.progress) + '%';
-}
-
-// Schedule piranha attacks
-setInterval(()=>{
-  if(gs.mapMode==='hardcore' || gs.mapMode==='normal') {
-    if(gs.phase==='idle') spawnPiranha();
-  }
-}, 20000 + Math.random()*15000);
 
 // ════════════════════════════════════════════════════════════
 // 🧟 БОМЖАТСКАЯ КАРТА
