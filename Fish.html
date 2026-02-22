@@ -1429,6 +1429,190 @@ body {
   50%{filter:drop-shadow(0 0 18px #6020e0)}
   100%{filter:drop-shadow(0 0 6px #3010a0)}
 }
+
+/* ═══════════════════════════════════════════
+   OG RARITY
+═══════════════════════════════════════════ */
+.rarity-og {
+  background:linear-gradient(135deg,#ff40ff,#40c8ff,#ffd040,#ff40ff);
+  background-size:300% 300%;
+  animation:ogRainbow 2s linear infinite;
+  color:#fff; font-weight:bold; text-shadow:0 0 8px #fff;
+  padding:2px 10px; border-radius:8px; font-size:12px;
+  box-shadow:0 0 14px rgba(255,100,255,.7);
+}
+@keyframes ogRainbow{0%{background-position:0%}100%{background-position:300%}}
+
+/* ═══════════════════════════════════════════
+   BOSS FIGHT OVERLAY
+═══════════════════════════════════════════ */
+#boss-overlay {
+  display:none;
+  position:absolute; inset:0; z-index:9999;
+  background:#000;
+  flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+#boss-overlay.active { display:flex; }
+
+/* Cutscene layer */
+#boss-cutscene {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:2;
+}
+.boss-cs-text {
+  font-family:'UnifrakturMaguntia',cursive;
+  font-size:22px; color:#40e8ff;
+  text-shadow:0 0 20px #40e8ff, 0 0 40px rgba(0,200,255,.5);
+  text-align:center; padding:0 20px; opacity:0;
+  animation:csTextIn 0.8s ease forwards;
+}
+@keyframes csTextIn{0%{opacity:0;transform:scale(.7)}100%{opacity:1;transform:scale(1)}}
+
+.boss-cs-sub {
+  font-family:'Neucha',cursive; font-size:14px; color:#a0e8ff;
+  text-align:center; padding:8px 20px; opacity:0;
+  animation:csTextIn 0.8s 0.4s ease forwards;
+  max-width:320px; line-height:1.5;
+}
+
+/* Ocean BG animation */
+#boss-ocean {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom,#000510 0%,#001428 40%,#002850 100%);
+  overflow:hidden;
+}
+.boss-wave {
+  position:absolute; left:-50%; width:200%; height:60px;
+  background:linear-gradient(to bottom,transparent,rgba(0,80,160,.3),transparent);
+  border-radius:50%;
+  animation:bossWave var(--bwt,6s) ease-in-out infinite alternate;
+}
+@keyframes bossWave{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(5%) translateY(-10px)}}
+
+/* Shark silhouette */
+#boss-shark-wrap {
+  position:relative; z-index:3;
+  animation:sharkEmerge 2s ease forwards;
+}
+@keyframes sharkEmerge{
+  0%{transform:translateY(120px) scale(0.6);opacity:0}
+  60%{opacity:1}
+  100%{transform:translateY(0) scale(1);opacity:1}
+}
+#boss-shark-svg {
+  filter:drop-shadow(0 0 30px rgba(0,200,255,.8)) drop-shadow(0 0 60px rgba(0,100,200,.4));
+  animation:sharkFloat 2s ease-in-out infinite alternate;
+}
+@keyframes sharkFloat{0%{transform:translateY(0) rotate(-2deg)}100%{transform:translateY(-12px) rotate(2deg)}}
+
+/* HP bar */
+#boss-hp-wrap {
+  position:absolute; top:70px; left:20px; right:20px; z-index:10;
+}
+#boss-hp-label {
+  font-family:'UnifrakturMaguntia',cursive; font-size:18px; color:#ff4040;
+  text-shadow:0 0 12px #ff0000; text-align:center; margin-bottom:4px;
+  animation:bossHpGlow 1s ease-in-out infinite alternate;
+}
+@keyframes bossHpGlow{0%{text-shadow:0 0 8px #ff0000}100%{text-shadow:0 0 24px #ff8000}}
+#boss-hp-bar-bg {
+  height:18px; background:rgba(0,0,0,.6); border:2px solid #ff4040;
+  border-radius:9px; overflow:hidden;
+  box-shadow:0 0 10px rgba(255,0,0,.4);
+}
+#boss-hp-fill {
+  height:100%; width:100%;
+  background:linear-gradient(to right,#ff0000,#ff6000,#ffcc00);
+  transition:width 0.5s;
+  animation:hpShimmer 1s linear infinite;
+}
+@keyframes hpShimmer{
+  0%{filter:brightness(1)}50%{filter:brightness(1.3)}100%{filter:brightness(1)}
+}
+
+/* Attack area */
+#boss-attack-zone {
+  position:absolute; bottom:120px; left:20px; right:20px; z-index:10;
+  text-align:center;
+}
+.boss-attack-btn {
+  font-family:'UnifrakturMaguntia',cursive; font-size:18px;
+  background:linear-gradient(to bottom,#ff4040,#a00000);
+  border:3px solid #ff8040; border-radius:16px;
+  padding:12px 30px; color:#fff; cursor:pointer;
+  text-shadow:0 0 8px rgba(255,100,0,.8);
+  box-shadow:0 0 20px rgba(255,50,0,.6);
+  transition:transform .1s, filter .1s;
+  animation:attackBtnPulse 1s ease-in-out infinite alternate;
+}
+@keyframes attackBtnPulse{0%{box-shadow:0 0 15px rgba(255,50,0,.5)}100%{box-shadow:0 0 30px rgba(255,100,0,.9)}}
+.boss-attack-btn:active{transform:scale(.92); filter:brightness(1.4);}
+
+#boss-attack-hint {
+  font-family:'Neucha',cursive; font-size:13px; color:#80c8ff;
+  margin-bottom:10px; animation:csTextIn 1s ease forwards;
+}
+
+/* Boss phase messages */
+#boss-phase-msg {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:'UnifrakturMaguntia',cursive; font-size:26px;
+  color:#ff8040; text-shadow:0 0 30px #ff4000;
+  z-index:20; pointer-events:none; display:none;
+  text-align:center; width:320px;
+}
+
+/* Mini shark particles */
+.mini-shark {
+  position:absolute; font-size:20px; pointer-events:none; z-index:15;
+  animation:miniSharkSwim 1.5s ease-in-out forwards;
+}
+@keyframes miniSharkSwim{
+  0%{transform:translate(0,0) scale(0.5);opacity:0}
+  30%{opacity:1}
+  70%{transform:translate(var(--msx,30px),var(--msy,-50px)) scale(1.2);opacity:1}
+  100%{transform:translate(var(--msx2,60px),var(--msy2,-100px)) scale(0.3);opacity:0}
+}
+
+/* Victory screen */
+#boss-victory {
+  position:absolute; inset:0; z-index:30; display:none;
+  background:radial-gradient(ellipse at center,rgba(0,200,255,.2),rgba(0,0,0,.95));
+  flex-direction:column; align-items:center; justify-content:center;
+}
+#boss-victory.show { display:flex; }
+.boss-victory-title {
+  font-family:'UnifrakturMaguntia',cursive; font-size:32px;
+  color:#40ffff; text-shadow:0 0 40px #00ffff, 0 0 80px rgba(0,200,255,.5);
+  animation:victoryPop 0.6s ease forwards; text-align:center;
+}
+@keyframes victoryPop{0%{transform:scale(0) rotate(-10deg)}100%{transform:scale(1) rotate(0)}}
+.boss-reward-item {
+  font-family:'Neucha',cursive; font-size:15px; color:#f0f090;
+  margin:6px 0; text-align:center;
+  animation:csTextIn 0.5s ease forwards;
+}
+.boss-close-btn {
+  font-family:'UnifrakturMaguntia',cursive; font-size:16px;
+  background:linear-gradient(to bottom,#006090,#003060);
+  border:2px solid #0090d0; border-radius:12px;
+  padding:10px 28px; color:#80e8ff; cursor:pointer; margin-top:16px;
+  box-shadow:0 0 16px rgba(0,150,200,.5);
+}
+
+/* Craft rod btn */
+.craft-rod-btn {
+  font-family:'UnifrakturMaguntia',cursive; font-size:15px;
+  background:linear-gradient(135deg,#004060,#00a0c0);
+  border:2px solid #40c8ff; border-radius:12px;
+  padding:8px 20px; color:#c0f8ff; cursor:pointer;
+  box-shadow:0 0 14px rgba(0,180,220,.5);
+  transition:.15s; display:block; margin:6px auto;
+}
+.craft-rod-btn:active{transform:scale(.94);}
+.craft-rod-btn:disabled{opacity:.5;cursor:default;}
 </style>
 <!-- Firebase compat SDK v9 — reliable CDN URLs, no dynamic import() needed -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -2023,6 +2207,46 @@ body {
   <!-- TOAST -->
   <div id="toast"></div>
 
+  <!-- ═══════════════════════════════════
+       🦈 BOSS FIGHT — ГИБРИД АКУЛА
+  ═══════════════════════════════════ -->
+  <div id="boss-overlay">
+    <!-- Ocean background -->
+    <div id="boss-ocean">
+      <div class="boss-wave" style="top:40%;--bwt:5s"></div>
+      <div class="boss-wave" style="top:55%;--bwt:7s;opacity:.6"></div>
+      <div class="boss-wave" style="top:65%;--bwt:9s;opacity:.4"></div>
+    </div>
+
+    <!-- HP Bar (shown during fight) -->
+    <div id="boss-hp-wrap" style="display:none">
+      <div id="boss-hp-label">🦈 ГИБРИД АКУЛА — BOSS</div>
+      <div id="boss-hp-bar-bg"><div id="boss-hp-fill"></div></div>
+      <div id="boss-hp-text" style="font-family:Neucha,cursive;font-size:11px;color:#ff8060;text-align:right;margin-top:2px">1000/1000 HP</div>
+    </div>
+
+    <!-- Phase message -->
+    <div id="boss-phase-msg"></div>
+
+    <!-- Cutscene layer -->
+    <div id="boss-cutscene"></div>
+
+    <!-- Attack zone (shown during fight) -->
+    <div id="boss-attack-zone" style="display:none">
+      <div id="boss-attack-hint">Нажимай УДАР чтобы нанести урон!</div>
+      <button class="boss-attack-btn" onclick="bossAttack()">⚔️ УДАР!</button>
+      <div id="boss-combo-txt" style="font-family:Neucha,cursive;font-size:12px;color:#ffd060;margin-top:6px;height:16px"></div>
+    </div>
+
+    <!-- Victory screen -->
+    <div id="boss-victory">
+      <div class="boss-victory-title">🏆 ПОБЕДА!</div>
+      <div style="font-size:48px;animation:sharkFloat 1.5s ease-in-out infinite alternate">🦈</div>
+      <div id="boss-reward-list"></div>
+      <button class="boss-close-btn" onclick="closeBossFight()">🎣 Продолжить рыбалку!</button>
+    </div>
+  </div>
+
 </div><!-- /game -->
 </div><!-- /scale-wrapper -->
 
@@ -2089,6 +2313,17 @@ const FISH_DATA = [
   {name:'Акула-Призрак', w:[5.0,20.], pts:350,coins:130, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#607080', col2:'#303848', coastal:true},
   {name:'Левиафан',      w:[10.,40.], pts:500,coins:150, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#1a4020', col2:'#0a2010', coastal:true},
   {name:'Кракен-Рыба',   w:[8.0,30.], pts:450,coins:140, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#601060', col2:'#300830', coastal:true},
+  // ═══ OG РЫБЫ (новая редкость) ═══
+  {name:'Призрачный Лещ',   w:[2.0,8.0],  pts:500,  coins:400,  rar:'og', label:'👑 OG', col:'#c0e8ff', col2:'#80b0d0', og:true},
+  {name:'Огненный Карп',    w:[1.5,7.0],  pts:550,  coins:450,  rar:'og', label:'👑 OG', col:'#ff6020', col2:'#c03010', og:true},
+  {name:'Лунная Форель',    w:[0.8,4.0],  pts:480,  coins:380,  rar:'og', label:'👑 OG', col:'#e0d8ff', col2:'#8070c0', og:true},
+  {name:'Радужный Сазан',   w:[3.0,12.0], pts:600,  coins:500,  rar:'og', label:'👑 OG', col:'#ff80ff', col2:'#c040c0', og:true},
+  {name:'Звёздная Щука',    w:[2.0,10.0], pts:580,  coins:480,  rar:'og', label:'👑 OG', col:'#ffffa0', col2:'#c0c030', og:true},
+  {name:'Тёмный Сом',       w:[5.0,20.0], pts:650,  coins:550,  rar:'og', label:'👑 OG', col:'#3030a0', col2:'#101060', og:true},
+  {name:'Кристальная Рыба', w:[0.5,3.0],  pts:520,  coins:420,  rar:'og', label:'👑 OG', col:'#a0ffff', col2:'#30b0b0', og:true},
+  {name:'Рыба Древности',   w:[4.0,15.0], pts:700,  coins:600,  rar:'og', label:'👑 OG', col:'#d4a820', col2:'#987020', og:true},
+  {name:'Небесный Окунь',   w:[1.0,5.0],  pts:510,  coins:410,  rar:'og', label:'👑 OG', col:'#80c8ff', col2:'#3080c0', og:true},
+  {name:'Вечная Рыбка',     w:[0.2,1.0],  pts:999,  coins:999,  rar:'og', label:'👑 OG МАКС', col:'#ffffff', col2:'#c0c0c0', og:true},
 ];
 
 // ============================================================
@@ -2104,6 +2339,7 @@ const RODS = [
   {id:'crystal',    name:'Кристальная',   desc:'Из чистейшего горного хрусталя',         price:8000,  biteChance:5.0, catchMult:4.0, stats:'Клёв: x5 • Улов: x4 • Редк. x2'},
   {id:'thunder',    name:'Громовая',      desc:'Заряжена молнией — рыба не убежит',      price:12000, biteChance:6.0, catchMult:5.0, stats:'Клёв: x6 • Улов: x5 • Мгновенный клёв'},
   {id:'void',       name:'Бездны',        desc:'Из глубин где нет света',                price:25000, biteChance:8.0, catchMult:7.0, stats:'Клёв: x8 • Улов: x7 • Только легенды'},
+  {id:'shark',      name:'Акулья',        desc:'Скрафтлена из Кожи Акулы! Пускает мини-акул на легендарки', price:0, biteChance:10.0, catchMult:9.0, stats:'Клёв: x10 • Мини-акулы ищут OG! • Всегда OG', special:'shark', craftable:true},
 ];
 
 // ============================================================
@@ -2669,13 +2905,31 @@ function triggerBite() {
   const legendOnly = isLegendOnlyEvent();
   const isDuck = gs.currentRod.id === 'rubberduck';
   const isVoid = gs.currentRod.id === 'void';
+  const isShark = gs.currentRod.id === 'shark';
+  const ogLureActive = gs._ogLureActive && Date.now() < gs._ogLureActive;
+
+  // 🦈 Акулья удочка — всегда OG рыба + мини акулы
+  if(isShark) {
+    const ogFish = FISH_DATA.filter(f=>f.og||f.rar==='coastal_legend');
+    gs.fish = ogFish[Math.floor(Math.random()*ogFish.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    setTimeout(()=>{ for(let i=0;i<5;i++) setTimeout(spawnMiniSharkOnScreen, i*200); }, 100);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
   FISH_DATA.filter(f=>!f.coastal).forEach(f=>{
-    let w = f.rar==='common'?60 : f.rar==='rare'?30 : f.rar==='epic'?8 : 2;
+    let w = f.rar==='common'?60 : f.rar==='rare'?30 : f.rar==='epic'?8 : f.rar==='og'?0.5 : 2;
     if(isDuck && (f.rar==='common'||f.rar==='rare')) w=0; // утка — только эпики+
-    if(legendOnly && f.rar!=='legend') w=0; // событие легенд
-    if(isVoid && f.rar!=='legend') w=0; // бездна — только легенды
+    if(legendOnly && f.rar!=='legend'&&f.rar!=='og') w=0; // событие легенд
+    if(isVoid && f.rar!=='legend'&&f.rar!=='og') w=0; // бездна — только легенды
     if(f.rar==='legend' && hasLucky) w*=1.5;
     if(f.rar!=='common') w *= (1+lureBonus);
+    // OG лура: в 35% случаев ловит OG
+    if(ogLureActive && f.rar==='og') w = 35;
     for(let i=0;i<Math.round(w);i++) pool.push(f);
   });
   if(pool.length===0) FISH_DATA.filter(f=>!f.coastal && f.rar==='epic').forEach(f=>pool.push(f));
@@ -2787,7 +3041,12 @@ function catchFish() {
   document.getElementById('catch-weight-txt').textContent=`${f.weight} кг • +${f.pts} ★`;
   const rarEl=document.getElementById('catch-rarity');
   rarEl.textContent=f.label;
-  rarEl.className = f.rar==='coastal_legend' ? 'rarity-legend' : `rarity-${f.rar}`;
+  if(f.rar==='og'){
+    rarEl.className='rarity-og';
+    rarEl.textContent='👑 OG — ЛЕГЕНДА ЛЕГЕНД!';
+  } else {
+    rarEl.className = f.rar==='coastal_legend' ? 'rarity-legend' : `rarity-${f.rar}`;
+  }
   const price=Math.round(calcPrice(f) * getEventCoinMult());
   document.getElementById('popup-sell-price').textContent=' '+price+(getEventCoinMult()>1?' 🌅x2':'');
   document.getElementById('catch-sell-btn').style.display = '';
@@ -3094,6 +3353,13 @@ function rodIconSVG(rod) {
       <circle cx="26" cy="26" r="4" fill="${c}" opacity=".9"/>
       <line x1="26" y1="8" x2="26" y2="44" stroke="${c}" stroke-width="1" opacity=".5"/>
       <line x1="8" y1="26" x2="44" y2="26" stroke="${c}" stroke-width="1" opacity=".5"/>`,
+    shark: `<ellipse cx="26" cy="28" rx="18" ry="9" fill="rgba(0,100,140,.7)" stroke="${c}" stroke-width="2"/>
+      <polygon points="26,10 30,19 26,28 22,19" fill="#1a8aaa" stroke="${c}" stroke-width="1.5"/>
+      <polygon points="12,30 6,40 18,34" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
+      <polygon points="40,30 46,40 34,34" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
+      <circle cx="16" cy="26" r="3" fill="#001020" stroke="${c}" stroke-width="1"/>
+      <path d="M10,31 L13,34 L16,31 L19,34 L22,31" stroke="#fff" stroke-width="1.5" fill="none"/>
+      <text x="26" y="48" text-anchor="middle" font-size="9" fill="${c}" font-family="sans-serif">🦈</text>`,
   };
 
   // Общий шаблон удочки с кольцами и катушкой
@@ -3329,6 +3595,10 @@ const SEEDS = [
   {id:'clover',   name:'Клевер',     bag:'🍀', seed:'🫘', flower:'🍀', color:'#40c060',
    desc:'На удачу!',                 flowerDesc:'Четырёхлистный клевер приносит удачу в рыбалке (+10% клёв).',
    growTime:40000, price:30, sellPrice:30, owned:0, bonusEffect:'bite'},
+  {id:'hybrid_plant', name:'Гибрид Растения', bag:'🌿', seed:'🧬', flower:'🌺', color:'#ff40a0',
+   desc:'⚗️ Мутировавшее растение! Цветёт циклами',
+   flowerDesc:'Гибридное растение — результат мутации. Даёт случайный бонус: монеты, рыбацкий бустер или OG приманку!',
+   growTime:90000, price:150, sellPrice:300, owned:0, bonusEffect:'og_lure', special:'hybrid'},
 ];
 
 const GARDEN_PLOTS = 6; // 3 left + 3 right
@@ -4872,6 +5142,7 @@ const ROD_COLORS = {
   crystal:    {color:'#a0e8ff', glow:'0 0 22px rgba(100,220,255,.9)'},
   thunder:    {color:'#f0f040', glow:'0 0 28px rgba(255,255,50,1.0)'},
   void:       {color:'#3010a0', glow:'0 0 30px rgba(80,0,200,.9)'},
+  shark:      {color:'#40c8e0', glow:'0 0 35px rgba(0,200,230,1.0)'},
 };
 
 function updateRodVisual() {
@@ -5057,6 +5328,585 @@ function saveGarden() {
   // пример — сохраняем сад локально
   localStorage.setItem('garden', JSON.stringify(gardenPlots));
 }
+
+// ============================================================
+// 👑 OG РЫБЫ — Обработка новой редкости
+// ============================================================
+// Patch getRarityLabel/color for OG
+const _origGetRarityStyle = window.getRarityStyle;
+function getOgStyle(rar) {
+  if(rar==='og') return {label:'👑 OG', cls:'rarity-og', col:'#ff80ff'};
+  return null;
+}
+
+// Patch catch popup for OG
+const _origShowCatchPopup = window.showCatchPopup;
+
+// OG fish spawn: very rare, shark rod gives them always
+// Patch pickFish to handle OG and shark rod
+const _origPickFish = window.pickFish;
+
+// Shark rod special: always OG or legend
+function sharkRodPickFish() {
+  const ogFish = FISH_DATA.filter(f=>f.og);
+  const f = ogFish[Math.floor(Math.random()*ogFish.length)];
+  const w = (f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2);
+  return {...f, weight:w};
+}
+
+// ============================================================
+// 🦈 BOSS FIGHT — ГИБРИД АКУЛА
+// ============================================================
+const BOSS_KEY = 'fishing_boss_defeated_v1';
+const UPDATE_KEY = 'fishing_update_v2_seen';
+
+let bossState = {
+  active: false,
+  hp: 1000,
+  maxHp: 1000,
+  phase: 1, // 1 = normal, 2 = enraged (<50%), 3 = final (<20%)
+  hits: 0,
+  combo: 0,
+  comboTimer: null,
+  cutsceneStep: 0,
+};
+
+function checkBossFirstVisit() {
+  if(localStorage.getItem(UPDATE_KEY)) return;
+  localStorage.setItem(UPDATE_KEY, '1');
+  // Show boss intro after a short delay
+  setTimeout(startBossIntro, 1200);
+}
+
+function startBossIntro() {
+  bossState.active = true;
+  bossState.hp = bossState.maxHp;
+  bossState.phase = 1;
+  bossState.hits = 0;
+  bossState.combo = 0;
+
+  const overlay = document.getElementById('boss-overlay');
+  overlay.classList.add('active');
+  document.getElementById('boss-cutscene').innerHTML = '';
+  document.getElementById('boss-hp-wrap').style.display = 'none';
+  document.getElementById('boss-attack-zone').style.display = 'none';
+  document.getElementById('boss-victory').classList.remove('show');
+
+  // Run cutscene sequence
+  const steps = [
+    {delay:0,    text:'⚡ ОБНОВЛЕНИЕ v2.0 ⚡', sub:'Что-то большое движется в глубинах...'},
+    {delay:2200, text:'🌊 Воды потемнели...', sub:'Огромная тень поднимается со дна!'},
+    {delay:4400, text:'💥 ГИБРИД АКУЛА!', sub:'Легендарный мутант из глубин! Убить её очень тяжело...', big:true},
+    {delay:6600, text:'⚔️ К БОЮ!', sub:'Нажимай УДАР как можно быстрее! За победу ждут ништяки!'},
+  ];
+
+  steps.forEach((s,i)=>{
+    setTimeout(()=>{
+      const cs = document.getElementById('boss-cutscene');
+      cs.innerHTML = '';
+
+      // Show shark SVG on step 2+
+      if(i>=2){
+        cs.innerHTML += `<div id="boss-shark-wrap">
+          <svg id="boss-shark-svg" width="200" height="140" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="sharkG" cx="40%" cy="40%">
+                <stop offset="0%" stop-color="#60c8e8"/>
+                <stop offset="60%" stop-color="#208aaa"/>
+                <stop offset="100%" stop-color="#104060"/>
+              </radialGradient>
+              <filter id="sharkGlow">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+              </filter>
+            </defs>
+            <!-- Body -->
+            <ellipse cx="100" cy="70" rx="80" ry="35" fill="url(#sharkG)" stroke="#0a3050" stroke-width="2" filter="url(#sharkGlow)"/>
+            <!-- Belly -->
+            <ellipse cx="100" cy="82" rx="55" ry="16" fill="#c0e8f8" opacity=".6"/>
+            <!-- Tail -->
+            <polygon points="180,70 200,40 200,100" fill="#208aaa" stroke="#0a3050" stroke-width="1.5"/>
+            <!-- Dorsal fin -->
+            <polygon points="90,35 110,10 115,35" fill="#1a6888" stroke="#0a3050" stroke-width="1.5"/>
+            <!-- Pectoral fins -->
+            <polygon points="75,75 55,95 80,85" fill="#1a6888" stroke="#0a3050" stroke-width="1"/>
+            <!-- Eye -->
+            <circle cx="35" cy="65" r="8" fill="#001020" stroke="#40a0c0" stroke-width="2"/>
+            <circle cx="33" cy="63" r="3" fill="#40e8ff" opacity=".8"/>
+            <!-- Teeth -->
+            <path d="M22,72 L28,78 L34,72 L40,78 L46,72" stroke="#fff" stroke-width="2" fill="none"/>
+            <!-- Scars / hybrid mutations -->
+            <path d="M60,55 L80,60 L60,65" stroke="#ff4040" stroke-width="2" fill="none" opacity=".7"/>
+            <circle cx="120" cy="60" r="5" fill="#ff2020" opacity=".6"/>
+            <path d="M140,50 Q160,45 155,65" stroke="#ff4040" stroke-width="2.5" fill="none" opacity=".8"/>
+            <!-- Glow lines -->
+            <path d="M30,70 Q100,60 175,70" stroke="rgba(0,200,255,.3)" stroke-width="1.5" fill="none"/>
+          </svg>
+        </div>`;
+      }
+
+      const div1 = document.createElement('div');
+      div1.className = 'boss-cs-text';
+      if(s.big) div1.style.fontSize='28px';
+      div1.textContent = s.text;
+      cs.appendChild(div1);
+
+      const div2 = document.createElement('div');
+      div2.className = 'boss-cs-sub';
+      div2.textContent = s.sub;
+      cs.appendChild(div2);
+
+      // Screen shake on big step
+      if(s.big) {
+        shakeScreen();
+        setTimeout(shakeScreen, 300);
+        setTimeout(shakeScreen, 600);
+      }
+
+    }, s.delay);
+  });
+
+  // Start actual fight after cutscenes
+  setTimeout(startBossFight, 8500);
+}
+
+function shakeScreen() {
+  const g = document.getElementById('game');
+  g.style.animation = 'none';
+  void g.offsetWidth;
+  g.style.animation = 'bossShake 0.4s ease';
+  setTimeout(()=>{ g.style.animation=''; }, 400);
+}
+
+// Add shake keyframe dynamically
+(function(){
+  const style = document.createElement('style');
+  style.textContent = `@keyframes bossShake{0%{transform:translate(0,0)}15%{transform:translate(-6px,4px)}30%{transform:translate(6px,-4px)}45%{transform:translate(-4px,2px)}60%{transform:translate(4px,-2px)}75%{transform:translate(-2px,1px)}100%{transform:translate(0,0)}}`;
+  document.head.appendChild(style);
+})();
+
+function startBossFight() {
+  document.getElementById('boss-cutscene').innerHTML = `
+    <div id="boss-shark-wrap" style="margin-bottom:20px">
+      <svg id="boss-shark-svg" width="160" height="110" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sharkG2" cx="40%" cy="40%">
+            <stop offset="0%" stop-color="#60c8e8"/>
+            <stop offset="60%" stop-color="#208aaa"/>
+            <stop offset="100%" stop-color="#104060"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="70" rx="80" ry="35" fill="url(#sharkG2)" stroke="#0a3050" stroke-width="2"/>
+        <ellipse cx="100" cy="82" rx="55" ry="16" fill="#c0e8f8" opacity=".6"/>
+        <polygon points="180,70 200,40 200,100" fill="#208aaa" stroke="#0a3050" stroke-width="1.5"/>
+        <polygon points="90,35 110,10 115,35" fill="#1a6888" stroke="#0a3050" stroke-width="1.5"/>
+        <polygon points="75,75 55,95 80,85" fill="#1a6888" stroke="#0a3050" stroke-width="1"/>
+        <circle cx="35" cy="65" r="8" fill="#001020" stroke="#40a0c0" stroke-width="2"/>
+        <circle cx="33" cy="63" r="3" fill="#40e8ff" opacity=".8"/>
+        <path d="M22,72 L28,78 L34,72 L40,78 L46,72" stroke="#fff" stroke-width="2" fill="none"/>
+        <path d="M60,55 L80,60 L60,65" stroke="#ff4040" stroke-width="2" fill="none" opacity=".7"/>
+        <circle cx="120" cy="60" r="5" fill="#ff2020" opacity=".6"/>
+        <path d="M140,50 Q160,45 155,65" stroke="#ff4040" stroke-width="2.5" fill="none" opacity=".8"/>
+      </svg>
+    </div>`;
+
+  document.getElementById('boss-hp-wrap').style.display = 'block';
+  document.getElementById('boss-attack-zone').style.display = 'block';
+  updateBossHpBar();
+}
+
+function updateBossHpBar() {
+  const pct = Math.max(0, bossState.hp / bossState.maxHp * 100);
+  document.getElementById('boss-hp-fill').style.width = pct + '%';
+  document.getElementById('boss-hp-text').textContent = Math.max(0,bossState.hp) + '/' + bossState.maxHp + ' HP';
+
+  // Color change by phase
+  const fill = document.getElementById('boss-hp-fill');
+  if(pct < 20) fill.style.background = 'linear-gradient(to right,#ff0000,#ff0050)';
+  else if(pct < 50) fill.style.background = 'linear-gradient(to right,#ff4000,#ff8000)';
+  else fill.style.background = 'linear-gradient(to right,#ff0000,#ff6000,#ffcc00)';
+}
+
+let _lastBossAttack = 0;
+function bossAttack() {
+  if(!bossState.active) return;
+
+  const now = Date.now();
+  const timeSinceLastHit = now - _lastBossAttack;
+  _lastBossAttack = now;
+
+  // Combo system
+  if(timeSinceLastHit < 800) {
+    bossState.combo++;
+  } else {
+    bossState.combo = 1;
+  }
+
+  clearTimeout(bossState.comboTimer);
+  bossState.comboTimer = setTimeout(()=>{ bossState.combo=0; }, 1200);
+
+  // Damage calculation
+  let dmg = 30 + Math.random()*20;
+  if(bossState.combo >= 5) dmg *= 2.5;
+  else if(bossState.combo >= 3) dmg *= 1.5;
+  dmg = Math.floor(dmg);
+
+  bossState.hp -= dmg;
+  bossState.hits++;
+  updateBossHpBar();
+
+  // Combo text
+  const comboTxt = document.getElementById('boss-combo-txt');
+  if(bossState.combo >= 3) {
+    comboTxt.textContent = '🔥 x' + bossState.combo + ' КОМБО! ×' + (bossState.combo>=5?'2.5':'1.5') + ' урон!';
+    comboTxt.style.color = bossState.combo >= 5 ? '#ff4040' : '#ffd060';
+  } else {
+    comboTxt.textContent = '-' + dmg + ' HP';
+    comboTxt.style.color = '#c0f8ff';
+  }
+
+  // Spawn mini shark particles
+  spawnMiniSharks(3);
+
+  // Phase transitions
+  const pct = bossState.hp / bossState.maxHp;
+  if(pct <= 0.5 && bossState.phase === 1) {
+    bossState.phase = 2;
+    showBossPhaseMsg('😡 БЕШЕНСТВО! Акула разозлилась!', '#ff8040');
+    shakeScreen(); shakeScreen();
+    // Make shark look angry
+    document.getElementById('boss-shark-svg').style.filter = 'drop-shadow(0 0 20px #ff4000) hue-rotate(30deg)';
+  }
+
+  if(pct <= 0.2 && bossState.phase === 2) {
+    bossState.phase = 3;
+    showBossPhaseMsg('💀 ПОСЛЕДНИЙ РЫВОК!', '#ff0040');
+    shakeScreen(); setTimeout(shakeScreen,200); setTimeout(shakeScreen,400);
+    document.getElementById('boss-shark-svg').style.filter = 'drop-shadow(0 0 30px #ff0000) hue-rotate(60deg) brightness(1.5)';
+  }
+
+  // Death
+  if(bossState.hp <= 0) {
+    bossState.hp = 0;
+    bossState.active = false;
+    updateBossHpBar();
+    setTimeout(showBossVictory, 600);
+  }
+}
+
+function spawnMiniSharks(count) {
+  const overlay = document.getElementById('boss-overlay');
+  for(let i=0;i<count;i++){
+    const ms = document.createElement('div');
+    ms.className = 'mini-shark';
+    ms.textContent = '🦈';
+    const sx = -60 + Math.random()*120;
+    const sy = -60 + Math.random()*40;
+    const sx2 = -80 + Math.random()*160;
+    const sy2 = -120 + Math.random()*60;
+    ms.style.cssText = `left:${120+Math.random()*100}px;top:${200+Math.random()*80}px;--msx:${sx}px;--msy:${sy}px;--msx2:${sx2}px;--msy2:${sy2}px;`;
+    overlay.appendChild(ms);
+    setTimeout(()=>{ if(ms.parentNode) ms.parentNode.removeChild(ms); }, 1600);
+  }
+}
+
+function showBossPhaseMsg(text, color) {
+  const el = document.getElementById('boss-phase-msg');
+  el.textContent = text;
+  el.style.color = color;
+  el.style.textShadow = `0 0 20px ${color}`;
+  el.style.display = 'block';
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'csTextIn 0.5s ease forwards';
+  setTimeout(()=>{ el.style.display='none'; }, 2500);
+}
+
+function showBossVictory() {
+  shakeScreen(); setTimeout(shakeScreen,150); setTimeout(shakeScreen,300);
+
+  // Rewards
+  const sharkSkinCount = 1 + Math.floor(bossState.hits / 20);
+  const bonusCoins = 5000 + bossState.hits * 50;
+
+  // Give shark skin (stored in gs)
+  gs.sharkSkins = (gs.sharkSkins || 0) + sharkSkinCount;
+  gs.coins += bonusCoins;
+  updateCoins();
+
+  // Give some OG fish
+  const ogFishPool = FISH_DATA.filter(f=>f.og);
+  const ogGifts = 2;
+  const giftedOg = [];
+  for(let i=0;i<ogGifts;i++){
+    const f = ogFishPool[Math.floor(Math.random()*ogFishPool.length)];
+    const w = (f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2);
+    if(gs.inventory.length < gs.maxInv) gs.inventory.push({...f, weight:w});
+    giftedOg.push(f.name);
+  }
+
+  // Mark boss as defeated
+  localStorage.setItem(BOSS_KEY, '1');
+
+  // Victory screen
+  const rewards = document.getElementById('boss-reward-list');
+  rewards.innerHTML = `
+    <div class="boss-reward-item">🦈 Кожа Акулы × ${sharkSkinCount}</div>
+    <div class="boss-reward-item">💰 +${bonusCoins.toLocaleString()} монет</div>
+    <div class="boss-reward-item">👑 OG Рыбы: ${giftedOg.join(', ')}</div>
+    <div class="boss-reward-item" style="font-size:12px;color:#80c8ff;margin-top:8px">🔨 Теперь можно скрафтить Акулью Удочку!</div>`;
+
+  document.getElementById('boss-hp-wrap').style.display = 'none';
+  document.getElementById('boss-attack-zone').style.display = 'none';
+  document.getElementById('boss-cutscene').innerHTML = '';
+  document.getElementById('boss-victory').classList.add('show');
+
+  // Add achievement
+  gs.achievements = gs.achievements || {};
+  gs.achievements['boss_killed'] = Date.now();
+  addXP(1000);
+  saveGame();
+
+  // Big coin burst
+  for(let i=0;i<5;i++) setTimeout(()=>coinBurst(120+Math.random()*120, 200+Math.random()*100), i*200);
+}
+
+function closeBossFight() {
+  document.getElementById('boss-overlay').classList.remove('active');
+  bossState.active = false;
+  showToast('🦈 Гибрид Акула повержена! Проверь инвентарь и лавку!');
+  // Refresh shop to show craft button
+  if(gs.currentScreen === 'shop') renderShop();
+}
+
+// ============================================================
+// 🔨 КРАФТ АКУЛЬЕЙ УДОЧКИ
+// ============================================================
+function craftSharkRod() {
+  if((gs.sharkSkins||0) < 1) {
+    showToast('❌ Нужна Кожа Акулы (убей Гибрид Акулу)!');
+    return;
+  }
+  if(gs.coins < 10000) {
+    showToast('❌ Нужно 10000 монет!');
+    return;
+  }
+  const sharkRod = RODS.find(r=>r.id==='shark');
+  if(!sharkRod) return;
+  if(sharkRod.owned) {
+    showToast('✅ Акулья Удочка уже есть!');
+    return;
+  }
+  gs.sharkSkins--;
+  gs.coins -= 10000;
+  updateCoins();
+  sharkRod.owned = true;
+  showToast('🦈 Акулья Удочка скрафтлена! Надевай в лавке!');
+  saveGame();
+  renderShop();
+}
+
+// Patch renderRods to show shark rod craft option
+const _origRenderRods = window.renderRods;
+function renderRods(body) {
+  RODS.forEach(rod=>{
+    const owned=rod.owned||false;
+    const equipped=rod.equipped||false;
+    let btnHtml;
+
+    if(rod.craftable && !owned) {
+      const canCraft = (gs.sharkSkins||0) >= 1 && gs.coins >= 10000;
+      const bossKilled = !!localStorage.getItem(BOSS_KEY);
+      if(!bossKilled) {
+        btnHtml = `<button class="shop-item-btn btn-owned-shop" style="font-size:10px">🔒 Убей Акулу</button>`;
+      } else {
+        btnHtml = `<button class="craft-rod-btn" onclick="craftSharkRod()" style="font-size:12px;padding:5px 10px"${canCraft?'':' disabled'}>🔨 Крафт (Кожа Акулы + 10к🪙)</button>`;
+      }
+    } else if(equipped) {
+      btnHtml=`<button class="shop-item-btn btn-equipped-shop">✓ Надета</button>`;
+    } else if(owned) {
+      btnHtml=`<button class="shop-item-btn btn-equip-shop" onclick="equipRod('${rod.id}')">Надеть</button>`;
+    } else {
+      btnHtml=`<button class="shop-item-btn btn-buy-shop" onclick="buyRod('${rod.id}')">Купить</button>`;
+    }
+
+    const cls=equipped?'equipped':owned?'owned':'';
+    const statsExtra = rod.id==='shark' ? (rod.stats + (gs.sharkSkins?' • 🦈 Кожи: '+(gs.sharkSkins||0):'')) : rod.stats;
+    const el=makeShopItem(
+      rodIconSVG(rod), rod.name, rod.desc, statsExtra,
+      (owned||rod.craftable)?'':rod.price, btnHtml, cls
+    );
+    body.appendChild(el);
+  });
+}
+
+// ============================================================
+// 🦈 SHARK ROD SPECIAL ABILITY — Mini sharks hunt OG
+// ============================================================
+// Override pickFish for shark rod
+function pickFishPatched() {
+  const rod = gs.currentRod;
+  if(rod.id === 'shark') {
+    // Always pick OG or coastal legend
+    const ogFish = FISH_DATA.filter(f=>f.og||f.rar==='coastal_legend');
+    const f = ogFish[Math.floor(Math.random()*ogFish.length)];
+    // Spawn mini sharks as visual
+    setTimeout(()=>{ for(let i=0;i<4;i++) spawnMiniSharkOnScreen(); }, 200);
+    return f;
+  }
+  return null; // Fall through to original
+}
+
+function spawnMiniSharkOnScreen() {
+  const fs = document.getElementById('fishing-screen');
+  if(!fs) return;
+  const ms = document.createElement('div');
+  ms.style.cssText = `position:absolute;font-size:18px;z-index:50;pointer-events:none;animation:swimAcross 2s linear forwards;top:${280+Math.random()*80}px;`;
+  ms.textContent = '🦈';
+  fs.appendChild(ms);
+  setTimeout(()=>{ if(ms.parentNode) ms.parentNode.removeChild(ms); }, 2100);
+}
+
+// ============================================================
+// 🌺 ГИБРИД РАСТЕНИЯ — special harvest
+// ============================================================
+const _origHarvestPlot = window.harvestPlot;
+function harvestPlot(i) {
+  const p = gardenPlots[i];
+  if(!p || p.state !== 'ready') return;
+  const seed = SEEDS.find(s=>s.id===p.seedId);
+
+  if(seed && seed.special === 'hybrid') {
+    // Special reward
+    const roll = Math.random();
+    let bonus = '';
+    if(roll < 0.33) {
+      gs.coins += 2000; updateCoins();
+      bonus = '💰 +2000 монет!';
+    } else if(roll < 0.66) {
+      // OG lure: boost bite chance temporarily
+      gs._ogLureActive = Date.now() + 60000;
+      bonus = '🎣 OG Приманка на 60 сек (шанс OG рыб)!';
+    } else {
+      // Give a shark skin
+      gs.sharkSkins = (gs.sharkSkins||0) + 1;
+      bonus = '🦈 +1 Кожа Акулы!';
+    }
+    gardenFlowersSold += seed.sellPrice;
+    p.state='empty'; p.seedId=null; p.plantedAt=0;
+    saveGame();
+    renderGardenPlots();
+    showToast('🌺 Гибрид Растения дало: ' + bonus);
+    return;
+  }
+
+  // Fall through to original
+  if(_origHarvestPlot) return _origHarvestPlot(i);
+
+  // Inline original logic as fallback
+  if(!seed) return;
+  const price = seed.sellPrice;
+  gardenFlowersSold += price;
+  gs.coins += price; updateCoins();
+  if(seed.bonusEffect==='bite') {
+    showToast('🍀 Клевер собран! +10% к клёву на 2 мин');
+  }
+  p.state='empty'; p.seedId=null; p.plantedAt=0;
+  saveGame();
+  renderGardenPlots();
+  showToast('🌸 ' + seed.name + ' продана за ' + price + '🪙!');
+}
+
+// ============================================================
+// OG FISH — patch catch rarity display
+// ============================================================
+// Patch the rarity badge in showCatchPopup
+const _origGetRarBadge = window.getRarBadge;
+function getRarBadge(rar) {
+  if(rar==='og') return '<div class="catch-rarity rarity-og" style="display:inline-block;padding:3px 12px;border-radius:8px;margin-top:4px;font-family:Neucha,cursive;font-size:13px">👑 OG — Легенда Легенд!</div>';
+  if(_origGetRarBadge) return _origGetRarBadge(rar);
+  const map = {common:'rarity-common',rare:'rarity-rare',epic:'rarity-epic',legend:'rarity-legend',coastal_legend:'rarity-legend og'};
+  const labels = {common:'Обычный',rare:'Редкий',epic:'Эпический',legend:'Легендарный!',coastal_legend:'🌊 Легенда Побережья',og:'👑 OG!'};
+  return '<div class="catch-rarity '+(map[rar]||'rarity-common')+'">'+(labels[rar]||rar)+'</div>';
+}
+
+// ============================================================
+// OG LURE — modify pickFish to give OG fish occasionally
+// ============================================================
+// Intercept at the catchFish level via gs._ogLureActive
+const _origShowFishResult = window.showFishResult;
+
+// Patch: OG fish rarity in random fish pick when OG lure is active
+// We add a post-process step in the existing pickFish that upgrades legend to OG
+function upgradeToOgIfActive(fish) {
+  if(!fish) return fish;
+  if(gs._ogLureActive && Date.now() < gs._ogLureActive) {
+    const ogFish = FISH_DATA.filter(f=>f.og);
+    if(ogFish.length && Math.random() < 0.35) {
+      const f = ogFish[Math.floor(Math.random()*ogFish.length)];
+      return {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
+    }
+  }
+  return fish;
+}
+
+// ============================================================
+// SAVE EXTENDED — include sharkSkins
+// ============================================================
+const _origSaveGame = saveGame;
+function saveGame() {
+  // Call original first (already defined above, this is a redefinition)
+  const data = {
+    coins: gs.coins,
+    score: gs.score,
+    fishCount: gs.fishCount,
+    energy: gs.energy,
+    inventory: gs.inventory,
+    maxInv: gs.maxInv,
+    currentRodId: gs.currentRod.id,
+    rods: RODS.map(r=>({id:r.id,owned:r.owned||false,equipped:r.equipped||false})),
+    baits: BAITS.map(b=>({id:b.id,qty:b.qty})),
+    lures: LURES.map(l=>({id:l.id,qty:l.qty})),
+    upgrades: UPGRADES.map(u=>({id:u.id,owned:u.owned||false})),
+  };
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e){}
+  try {
+    const extra = {
+      pikaCoins: gs.pikaCoins,
+      pikaCatchCount: gs.pikaCatchCount,
+      mapMode: gs.mapMode,
+      coastUnlocked: gs.coastUnlocked || false,
+      caughtPokemon: gs.caughtPokemon || [],
+      xp: gs.xp || 0,
+      achievements: gs.achievements || {},
+      catchStreak: gs.catchStreak || 0,
+      _caughtLegend: gs._caughtLegend || false,
+      _coastCatch: gs._coastCatch || false,
+      _duckCatches: gs._duckCatches || 0,
+      _soldAll: gs._soldAll || false,
+      sharkSkins: gs.sharkSkins || 0,
+    };
+    localStorage.setItem('fishing_reborn_extra', JSON.stringify(extra));
+  } catch(e){}
+}
+
+// Load sharkSkins
+(function loadSharkSkins() {
+  try {
+    const raw = localStorage.getItem('fishing_reborn_extra');
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    gs.sharkSkins = d.sharkSkins || 0;
+  } catch(e){}
+})();
+
+// ============================================================
+// TRIGGER BOSS ON STARTUP (first visit to this update)
+// ============================================================
+setTimeout(()=>{
+  // Check if boss should appear (first time seeing this update)
+  checkBossFirstVisit();
+}, 1500);
 
 </script>
 </body>
