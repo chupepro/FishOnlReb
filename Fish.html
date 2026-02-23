@@ -502,9 +502,15 @@ body {
 
 /* ROD NAME */
 #current-rod-name {
-  position:absolute; bottom:145px; left:50%; transform:translateX(-50%);
+  position:absolute; bottom:155px; left:50%; transform:translateX(-50%);
   font-family:'Neucha',cursive; font-size:11px; color:#c8a060;
   text-shadow:0 1px 2px rgba(0,0,0,.8); white-space:nowrap; z-index:201; pointer-events:none;
+}
+#current-rod-stats {
+  position:absolute; bottom:142px; left:50%; transform:translateX(-50%);
+  font-family:'Neucha',cursive; font-size:9px; color:#a0c8e0;
+  text-shadow:0 1px 2px rgba(0,0,0,.9); white-space:nowrap; z-index:201; pointer-events:none;
+  opacity:0.85;
 }
 
 /* CAST HINT */
@@ -613,6 +619,11 @@ body {
 #catch-header { font-family:'UnifrakturMaguntia',cursive; font-size:20px; color:var(--accent-gold); text-align:center; text-shadow:0 2px 4px rgba(0,0,0,.7); margin-bottom:12px; border-bottom:2px solid var(--wood-dark); padding-bottom:8px; }
 #catch-fish-svg { display:block; margin:10px auto; animation:fishWigglePop .6s ease-in-out infinite alternate; }
 @keyframes fishWigglePop { 0%{transform:rotate(-8deg) scaleX(1)} 100%{transform:rotate(8deg) scaleX(1.05)} }
+@keyframes fishBlink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes finWave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}
+@keyframes fishWiggle{0%,100%{transform:rotate(-3deg) scaleX(1)}25%{transform:rotate(3deg) scaleX(1.05)}50%{transform:rotate(-2deg) scaleX(.98)}75%{transform:rotate(4deg) scaleX(1.03)}}
+@keyframes marbleSplashAnim{0%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(0.2) translateY(-40px);opacity:0}}
+@keyframes marbleRodGlow{0%{opacity:.9}100%{opacity:1;filter:drop-shadow(0 0 6px rgba(200,180,255,.7))}}
 #catch-name-txt { font-family:'Neucha',cursive; font-size:20px; color:#f5e0a0; text-align:center; text-shadow:0 1px 3px rgba(0,0,0,.7); margin-top:6px; }
 #catch-weight-txt { font-family:'Neucha',cursive; font-size:13px; color:#c8b070; text-align:center; margin-top:4px; }
 #catch-rarity { font-family:'Neucha',cursive; font-size:12px; text-align:center; margin-top:3px; padding:2px 8px; border-radius:8px; display:inline-block; width:100%; }
@@ -1956,6 +1967,7 @@ body {
 
     <!-- Current rod name -->
     <div id="current-rod-name">Удочка: Деревенская</div>
+    <div id="current-rod-stats"></div>
 
     <!-- Hint -->
     <div id="cast-hint">Нажми на воду для заброса</div>
@@ -2323,15 +2335,29 @@ body {
       <div id="catch-header">🎉 Улов!</div>
       <svg id="catch-fish-svg" width="100" height="55" viewBox="0 0 100 55" xmlns="http://www.w3.org/2000/svg">
         <defs><radialGradient id="fishG" cx="40%" cy="40%"><stop offset="0%" stop-color="#e0a030"/><stop offset="100%" stop-color="#905010"/></radialGradient></defs>
-        <ellipse cx="48" cy="28" rx="32" ry="18" fill="url(#fishG)" stroke="#6a3808" stroke-width="1.5"/>
-        <polygon points="80,28 98,14 98,42" fill="#c07820" stroke="#6a3808" stroke-width="1"/>
-        <path d="M 36,12 Q 48,4 60,12" stroke="#a06018" stroke-width="2" fill="none"/>
+        <!-- Body — wiggles -->
+        <g style="animation:fishWiggle 0.9s ease-in-out infinite;transform-origin:48px 28px;">
+          <ellipse cx="48" cy="28" rx="32" ry="18" fill="url(#fishG)" stroke="#6a3808" stroke-width="1.5"/>
+          <!-- Scales -->
+          <path d="M 36,22 Q 42,17 48,22" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
+          <path d="M 48,22 Q 54,17 60,22" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
+          <path d="M 30,28 Q 40,24 50,28" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
+          <!-- Mouth -->
+          <path d="M 16,28 Q 18,32 21,28" stroke="#6a3808" stroke-width="1.5" fill="none"/>
+        </g>
+        <!-- Tail fin — waves -->
+        <g style="animation:finWave 0.6s ease-in-out infinite alternate;transform-origin:80px 28px;">
+          <polygon points="80,28 98,14 98,42" fill="#c07820" stroke="#6a3808" stroke-width="1"/>
+        </g>
+        <!-- Dorsal fin — sways -->
+        <g style="animation:finWave 0.8s 0.2s ease-in-out infinite alternate;transform-origin:48px 10px;">
+          <path d="M 36,12 Q 48,4 60,12" stroke="#a06018" stroke-width="2" fill="rgba(180,100,20,.3)"/>
+        </g>
+        <!-- Eye — blinks -->
         <circle cx="22" cy="24" r="4.5" fill="#fff" stroke="#3a2008" stroke-width="1"/>
-        <circle cx="21" cy="24" r="2.2" fill="#1a1008"/>
-        <path d="M 36,22 Q 42,17 48,22" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
-        <path d="M 48,22 Q 54,17 60,22" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
-        <path d="M 30,28 Q 40,24 50,28" stroke="#7a4818" stroke-width="1" fill="none" opacity=".6"/>
-        <path d="M 16,28 Q 18,32 21,28" stroke="#6a3808" stroke-width="1.5" fill="none"/>
+        <circle cx="21" cy="24" r="2.2" fill="#1a1008" style="animation:fishBlink 3s ease-in-out infinite;"/>
+        <!-- Eye highlight -->
+        <circle cx="22" cy="22.5" r="1" fill="rgba(255,255,255,.7)"/>
       </svg>
       <div id="catch-pokemon-emoji" style="display:none;font-size:58px;line-height:1;text-align:center;margin:4px 0;filter:drop-shadow(0 2px 8px rgba(100,80,255,.5));"></div>
       <div id="catch-name-txt">Карась</div>
@@ -2497,6 +2523,49 @@ const FISH_DATA = [
   // === НОВЫЕ ЭПИЧЕСКИЕ ===
   {name:'Белуга Малая',  w:[2.0,9.0], pts:80, coins:60,  rar:'epic',    label:'Эпический',   col:'#d0d0c0', col2:'#909088'},
   {name:'Тайменёнок',    w:[1.5,7.0], pts:75, coins:55,  rar:'epic',    label:'Эпический',   col:'#c06030', col2:'#803010'},
+  // === БОЛЬШОЙ ПАККЕТ НОВЫХ РЫБ ===
+  // Обычные (common)
+  {name:'Снеток',         w:[.02,.1],  pts:3,  coins:1,   rar:'common',  label:'Обычный',     col:'#e8e0c0', col2:'#a0988a'},
+  {name:'Тюлька',         w:[.04,.18], pts:4,  coins:2,   rar:'common',  label:'Обычный',     col:'#c0d0b0', col2:'#809070'},
+  {name:'Быстрянка',      w:[.03,.12], pts:4,  coins:1,   rar:'common',  label:'Обычный',     col:'#d8c890', col2:'#908848'},
+  {name:'Гольян',         w:[.02,.1],  pts:3,  coins:1,   rar:'common',  label:'Обычный',     col:'#b8c8a0', col2:'#788860'},
+  {name:'Горчак',         w:[.03,.15], pts:5,  coins:2,   rar:'common',  label:'Обычный',     col:'#d0a0c0', col2:'#906090'},
+  {name:'Елец',           w:[.1,.6],   pts:8,  coins:4,   rar:'common',  label:'Обычный',     col:'#c8b070', col2:'#888030'},
+  {name:'Пескарь-Усач',   w:[.08,.4],  pts:7,  coins:3,   rar:'common',  label:'Обычный',     col:'#c0a860', col2:'#807020'},
+  {name:'Серебряный Карась',w:[.15,.8],pts:10, coins:5,   rar:'common',  label:'Обычный',     col:'#d0d0b8', col2:'#909080'},
+  {name:'Щиповка',        w:[.02,.08], pts:3,  coins:1,   rar:'common',  label:'Обычный',     col:'#b8a888', col2:'#787048'},
+  {name:'Пузанок',        w:[.05,.2],  pts:5,  coins:2,   rar:'common',  label:'Обычный',     col:'#e0c8a0', col2:'#a08860'},
+  // Редкие (rare)
+  {name:'Рыбец',          w:[.3,1.8],  pts:26, coins:14,  rar:'rare',    label:'Редкий',      col:'#a8c0a0', col2:'#608060'},
+  {name:'Чехонь',         w:[.2,1.5],  pts:22, coins:12,  rar:'rare',    label:'Редкий',      col:'#c0d0c8', col2:'#809088'},
+  {name:'Жерех Серебряный',w:[.4,2.5], pts:28, coins:16,  rar:'rare',    label:'Редкий',      col:'#c8c8c0', col2:'#888880'},
+  {name:'Усач',           w:[.5,3.0],  pts:32, coins:18,  rar:'rare',    label:'Редкий',      col:'#a09050', col2:'#706030'},
+  {name:'Вырезуб',        w:[.8,5.0],  pts:38, coins:22,  rar:'rare',    label:'Редкий',      col:'#b0a070', col2:'#706040'},
+  {name:'Синец',          w:[.3,2.0],  pts:25, coins:13,  rar:'rare',    label:'Редкий',      col:'#8090b0', col2:'#405070'},
+  {name:'Густера',        w:[.2,1.2],  pts:20, coins:11,  rar:'rare',    label:'Редкий',      col:'#c0b890', col2:'#807850'},
+  {name:'Уклея',          w:[.1,.5],   pts:15, coins:8,   rar:'rare',    label:'Редкий',      col:'#e8e0d0', col2:'#a8a090'},
+  {name:'Нельма',         w:[1.0,6.0], pts:42, coins:26,  rar:'rare',    label:'Редкий',      col:'#d0c8b0', col2:'#908870'},
+  {name:'Рипус',          w:[.3,2.5],  pts:27, coins:15,  rar:'rare',    label:'Редкий',      col:'#b8d0e0', col2:'#7890a0'},
+  // Эпические (epic)
+  {name:'Севрюга Малая',  w:[1.5,8.0], pts:70, coins:52,  rar:'epic',    label:'Эпический',   col:'#a0a8b0', col2:'#606870'},
+  {name:'Осётр Речной',   w:[2.0,10.], pts:85, coins:65,  rar:'epic',    label:'Эпический',   col:'#808898', col2:'#404858'},
+  {name:'Нерка',          w:[1.0,5.0], pts:55, coins:40,  rar:'epic',    label:'Эпический',   col:'#e05050', col2:'#a02020'},
+  {name:'Горбуша',        w:[.8,4.0],  pts:50, coins:36,  rar:'epic',    label:'Эпический',   col:'#d08050', col2:'#905020'},
+  {name:'Кета',           w:[1.5,6.0], pts:60, coins:44,  rar:'epic',    label:'Эпический',   col:'#c06040', col2:'#803020'},
+  {name:'Чавыча',         w:[3.0,12.], pts:90, coins:70,  rar:'epic',    label:'Эпический',   col:'#902040', col2:'#501020'},
+  {name:'Голец Арктический',w:[.5,3.0],pts:48, coins:33,  rar:'epic',    label:'Эпический',   col:'#9090c0', col2:'#505080'},
+  {name:'Хариус',         w:[.3,2.0],  pts:45, coins:30,  rar:'epic',    label:'Эпический',   col:'#6090a0', col2:'#305060'},
+  {name:'Ленок',          w:[.5,3.5],  pts:52, coins:38,  rar:'epic',    label:'Эпический',   col:'#d07040', col2:'#904020'},
+  {name:'Омуль',          w:[.4,2.5],  pts:46, coins:31,  rar:'epic',    label:'Эпический',   col:'#90b0c0', col2:'#507080'},
+  // Легендарные (legend)
+  {name:'Белуга',         w:[10.,50.], pts:200, coins:160, rar:'legend', label:'Легендарный', col:'#c0c8d0', col2:'#808890'},
+  {name:'Осётр Гигант',   w:[5.0,30.], pts:180, coins:140, rar:'legend', label:'Легендарный', col:'#708090', col2:'#384050'},
+  {name:'Тунец Атлантик', w:[3.0,20.], pts:160, coins:120, rar:'legend', label:'Легендарный', col:'#405870', col2:'#202838'},
+  {name:'Рыба-меч',       w:[4.0,25.], pts:170, coins:130, rar:'legend', label:'Легендарный', col:'#6090c0', col2:'#305080'},
+  {name:'Чёрная Акула',   w:[8.0,40.], pts:250, coins:200, rar:'legend', label:'Легендарный!', col:'#202830', col2:'#101418'},
+  {name:'Арована Золотая',w:[.5,3.0],  pts:220, coins:180, rar:'legend', label:'Легендарный', col:'#f0c840', col2:'#b08020'},
+  {name:'Флайинг Фиш',    w:[.2,1.0],  pts:150, coins:110, rar:'legend', label:'Легендарный', col:'#60c0e0', col2:'#208090'},
+  {name:'Рыба Дракон',    w:[1.0,6.0], pts:300, coins:250, rar:'legend', label:'Легендарный!', col:'#c03020', col2:'#801000'},
   // === ЛЕГЕНДЫ ПОБЕРЕЖЬЯ (только на карте "Побережье легендарок") ===
   {name:'Морской Дракон',w:[3.0,15.], pts:300,coins:120, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#2060a0', col2:'#103060', coastal:true},
   {name:'Акула-Призрак', w:[5.0,20.], pts:350,coins:130, rar:'coastal_legend', label:'🌊 Легенда Побережья', col:'#607080', col2:'#303848', coastal:true},
@@ -2526,6 +2595,16 @@ const FISH_DATA = [
    flowerAnim:'orchidGlow'},
   {name:'Золотой Подсолнух',  w:[4.0,18.0], pts:1500, coins:1400, rar:'flower', label:'🌻 ЦВЕТОК ЛЕГЕНД', col:'#ffd700', col2:'#ff8800', og:true, flower:true,
    flowerAnim:'sunflowerBlaze'},
+  // ═══ ДОПОЛНИТЕЛЬНЫЕ OG РЫБЫ ═══
+  {name:'Алмазный Карась',    w:[0.1,0.5],  pts:800,  coins:700,  rar:'og', label:'👑 OG', col:'#b0e0ff', col2:'#60a0d0', og:true},
+  {name:'Рубиновая Форель',   w:[0.5,3.0],  pts:750,  coins:650,  rar:'og', label:'👑 OG', col:'#ff3060', col2:'#c01030', og:true},
+  {name:'Изумрудный Сом',     w:[3.0,15.0], pts:900,  coins:800,  rar:'og', label:'👑 OG', col:'#20e060', col2:'#108030', og:true},
+  {name:'Сапфировая Щука',    w:[1.5,8.0],  pts:850,  coins:750,  rar:'og', label:'👑 OG', col:'#2080ff', col2:'#1040c0', og:true},
+  {name:'Золотой Левиафан',   w:[20.0,80.0],pts:2000, coins:1800, rar:'og', label:'👑 OG БОГ', col:'#ffd700', col2:'#c09000', og:true},
+  {name:'Теневой Угорь',      w:[0.5,4.0],  pts:700,  coins:600,  rar:'og', label:'👑 OG', col:'#201030', col2:'#100818', og:true},
+  {name:'Солнечная Арована',  w:[0.5,3.0],  pts:1000, coins:900,  rar:'og', label:'👑 OG', col:'#fff080', col2:'#d0a000', og:true},
+  {name:'Квантовая Рыбка',    w:[0.1,0.8],  pts:1300, coins:1200, rar:'og', label:'👑 OG КВАНТ', col:'#ff00ff', col2:'#8000c0', og:true},
+  {name:'Ледяной Дракон',     w:[5.0,25.0], pts:1600, coins:1500, rar:'og', label:'👑 OG', col:'#a0f0ff', col2:'#4090c0', og:true},
 ];
 
 // ============================================================
@@ -2555,6 +2634,9 @@ const RODS = [
   {id:'demonic', name:'Демоническая',        desc:'Пропитана кровью тёмных существ. Только ЛЕГЕНДЫ и OG.',            price:200000, biteChance:25.0, catchMult:20.0, stats:'Клёв: x25 • Только OG/Легенды • +666🪙 за улов',       detail:'Гипер-Детальная', owned:false, equipped:false},
   {id:'godly',   name:'Удочка Богов',        desc:'МАКСИМАЛЬНАЯ УДОЧКА. Создана самими богами рыбалки.',               price:500000, biteChance:50.0, catchMult:30.0, stats:'Клёв: x50 • x30 улов • ВСЕ РЫБЫ • БОГ РЫБАЛКИ',       detail:'БОГ-ТИЕР',        owned:false, equipped:false},
   {id:'flower',  name:'Цветочная Удочка',    desc:'Создана из живых цветов. Ловит Цветочных Рыб и баффит сад при каждом улове!', price:0, biteChance:30.0, catchMult:25.0, stats:'Клёв: x30 • x25 • Цветочные Рыбы • Бафф Сада • Анимированные!', detail:'🌸 ЦВЕТОК', owned:false, equipped:false, craftable:true, craftType:'flower'},
+  {id:'marble',  name:'Мраморная Удочка',    desc:'Высечена из чистейшего мрамора. Бросает мраморный шар в воду — ×2 к продаже!', price:750000, biteChance:40.0, catchMult:35.0, stats:'Клёв: x40 • x35 улов • Только OG+Легенды • ×2 цена продажи', detail:'🪨 МРАМОР', owned:false, equipped:false, special:'marble'},
+  // ═══ ПРИЗРАК ═══
+  {id:'ghost',   name:'Призрачная Удочка',   desc:'Удочка из другого измерения. Каждый заброс случайно меняет силу клёва — от слабой до x3!', price:15000, biteChance:1.0, catchMult:2.0, stats:'Клёв: СЛУЧАЙНЫЙ (x0.3–x3) • Только Легенды и ниже • Авантюра!', detail:'👻 ПРИЗРАК', owned:false, equipped:false, special:'ghost'},
 ];
 
 // ============================================================
@@ -3197,6 +3279,52 @@ function triggerBite() {
     gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
     return;
   }
+  
+  // 👻 Призрачная удочка — случайный клёв, только легенды и ниже
+  const isGhost = gs.currentRod.id === 'ghost';
+  if(isGhost) {
+    // Случайный множитель клёва: от x0.3 до x3
+    const ghostRoll = 0.3 + Math.random() * 2.7;
+    const ghostPool = FISH_DATA.filter(f=>!f.coastal && !f.og && f.rar !== 'og');
+    const ghostWeighted = [];
+    ghostPool.forEach(f=>{
+      let w = f.rar==='common'?40 : f.rar==='rare'?30 : f.rar==='epic'?20 : f.rar==='legend'?10 : 0;
+      for(let i=0;i<Math.round(w);i++) ghostWeighted.push(f);
+    });
+    if(ghostWeighted.length === 0) ghostPool.forEach(f=>ghostWeighted.push(f));
+    gs.fish = ghostWeighted[Math.floor(Math.random()*ghostWeighted.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2), ghostMult: ghostRoll};
+    // Показываем какой множитель выпал
+    const ghostEmoji = ghostRoll < 0.8 ? '💀' : ghostRoll < 1.5 ? '👻' : ghostRoll < 2.5 ? '✨' : '🌟';
+    showToast(`${ghostEmoji} Призрак бросает... Клёв x${ghostRoll.toFixed(1)}!`);
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([60,20,60]);
+    const autoReel = UPGRADES.find(u=>u.id==='auto_reel')?.owned;
+    if(autoReel) {
+      setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, 1000);
+    } else {
+      gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, ghostRoll < 1.0 ? 3000 : 6000);
+    }
+    return;
+  }
+
+  // 🪨 Мраморная удочка — только OG+легенды, мрамор даёт ×2 к продаже
+  const isMarble = gs.currentRod.id === 'marble';
+  if(isMarble) {
+    const mPool = FISH_DATA.filter(f=>f.og||f.rar==='legend'||f.rar==='coastal_legend');
+    gs.fish = mPool[Math.floor(Math.random()*mPool.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2), marbleBonus:true};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([80,40,80,40,80]);
+    // Spawn marble splash particles
+    setTimeout(()=>{
+      for(let i=0;i<6;i++) setTimeout(()=>spawnMarbleSplash(), i*150);
+    },100);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
 
   FISH_DATA.filter(f=>!f.coastal).forEach(f=>{
     let w = f.rar==='common'?60 : f.rar==='rare'?30 : f.rar==='epic'?8 : f.rar==='og'?0.5 : 2;
@@ -3273,7 +3401,44 @@ function catchFish() {
     if(navigator.vibrate) navigator.vibrate(30);
     if(gs.coastTapCount < gs.coastTapNeeded) return; // ещё тапы нужны
     hideCoastTapBar();
-    // Достаточно тапов — ловим
+    // Достаточно тапов — ловим (переходим к нормальному улову)
+    clearTimeout(gs.biteTimeout);
+    gs.phase='idle';
+    biteEl.classList.remove('visible');
+    reelSvg.classList.add('spinning');
+    setTimeout(()=>reelSvg.classList.remove('spinning'), 900);
+    bobWrap.style.display='none'; bobWrap.style.animation='';
+    lctx.clearRect(0,0,360,700);
+    // Use the already-selected catch
+    const f=gs.currentCatch;
+    gs.fishCount++;
+    gs.score+=f.pts;
+    document.getElementById('fish-count').textContent=gs.fishCount;
+    document.getElementById('score-val').textContent=gs.score;
+    updateCatchPopupFish(f);
+    document.getElementById('catch-header').textContent = '🎉 Улов!';
+    document.getElementById('catch-name-txt').textContent=f.name;
+    document.getElementById('catch-weight-txt').textContent=`${f.weight} кг • +${f.pts} ★`;
+    const rarEl2=document.getElementById('catch-rarity');
+    rarEl2.textContent=f.label;
+    rarEl2.className = 'rarity-coastal_legend';
+    const price2=Math.round(calcPrice(f) * getEventCoinMult());
+    document.getElementById('popup-sell-price').textContent=' '+price2;
+    document.getElementById('catch-sell-btn').style.display = '';
+    document.getElementById('catch-popup').classList.add('show');
+    showScorePop('+'+f.pts, gs.bobX, gs.bobY);
+    makeRipple(gs.bobX, gs.bobY, 65);
+    gs.catchStreak = (gs.catchStreak||0) + 1;
+    updateStreakUI();
+    gs._coastCatch = true;
+    updateQuestProgress('fish');
+    updateQuestProgress('legend');
+    updateQuestProgress('epic');
+    addXP(80);
+    showXPPop(80, gs.bobX, gs.bobY);
+    checkAchievements();
+    saveGame();
+    return;
   }
   if(gs.phase!=='bite') return;
   clearTimeout(gs.biteTimeout);
@@ -3325,7 +3490,7 @@ function catchFish() {
     rarEl.className = f.rar==='coastal_legend' ? 'rarity-legend' : `rarity-${f.rar}`;
   }
   const price=Math.round(calcPrice(f) * getEventCoinMult());
-  document.getElementById('popup-sell-price').textContent=' '+price+(getEventCoinMult()>1?' 🌅x2':'');
+  document.getElementById('popup-sell-price').textContent=' '+price+(getEventCoinMult()>1?' 🌅x2':'')+(f.marbleBonus?' 🪨×2':'');
   document.getElementById('catch-sell-btn').style.display = '';
   document.getElementById('catch-popup').classList.add('show');
   showScorePop('+'+f.pts, gs.bobX, gs.bobY);
@@ -3338,6 +3503,10 @@ function catchFish() {
     gs.coins += bonus;
     updateCoins();
     showToast('🦆 Утиный магнит: +'+bonus+'🪙!');
+  }
+  // 🪨 Мраморная удочка: ×2 продажа — тост
+  if(gs.currentRod.id === 'marble' && f.marbleBonus) {
+    showToast('🪨 Мрамор в воде! Цена ×2 — ' + Math.round(calcPrice(f)) + '🪙!');
   }
   // Удочка Бездны: только легенды
   if(gs.currentRod.id === 'void' && f.rar !== 'legend' && f.rar !== 'coastal_legend') {
@@ -3365,7 +3534,24 @@ function catchFish() {
 }
 
 function calcPrice(f) {
-  return Math.round(parseFloat(f.weight) * f.coins);
+  const base = Math.round(parseFloat(f.weight) * f.coins);
+  return f.marbleBonus ? base * 2 : base;
+}
+
+function spawnMarbleSplash() {
+  const game = document.getElementById('game');
+  const m = document.createElement('div');
+  const sz = 8 + Math.random()*16;
+  const hue = 240 + Math.random()*40;
+  m.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.9),hsl(${hue},50%,70%),hsl(${hue},40%,40%));
+    box-shadow:0 0 ${sz*.4}px rgba(200,180,255,.6);
+    left:${gs.bobX - sz/2 + (Math.random()-0.5)*50}px;
+    top:${gs.bobY - sz/2 + (Math.random()-0.5)*30}px;
+    pointer-events:none;z-index:30;
+    animation:marbleSplashAnim 1s ease-out forwards;`;
+  game.appendChild(m);
+  setTimeout(()=>m.remove(), 1000);
 }
 
 function updateCatchPopupFish(f) {
@@ -3610,26 +3796,315 @@ function rodIconSVG(rod) {
   const c = RC.color;
   const glowStyle = RC.glow !== 'none' ? `filter:drop-shadow(0 0 8px ${c});` : '';
 
-  // Специальные иконки для каждой удочки
+  // Специальные иконки для каждой удочки — ВСЕ удочки
   const specials = {
-    rubberduck: `<circle cx="26" cy="24" r="14" fill="#f0d820" stroke="#c0a010" stroke-width="2"/>
-      <circle cx="26" cy="20" r="7" fill="#f0d820" stroke="#c0a010" stroke-width="1.5"/>
-      <circle cx="29" cy="18" r="1.5" fill="#1a1008"/>
-      <path d="M30,19 Q34,17 33,21" stroke="#e05020" stroke-width="2" fill="none" stroke-linecap="round"/>
-      <path d="M20,30 Q26,38 32,30" stroke="#c0a010" stroke-width="1.5" fill="rgba(240,200,10,.3)"/>`,
-    crystal: `<polygon points="26,6 34,20 26,46 18,20" fill="rgba(160,232,255,.35)" stroke="${c}" stroke-width="1.5"/>
-      <polygon points="26,6 34,20 26,28 18,20" fill="rgba(200,245,255,.5)" stroke="${c}" stroke-width="1"/>
-      <line x1="26" y1="6" x2="26" y2="46" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
-      <circle cx="26" cy="20" r="4" fill="rgba(200,245,255,.8)" stroke="${c}" stroke-width="1"/>`,
-    thunder: `<polygon points="32,6 22,27 28,27 20,46 36,22 28,22" fill="#f8f040" stroke="#c0b010" stroke-width="1.5"/>
-      <circle cx="26" cy="26" r="3" fill="white" opacity=".7"/>
-      <line x1="10" y1="26" x2="16" y2="26" stroke="${c}" stroke-width="2" stroke-dasharray="2,2"/>
-      <line x1="36" y1="26" x2="42" y2="26" stroke="${c}" stroke-width="2" stroke-dasharray="2,2"/>`,
-    void: `<circle cx="26" cy="26" r="18" fill="rgba(20,0,60,.9)" stroke="${c}" stroke-width="2"/>
-      <circle cx="26" cy="26" r="10" fill="rgba(60,0,160,.5)" stroke="${c}" stroke-width="1"/>
-      <circle cx="26" cy="26" r="4" fill="${c}" opacity=".9"/>
-      <line x1="26" y1="8" x2="26" y2="44" stroke="${c}" stroke-width="1" opacity=".5"/>
-      <line x1="8" y1="26" x2="44" y2="26" stroke="${c}" stroke-width="1" opacity=".5"/>`,
+    /* ── Базовые (полностью уникальный дизайн для каждой) ── */
+
+    // Деревенская: старая треснутая доска с гвоздями и верёвкой
+    wood: `
+      <!-- Потрёпанная деревенская удочка из доски -->
+      <rect x="22" y="6" width="8" height="40" rx="2" fill="url(#wdPlank)" stroke="#5a3010" stroke-width="1"/>
+      <defs><linearGradient id="wdPlank" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a2808"/><stop offset="50%" stop-color="#8b5e2a"/><stop offset="100%" stop-color="#5a3010"/></linearGradient></defs>
+      <!-- Трещины в дереве -->
+      <line x1="24" y1="10" x2="26" y2="25" stroke="#3a1808" stroke-width="0.8" opacity=".7"/>
+      <line x1="27" y1="18" x2="29" y2="30" stroke="#3a1808" stroke-width="0.6" opacity=".5"/>
+      <!-- Узловатый крюк сверху (примитивный) -->
+      <path d="M26,6 Q26,2 30,2 Q34,2 34,6 Q34,9 30,9" stroke="#5a3828" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Гвоздики на рукоятке -->
+      <circle cx="24" cy="40" r="1.2" fill="#888" stroke="#444" stroke-width="0.5"/>
+      <circle cx="28" cy="40" r="1.2" fill="#888" stroke="#444" stroke-width="0.5"/>
+      <!-- Верёвка вместо лески -->
+      <path d="M26,6 Q36,12 44,24" stroke="#7a6030" stroke-width="1.5" stroke-dasharray="2,1" fill="none"/>
+      <!-- Корявый поплавок из пробки -->
+      <ellipse cx="44" cy="26" rx="4" ry="6" fill="#c87030" stroke="#8a4820" stroke-width="1"/>
+      <line x1="44" y1="20" x2="44" y2="16" stroke="#7a6030" stroke-width="1.5"/>
+      <!-- Ручка обмотана тряпкой -->
+      <rect x="21" y="36" width="10" height="10" rx="1" fill="rgba(80,40,10,.5)" stroke="#6a4020" stroke-width="1"/>
+      <line x1="21" y1="38" x2="31" y2="38" stroke="#9a6030" stroke-width="0.8" opacity=".6"/>
+      <line x1="21" y1="41" x2="31" y2="41" stroke="#9a6030" stroke-width="0.8" opacity=".6"/>
+      <line x1="21" y1="44" x2="31" y2="44" stroke="#9a6030" stroke-width="0.8" opacity=".6"/>`,
+
+    // Бамбуковая: тонкое бамбуковое колено с листиком
+    bamboo: `
+      <!-- Тонкое бамбуковое колено -->
+      <line x1="36" y1="6" x2="20" y2="48" stroke="#4a7020" stroke-width="4" stroke-linecap="round"/>
+      <line x1="36" y1="6" x2="20" y2="48" stroke="#8aaa40" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+      <!-- Узлы бамбука -->
+      <line x1="35" y1="10" x2="31" y2="10" stroke="#2a5010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="32" y1="17" x2="28" y2="17" stroke="#2a5010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="30" y1="24" x2="26" y2="24" stroke="#2a5010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="27" y1="31" x2="23" y2="31" stroke="#2a5010" stroke-width="2" stroke-linecap="round"/>
+      <line x1="24" y1="39" x2="21" y2="39" stroke="#2a5010" stroke-width="2" stroke-linecap="round"/>
+      <!-- Живой листик сбоку -->
+      <path d="M34,13 Q42,8 44,15 Q38,16 34,13Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.8"/>
+      <line x1="34" y1="13" x2="42" y2="14" stroke="#2a6010" stroke-width="0.7" opacity=".7"/>
+      <!-- Тонкая нитяная леска -->
+      <line x1="36" y1="6" x2="46" y2="30" stroke="rgba(180,200,160,.6)" stroke-width="0.8"/>
+      <!-- Круглый поплавок из дерева -->
+      <circle cx="46" cy="32" r="5" fill="url(#bmbFl)" stroke="#5a3010" stroke-width="1"/>
+      <defs><linearGradient id="bmbFl" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#e8c860"/><stop offset="50%" stop-color="#e8c860"/><stop offset="50.1%" stop-color="#c0e060"/><stop offset="100%" stop-color="#c0e060"/></linearGradient></defs>
+      <!-- Крюк сбоку внизу -->
+      <path d="M20,46 Q16,46 16,50 Q16,54 20,54" stroke="#888" stroke-width="1.5" fill="none"/>`,
+
+    // Карбоновая: хайтек спортивная с волокнами и цифровым дисплеем
+    carbon: `
+      <!-- Карбоновое тело — шестиугольная текстура -->
+      <rect x="23" y="8" width="6" height="38" rx="3" fill="#1e2a34" stroke="#405868" stroke-width="1"/>
+      <!-- Карбоновые волокна (диагональ) -->
+      <line x1="23" y1="10" x2="29" y2="16" stroke="rgba(80,140,180,.4)" stroke-width="0.7"/>
+      <line x1="23" y1="15" x2="29" y2="21" stroke="rgba(80,140,180,.4)" stroke-width="0.7"/>
+      <line x1="23" y1="20" x2="29" y2="26" stroke="rgba(80,140,180,.4)" stroke-width="0.7"/>
+      <line x1="23" y1="25" x2="29" y2="31" stroke="rgba(80,140,180,.4)" stroke-width="0.7"/>
+      <line x1="23" y1="30" x2="29" y2="36" stroke="rgba(80,140,180,.4)" stroke-width="0.7"/>
+      <line x1="29" y1="10" x2="23" y2="16" stroke="rgba(60,100,140,.3)" stroke-width="0.7"/>
+      <line x1="29" y1="15" x2="23" y2="21" stroke="rgba(60,100,140,.3)" stroke-width="0.7"/>
+      <line x1="29" y1="20" x2="23" y2="26" stroke="rgba(60,100,140,.3)" stroke-width="0.7"/>
+      <!-- Мини-дисплей (датчик поклёвки) -->
+      <rect x="18" y="20" width="10" height="7" rx="1.5" fill="#001828" stroke="#40a0c0" stroke-width="1"/>
+      <rect x="19" y="21" width="8" height="5" rx="1" fill="#003050"/>
+      <line x1="20" y1="23.5" x2="26" y2="23.5" stroke="#00c0ff" stroke-width="0.8" opacity=".7"/>
+      <circle cx="24" cy="23.5" r="1" fill="#00ffff" opacity=".9"/>
+      <!-- Антенна/кончик — углепластик -->
+      <line x1="26" y1="8" x2="26" y2="3" stroke="#607888" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="26" cy="3" r="1.5" fill="#80c8e0" stroke="#405868" stroke-width="0.8"/>
+      <!-- Леска тонкая -->
+      <line x1="26" y1="3" x2="44" y2="28" stroke="rgba(150,200,240,.5)" stroke-width="0.7"/>
+      <!-- Поплавок-торпеда -->
+      <ellipse cx="44" cy="29" rx="3" ry="7" fill="#e03020" stroke="#801010" stroke-width="1"/>
+      <line x1="44" y1="22" x2="44" y2="20" stroke="rgba(150,200,240,.5)" stroke-width="0.7"/>`,
+
+    // Волшебная: жезл с кристаллом и магическими рунами
+    magic: `
+      <!-- Тело жезла — резьба с рунами -->
+      <rect x="23" y="10" width="6" height="36" rx="3" fill="url(#magWand)" stroke="#7030a0" stroke-width="1"/>
+      <defs><linearGradient id="magWand" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a1060"/><stop offset="50%" stop-color="#8040c0"/><stop offset="100%" stop-color="#3a1060"/></linearGradient></defs>
+      <!-- Руны на жезле -->
+      <text x="26" y="22" text-anchor="middle" font-size="5" fill="#c080ff" opacity=".8">ᚠ</text>
+      <text x="26" y="30" text-anchor="middle" font-size="5" fill="#e0a0ff" opacity=".7">ᚱ</text>
+      <text x="26" y="38" text-anchor="middle" font-size="5" fill="#c080ff" opacity=".8">ᚾ</text>
+      <!-- Большой кристалл на вершине -->
+      <polygon points="26,3 30,9 26,13 22,9" fill="rgba(200,100,255,.7)" stroke="#b060e0" stroke-width="1.5"/>
+      <polygon points="26,3 30,9 26,7" fill="rgba(240,180,255,.8)"/>
+      <circle cx="25" cy="6" r="1.5" fill="white" opacity=".9"/>
+      <!-- Магические искры вокруг кристалла -->
+      <circle cx="32" cy="5" r="1.5" fill="#ff80ff" opacity=".8"/>
+      <circle cx="20" cy="7" r="1" fill="#e060ff" opacity=".7"/>
+      <circle cx="34" cy="10" r="1" fill="#c040ff" opacity=".6"/>
+      <!-- Светящаяся аура вокруг жезла -->
+      <ellipse cx="26" cy="26" rx="10" ry="18" fill="none" stroke="rgba(180,80,255,.25)" stroke-width="3"/>
+      <!-- Леска из светящихся частиц -->
+      <line x1="26" y1="3" x2="44" y2="20" stroke="rgba(200,100,255,.6)" stroke-width="1" stroke-dasharray="2,2"/>
+      <!-- Магический поплавок (звезда) -->
+      <polygon points="44,20 45.5,24.5 50.5,24.5 46.5,27.5 48,32 44,29 40,32 41.5,27.5 37.5,24.5 42.5,24.5" fill="rgba(200,100,255,.8)" stroke="#9040c0" stroke-width="0.8"/>
+      <!-- Ручка с кожаной обмоткой -->
+      <rect x="22" y="42" width="8" height="5" rx="2" fill="#2a0840" stroke="#7030a0" stroke-width="1"/>`,
+
+    // Золотая: богатая тросточка с монетами и насечкой
+    golden: `
+      <!-- Золотой декоративный стержень -->
+      <rect x="23" y="8" width="6" height="38" rx="3" fill="url(#golRod)" stroke="#c09010" stroke-width="1.2"/>
+      <defs>
+        <linearGradient id="golRod" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#907010"/><stop offset="30%" stop-color="#ffe060"/><stop offset="70%" stop-color="#d4a020"/><stop offset="100%" stop-color="#907010"/></linearGradient>
+      </defs>
+      <!-- Гравировка — ромбы -->
+      <line x1="23" y1="14" x2="29" y2="14" stroke="#b08010" stroke-width="0.8" opacity=".7"/>
+      <line x1="23" y1="20" x2="29" y2="20" stroke="#b08010" stroke-width="0.8" opacity=".7"/>
+      <line x1="23" y1="26" x2="29" y2="26" stroke="#b08010" stroke-width="0.8" opacity=".7"/>
+      <line x1="23" y1="32" x2="29" y2="32" stroke="#b08010" stroke-width="0.8" opacity=".7"/>
+      <!-- Навершие — корона -->
+      <rect x="21" y="5" width="10" height="4" rx="1" fill="#d4a020" stroke="#c09010" stroke-width="0.8"/>
+      <rect x="21" y="3" width="2" height="4" rx="0.5" fill="#d4a020" stroke="#c09010" stroke-width="0.7"/>
+      <rect x="25" y="2" width="2" height="5" rx="0.5" fill="#ffe060" stroke="#c09010" stroke-width="0.7"/>
+      <rect x="29" y="3" width="2" height="4" rx="0.5" fill="#d4a020" stroke="#c09010" stroke-width="0.7"/>
+      <!-- Рубины в короне -->
+      <circle cx="22" cy="4" r="1" fill="#ff2020"/>
+      <circle cx="26" cy="3" r="1.2" fill="#ff4040"/>
+      <circle cx="30" cy="4" r="1" fill="#ff2020"/>
+      <!-- Монетки вдоль тела -->
+      <ellipse cx="20" cy="20" rx="3" ry="3" fill="#e8b830" stroke="#b08010" stroke-width="0.7" opacity=".8"/>
+      <ellipse cx="32" cy="30" rx="3" ry="3" fill="#e8b830" stroke="#b08010" stroke-width="0.7" opacity=".7"/>
+      <!-- Леска — золотая нить -->
+      <line x1="26" y1="2" x2="44" y2="22" stroke="rgba(255,210,50,.7)" stroke-width="1.2"/>
+      <!-- Поплавок — кубок -->
+      <rect x="41" y="23" width="6" height="8" rx="1" fill="#d4a020" stroke="#907010" stroke-width="1"/>
+      <rect x="40" y="23" width="8" height="2" rx="1" fill="#ffe060" stroke="#b08010" stroke-width="0.5"/>
+      <rect x="43" y="31" width="2" height="3" fill="#907010"/>
+      <rect x="41" y="34" width="6" height="1.5" rx="0.5" fill="#d4a020" stroke="#907010" stroke-width="0.5"/>
+      <!-- Искры золота -->
+      <circle cx="15" cy="15" r="1.5" fill="#ffe060" opacity=".7"/>
+      <circle cx="38" cy="12" r="1" fill="#ffd040" opacity=".6"/>`,
+    mech: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#90e0f8" stroke-width="6" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"/>
+      <rect x="35" y="7" width="9" height="7" rx="2" fill="rgba(30,80,100,.9)" stroke="#90e0f8" stroke-width="1.5"/>
+      <circle cx="39.5" cy="10.5" r="2.5" fill="#90e0f8" stroke="#406070" stroke-width="0.8"/>
+      <circle cx="39.5" cy="10.5" r="1" fill="white"/>
+      <rect x="28" y="19" width="6" height="3" rx="1" fill="#90e0f844" stroke="#90e0f8" stroke-width="0.8"/>
+      <rect x="22" y="26" width="5" height="3" rx="1" fill="#90e0f844" stroke="#90e0f8" stroke-width="0.8"/>
+      <rect x="17" y="33" width="5" height="3" rx="1" fill="#90e0f844" stroke="#90e0f8" stroke-width="0.8"/>
+      <circle cx="18" cy="36" r="6.5" fill="rgba(15,50,65,.9)" stroke="#90e0f8" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#306070" stroke="#4090a0" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#90e0f8"/>
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="#90e0f8" stroke-width="1.5" opacity=".85"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="#90e0f8" stroke-width="1.3" opacity=".75"/>`,
+    cosmic: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#e060ff" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="rgba(255,150,255,.25)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="38" cy="10" r="8" fill="rgba(60,0,120,.7)" stroke="#e060ff" stroke-width="1.5"/>
+      <circle cx="38" cy="10" r="4.5" fill="#a020d0" opacity=".7"/>
+      <circle cx="38" cy="10" r="2" fill="#e060ff"/>
+      <circle cx="36" cy="8" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="10" cy="20" r="1" fill="white" opacity=".5"/>
+      <circle cx="44" cy="28" r="1" fill="white" opacity=".4"/>
+      <circle cx="6" cy="36" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="18" cy="36" r="6.5" fill="rgba(30,5,60,.9)" stroke="#e060ff" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#601090" stroke="#8020c0" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#e060ff"/>
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="#e060ff" stroke-width="1.5" opacity=".85"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="#e060ff" stroke-width="1.3" opacity=".75"/>`,
+    demonic: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#ff1020" stroke-width="6" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="rgba(255,80,80,.25)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34,12 Q38,8 36,14" fill="#990010" stroke="#cc0010" stroke-width="1.2"/>
+      <path d="M29,18 Q33,14 31,20" fill="#990010" stroke="#cc0010" stroke-width="1.2"/>
+      <path d="M24,24 Q28,20 26,26" fill="#990010" stroke="#cc0010" stroke-width="1.2"/>
+      <path d="M19,31 Q23,27 21,33" fill="#990010" stroke="#cc0010" stroke-width="1.2"/>
+      <circle cx="38" cy="10" r="7" fill="rgba(80,0,10,.9)" stroke="#ff1020" stroke-width="1.5"/>
+      <circle cx="35.5" cy="7.5" r="2" fill="#ff0000" opacity=".9"/>
+      <circle cx="40.5" cy="7.5" r="2" fill="#ff0000" opacity=".9"/>
+      <path d="M35,12 Q38,14 41,12" stroke="#ff4040" stroke-width="1" fill="none"/>
+      <circle cx="18" cy="36" r="6.5" fill="rgba(50,0,10,.95)" stroke="#ff1020" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#600010" stroke="#880010" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#ff4050"/>
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="#ff2030" stroke-width="1.5" opacity=".85"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="#ff2030" stroke-width="1.3" opacity=".75"/>`,
+    godly: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#ffd700" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="rgba(255,255,180,.35)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="38" cy="10" r="9" fill="rgba(200,160,0,.3)" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="38" cy="10" r="5" fill="#ffd70099" stroke="#c09010" stroke-width="1"/>
+      <circle cx="36" cy="8" r="2.5" fill="rgba(255,255,220,.85)"/>
+      <circle cx="18" cy="36" r="6.5" fill="rgba(60,45,0,.9)" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#907010" stroke="#b09010" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#fff8a0"/>
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".9"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="#ffd700" stroke-width="1.3" opacity=".8"/>
+      <circle cx="36" cy="17" r="2" fill="none" stroke="#ffd700" stroke-width="1.2" opacity=".7"/>
+      <line x1="38" y1="10" x2="46" y2="28" stroke="rgba(255,230,80,.5)" stroke-width="1" stroke-dasharray="2,3"/>`,
+    flower: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#ffb0e0" stroke-width="5.5" stroke-linecap="round"/>
+      <circle cx="38" cy="10" r="8" fill="rgba(255,100,180,.4)" stroke="#ffb0e0" stroke-width="1.5"/>
+      <circle cx="38" cy="10" r="4" fill="rgba(255,200,100,.7)" stroke="#d0a000" stroke-width="1"/>
+      <circle cx="38" cy="10" r="2" fill="#ffff80"/>
+      <circle cx="34" cy="7" r="3" fill="rgba(255,120,180,.6)" stroke="#ffb0e0" stroke-width="0.8"/>
+      <circle cx="42" cy="7" r="3" fill="rgba(255,120,180,.6)" stroke="#ffb0e0" stroke-width="0.8"/>
+      <circle cx="34" cy="13" r="3" fill="rgba(255,120,180,.5)" stroke="#ffb0e0" stroke-width="0.8"/>
+      <circle cx="42" cy="13" r="3" fill="rgba(255,120,180,.5)" stroke="#ffb0e0" stroke-width="0.8"/>
+      <circle cx="24" cy="24" r="5" fill="rgba(255,100,180,.4)" stroke="#ffb0e0" stroke-width="1"/>
+      <circle cx="24" cy="24" r="2.5" fill="#ffff80" stroke="#d0a000" stroke-width="0.5"/>
+      <circle cx="18" cy="36" r="6.5" fill="rgba(80,20,50,.9)" stroke="#ffb0e0" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#c06090" stroke="#e090b0" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#ffb0e0"/>
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="#ffb0e0" stroke-width="1.5" opacity=".85"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="#ffb0e0" stroke-width="1.3" opacity=".75"/>`,
+    /* ── Уже были — полностью переработаны ── */
+
+    // Резиновая утка: утка на мини-спиннинге с брызгами
+    rubberduck: `
+      <!-- Корпус удочки — весёлая жёлтая -->
+      <line x1="38" y1="10" x2="18" y2="44" stroke="#f0b010" stroke-width="4.5" stroke-linecap="round"/>
+      <!-- Бантик-украшение на рукоятке -->
+      <path d="M20,42 Q14,38 16,34 Q22,38 20,42Z" fill="#ff6060" stroke="#cc3030" stroke-width="0.8"/>
+      <path d="M20,42 Q26,38 24,34 Q18,38 20,42Z" fill="#ff6060" stroke="#cc3030" stroke-width="0.8"/>
+      <circle cx="20" cy="42" r="2" fill="#ffaaaa" stroke="#cc3030" stroke-width="0.5"/>
+      <!-- Леска пунктиром (игривая) -->
+      <path d="M38,10 Q42,18 38,26 Q34,34 38,42" stroke="#f0d020" stroke-width="1.2" stroke-dasharray="2,2" fill="none"/>
+      <!-- УТКА плавает на конце -->
+      <!-- Тело утки -->
+      <ellipse cx="40" cy="38" rx="9" ry="7" fill="#f0d820" stroke="#c0a010" stroke-width="1.5"/>
+      <!-- Голова -->
+      <circle cx="44" cy="33" r="5.5" fill="#f0d820" stroke="#c0a010" stroke-width="1.5"/>
+      <!-- Глаз -->
+      <circle cx="46" cy="32" r="1.5" fill="#1a1008"/>
+      <circle cx="46.5" cy="31.5" r="0.5" fill="white"/>
+      <!-- Клюв -->
+      <path d="M47,34 Q51,32 50,36" stroke="#e05020" stroke-width="2.5" fill="#ff8030" stroke-linecap="round"/>
+      <!-- Крылышко -->
+      <path d="M35,38 Q38,34 42,37" stroke="#c0a010" stroke-width="1.5" fill="rgba(240,200,10,.3)"/>
+      <!-- Волны под уткой -->
+      <path d="M32,44 Q36,42 40,44 Q44,46 48,44" stroke="rgba(100,180,255,.6)" stroke-width="1.2" fill="none"/>`,
+
+    // Кристальная: вертикальный кристалл с гранями и радужным отражением  
+    crystal: `
+      <!-- Кристальный столп снизу вверх -->
+      <polygon points="26,6 33,16 30,46 22,46 19,16" fill="rgba(160,232,255,.3)" stroke="${c}" stroke-width="1.5"/>
+      <!-- Грани кристалла -->
+      <polygon points="26,6 33,16 26,18 19,16" fill="rgba(200,245,255,.6)" stroke="${c}" stroke-width="1"/>
+      <line x1="26" y1="6" x2="26" y2="46" stroke="rgba(255,255,255,.5)" stroke-width="1.2"/>
+      <line x1="26" y1="18" x2="33" y2="16" stroke="rgba(255,255,255,.3)" stroke-width="0.8"/>
+      <line x1="26" y1="18" x2="19" y2="16" stroke="rgba(255,255,255,.3)" stroke-width="0.8"/>
+      <!-- Радужные отблески -->
+      <line x1="8" y1="10" x2="14" y2="18" stroke="rgba(255,100,100,.6)" stroke-width="1.5"/>
+      <line x1="8" y1="14" x2="14" y2="22" stroke="rgba(255,200,50,.5)" stroke-width="1.2"/>
+      <line x1="8" y1="18" x2="14" y2="26" stroke="rgba(50,255,100,.5)" stroke-width="1"/>
+      <line x1="8" y1="22" x2="14" y2="30" stroke="rgba(50,100,255,.5)" stroke-width="1.2"/>
+      <!-- Снежинки вокруг -->
+      <circle cx="40" cy="15" r="2" fill="rgba(200,245,255,.7)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="42" cy="25" r="1.5" fill="rgba(200,245,255,.6)" stroke="${c}" stroke-width="0.7"/>
+      <circle cx="10" cy="34" r="1.5" fill="rgba(200,245,255,.5)"/>
+      <!-- Леска -->
+      <line x1="26" y1="6" x2="44" y2="14" stroke="${c}" stroke-width="0.8" opacity=".7"/>
+      <!-- Кристальный поплавок -->
+      <polygon points="44,14 48,20 44,28 40,20" fill="rgba(160,232,255,.5)" stroke="${c}" stroke-width="1"/>
+      <polygon points="44,14 48,20 44,18 40,20" fill="rgba(220,250,255,.8)"/>`,
+
+    // Громовая: зигзаг-молния с грозовыми тучами и дугой тока
+    thunder: `
+      <!-- Грозовая туча сверху -->
+      <ellipse cx="14" cy="14" rx="10" ry="7" fill="rgba(60,60,90,.9)" stroke="${c}" stroke-width="1.2"/>
+      <ellipse cx="22" cy="12" rx="7" ry="5" fill="rgba(70,70,100,.9)" stroke="${c}" stroke-width="1"/>
+      <ellipse cx="10" cy="18" rx="7" ry="4" fill="rgba(60,60,90,.9)" stroke="${c}" stroke-width="0.8"/>
+      <!-- Основная молния — большой зигзаг -->
+      <polygon points="22,18 14,32 20,32 10,48 28,30 20,30" fill="#f8f040" stroke="#c0b010" stroke-width="1.5"/>
+      <!-- Дополнительные разряды -->
+      <path d="M26,20 L32,28 L28,28 L34,38" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M8,22 L12,30" stroke="${c}" stroke-width="1.5" fill="none" opacity=".5"/>
+      <!-- Электрические дуги вокруг -->
+      <path d="M38,14 Q44,18 38,22" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".8"/>
+      <path d="M40,24 Q46,28 40,32" stroke="${c}" stroke-width="1" fill="none" stroke-linecap="round" opacity=".6"/>
+      <!-- Дождь из тучи -->
+      <line x1="8" y1="22" x2="6" y2="28" stroke="rgba(100,150,255,.7)" stroke-width="1"/>
+      <line x1="12" y1="24" x2="10" y2="30" stroke="rgba(100,150,255,.6)" stroke-width="1"/>
+      <!-- Круглая молния-поплавок -->
+      <circle cx="10" cy="48" r="3" fill="#f8f040" stroke="#c0b010" stroke-width="1"/>
+      <polygon points="10,44 11,47 13,47 11,49 12,51 10,49 8,51 9,49 7,47 9,47" fill="#ffe040" transform="scale(0.4) translate(15,70)"/>`,
+
+    // Бездна: чёрная дыра с горизонтом событий и искажением
+    void: `
+      <!-- Горизонт событий — чёрная дыра -->
+      <circle cx="26" cy="26" r="20" fill="rgba(5,0,20,.95)" stroke="${c}" stroke-width="2.5"/>
+      <!-- Аккреционный диск (кольца вокруг ЧД) -->
+      <ellipse cx="26" cy="26" rx="18" ry="6" fill="none" stroke="rgba(80,0,200,.6)" stroke-width="2" opacity=".9"/>
+      <ellipse cx="26" cy="26" rx="22" ry="8" fill="none" stroke="rgba(60,0,160,.4)" stroke-width="1.5" opacity=".7"/>
+      <!-- Линзирование — искажение пространства -->
+      <path d="M6,20 Q14,22 6,28" stroke="rgba(120,0,255,.5)" stroke-width="1.5" fill="none"/>
+      <path d="M46,20 Q38,22 46,28" stroke="rgba(120,0,255,.5)" stroke-width="1.5" fill="none"/>
+      <!-- Светлые звёзды затягиваются -->
+      <circle cx="8" cy="12" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="44" cy="10" r="1" fill="white" opacity=".4"/>
+      <circle cx="6" cy="38" r="1.5" fill="white" opacity=".3"/>
+      <circle cx="46" cy="40" r="1" fill="white" opacity=".4"/>
+      <!-- Растяжение звёзд (спагеттификация) -->
+      <line x1="12" y1="14" x2="18" y2="20" stroke="white" stroke-width="0.8" opacity=".4"/>
+      <line x1="40" y1="14" x2="34" y2="20" stroke="white" stroke-width="0.8" opacity=".3"/>
+      <!-- Ядро ЧД — абсолютная тьма -->
+      <circle cx="26" cy="26" r="8" fill="#000000"/>
+      <circle cx="26" cy="26" r="4" fill="${c}" opacity=".6"/>
+      <!-- Крест прицела (только "легенды") -->
+      <line x1="26" y1="14" x2="26" y2="19" stroke="${c}" stroke-width="1" opacity=".6"/>
+      <line x1="26" y1="33" x2="26" y2="38" stroke="${c}" stroke-width="1" opacity=".6"/>
+      <line x1="14" y1="26" x2="19" y2="26" stroke="${c}" stroke-width="1" opacity=".6"/>
+      <line x1="33" y1="26" x2="38" y2="26" stroke="${c}" stroke-width="1" opacity=".6"/>`,
     shark: `<ellipse cx="26" cy="28" rx="18" ry="9" fill="rgba(0,100,140,.7)" stroke="${c}" stroke-width="2"/>
       <polygon points="26,10 30,19 26,28 22,19" fill="#1a8aaa" stroke="${c}" stroke-width="1.5"/>
       <polygon points="12,30 6,40 18,34" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
@@ -3762,6 +4237,72 @@ function rodIconSVG(rod) {
       <path d="M20,40 L19,44 L20,48" stroke="#cc0000" stroke-width="2" fill="none"/>
       <path d="M28,42 L27,46" stroke="#cc0000" stroke-width="2" fill="none"/>
       <circle cx="19" cy="49" r="2" fill="#cc0000"/>`,
+    marble: `
+      <!-- Marble rod — white/grey veined marble handle with marble ball -->
+      <!-- Rod body — white marble with veins -->
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#e8e0f0" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="rgba(160,140,200,.4)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Marble veins on rod -->
+      <path d="M34,14 Q32,18 36,22" stroke="rgba(160,140,200,.6)" stroke-width="1" fill="none"/>
+      <path d="M28,20 Q24,24 28,30" stroke="rgba(200,180,240,.5)" stroke-width="0.8" fill="none"/>
+      <path d="M22,28 Q26,32 20,38" stroke="rgba(140,120,180,.5)" stroke-width="0.8" fill="none"/>
+      <!-- Marble sphere at tip — realistic marble -->
+      <defs>
+        <radialGradient id="marbleGrad" cx="35%" cy="30%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="40%" stop-color="#d4c8e8"/>
+          <stop offset="100%" stop-color="#9080c0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="38" cy="10" r="9" fill="url(#marbleGrad)" stroke="rgba(180,160,220,.8)" stroke-width="1.5"/>
+      <!-- Marble veins on sphere -->
+      <path d="M32,6 Q36,10 34,14" stroke="rgba(80,60,140,.4)" stroke-width="1" fill="none"/>
+      <path d="M38,4 Q42,8 40,12" stroke="rgba(100,80,160,.3)" stroke-width="0.8" fill="none"/>
+      <path d="M35,8 Q33,11 36,13" stroke="rgba(200,180,240,.5)" stroke-width="0.7" fill="none"/>
+      <!-- Highlight on sphere -->
+      <circle cx="35" cy="7" r="3" fill="rgba(255,255,255,.6)"/>
+      <!-- Reel -->
+      <circle cx="18" cy="36" r="6.5" fill="rgba(30,20,60,.7)" stroke="#c0b0e0" stroke-width="2"/>
+      <circle cx="18" cy="36" r="3.5" fill="#a090c0" stroke="#8070a0" stroke-width="1"/>
+      <circle cx="18" cy="36" r="1.5" fill="#e0d0ff"/>
+      <!-- Rod rings -->
+      <circle cx="25" cy="29" r="3.5" fill="none" stroke="#d0c0f0" stroke-width="1.5" opacity=".8"/>
+      <circle cx="31" cy="23" r="2.5" fill="none" stroke="#d0c0f0" stroke-width="1.3" opacity=".7"/>
+      <!-- Marble thrown in water effect — mini marble below rod -->
+      <circle cx="10" cy="46" r="4" fill="url(#marbleGrad)" stroke="rgba(180,160,220,.6)" stroke-width="1" opacity=".7"/>
+      <path d="M8,48 Q10,50 12,48" stroke="rgba(160,200,255,.5)" stroke-width="1" fill="none"/>`,
+
+    // Призрачная: полупрозрачная ectoplasm-удочка с мерцающим контуром
+    ghost: `
+      <!-- Призрачное тело — полупрозрачное, слегка искажённое -->
+      <line x1="38" y1="10" x2="18" y2="44" stroke="rgba(128,255,200,.15)" stroke-width="7" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="18" y2="44" stroke="rgba(128,255,200,.6)" stroke-width="2" stroke-linecap="round" stroke-dasharray="4,2"/>
+      <!-- "Тень" удочки — смещённая -->
+      <line x1="40" y1="9" x2="20" y2="43" stroke="rgba(180,100,255,.2)" stroke-width="5" stroke-linecap="round"/>
+      <!-- Кольца — светящиеся, парящие -->
+      <circle cx="32" cy="20" r="5" fill="none" stroke="rgba(128,255,200,.7)" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <circle cx="27" cy="28" r="4" fill="none" stroke="rgba(128,255,200,.6)" stroke-width="1.3" stroke-dasharray="3,2"/>
+      <circle cx="23" cy="35" r="3" fill="none" stroke="rgba(128,255,200,.5)" stroke-width="1.2" stroke-dasharray="2,2"/>
+      <!-- Призрак на вершине (милый) -->
+      <ellipse cx="38" cy="10" rx="9" ry="10" fill="rgba(200,255,230,.85)" stroke="rgba(128,255,200,.9)" stroke-width="1.5"/>
+      <path d="M29,15 Q29,22 33,20 Q35,18 38,20 Q41,18 43,20 Q47,22 47,15" fill="rgba(200,255,230,.85)" stroke="rgba(128,255,200,.9)" stroke-width="1.5"/>
+      <!-- Глазки призрака -->
+      <ellipse cx="35" cy="9" rx="2" ry="2.5" fill="rgba(20,20,40,.8)"/>
+      <ellipse cx="41" cy="9" rx="2" ry="2.5" fill="rgba(20,20,40,.8)"/>
+      <!-- Ротик О_О (удивлённый) -->
+      <circle cx="38" cy="13" r="1.5" fill="rgba(20,20,40,.7)"/>
+      <!-- Катушка — прозрачная -->
+      <circle cx="18" cy="40" r="7" fill="rgba(128,255,200,.1)" stroke="rgba(128,255,200,.7)" stroke-width="1.8" stroke-dasharray="4,3"/>
+      <circle cx="18" cy="40" r="4" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.5)" stroke-width="1"/>
+      <circle cx="18" cy="40" r="1.5" fill="rgba(200,255,230,.8)"/>
+      <!-- Потусторонняя леска — мерцающая -->
+      <line x1="38" y1="10" x2="44" y2="34" stroke="rgba(128,255,200,.5)" stroke-width="0.8" stroke-dasharray="3,2"/>
+      <!-- Мини призрачные рыбки вдоль лески (намёк на механику) -->
+      <ellipse cx="42" cy="22" rx="3" ry="2" fill="rgba(128,255,200,.25)" stroke="rgba(128,255,200,.5)" stroke-width="0.7"/>
+      <ellipse cx="44" cy="30" rx="2.5" ry="1.5" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.4)" stroke-width="0.7"/>
+      <!-- Поплавок-призрак -->
+      <circle cx="44" cy="36" r="5" fill="rgba(180,255,220,.3)" stroke="rgba(128,255,200,.7)" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <text x="44" y="39" text-anchor="middle" font-size="6" fill="rgba(128,255,200,.9)">👻</text>`,
   };
 
   // Общий шаблон удочки с кольцами и катушкой
@@ -3779,13 +4320,7 @@ function rodIconSVG(rod) {
       ${extraDecor}`;
   }
 
-  const extraByRod = {
-    wood:   '<rect x="14" y="38" width="6" height="3" rx="1" fill="#6a3808" opacity=".7"/>',
-    bamboo: '<line x1="20" y1="34" x2="38" y2="14" stroke="rgba(150,220,80,.3)" stroke-width="3" stroke-dasharray="4,4"/>',
-    carbon: '<line x1="26" y1="28" x2="38" y2="16" stroke="rgba(100,160,200,.4)" stroke-width="2" stroke-dasharray="3,3"/>',
-    magic:  '<circle cx="40" cy="10" r="5" fill="rgba(180,80,255,.6)" stroke="rgba(220,130,255,.9)" stroke-width="1.5"/><circle cx="40" cy="10" r="2" fill="white" opacity=".8"/>',
-    golden: '<polygon points="40,4 41.5,8 46,8 42.5,11 44,15 40,12 36,15 37.5,11 34,8 38.5,8" fill="rgba(255,220,30,.8)" stroke="#c09010" stroke-width="0.5"/>',
-  };
+  const extraByRod = {}; // не используется — все в specials теперь
 
   if(specials[rod.id]) {
     return `<svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg" style="${glowStyle}width:52px;height:52px">
@@ -4503,10 +5038,16 @@ const POKEMON_DATA = [
 ];
 
 const PIKABUFS = [
-  {id:'combo_x2',  name:'Пика-Комбо ×2', desc:'Следующие 5 покемонов дают x2 пикакоины',    price:30,  icon:'⚡×2', effect:'combo2'},
-  {id:'combo_x3',  name:'Пика-Комбо ×3', desc:'Следующие 3 покемона дают x3 пикакоины',     price:60,  icon:'⚡×3', effect:'combo3'},
-  {id:'rare_boost',name:'РарБуст',        desc:'Редкие покемоны появляются вдвое чаще',       price:80,  icon:'🌟',   effect:'rare'},
-  {id:'legend_call',name:'Зов Легенды',   desc:'Шанс поймать легендарного покемона',          price:150, icon:'🔮',   effect:'legend'},
+  {id:'combo_x2',    name:'Пика-Комбо ×2',      desc:'Следующие 5 покемонов дают x2 пикакоины',       price:30,  icon:'⚡×2', effect:'combo2'},
+  {id:'combo_x3',    name:'Пика-Комбо ×3',      desc:'Следующие 3 покемона дают x3 пикакоины',        price:60,  icon:'⚡×3', effect:'combo3'},
+  {id:'combo_x5',    name:'ПИКА-КОМБО ×5!',     desc:'Следующий покемон даёт x5 пикакоины!',          price:120, icon:'⚡×5', effect:'combo5'},
+  {id:'rare_boost',  name:'РарБуст',             desc:'Редкие покемоны появляются вдвое чаще',         price:80,  icon:'🌟',   effect:'rare'},
+  {id:'legend_call', name:'Зов Легенды',         desc:'Шанс поймать легендарного покемона',            price:150, icon:'🔮',   effect:'legend'},
+  {id:'pika_storm',  name:'Пика-Буря',           desc:'10 секунд — клёв x5! Лови как сумасшедший!',   price:90,  icon:'⛈️⚡', effect:'pika_storm'},
+  {id:'shiny_hunt',  name:'Поиск Блестящих',     desc:'Следующие 4 покемона дают x2 очков',           price:70,  icon:'✨',   effect:'shiny'},
+  {id:'mega_evolve', name:'Мега-Эволюция',       desc:'Следующий улов даёт x4 PikaCoins + монеты!',   price:200, icon:'💫',   effect:'mega'},
+  {id:'poke_radar',  name:'ПокеРадар',           desc:'Видишь редкость следующего покемона до клёва',  price:50,  icon:'📡',   effect:'radar'},
+  {id:'lucky_egg',   name:'Счастливое яйцо',     desc:'x2 XP от всего на 60 секунд',                  price:100, icon:'🥚',   effect:'lucky_egg'},
 ];
 
 gs.mapMode = 'normal'; // 'normal' | 'pokemon'
@@ -4517,7 +5058,7 @@ gs.pikaBufCount = 0;
 
 function setMap(mode) {
   gs.mapMode = mode;
-  ['normal','pokemon','coast','hardcore','hobo'].forEach(m=>{
+  ['normal','pokemon','coast','hardcore','hobo','bum'].forEach(m=>{
     const btn = document.getElementById('map-btn-'+m);
     if(btn) btn.classList.toggle('active', mode===m);
   });
@@ -4537,6 +5078,10 @@ function setMap(mode) {
   if(hcBar)    hcBar.style.display='none';
   // Stop piranha and boss loops if switching
   stopHcBossLoop();
+  // Reset any in-progress coast fishing
+  hideCoastTapBar();
+  gs.coastTapCount = 0;
+  gs.coastTapNeeded = 0;
 
   if(mode === 'pokemon') {
     if(pokeBadge) pokeBadge.style.display='block';
@@ -4604,6 +5149,9 @@ function catchPokemon(f) {
   // Apply active buffs
   if(gs.activePikaBuf?.effect === 'combo2') { earned *= 2; gs.pikaBufCount--; }
   if(gs.activePikaBuf?.effect === 'combo3') { earned *= 3; gs.pikaBufCount--; }
+  if(gs.activePikaBuf?.effect === 'combo5') { earned *= 5; gs.pikaBufCount--; }
+  if(gs.activePikaBuf?.effect === 'shiny')  { gs.score += f.pts; gs.pikaBufCount--; }
+  if(gs.activePikaBuf?.effect === 'mega')   { earned *= 4; gs.coins += 200; updateCoins(); gs.pikaBufCount--; }
   if(gs.pikaBufCount <= 0) gs.activePikaBuf = null;
   
   gs.pikaCoins += earned;
@@ -4678,7 +5226,30 @@ function buyPikaBuf(id) {
   gs.pikaCoins -= pb.price;
   updatePikaCoins();
   gs.activePikaBuf = pb;
-  gs.pikaBufCount = pb.effect.startsWith('combo') ? parseInt(pb.effect.slice(-1))*2 : 10;
+  // Set duration/count depending on effect
+  if(pb.effect === 'combo2') gs.pikaBufCount = 5;
+  else if(pb.effect === 'combo3') gs.pikaBufCount = 3;
+  else if(pb.effect === 'combo5') gs.pikaBufCount = 1;
+  else if(pb.effect === 'shiny')  gs.pikaBufCount = 4;
+  else if(pb.effect === 'mega')   gs.pikaBufCount = 1;
+  else if(pb.effect === 'pika_storm') {
+    gs.pikaBufCount = 999;
+    const prevBite = gs.currentRod.biteChance;
+    gs.currentRod._stormBiteBackup = prevBite;
+    gs.currentRod.biteChance = prevBite * 5;
+    setTimeout(()=>{
+      if(gs.currentRod._stormBiteBackup) {
+        gs.currentRod.biteChance = gs.currentRod._stormBiteBackup;
+        delete gs.currentRod._stormBiteBackup;
+      }
+      gs.activePikaBuf = null; gs.pikaBufCount = 0;
+      showToast('⛈️ Пика-Буря закончилась!');
+    }, 10000);
+  } else if(pb.effect === 'lucky_egg') {
+    gs.pikaBufCount = 999;
+    gs._luckyEggActive = true;
+    setTimeout(()=>{ gs._luckyEggActive = false; gs.activePikaBuf = null; gs.pikaBufCount = 0; showToast('🥚 Счастливое яйцо закончилось!'); }, 60000);
+  } else gs.pikaBufCount = 10;
   renderShop();
   showToast(`⚡ ${pb.name} активирован!`);
 }
@@ -5555,70 +6126,781 @@ const ROD_COLORS = {
   quantum:    {color:'#ff00ff', glow:'0 0 50px rgba(255,0,255,1.0)'},
   celestial:  {color:'#ffffff', glow:'0 0 60px rgba(255,255,255,1.0)'},
   apocalypse: {color:'#ff0000', glow:'0 0 80px rgba(255,0,0,1.0)'},
+  marble:     {color:'#c0b0e0', glow:'0 0 40px rgba(200,180,255,.9)'},
+  ghost:      {color:'#80ffcc', glow:'0 0 30px rgba(80,255,180,.8)'},
 };
+
+// Рисуем вертикальную удочку в игре — красиво, как в магазине, но вертикально
+// SVG viewBox: ширина=20, высота=400 (масштабируется на всю высоту wrapper)
+function makeIngameRodSVG(rod) {
+  const RC = ROD_COLORS[rod.id] || ROD_COLORS.wood;
+  const c = RC.color;
+  const glow = RC.glow !== 'none' ? `filter:drop-shadow(0 0 8px ${c});` : '';
+
+  // Базовые элементы удочки (вертикаль): тело, кольца, катушка
+  // x=10 — центр, y=0 верх (кончик), y=380 низ (ручка)
+  // Кольца на y=60,120,180,240,300
+  function rings(color, opacity=1) {
+    return [60,120,180,240,300].map((y,i)=>{
+      const w = 9 - i*1.2; // кольца сужаются к верху
+      return `<ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${color}" stroke-width="2" opacity="${opacity-(i*0.05)}"/>`;
+    }).join('');
+  }
+  function reel(color, fill='rgba(0,0,0,.6)') {
+    return `
+      <ellipse cx="10" cy="345" rx="12" ry="8" fill="${fill}" stroke="${color}" stroke-width="2"/>
+      <ellipse cx="10" cy="345" rx="7" ry="4.5" fill="${color}88" stroke="${color}" stroke-width="1"/>
+      <ellipse cx="10" cy="345" rx="3" ry="2" fill="${color}"/>
+      <line x1="10" y1="337" x2="10" y2="353" stroke="${color}44" stroke-width="1"/>
+      <line x1="-2" y1="345" x2="22" y2="345" stroke="${color}44" stroke-width="1"/>`;
+  }
+  function handle(color) {
+    return `<rect x="6" y="360" width="8" height="35" rx="4" fill="${color}aa" stroke="${color}" stroke-width="1.5"/>`;
+  }
+
+  // Специфичные детали для каждой удочки
+  const specials = {
+
+    // ДЕРЕВЕНСКАЯ — узловатая палка, видны сучки и трещины, верёвка вместо лески
+    wood: `
+      <defs><linearGradient id="wdGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a1a05"/><stop offset="45%" stop-color="#8b5e2a"/><stop offset="100%" stop-color="#4a2808"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="2" fill="url(#wdGrad)" stroke="#5a3010" stroke-width="1"/>
+      <!-- Трещины по дереву -->
+      <line x1="9" y1="20" x2="10" y2="80" stroke="#3a1808" stroke-width="1" opacity=".7"/>
+      <line x1="11" y1="60" x2="10" y2="140" stroke="#4a2010" stroke-width="0.8" opacity=".5"/>
+      <line x1="9" y1="160" x2="10.5" y2="220" stroke="#3a1808" stroke-width="0.7" opacity=".6"/>
+      <!-- Сучки (узлы дерева) -->
+      <ellipse cx="9" cy="50" rx="3" ry="2" fill="#3a1808" stroke="#2a1005" stroke-width="0.5" opacity=".8"/>
+      <ellipse cx="11" cy="150" rx="2.5" ry="1.8" fill="#3a1808" stroke="#2a1005" stroke-width="0.5" opacity=".7"/>
+      <ellipse cx="9" cy="260" rx="3" ry="2" fill="#3a1808" stroke="#2a1005" stroke-width="0.5" opacity=".6"/>
+      <!-- Кольца из грубой проволоки -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#6a5020" stroke-width="3" opacity=".9"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#c8a060" stroke-width="1" opacity=".5"/>
+      `;}).join('')}
+      <!-- Катушка — деревянный барабан -->
+      <ellipse cx="10" cy="345" rx="14" ry="9" fill="rgba(40,20,5,.9)" stroke="#7a4a18" stroke-width="2.5"/>
+      <ellipse cx="10" cy="345" rx="8" ry="5" fill="#5a3010" stroke="#8b5e2a" stroke-width="1.5"/>
+      <ellipse cx="10" cy="345" rx="3" ry="2" fill="#8b5e2a"/>
+      <line x1="10" y1="336" x2="10" y2="354" stroke="#8b5e2a44" stroke-width="1"/>
+      <line x1="-4" y1="345" x2="24" y2="345" stroke="#8b5e2a44" stroke-width="1"/>
+      <!-- Ручка — обмотана грубой тканью -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="#4a2808" stroke="#6a3808" stroke-width="1.5"/>
+      <line x1="5" y1="362" x2="15" y2="362" stroke="#7a5020" stroke-width="1" opacity=".6"/>
+      <line x1="5" y1="367" x2="15" y2="367" stroke="#7a5020" stroke-width="1" opacity=".6"/>
+      <line x1="5" y1="372" x2="15" y2="372" stroke="#7a5020" stroke-width="1" opacity=".6"/>
+      <line x1="5" y1="377" x2="15" y2="377" stroke="#7a5020" stroke-width="1" opacity=".5"/>
+      <line x1="5" y1="382" x2="15" y2="382" stroke="#7a5020" stroke-width="1" opacity=".5"/>`,
+
+    // БАМБУКОВАЯ — явные узлы бамбука, живые листики торчат в стороны
+    bamboo: `
+      <defs><linearGradient id="bmGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a6010"/><stop offset="50%" stop-color="#7ab030"/><stop offset="100%" stop-color="#3a6010"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#bmGrad)" stroke="#4a7020" stroke-width="0.8"/>
+      <!-- Продольные волокна бамбука -->
+      <line x1="8.5" y1="0" x2="8.5" y2="360" stroke="#2a5010" stroke-width="0.6" opacity=".4"/>
+      <line x1="11.5" y1="0" x2="11.5" y2="360" stroke="#2a5010" stroke-width="0.6" opacity=".3"/>
+      <!-- Узлы бамбука — горизонтальные перемычки -->
+      ${[45,90,135,180,225,270,315].map(y=>`
+        <rect x="5" y="${y-2}" width="10" height="4" rx="1" fill="#2a5010" stroke="#1a3808" stroke-width="0.5"/>
+        <rect x="5.5" y="${y-1}" width="9" height="2" rx="0.5" fill="#4a8020" stroke="none" opacity=".5"/>
+      `).join('')}
+      <!-- Листья торчат в стороны -->
+      <path d="M13,30 Q22,22 24,32 Q18,33 13,30Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.8"/>
+      <line x1="13" y1="30" x2="21" y2="30" stroke="#2a6010" stroke-width="0.6"/>
+      <path d="M5,80 Q-4,72 -6,82 Q0,83 5,80Z" fill="#6aaa20" stroke="#3a8010" stroke-width="0.8"/>
+      <line x1="5" y1="80" x2="-3" y2="80" stroke="#2a6010" stroke-width="0.6"/>
+      <path d="M13,160 Q20,150 22,160 Q17,162 13,160Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.8"/>
+      <path d="M5,240 Q-3,230 -5,240 Q0,243 5,240Z" fill="#6aaa20" stroke="#3a8010" stroke-width="0.8"/>
+      <!-- Кольца бамбуковые -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#4a7020" stroke-width="2.5" opacity=".9"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="#8ac040" stroke-width="1" opacity=".6"/>
+      `;}).join('')}
+      ${reel('#6a9030','rgba(20,40,5,.8)')}${handle('#4a7020')}`,
+
+    // КАРБОНОВАЯ — сетчатая текстура волокон, маленький LED-дисплей на рукоятке
+    carbon: `
+      <defs>
+        <linearGradient id="cbGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#10181e"/><stop offset="50%" stop-color="#405868"/><stop offset="100%" stop-color="#10181e"/></linearGradient>
+        <pattern id="cfPat" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse"><line x1="0" y1="4" x2="4" y2="0" stroke="rgba(80,140,180,.35)" stroke-width="0.8"/><line x1="-1" y1="1" x2="1" y2="-1" stroke="rgba(80,140,180,.35)" stroke-width="0.8"/><line x1="3" y1="5" x2="5" y2="3" stroke="rgba(80,140,180,.35)" stroke-width="0.8"/></pattern>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#cbGrad)"/>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#cfPat)" stroke="#304858" stroke-width="0.8"/>
+      <!-- LED-полоска вдоль тела -->
+      <line x1="13.5" y1="0" x2="13.5" y2="340" stroke="rgba(0,180,255,.3)" stroke-width="1"/>
+      <!-- Металлические кольца (зажимы) -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+1}" ry="3.5" fill="rgba(30,50,70,.9)" stroke="#506878" stroke-width="1.5"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#80c0e0" stroke-width="1.5" opacity=".9"/>
+        <ellipse cx="10" cy="${y}" rx="${w-3}" ry="1.3" fill="none" stroke="rgba(0,200,255,.4)" stroke-width="0.8"/>
+      `;}).join('')}
+      <!-- Дисплей-датчик -->
+      <rect x="3" y="290" width="14" height="9" rx="2" fill="#001828" stroke="#40a0c0" stroke-width="1.2"/>
+      <rect x="4" y="291" width="12" height="7" rx="1" fill="#003050"/>
+      <line x1="5" y1="294.5" x2="15" y2="294.5" stroke="rgba(0,180,255,.5)" stroke-width="0.7"/>
+      <circle cx="12" cy="294.5" r="1.2" fill="#00ffff" opacity=".9"/>
+      <line x1="5" y1="297" x2="9" y2="297" stroke="rgba(0,255,100,.4)" stroke-width="0.6"/>
+      ${reel('#405868','rgba(5,15,25,.9)')}${handle('#304858')}`,
+
+    // ВОЛШЕБНАЯ — руны светятся вдоль тела, плавающие звёздочки, кристалл на вершине
+    magic: `
+      <defs>
+        <linearGradient id="mgGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2a0860"/><stop offset="50%" stop-color="#8030c0"/><stop offset="100%" stop-color="#2a0860"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#mgGrad)" stroke="#7030b0" stroke-width="0.8"/>
+      <!-- Светящаяся аура вокруг тела -->
+      <rect x="6" y="0" width="8" height="360" rx="3.5" fill="none" stroke="rgba(180,80,255,.2)" stroke-width="3"/>
+      <!-- Руны вдоль удочки -->
+      <text x="10" y="35" text-anchor="middle" font-size="7" fill="rgba(200,120,255,.9)" font-family="serif">ᚠ</text>
+      <text x="10" y="90" text-anchor="middle" font-size="7" fill="rgba(220,150,255,.8)" font-family="serif">ᚱ</text>
+      <text x="10" y="145" text-anchor="middle" font-size="7" fill="rgba(200,120,255,.9)" font-family="serif">ᚾ</text>
+      <text x="10" y="200" text-anchor="middle" font-size="7" fill="rgba(220,150,255,.8)" font-family="serif">ᛁ</text>
+      <text x="10" y="255" text-anchor="middle" font-size="7" fill="rgba(200,120,255,.9)" font-family="serif">ᚷ</text>
+      <text x="10" y="310" text-anchor="middle" font-size="7" fill="rgba(220,150,255,.8)" font-family="serif">ᛏ</text>
+      <!-- Плавающие магические частицы -->
+      <circle cx="3" cy="70" r="2" fill="rgba(200,100,255,.7)"/><circle cx="17" cy="110" r="1.5" fill="rgba(255,150,255,.6)"/>
+      <circle cx="2" cy="190" r="1.5" fill="rgba(180,80,255,.7)"/><circle cx="18" cy="230" r="2" fill="rgba(220,130,255,.6)"/>
+      <circle cx="3" cy="290" r="1.5" fill="rgba(200,100,255,.5)"/>
+      <!-- Большой кристалл на вершине -->
+      <polygon points="10,-2 14,8 10,16 6,8" fill="rgba(200,100,255,.75)" stroke="rgba(220,130,255,.9)" stroke-width="1.5"/>
+      <polygon points="10,-2 14,8 10,6" fill="rgba(240,190,255,.85)"/>
+      <circle cx="9" cy="2" r="1.8" fill="rgba(255,255,255,.8)"/>
+      <!-- Кольца с магическим свечением -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#c080ff" stroke-width="2" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w+2}" ry="4" fill="none" stroke="rgba(180,60,255,.25)" stroke-width="2"/>
+      `;}).join('')}
+      ${reel('#9040c0','rgba(30,5,70,.9)')}${handle('#5020a0')}`,
+
+    // ЗОЛОТАЯ — гравировка ромбами, монетки висят на кольцах, золотая корона сверху
+    golden: `
+      <defs>
+        <linearGradient id="gdGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#806010"/><stop offset="30%" stop-color="#f0c030"/><stop offset="70%" stop-color="#d4a020"/><stop offset="100%" stop-color="#806010"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#gdGrad)" stroke="#c09010" stroke-width="1"/>
+      <!-- Гравировка на теле — ромбы -->
+      ${[30,60,90,120,150,180,210,240,270,300,330].map(y=>`
+        <line x1="7" y1="${y}" x2="13" y2="${y+8}" stroke="#a07010" stroke-width="0.6" opacity=".5"/>
+        <line x1="13" y1="${y}" x2="7" y2="${y+8}" stroke="#a07010" stroke-width="0.6" opacity=".5"/>
+      `).join('')}
+      <!-- Монетки на кольцах -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#d4a020" stroke-width="2.5" opacity=".9"/>
+        <circle cx="${10+w+3}" cy="${y}" r="3.5" fill="#e8b830" stroke="#a07010" stroke-width="0.8" opacity=".85"/>
+      `;}).join('')}
+      <!-- Корона на вершине -->
+      <rect x="5" y="-3" width="10" height="5" rx="1" fill="#d4a020" stroke="#c09010" stroke-width="0.8"/>
+      <rect x="5" y="-7" width="2.5" height="5" rx="0.5" fill="#d4a020" stroke="#b08010" stroke-width="0.6"/>
+      <rect x="8.75" y="-9" width="2.5" height="7" rx="0.5" fill="#ffe060" stroke="#b08010" stroke-width="0.6"/>
+      <rect x="12.5" y="-7" width="2.5" height="5" rx="0.5" fill="#d4a020" stroke="#b08010" stroke-width="0.6"/>
+      <circle cx="6.25" cy="-7" r="1" fill="#ff2020"/>
+      <circle cx="10" cy="-9" r="1.2" fill="#ff4040"/>
+      <circle cx="13.75" cy="-7" r="1" fill="#ff2020"/>
+      <!-- Искры золота рядом -->
+      <circle cx="1" cy="50" r="2" fill="#ffe060" opacity=".6"/>
+      <circle cx="19" cy="130" r="1.5" fill="#ffd040" opacity=".5"/>
+      <circle cx="1" cy="210" r="1.5" fill="#ffe060" opacity=".5"/>
+      ${reel('#d4a020','rgba(50,35,0,.9)')}${handle('#b08010')}`,
+
+    // РЕЗИНОВАЯ УТКА — утка с шеей сидит наверху удочки, ярко-жёлтая
+    rubberduck: `
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="#e8c820" stroke="#c0a010" stroke-width="1"/>
+      <!-- Жёлтые полоски вдоль -->
+      <line x1="7" y1="0" x2="7" y2="360" stroke="#c0a010" stroke-width="1.2"/>
+      <line x1="13" y1="0" x2="13" y2="360" stroke="#c0a010" stroke-width="1.2"/>
+      <!-- УТКА СИДИТ НАВЕРХУ — тело -->
+      <ellipse cx="10" cy="30" rx="11" ry="9" fill="#f0d820" stroke="#c0a010" stroke-width="1.5"/>
+      <!-- Голова -->
+      <circle cx="10" cy="17" r="7" fill="#f0d820" stroke="#c0a010" stroke-width="1.5"/>
+      <!-- Глаз -->
+      <circle cx="12.5" cy="15.5" r="1.8" fill="#1a1008"/>
+      <circle cx="13" cy="15" r="0.7" fill="white"/>
+      <!-- Клюв -->
+      <path d="M14,17.5 Q18,15 17,19.5" stroke="#e05020" stroke-width="2" fill="#ff8030" stroke-linecap="round"/>
+      <!-- Крылышко -->
+      <path d="M2,28 Q6,23 11,27" stroke="#c0a010" stroke-width="1.5" fill="rgba(240,200,10,.4)"/>
+      <!-- Кольца (жёлтые с оранжевой точкой) -->
+      ${[75,135,195,255,315].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#d4a010" stroke-width="2.5" opacity=".9"/>
+        <circle cx="${10-w-2}" cy="${y}" r="2.5" fill="#ff8020" stroke="#cc5010" stroke-width="0.7" opacity=".8"/>
+      `;}).join('')}
+      ${reel('#c0a010','rgba(60,50,0,.9)')}${handle('#b09000')}`,
+
+    // КРИСТАЛЬНАЯ — прозрачное тело с гранями и разноцветными отблесками внутри
+    crystal: `
+      <defs>
+        <linearGradient id="crGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#60b0d888"/><stop offset="50%" stop-color="#b0ecff"/><stop offset="100%" stop-color="#60b0d888"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#crGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Внутренние грани (многогранник) -->
+      <line x1="10" y1="0" x2="10" y2="360" stroke="rgba(255,255,255,.5)" stroke-width="0.8"/>
+      <line x1="7" y1="0" x2="13" y2="60" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="13" y1="60" x2="7" y2="120" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="7" y1="120" x2="13" y2="180" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="13" y1="180" x2="7" y2="240" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="7" y1="240" x2="13" y2="300" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <!-- Радужные отблески сбоку -->
+      <line x1="3" y1="30" x2="6" y2="50" stroke="rgba(255,80,80,.7)" stroke-width="1.5"/>
+      <line x1="3" y1="55" x2="6" y2="75" stroke="rgba(255,200,50,.6)" stroke-width="1.2"/>
+      <line x1="3" y1="80" x2="6" y2="100" stroke="rgba(50,255,100,.6)" stroke-width="1.2"/>
+      <line x1="3" y1="105" x2="6" y2="125" stroke="rgba(50,150,255,.6)" stroke-width="1.2"/>
+      <line x1="3" y1="130" x2="6" y2="150" stroke="rgba(180,50,255,.6)" stroke-width="1.2"/>
+      <!-- Кристалл сверху -->
+      <polygon points="10,-5 14.5,8 10,18 5.5,8" fill="rgba(180,240,255,.6)" stroke="${c}" stroke-width="1.5"/>
+      <polygon points="10,-5 14.5,8 10,6" fill="rgba(220,250,255,.85)"/>
+      <circle cx="9" cy="1" r="2" fill="rgba(255,255,255,.8)"/>
+      <!-- Снежинки-кольца -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+        <circle cx="${10+w+2}" cy="${y}" r="1.5" fill="rgba(200,245,255,.7)" stroke="${c}" stroke-width="0.5"/>
+        <circle cx="${10-w-2}" cy="${y}" r="1.5" fill="rgba(200,245,255,.7)" stroke="${c}" stroke-width="0.5"/>
+      `;}).join('')}
+      ${reel(c,'rgba(20,60,80,.85)')}${handle('#80c8e0')}`,
+
+    // ГРОМОВАЯ — зигзаг-молния вдоль всего тела, облака на кольцах
+    thunder: `
+      <defs>
+        <linearGradient id="thGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#606010"/><stop offset="50%" stop-color="#e8e030"/><stop offset="100%" stop-color="#606010"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#thGrad)" stroke="#c0b010" stroke-width="1"/>
+      <!-- БОЛЬШАЯ МОЛНИЯ вдоль всей удочки -->
+      <polyline points="13,0 7,40 13,80 7,120 13,160 7,200 13,240 7,280 13,320 7,360" fill="none" stroke="#fffff0" stroke-width="2.5" opacity=".9"/>
+      <polyline points="13,0 7,40 13,80 7,120 13,160 7,200 13,240 7,280 13,320 7,360" fill="none" stroke="#f8f040" stroke-width="1.2"/>
+      <!-- Электрические дуги (горизонтальные) -->
+      <line x1="-2" y1="30" x2="5" y2="30" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".8"/>
+      <line x1="15" y1="70" x2="22" y2="70" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".7"/>
+      <line x1="-2" y1="110" x2="5" y2="110" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".8"/>
+      <line x1="15" y1="160" x2="22" y2="160" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".7"/>
+      <line x1="-2" y1="200" x2="5" y2="200" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".6"/>
+      <line x1="15" y1="250" x2="22" y2="250" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".6"/>
+      <!-- Грозовая туча наверху -->
+      <ellipse cx="10" cy="-8" rx="10" ry="6" fill="rgba(60,60,90,.95)" stroke="#8080a0" stroke-width="1"/>
+      <ellipse cx="5" cy="-5" rx="6" ry="4" fill="rgba(60,60,90,.95)"/>
+      <ellipse cx="15" cy="-5" rx="5" ry="3.5" fill="rgba(70,70,100,.9)"/>
+      <!-- Кольца — молниеотводы -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(50,50,10,.8)" stroke="${c}" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="rgba(255,255,150,.5)" stroke-width="1"/>
+      `;}).join('')}
+      ${reel('#d0b010','rgba(40,40,0,.9)')}${handle('#b0a000')}`,
+
+    // БЕЗДНА — абсолютно чёрное тело, звёзды затягиваются внутрь, кольца в виде орбит
+    void: `
+      <defs>
+        <linearGradient id="vdGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#080020"/><stop offset="50%" stop-color="#200080"/><stop offset="100%" stop-color="#080020"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#vdGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Пространственные трещины -->
+      <line x1="7" y1="20" x2="13" y2="60" stroke="rgba(100,0,200,.5)" stroke-width="0.8"/>
+      <line x1="13" y1="80" x2="7" y2="130" stroke="rgba(80,0,180,.4)" stroke-width="0.8"/>
+      <line x1="7" y1="150" x2="13" y2="200" stroke="rgba(100,0,200,.5)" stroke-width="0.8"/>
+      <line x1="13" y1="220" x2="7" y2="270" stroke="rgba(80,0,180,.4)" stroke-width="0.8"/>
+      <!-- Звёзды затягиваются в ЧД -->
+      <circle cx="2" cy="40" r="1.2" fill="white" opacity=".5"/>
+      <circle cx="18" cy="80" r="1" fill="white" opacity=".4"/>
+      <circle cx="1" cy="150" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="19" cy="200" r="1" fill="white" opacity=".3"/>
+      <circle cx="2" cy="270" r="1.2" fill="white" opacity=".4"/>
+      <circle cx="18" cy="320" r="1" fill="white" opacity=".3"/>
+      <!-- Мини-чёрная дыра наверху -->
+      <circle cx="10" cy="5" r="9" fill="rgba(5,0,20,.98)" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="10" cy="5" r="5" fill="rgba(40,0,120,.6)" stroke="${c}" stroke-width="1"/>
+      <circle cx="10" cy="5" r="2.5" fill="${c}" opacity=".8"/>
+      <line x1="10" y1="-4" x2="10" y2="14" stroke="${c}" stroke-width="0.8" opacity=".5"/>
+      <line x1="1" y1="5" x2="19" y2="5" stroke="${c}" stroke-width="0.8" opacity=".5"/>
+      <!-- Кольца — орбитальные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="4" fill="none" stroke="rgba(60,0,160,.4)" stroke-width="2"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.06}"/>
+      `;}).join('')}
+      ${reel(c,'rgba(5,0,30,.95)')}${handle('#150060')}`,
+
+    shark: `
+      <defs><linearGradient id="shGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#006070"/><stop offset="50%" stop-color="#40c8e0"/><stop offset="100%" stop-color="#006070"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#shGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Плавник акулы сверху -->
+      <polygon points="10,-12 14,0 6,0" fill="#1a8aaa" stroke="${c}" stroke-width="1.5"/>
+      <!-- Чешуя акулы вдоль тела -->
+      ${[20,45,70,95,120,145,170,195,220,245,270,295,320].map(y=>`
+        <path d="M7,${y} Q10,${y-7} 13,${y}" stroke="#1a8aaa" stroke-width="1" fill="rgba(26,138,170,.2)"/>
+      `).join('')}
+      <!-- Боковые плавники -->
+      <polygon points="3,80 -5,95 3,100" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
+      <polygon points="17,80 25,95 17,100" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
+      <polygon points="3,200 -5,215 3,220" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
+      <polygon points="17,200 25,215 17,220" fill="#1a8aaa" stroke="${c}" stroke-width="1"/>
+      <!-- Глаз акулы -->
+      <circle cx="7" cy="50" r="3" fill="#001020" stroke="${c}" stroke-width="1"/>
+      <circle cx="7.5" cy="49.5" r="1" fill="rgba(255,255,255,.4)"/>
+      <!-- Зубастая пасть снизу акулы -->
+      <path d="M5,340 L7,345 L9,340 L11,345 L13,340 L15,345" stroke="white" stroke-width="1.5" fill="none" opacity=".8"/>
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(0,40,60,.7)" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+      `;}).join('')}
+      ${reel(c,'rgba(0,30,50,.95)')}${handle('#006080')}`,
+
+    flower: `
+      <defs><linearGradient id="flGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#901060"/><stop offset="50%" stop-color="#ffb0e0"/><stop offset="100%" stop-color="#901060"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#flGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- ЦВЕТЫ вдоль всей удочки (это главное!) -->
+      <!-- Цветок 1 -->
+      <circle cx="10" cy="25" r="7" fill="rgba(255,100,180,.5)" stroke="${c}" stroke-width="1"/>
+      <circle cx="10" cy="19" r="4" fill="rgba(255,100,180,.55)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="16" cy="22" r="4" fill="rgba(255,100,180,.55)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="16" cy="28" r="4" fill="rgba(255,100,180,.55)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="10" cy="31" r="4" fill="rgba(255,100,180,.55)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="4" cy="28" r="4" fill="rgba(255,100,180,.55)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="4" cy="22" r="4" fill="rgba(255,100,180,.55)" stroke="${c}" stroke-width="0.8"/>
+      <circle cx="10" cy="25" r="4" fill="#ffff80" stroke="#d0a000" stroke-width="1"/>
+      <!-- Цветок 2 -->
+      <circle cx="10" cy="105" r="6" fill="rgba(255,130,200,.45)" stroke="rgba(255,150,220,.8)" stroke-width="0.8"/>
+      <circle cx="10" cy="100" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="15.2" cy="102.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="15.2" cy="107.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="10" cy="110" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="4.8" cy="107.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="4.8" cy="102.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="10" cy="105" r="3" fill="#ffe060" stroke="#c09000" stroke-width="0.8"/>
+      <!-- Цветок 3 -->
+      <circle cx="10" cy="195" r="7" fill="rgba(255,80,160,.4)" stroke="rgba(255,140,210,.8)" stroke-width="0.8"/>
+      <circle cx="10" cy="189" r="4" fill="rgba(255,90,170,.5)" stroke="rgba(255,140,210,.7)" stroke-width="0.7"/>
+      <circle cx="16" cy="192" r="4" fill="rgba(255,90,170,.5)" stroke="rgba(255,140,210,.7)" stroke-width="0.7"/>
+      <circle cx="16" cy="198" r="4" fill="rgba(255,90,170,.5)" stroke="rgba(255,140,210,.7)" stroke-width="0.7"/>
+      <circle cx="10" cy="201" r="4" fill="rgba(255,90,170,.5)" stroke="rgba(255,140,210,.7)" stroke-width="0.7"/>
+      <circle cx="4" cy="198" r="4" fill="rgba(255,90,170,.5)" stroke="rgba(255,140,210,.7)" stroke-width="0.7"/>
+      <circle cx="4" cy="192" r="4" fill="rgba(255,90,170,.5)" stroke="rgba(255,140,210,.7)" stroke-width="0.7"/>
+      <circle cx="10" cy="195" r="4" fill="#fff080" stroke="#c0a000" stroke-width="0.8"/>
+      <!-- Цветок 4 -->
+      <circle cx="10" cy="285" r="6" fill="rgba(255,110,185,.4)" stroke="rgba(255,150,220,.7)" stroke-width="0.8"/>
+      <circle cx="10" cy="280" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="15.2" cy="282.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="15.2" cy="287.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="10" cy="290" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="4.8" cy="287.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="4.8" cy="282.5" r="3.5" fill="rgba(255,120,190,.5)" stroke="rgba(255,150,220,.7)" stroke-width="0.7"/>
+      <circle cx="10" cy="285" r="3" fill="#ffe060" stroke="#c09000" stroke-width="0.8"/>
+      <!-- Листики между цветами -->
+      <path d="M13,60 Q20,52 22,60 Q17,62 13,60Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.7"/>
+      <path d="M7,150 Q0,142 -2,150 Q3,153 7,150Z" fill="#6aaa20" stroke="#3a8010" stroke-width="0.7"/>
+      <path d="M13,240 Q20,232 22,240 Q17,242 13,240Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.7"/>
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+      `;}).join('')}
+      ${reel(c,'rgba(80,15,50,.9)')}${handle('#c06090')}`,
+
+    // МЕТЕОРИТНАЯ — раскалённый камень с кратерами и огненным следом сверху
+    meteor: `
+      <defs><linearGradient id="mtGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a1005"/><stop offset="50%" stop-color="#c04018"/><stop offset="100%" stop-color="#4a1005"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#mtGrad)" stroke="#aa3010" stroke-width="1"/>
+      <!-- Раскалённые трещины-лава вдоль -->
+      <path d="M8,0 Q10,40 8,80 Q10,120 8,160 Q10,200 8,240 Q10,280 8,320 Q10,350 8,360" fill="none" stroke="rgba(255,80,0,.5)" stroke-width="1.5"/>
+      <path d="M12,0 Q10,50 12,100 Q10,150 12,200 Q10,250 12,300 Q10,340 12,360" fill="none" stroke="rgba(255,120,0,.4)" stroke-width="1"/>
+      <!-- Кратеры-дырки на теле -->
+      <circle cx="9" cy="50" r="4" fill="rgba(0,0,0,.6)" stroke="rgba(255,80,0,.5)" stroke-width="0.8"/>
+      <circle cx="9" cy="50" r="2" fill="rgba(255,60,0,.3)"/>
+      <circle cx="11" cy="130" r="3" fill="rgba(0,0,0,.5)" stroke="rgba(255,100,0,.4)" stroke-width="0.7"/>
+      <circle cx="9" cy="210" r="4" fill="rgba(0,0,0,.6)" stroke="rgba(255,80,0,.5)" stroke-width="0.8"/>
+      <circle cx="11" cy="290" r="3" fill="rgba(0,0,0,.5)" stroke="rgba(255,100,0,.4)" stroke-width="0.7"/>
+      <!-- Метеорит на вершине — раскалённый булыжник -->
+      <ellipse cx="10" cy="8" rx="12" ry="12" fill="rgba(60,15,0,.92)" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="6" cy="5" r="4" fill="rgba(0,0,0,.5)" stroke="rgba(255,80,0,.5)" stroke-width="1"/>
+      <circle cx="13" cy="10" r="3" fill="rgba(0,0,0,.4)" stroke="rgba(255,100,0,.4)" stroke-width="0.8"/>
+      <path d="M4,4 L8,8 L4,12 L9,13" stroke="#ff6020" stroke-width="1.5" fill="none"/>
+      <path d="M11,3 L14,7 L12,12" stroke="#ff8040" stroke-width="1.5" fill="none"/>
+      <!-- Огненный хвост -->
+      <circle cx="-2" cy="-5" r="3" fill="#ff4000" opacity=".7"/>
+      <circle cx="22" cy="-6" r="2" fill="#ffaa00" opacity=".6"/>
+      <circle cx="-1" cy="3" r="1.5" fill="#ff6020" opacity=".5"/>
+      <!-- Кольца — металлические с огнём -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(50,15,0,.8)" stroke="${c}" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.3" fill="none" stroke="rgba(255,120,0,.4)" stroke-width="1"/>
+      `;}).join('')}
+      ${reel(c,'rgba(50,12,0,.95)')}${handle('#8a3010')}`,
+
+    // ДРАКОНЬЯ — чешуя дракона вдоль всей длины, хребет, череп с огнём наверху
+    dragon: `
+      <defs><linearGradient id="drGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#400808"/><stop offset="50%" stop-color="#aa1800"/><stop offset="100%" stop-color="#400808"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#drGrad)" stroke="#881800" stroke-width="1"/>
+      <!-- Чешуя дракона с обеих сторон (много!) -->
+      ${[15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345].map((y,i)=>`
+        <path d="M${i%2===0?6:14},${y} Q${i%2===0?0:20},${y-6} ${i%2===0?2:18},${y+5}" fill="#801010" stroke="#aa1800" stroke-width="0.8"/>
+      `).join('')}
+      <!-- Хребет-гребень по центру -->
+      ${[20,40,60,80,100,120,140,160,180,200,220,240,260,280,300,320,340].map((y,i)=>`
+        <polygon points="10,${y-7} 12,${y} 10,${y+1} 8,${y}" fill="#601010" stroke="#cc2000" stroke-width="0.6"/>
+      `).join('')}
+      <!-- Череп дракона сверху -->
+      <circle cx="10" cy="9" r="10" fill="rgba(50,0,0,.95)" stroke="#cc2200" stroke-width="2"/>
+      <!-- Глаза черепа -->
+      <ellipse cx="6.5" cy="7" rx="2.5" ry="3" fill="#ff0000" opacity=".9"/>
+      <ellipse cx="13.5" cy="7" rx="2.5" ry="3" fill="#ff0000" opacity=".9"/>
+      <ellipse cx="6.5" cy="7" rx="1.2" ry="1.5" fill="#111"/>
+      <ellipse cx="13.5" cy="7" rx="1.2" ry="1.5" fill="#111"/>
+      <!-- Зубы -->
+      <path d="M5,14 L7,17 L9,14 L11,17 L13,14 L15,17" stroke="#cc4020" stroke-width="1" fill="none"/>
+      <!-- Огненное дыхание из пасти -->
+      <path d="M6,14 Q10,20 14,14" fill="rgba(255,80,0,.5)" stroke="rgba(255,120,0,.4)" stroke-width="0.5"/>
+      <!-- Кольца — костяные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(40,0,0,.8)" stroke="#cc2200" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.3" fill="none" stroke="rgba(255,80,0,.4)" stroke-width="0.8"/>
+      `;}).join('')}
+      ${reel('#cc2200','rgba(35,0,0,.98)')}${handle('#700800')}`,
+
+    // ТРЕЗУБЕЦ ПОСЕЙДОНА — трезубец виден в верхней части, волны и пузыри вдоль
+    poseidon: `
+      <defs><linearGradient id="pdGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#001a60"/><stop offset="50%" stop-color="#0055e0"/><stop offset="100%" stop-color="#001a60"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#pdGrad)" stroke="#0048cc" stroke-width="1"/>
+      <!-- Волнистая текстура воды вдоль -->
+      <path d="M7,30 Q9,26 11,30 Q13,34 7,38 Q9,34 11,38" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <path d="M7,80 Q9,76 11,80 Q13,84 7,88 Q9,84 11,88" fill="none" stroke="rgba(80,160,255,.35)" stroke-width="1"/>
+      <path d="M7,130 Q9,126 11,130 Q13,134 7,138 Q9,134 11,138" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <path d="M7,180 Q9,176 11,180 Q13,184 7,188 Q9,184 11,188" fill="none" stroke="rgba(80,160,255,.35)" stroke-width="1"/>
+      <path d="M7,230 Q9,226 11,230 Q13,234 7,238 Q9,234 11,238" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <path d="M7,280 Q9,276 11,280 Q13,284 7,288 Q9,284 11,288" fill="none" stroke="rgba(80,160,255,.35)" stroke-width="1"/>
+      <path d="M7,330 Q9,326 11,330 Q13,334 7,338 Q9,334 11,338" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <!-- Пузыри воздуха -->
+      <circle cx="4" cy="60" r="2" fill="none" stroke="rgba(150,210,255,.6)" stroke-width="1"/>
+      <circle cx="16" cy="110" r="1.5" fill="none" stroke="rgba(130,200,255,.5)" stroke-width="0.8"/>
+      <circle cx="3" cy="180" r="2.5" fill="none" stroke="rgba(150,210,255,.6)" stroke-width="1"/>
+      <circle cx="17" cy="250" r="1.5" fill="none" stroke="rgba(130,200,255,.5)" stroke-width="0.8"/>
+      <circle cx="4" cy="320" r="2" fill="none" stroke="rgba(150,210,255,.6)" stroke-width="1"/>
+      <!-- ТРЕЗУБЕЦ наверху (три зубца) -->
+      <line x1="10" y1="0" x2="10" y2="25" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      <line x1="10" y1="0" x2="10" y2="25" stroke="rgba(150,200,255,.4)" stroke-width="2"/>
+      <!-- Центральный зубец -->
+      <line x1="10" y1="-12" x2="10" y2="8" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>
+      <polygon points="10,-16 8,-8 12,-8" fill="${c}" stroke="#0030a0" stroke-width="1"/>
+      <!-- Боковые зубцы -->
+      <line x1="4" y1="-8" x2="4" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="4,-12 2,-5 6,-5" fill="${c}" stroke="#0030a0" stroke-width="1"/>
+      <line x1="16" y1="-8" x2="16" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="16,-12 14,-5 18,-5" fill="${c}" stroke="#0030a0" stroke-width="1"/>
+      <!-- Перекладина -->
+      <line x1="4" y1="8" x2="16" y2="8" stroke="${c}" stroke-width="2.5"/>
+      <circle cx="4" cy="8" r="2.5" fill="${c}"/><circle cx="16" cy="8" r="2.5" fill="${c}"/>
+      <!-- Кольца с волнами -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(0,20,70,.8)" stroke="${c}" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.2" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="0.8"/>
+      `;}).join('')}
+      ${reel(c,'rgba(0,15,65,.95)')}${handle('#003090')}`,
+
+    // КВАНТОВАЯ — тройная удочка (три призрака наложены), вероятностные облака
+    quantum: `
+      <defs><linearGradient id="qtGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#500050"/><stop offset="50%" stop-color="#dd00dd"/><stop offset="100%" stop-color="#500050"/></linearGradient></defs>
+      <!-- Три наложенных удочки (суперпозиция) -->
+      <rect x="8.5" y="0" width="4" height="360" rx="2" fill="#00ffff33" stroke="#00ffff" stroke-width="0.8" opacity=".6"/>
+      <rect x="6.5" y="0" width="4" height="360" rx="2" fill="#ff00ff33" stroke="#ff00ff" stroke-width="0.8" opacity=".5"/>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#qtGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Квантовые кольца (сдвинутые) -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="9" cy="${y-1}" rx="${w}" ry="2.5" fill="none" stroke="#ff00ff" stroke-width="1.5" opacity=".6"/>
+        <ellipse cx="11" cy="${y+1}" rx="${w}" ry="2.5" fill="none" stroke="#00ffff" stroke-width="1.2" opacity=".5"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(80,0,80,.5)" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+      `;}).join('')}
+      <!-- Вероятностные облака на вершине -->
+      <circle cx="10" cy="10" r="9" fill="none" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="11" cy="9" r="9" fill="none" stroke="#ff00ff" stroke-width="1" opacity=".5"/>
+      <circle cx="9" cy="11" r="9" fill="none" stroke="#00ffff" stroke-width="1" opacity=".4"/>
+      <circle cx="10" cy="10" r="5" fill="rgba(200,0,200,.35)" stroke="${c}" stroke-width="1"/>
+      <circle cx="10" cy="10" r="2.5" fill="${c}" opacity=".9"/>
+      <!-- Размытые копии шара -->
+      <circle cx="13" cy="8" r="3" fill="rgba(255,0,255,.2)"/>
+      <circle cx="7" cy="12" r="3" fill="rgba(0,255,255,.15)"/>
+      <!-- Разрывы реальности -->
+      <path d="M-3,80 L5,95 L1,108" stroke="#ff00ff" stroke-width="1.2" fill="none" opacity=".6"/>
+      <path d="M23,180 L15,195 L19,208" stroke="#00ffff" stroke-width="1" fill="none" opacity=".5"/>
+      <path d="M-2,270 L6,285 L2,298" stroke="#ff00ff" stroke-width="1.2" fill="none" opacity=".6"/>
+      ${reel(c,'rgba(50,0,60,.95)')}${handle('#800080')}`,
+
+    // НЕБЕСНАЯ — ослепительно белая, ангельские перья вдоль, нимб и крылья сверху
+    celestial: `
+      <defs><linearGradient id="clGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#8090c0"/><stop offset="50%" stop-color="#ffffff"/><stop offset="100%" stop-color="#8090c0"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#clGrad)" stroke="rgba(200,220,255,.8)" stroke-width="1"/>
+      <!-- Перья вдоль тела -->
+      ${[20,60,100,140,180,220,260,300,340].map((y,i)=>`
+        <path d="M${i%2===0?6:14},${y} Q${i%2===0?-2:22},${y-4} ${i%2===0?0:20},${y+8} Q${i%2===0?4:16},${y+4} ${i%2===0?6:14},${y}Z" fill="rgba(240,245,255,.7)" stroke="rgba(180,200,255,.5)" stroke-width="0.7"/>
+        <line x1="${i%2===0?6:14}" y1="${y}" x2="${i%2===0?1:19}" y2="${y+4}" stroke="rgba(200,220,255,.4)" stroke-width="0.5"/>
+      `).join('')}
+      <!-- Нимб + крылья сверху -->
+      <ellipse cx="10" cy="-5" rx="12" ry="4" fill="none" stroke="#ffd700" stroke-width="2.5" opacity=".9"/>
+      <ellipse cx="10" cy="-5" rx="15" ry="5" fill="none" stroke="rgba(255,220,100,.4)" stroke-width="1.5"/>
+      <!-- Крылья -->
+      <path d="M4,5 Q-8,2 -10,12 Q-5,10 4,15Z" fill="rgba(240,245,255,.7)" stroke="rgba(200,220,255,.6)" stroke-width="0.8"/>
+      <path d="M16,5 Q28,2 30,12 Q25,10 16,15Z" fill="rgba(240,245,255,.7)" stroke="rgba(200,220,255,.6)" stroke-width="0.8"/>
+      <!-- Лучи света -->
+      <line x1="10" y1="-14" x2="10" y2="-10" stroke="#ffd700" stroke-width="2" opacity=".8"/>
+      ${[0,40,80,120,160,200,240,280,320].map(a=>`
+        <line x1="${10+12*Math.cos(a*Math.PI/180)}" y1="${-5+5*Math.sin(a*Math.PI/180)}" x2="${10+18*Math.cos(a*Math.PI/180)}" y2="${-5+7.5*Math.sin(a*Math.PI/180)}" stroke="rgba(255,240,180,.4)" stroke-width="0.8"/>
+      `).join('')}
+      <!-- Звёздочки вдоль -->
+      <circle cx="3" cy="50" r="1.5" fill="#ffffd0" opacity=".8"/>
+      <circle cx="17" cy="100" r="1.2" fill="#ffffd0" opacity=".7"/>
+      <circle cx="3" cy="180" r="1.5" fill="#ffffd0" opacity=".8"/>
+      <circle cx="17" cy="250" r="1.2" fill="#ffffd0" opacity=".7"/>
+      <!-- Кольца — сияющие белые -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="4.5" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(200,220,255,.2)" stroke="white" stroke-width="2.5" opacity="${0.95-i*0.05}"/>
+      `;}).join('')}
+      ${reel('white','rgba(160,190,255,.25)')}${handle('#b0c8ff')}`,
+
+    // АПОКАЛИПСИС — реальность разорвана, кровавые трещины, глаз хаоса в центре
+    apocalypse: `
+      <!-- Фон разорванного пространства -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="#cc000099" stroke="#ff0000" stroke-width="1.5"/>
+      <rect x="5" y="0" width="10" height="360" rx="4" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>
+      <!-- Трещины реальности (много, хаотично) -->
+      <path d="M0,0 L7,20 L3,35 L10,28 L15,45 L8,55" stroke="#ff0000" stroke-width="2" fill="none"/>
+      <path d="M20,10 L12,30 L18,40 L10,52 L16,65" stroke="#ff3000" stroke-width="1.5" fill="none" opacity=".8"/>
+      <path d="M1,80 L8,95 L4,110 L12,105 L6,125" stroke="#ff0000" stroke-width="2" fill="none"/>
+      <path d="M19,90 L13,108 L17,122 L9,118 L15,138" stroke="#ff2000" stroke-width="1.5" fill="none" opacity=".8"/>
+      <path d="M0,160 L8,178 L3,192 L11,186 L5,206" stroke="#ff0000" stroke-width="2" fill="none"/>
+      <path d="M20,170 L12,190 L18,204 L8,198 L15,218" stroke="#ff3000" stroke-width="1.5" fill="none" opacity=".8"/>
+      <path d="M1,240 L9,258 L4,272 L12,268 L6,288" stroke="#ff0000" stroke-width="2" fill="none"/>
+      <path d="M19,250 L11,270 L17,285 L8,280 L14,300" stroke="#ff2000" stroke-width="1.5" fill="none" opacity=".8"/>
+      <path d="M2,320 L10,338 L5,350 L13,345 L7,360" stroke="#ff0000" stroke-width="2" fill="none"/>
+      <!-- Глаз хаоса в центре (большой) -->
+      <ellipse cx="10" cy="180" rx="9" ry="5.5" fill="rgba(0,0,0,.95)" stroke="#ff0000" stroke-width="2"/>
+      <ellipse cx="10" cy="180" rx="5" ry="3.5" fill="#ff0000"/>
+      <ellipse cx="10" cy="180" rx="2.5" ry="2" fill="#ffffff" opacity=".9"/>
+      <ellipse cx="10" cy="180" rx="1" ry="0.8" fill="#000000"/>
+      <!-- Кольца взрыва вокруг глаза -->
+      <ellipse cx="10" cy="180" rx="13" ry="8" fill="none" stroke="#ff4000" stroke-width="1" opacity=".6"/>
+      <ellipse cx="10" cy="180" rx="18" ry="12" fill="none" stroke="#ff6000" stroke-width="0.7" opacity=".4"/>
+      <!-- Кольца — разорванные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(60,0,0,.8)" stroke="#ff0000" stroke-width="2.5" opacity="${0.9-i*0.05}" stroke-dasharray="${y===180?'1,0':'5,3'}"/>
+      `;}).join('')}
+      ${reel('#ff0000','rgba(35,0,0,.98)')}${handle('#700000')}`,
+
+    // МЕХ — металлический корпус с шестерёнками, поршнями, экраном ИИ
+    mech: `
+      <defs><linearGradient id="mcGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#102838"/><stop offset="50%" stop-color="#60b0d0"/><stop offset="100%" stop-color="#102838"/></linearGradient></defs>
+      <!-- Металлический корпус с рифлением -->
+      <rect x="7" y="0" width="6" height="360" rx="2" fill="url(#mcGrad)" stroke="#407090" stroke-width="1"/>
+      <rect x="6.5" y="0" width="1" height="360" fill="rgba(0,0,0,.3)"/>
+      <rect x="12.5" y="0" width="1" height="360" fill="rgba(255,255,255,.1)"/>
+      <!-- Шестерёнки вдоль тела -->
+      ${[30,100,170,240,310].map((y,i)=>`
+        <circle cx="${i%2===0?3:17}" cy="${y}" r="7" fill="rgba(20,60,80,.9)" stroke="${c}" stroke-width="1.2"/>
+        <circle cx="${i%2===0?3:17}" cy="${y}" r="4" fill="rgba(30,90,110,.8)" stroke="${c}88" stroke-width="0.8"/>
+        <circle cx="${i%2===0?3:17}" cy="${y}" r="1.5" fill="${c}"/>
+        <line x1="${i%2===0?3:17}" y1="${y-7}" x2="${i%2===0?3:17}" y2="${y-5}" stroke="${c}" stroke-width="1.5"/>
+        <line x1="${i%2===0?3:17}" y1="${y+5}" x2="${i%2===0?3:17}" y2="${y+7}" stroke="${c}" stroke-width="1.5"/>
+        <line x1="${i%2===0?-4:10}" y1="${y}" x2="${i%2===0?-2:12}" y2="${y}" stroke="${c}" stroke-width="1.5"/>
+        <line x1="${i%2===0?4:18}" y1="${y}" x2="${i%2===0?6:20}" y2="${y}" stroke="${c}" stroke-width="1.5"/>
+      `).join('')}
+      <!-- ИИ-экран наверху -->
+      <rect x="3" y="0" width="14" height="22" rx="2" fill="rgba(5,20,35,.95)" stroke="${c}" stroke-width="1.5"/>
+      <rect x="4" y="1" width="12" height="20" rx="1.5" fill="rgba(0,30,50,.9)"/>
+      <line x1="5" y1="7" x2="15" y2="7" stroke="${c}" stroke-width="0.8" opacity=".7"/>
+      <line x1="5" y1="11" x2="13" y2="11" stroke="${c}" stroke-width="0.8" opacity=".6"/>
+      <line x1="5" y1="15" x2="11" y2="15" stroke="${c}" stroke-width="0.8" opacity=".5"/>
+      <circle cx="13" cy="11" r="1.5" fill="${c}" opacity=".9"/>
+      <circle cx="12" cy="15" r="1" fill="rgba(0,255,150,.7)"/>
+      <!-- Поршни на кольцах -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <rect x="${10-w-2}" y="${y-3}" width="4" height="6" rx="1" fill="rgba(20,60,80,.8)" stroke="${c}" stroke-width="1"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(15,50,70,.8)" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="rgba(0,220,255,.4)" stroke-width="0.8"/>
+      `;}).join('')}
+      ${reel(c,'rgba(10,35,50,.95)')}${handle('#254555')}`,
+
+    // КОСМИЧЕСКАЯ — галактика внутри, звёздный путь, планета сверху
+    cosmic: `
+      <defs>
+        <linearGradient id="csGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#180830"/><stop offset="50%" stop-color="#6020c0"/><stop offset="100%" stop-color="#180830"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#csGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Звёздный путь вдоль тела (изогнутый) -->
+      <path d="M10,0 Q5,60 10,120 Q15,180 10,240 Q5,300 10,360" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="3"/>
+      <!-- Звёзды разного размера -->
+      <circle cx="5" cy="20" r="1.2" fill="white" opacity=".8"/>
+      <circle cx="15" cy="45" r="0.8" fill="white" opacity=".6"/>
+      <circle cx="4" cy="75" r="1.5" fill="white" opacity=".7"/>
+      <circle cx="16" cy="100" r="1" fill="white" opacity=".6"/>
+      <circle cx="5" cy="135" r="1.2" fill="white" opacity=".7"/>
+      <circle cx="15" cy="165" r="0.8" fill="white" opacity=".5"/>
+      <circle cx="4" cy="200" r="1.5" fill="white" opacity=".8"/>
+      <circle cx="16" cy="230" r="1" fill="white" opacity=".6"/>
+      <circle cx="5" cy="265" r="1.2" fill="white" opacity=".7"/>
+      <circle cx="15" cy="295" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="4" cy="330" r="1" fill="white" opacity=".6"/>
+      <!-- Планета на вершине -->
+      <circle cx="10" cy="6" r="10" fill="rgba(60,0,120,.85)" stroke="${c}" stroke-width="1.5"/>
+      <ellipse cx="10" cy="6" rx="14" ry="4" fill="none" stroke="${c}" stroke-width="1.2" opacity=".8"/>
+      <ellipse cx="10" cy="6" rx="18" ry="5" fill="none" stroke="rgba(180,80,255,.3)" stroke-width="1.5"/>
+      <circle cx="7" cy="4" r="3" fill="rgba(120,40,200,.6)"/>
+      <circle cx="12" cy="8" r="2" fill="rgba(100,30,180,.5)"/>
+      <circle cx="9" cy="2" r="2.5" fill="rgba(200,150,255,.4)"/>
+      <!-- Кольца — орбиты планет -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+4}" ry="5" fill="none" stroke="rgba(150,50,255,.2)" stroke-width="1.5"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+        <circle cx="${10+w+2}" cy="${y}" r="2" fill="rgba(150,80,255,.6)" stroke="${c}" stroke-width="0.5"/>
+      `;}).join('')}
+      ${reel(c,'rgba(25,5,55,.95)')}${handle('#4a1090')}`,
+
+    // ДЕМОНИЧЕСКАЯ — тёмно-красная, кровавые капли стекают, рога сверху, адское пламя
+    demonic: `
+      <defs><linearGradient id="dmGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#300008"/><stop offset="50%" stop-color="#cc0018"/><stop offset="100%" stop-color="#300008"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#dmGrad)" stroke="#880010" stroke-width="1"/>
+      <!-- Кровавые трещины вдоль -->
+      <line x1="9" y1="0" x2="7" y2="80" stroke="rgba(180,0,20,.6)" stroke-width="1.2"/>
+      <line x1="11" y1="50" x2="13" y2="140" stroke="rgba(160,0,15,.5)" stroke-width="1"/>
+      <line x1="8" y1="130" x2="7" y2="220" stroke="rgba(180,0,20,.6)" stroke-width="1.2"/>
+      <line x1="12" y1="200" x2="13" y2="290" stroke="rgba(160,0,15,.5)" stroke-width="1"/>
+      <!-- Шипы-чешуйки с обеих сторон -->
+      ${[20,50,80,110,140,170,200,230,260,290,320].map((y,i)=>`
+        <path d="M${i%2===0?6:14},${y} Q${i%2===0?0:20},${y-5} ${i%2===0?2:18},${y+7}" fill="#880010" stroke="#cc0010" stroke-width="0.8"/>
+      `).join('')}
+      <!-- Рога сверху -->
+      <path d="M7,0 Q3,-12 5,-18 Q8,-10 10,0Z" fill="#660010" stroke="#aa0010" stroke-width="1"/>
+      <path d="M13,0 Q17,-12 15,-18 Q12,-10 10,0Z" fill="#660010" stroke="#aa0010" stroke-width="1"/>
+      <!-- Адское пламя у основания рогов -->
+      <path d="M6,2 Q8,-3 10,2 Q12,-3 14,2" fill="rgba(255,60,0,.6)" stroke="rgba(255,100,0,.4)" stroke-width="0.5"/>
+      <!-- Глаза демона на теле -->
+      <ellipse cx="8" cy="100" rx="2" ry="2.5" fill="#ff0000" opacity=".8"/>
+      <ellipse cx="8" cy="100" rx="1" ry="1.5" fill="#111"/>
+      <ellipse cx="8" cy="220" rx="2" ry="2.5" fill="#ff0000" opacity=".7"/>
+      <ellipse cx="8" cy="220" rx="1" ry="1.5" fill="#111"/>
+      <!-- Капли крови -->
+      <path d="M13,60 Q14,65 13,70 Q12,65 13,60Z" fill="#cc0010"/>
+      <path d="M7,150 Q6,155 7,162 Q8,155 7,150Z" fill="#aa0010"/>
+      <path d="M13,240 Q14,247 13,254 Q12,247 13,240Z" fill="#cc0010"/>
+      <!-- Кольца с шипами -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(50,0,10,.8)" stroke="#cc0018" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <polygon points="${10+w+1},${y} ${10+w+4},${y-2} ${10+w+4},${y+2}" fill="#880010"/>
+        <polygon points="${10-w-1},${y} ${10-w-4},${y-2} ${10-w-4},${y+2}" fill="#880010"/>
+      `;}).join('')}
+      ${reel('#cc0018','rgba(40,0,8,.98)')}${handle('#500010')}`,
+
+    // УДОЧКА БОГОВ — радужное свечение, нимб, лучи света, золото на золоте
+    godly: `
+      <defs>
+        <linearGradient id="gyGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#706010"/><stop offset="25%" stop-color="#fff8a0"/><stop offset="50%" stop-color="#ffd700"/><stop offset="75%" stop-color="#fff8a0"/><stop offset="100%" stop-color="#706010"/></linearGradient>
+        <linearGradient id="rainbowY" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ff0000" stop-opacity=".4"/>
+          <stop offset="16%" stop-color="#ff8800" stop-opacity=".4"/>
+          <stop offset="33%" stop-color="#ffff00" stop-opacity=".4"/>
+          <stop offset="50%" stop-color="#00ff00" stop-opacity=".4"/>
+          <stop offset="66%" stop-color="#0088ff" stop-opacity=".4"/>
+          <stop offset="83%" stop-color="#8800ff" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#ff00ff" stop-opacity=".4"/>
+        </linearGradient>
+      </defs>
+      <!-- Радужная аура -->
+      <rect x="4" y="0" width="12" height="360" rx="5" fill="url(#rainbowY)" opacity=".5"/>
+      <!-- Золотое тело -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#gyGrad)" stroke="#d4a020" stroke-width="1.2"/>
+      <!-- Лучи света вдоль -->
+      <line x1="10" y1="0" x2="10" y2="360" stroke="rgba(255,255,200,.3)" stroke-width="1.5"/>
+      <!-- Парящие звёзды-частицы -->
+      ${[25,70,115,160,205,250,295,340].map((y,i)=>`
+        <polygon points="10,${y-5} 11,${y-2} 14,${y-2} 11.5,${y} 12.5,${y+3} 10,${y+1} 7.5,${y+3} 8.5,${y} 6,${y-2} 9,${y-2}" fill="#ffd700" stroke="#c09010" stroke-width="0.4" opacity="${.6+.3*(i%2)}"/>
+      `).join('')}
+      <!-- Нимб на вершине -->
+      <ellipse cx="10" cy="-2" rx="13" ry="4" fill="none" stroke="#ffd700" stroke-width="2.5" opacity=".9"/>
+      <ellipse cx="10" cy="-2" rx="16" ry="5" fill="none" stroke="rgba(255,220,50,.4)" stroke-width="2"/>
+      <ellipse cx="10" cy="-2" rx="9" ry="3" fill="none" stroke="rgba(255,240,100,.6)" stroke-width="1.2"/>
+      <!-- Лучи от нимба -->
+      ${[0,45,90,135,180,225,270,315].map(a=>`
+        <line x1="${10+12*Math.cos(a*Math.PI/180)}" y1="${-2+5*Math.sin(a*Math.PI/180)}" x2="${10+18*Math.cos(a*Math.PI/180)}" y2="${-2+7.5*Math.sin(a*Math.PI/180)}" stroke="rgba(255,230,80,.5)" stroke-width="1"/>
+      `).join('')}
+      <!-- Кольца — двойные золотые -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+2}" ry="4" fill="none" stroke="rgba(255,220,50,.3)" stroke-width="2"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(60,45,0,.6)" stroke="#ffd700" stroke-width="2.5" opacity="${0.95-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-3}" ry="1.3" fill="none" stroke="rgba(255,255,200,.5)" stroke-width="0.8"/>
+      `;}).join('')}
+      ${reel('#ffd700','rgba(55,40,0,.95)')}${handle('#c09010')}`,
+
+    marble: `
+      <defs>
+        <radialGradient id="igMbGrad" cx="35%" cy="30%"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#d4c8e8"/><stop offset="100%" stop-color="#9080c0"/></radialGradient>
+        <linearGradient id="igMbBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f0e8ff"/><stop offset="50%" stop-color="#c0b0e0"/><stop offset="100%" stop-color="#f0e8ff"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#igMbBody)" stroke="rgba(160,140,200,.5)" stroke-width="0.5"/>
+      <path d="M8,20 Q11,50 8,90" stroke="rgba(160,140,200,.6)" stroke-width="0.9" fill="none"/>
+      <path d="M12,60 Q9,110 12,160" stroke="rgba(200,180,240,.5)" stroke-width="0.8" fill="none"/>
+      <path d="M8,140 Q12,200 8,260" stroke="rgba(140,120,180,.5)" stroke-width="0.8" fill="none"/>
+      <path d="M12,240 Q8,300 12,340" stroke="rgba(180,160,220,.4)" stroke-width="0.7" fill="none"/>
+      ${rings('#d0c0f0')}
+      ${reel('#c0b0e0','rgba(30,20,60,.8)')}
+      ${handle('#a090c0')}
+      <circle cx="10" cy="8" r="8" fill="url(#igMbGrad)" stroke="rgba(180,160,220,.9)" stroke-width="1.5"/>
+      <path d="M5,4 Q9,8 7,12" stroke="rgba(80,60,140,.4)" stroke-width="0.9" fill="none"/>
+      <path d="M10,2 Q14,6 12,10" stroke="rgba(100,80,160,.3)" stroke-width="0.8" fill="none"/>
+      <circle cx="7.5" cy="5" r="2.5" fill="rgba(255,255,255,.65)"/>
+      <circle cx="10" cy="380" r="5" fill="url(#igMbGrad)" stroke="rgba(180,160,220,.5)" stroke-width="1" opacity=".8"/>`,
+
+    ghost: `
+      <!-- Призрачная удочка — полупрозрачная, прерывистая -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="rgba(128,255,200,.1)" stroke="rgba(128,255,200,.5)" stroke-width="0.8" stroke-dasharray="8,4"/>
+      <rect x="6.5" y="0" width="7" height="360" rx="3" fill="none" stroke="rgba(180,100,255,.2)" stroke-width="1.5"/>
+      <!-- Мини-призрак наверху -->
+      <ellipse cx="10" cy="12" rx="7" ry="8" fill="rgba(200,255,230,.8)" stroke="rgba(128,255,200,.9)" stroke-width="1.2"/>
+      <path d="M3,17 Q3,22 6,20 Q8,18 10,20 Q12,18 14,20 Q17,22 17,17" fill="rgba(200,255,230,.8)" stroke="rgba(128,255,200,.9)" stroke-width="1.2"/>
+      <ellipse cx="7.5" cy="11" rx="1.8" ry="2" fill="rgba(10,20,30,.8)"/>
+      <ellipse cx="12.5" cy="11" rx="1.8" ry="2" fill="rgba(10,20,30,.8)"/>
+      <circle cx="10" cy="14" r="1.2" fill="rgba(10,20,30,.7)"/>
+      <!-- Призрачные кольца -->
+      ${rings('rgba(128,255,200,.6)', 0.7)}
+      <!-- Катушка-призрак -->
+      <ellipse cx="10" cy="345" rx="12" ry="8" fill="rgba(128,255,200,.08)" stroke="rgba(128,255,200,.5)" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <ellipse cx="10" cy="345" rx="7" ry="4.5" fill="rgba(128,255,200,.15)" stroke="rgba(128,255,200,.4)" stroke-width="1"/>
+      <ellipse cx="10" cy="345" rx="3" ry="2" fill="rgba(200,255,230,.7)"/>
+      <!-- Ручка -->
+      <rect x="6" y="360" width="8" height="35" rx="4" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.5)" stroke-width="1" stroke-dasharray="4,3"/>`,
+  };
+
+  // Используем специальный вариант если есть, иначе дефолтный
+  const body = specials[rod.id] || `
+    <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#dfGrad)" stroke="${c}" stroke-width="0.5"/>
+    <defs><linearGradient id="dfGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${c}80"/><stop offset="50%" stop-color="${c}"/><stop offset="100%" stop-color="${c}80"/></linearGradient></defs>
+    ${rings(c)}${reel(c)}${handle(c)}`;
+
+  const anim = rod.id === 'apocalypse' ? 'animation:apocalypseShake .3s steps(3) infinite;' :
+               rod.id === 'quantum'    ? 'animation:quantumFlicker .8s steps(2) infinite;' :
+               rod.id === 'thunder'    ? 'animation:thunderZap 3s steps(1) infinite;' : '';
+
+  return `<svg id="rod-svg-ingame" viewBox="-15 -15 50 420"
+    xmlns="http://www.w3.org/2000/svg"
+    style="position:absolute;top:0;right:-10px;width:50px;height:100%;overflow:visible;pointer-events:none;${glow}${anim}">
+    ${body}
+  </svg>`;
+}
 
 function updateRodVisual() {
   const rod = gs.currentRod;
   const rc = ROD_COLORS[rod.id] || ROD_COLORS.wood;
+  const rodWrapper = document.getElementById('rod-wrapper');
   const rodBody = document.getElementById('rod-body');
-  // Применить анимацию по типу удочки
-  const animMap = {
-    rubberduck: 'duckWobble 1.2s ease-in-out infinite',
-    crystal:    'crystalShimmer 2s ease-in-out infinite',
-    thunder:    'thunderZap 3s steps(1) infinite',
-    void:       'voidPulse 2s ease-in-out infinite',
-    meteor:     'meteorPulse 1.5s ease-in-out infinite alternate',
-    dragon:     'dragonBreathe 2s ease-in-out infinite',
-    poseidon:   'poseidonWave 1.8s ease-in-out infinite alternate',
-    quantum:    'quantumFlicker 0.8s steps(2) infinite',
-    celestial:  'celestialGlow 2.5s ease-in-out infinite alternate',
-    apocalypse: 'apocalypseShake 0.3s steps(3) infinite',
-    mech:       'mechPulse 1.5s ease-in-out infinite',
-    cosmic:     'cosmicSpin 3s linear infinite',
-    demonic:    'demonicPulse 1.2s ease-in-out infinite',
-    godly:      'godlyShine 1.8s ease-in-out infinite',
-    flower:     'flowerRodGlow 1.5s ease-in-out infinite',
-  };
-  rodBody.style.animation = animMap[rod.id] || '';
-  rodBody.style.boxShadow = rc.glow;
+  const rodReel = document.getElementById('rod-reel');
 
-  // Градиент и ширина удочки — у крутых удочек толще
-  const fatRods = {mech:'#90e0f8,#4090b0,#90e0f8', cosmic:'#e060ff,#6020c0,#e060ff', demonic:'#ff1020,#800010,#ff1020', godly:'#fff8a0,#ffd700,#fff8a0', flower:'#ffb0e0,#ff60a0,#ffb0e0'};
-  if(fatRods[rod.id]) {
-    rodBody.style.background = `linear-gradient(to right, ${fatRods[rod.id]})`;
-    rodBody.style.width = '10px';
-    rodBody.style.borderRadius = '5px 3px 0 0';
-  } else {
-    rodBody.style.background = `linear-gradient(to right, ${rc.color}80, ${rc.color}, ${rc.color}80)`;
-    rodBody.style.width = '';
-    rodBody.style.borderRadius = '';
-  }
+  // --- Убираем старый SVG если есть ---
+  const oldSvg = document.getElementById('rod-svg-ingame');
+  if(oldSvg) oldSvg.remove();
 
-  // Обновить кольца
-  document.querySelectorAll('#rod-body .rod-ring').forEach(r=>{
-    r.style.background = `linear-gradient(to right, ${rc.color}88, ${rc.color}, ${rc.color}88)`;
-    r.style.boxShadow = rc.glow !== 'none' ? `0 0 6px ${rc.color}` : '';
-  });
+  // Прячем стандартный rod-body/reel и ставим наш красивый SVG
+  rodBody.style.visibility = 'hidden';
+  rodBody.style.opacity = '0';
+  if(rodReel) { rodReel.style.visibility = 'hidden'; rodReel.style.opacity = '0'; }
 
-  // Иконка удочки — показываем у верхнего края удочки
-  let existingBadge = document.getElementById('rod-icon-badge');
-  const ULTRA_ICONS = {mech:'⚙️', cosmic:'🌌', demonic:'💀', godly:'👑', void:'🌑', apocalypse:'💥', celestial:'✨', quantum:'⚛️', poseidon:'🔱', thunder:'⚡', crystal:'💎', shark:'🦈', dragon:'🔥', meteor:'☄️', magic:'✨', golden:'⭐', rubberduck:'🦆', flower:'🌸'};
-  if(ULTRA_ICONS[rod.id]) {
-    if(!existingBadge) {
-      existingBadge = document.createElement('div');
-      existingBadge.id = 'rod-icon-badge';
-      existingBadge.style.cssText = 'position:absolute;top:-2px;right:-14px;font-size:18px;line-height:1;pointer-events:none;z-index:25;filter:drop-shadow(0 0 4px currentColor);';
-      rodBody.appendChild(existingBadge);
-    }
-    existingBadge.textContent = ULTRA_ICONS[rod.id];
-    existingBadge.style.animation = animMap[rod.id] || 'iconFloat 2s ease-in-out infinite alternate';
-  } else if(existingBadge) {
-    existingBadge.remove();
-  }
+  // Вставляем SVG — он занимает весь rod-wrapper
+  rodWrapper.insertAdjacentHTML('beforeend', makeIngameRodSVG(rod));
+  rodWrapper.style.filter = rc.glow !== 'none' ? `drop-shadow(0 0 8px ${rc.color})` : '';
+  rodWrapper.style.overflow = 'visible';
 
   document.getElementById('current-rod-name').textContent = '🎣 '+rod.name;
   document.getElementById('current-rod-name').style.color = rc.color;
   document.getElementById('current-rod-name').style.textShadow = rc.glow !== 'none' ? `0 0 8px ${rc.color}` : '';
+  const statsEl = document.getElementById('current-rod-stats');
+  if(statsEl) { statsEl.textContent = rod.stats || ''; statsEl.style.color = rc.glow !== 'none' ? rc.color+'cc' : '#a0c8e0'; }
 }
 
 
@@ -8161,6 +9443,68 @@ window.renderGarden = function() {
 #fw-offline-notice .fw-off-sub { font-size:12px; color:#a04040; line-height:1.5; }
 </style>
 
+<!-- UPDATE CUTSCENE -->
+<div id="update-cutscene" style="
+  position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(135deg,#000a1a,#00050f);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;
+">
+  <div id="cs-marbles" style="position:absolute;inset:0;pointer-events:none;"></div>
+  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
+    <div style="position:absolute;top:30%;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,rgba(0,200,255,.5),transparent);animation:csGlitch 0.8s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute;top:65%;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(255,80,200,.4),transparent);animation:csGlitch 1.2s ease-in-out infinite alternate-reverse;"></div>
+  </div>
+  <div id="cs-text1" style="font-family:'UnifrakturMaguntia',cursive;font-size:36px;color:#00e8ff;text-shadow:0 0 30px #00e8ff,0 0 60px rgba(0,200,255,.5);text-align:center;padding:0 20px;opacity:0;transform:scale(0.5);transition:opacity 0.8s,transform 0.8s cubic-bezier(.34,1.56,.64,1);z-index:2;">Неожидал?</div>
+  <div id="cs-text2" style="font-family:'Neucha',cursive;font-size:16px;color:#a0f0ff;margin-top:16px;text-align:center;padding:0 30px;opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s ease;z-index:2;line-height:1.6;">Но тут я сделал обнову 🎣<br><span style="font-size:12px;color:#608090;">Мраморная удочка • Больше рыб • Анимации • Баги починены!</span></div>
+  <div id="cs-marbles-text" style="font-size:48px;margin-top:24px;opacity:0;transition:opacity 0.5s;z-index:2;animation:csMarblesFloat 2s ease-in-out infinite alternate;">🪨✨🎣</div>
+  <button id="cs-skip-btn" style="position:absolute;bottom:40px;font-family:'UnifrakturMaguntia',cursive;font-size:18px;background:linear-gradient(135deg,#004060,#00a0c0);border:2px solid #00e0ff;border-radius:16px;padding:12px 40px;color:#80ffff;cursor:pointer;box-shadow:0 0 20px rgba(0,200,255,.4);opacity:0;transition:opacity 0.5s;z-index:2;">🎣 Начать рыбалку!</button>
+</div>
+<style>
+@keyframes csGlitch{0%{opacity:.3;transform:scaleX(.8)}100%{opacity:.9;transform:scaleX(1.1)}}
+@keyframes csMarblesFloat{0%{transform:translateY(0) rotate(-5deg)}100%{transform:translateY(-12px) rotate(5deg)}}
+@keyframes marbleDrop{0%{transform:translateY(-100px) rotate(0deg);opacity:0}20%{opacity:1}80%{opacity:.8}100%{transform:translateY(800px) rotate(720deg);opacity:0}}
+/* Fish catch animation */
+@keyframes fishBlink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes finWave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}
+@keyframes fishWiggle{0%,100%{transform:rotate(-3deg) scaleX(1)}25%{transform:rotate(3deg) scaleX(1.05)}50%{transform:rotate(-2deg) scaleX(.98)}75%{transform:rotate(4deg) scaleX(1.03)}}
+@keyframes marbleSplashAnim{0%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(0.2) translateY(-40px);opacity:0}}
+</style>
+<script>
+(function(){
+  function skipCS(){
+    var cs=document.getElementById('update-cutscene');
+    if(!cs||cs._closing) return;
+    cs._closing=true;
+    cs.style.transition='opacity 0.6s';
+    cs.style.opacity='0';
+    setTimeout(function(){ if(cs.parentNode) cs.parentNode.removeChild(cs); },700);
+  }
+  window.skipUpdateCutscene=skipCS;
+
+  var mc=document.getElementById('cs-marbles');
+  for(var i=0;i<18;i++){
+    var b=document.createElement('div');
+    var sz=10+Math.random()*25;
+    var hue=Math.floor(Math.random()*60+160);
+    b.style.cssText='position:absolute;width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.8),hsl('+hue+',60%,50%),hsl('+hue+',40%,25%));box-shadow:inset -3px -3px 6px rgba(0,0,0,.4),0 0 '+(sz*.5)+'px rgba(0,200,255,.3);left:'+(Math.random()*95)+'%;top:'+(Math.random()*-50-10)+'px;animation:marbleDrop '+(2+Math.random()*3)+'s '+(Math.random()*2)+'s ease-in forwards;';
+    if(mc) mc.appendChild(b);
+  }
+
+  var btn=document.getElementById('cs-skip-btn');
+  if(btn){
+    btn.addEventListener('click', skipCS);
+    btn.addEventListener('touchend', function(e){ e.preventDefault(); skipCS(); });
+  }
+
+  setTimeout(function(){ var t=document.getElementById('cs-text1'); if(t){t.style.opacity='1';t.style.transform='scale(1)';} },400);
+  setTimeout(function(){ var t=document.getElementById('cs-text2'); if(t){t.style.opacity='1';t.style.transform='translateY(0)';} },1100);
+  setTimeout(function(){ var t=document.getElementById('cs-marbles-text'); if(t) t.style.opacity='1'; },1800);
+  setTimeout(function(){ if(btn) btn.style.opacity='1'; },2200);
+  setTimeout(skipCS, 6000);
+})();
+</script>
+
 <!-- FAREWELL HTML -->
 <div id="farewell-overlay">
   <!-- Background sky / sunset -->
@@ -8484,11 +9828,11 @@ window.renderGarden = function() {
     });
   });
 
-  // Start scene after game loads
+  // Skip farewell scene — go straight to game
   if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(runFarewellScene, 800));
+    document.addEventListener('DOMContentLoaded', () => setTimeout(closeFarewellAndPlay, 100));
   } else {
-    setTimeout(runFarewellScene, 800);
+    setTimeout(closeFarewellAndPlay, 100);
   }
 })();
 </script>
