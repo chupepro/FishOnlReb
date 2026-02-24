@@ -1803,6 +1803,395 @@ body {
   vertical-align:middle; margin-left:4px; border:1px solid #ffd060;
 }
 @keyframes meteorPulse{0%{filter:drop-shadow(0 0 8px #ff6020)}100%{filter:drop-shadow(0 0 24px #ffaa00) brightness(1.2)}}
+/* ═══ НОВЫЕ УДОЧКИ ═══ */
+@keyframes pharaohGlow{
+  0%  {filter:drop-shadow(0 0 12px #e8c020) brightness(1);}
+  50% {filter:drop-shadow(0 0 40px #ffe060) brightness(1.5) saturate(1.3);}
+  100%{filter:drop-shadow(0 0 12px #e8c020) brightness(1);}
+}
+@keyframes pharaohCurse{
+  0%,100%{filter:drop-shadow(0 0 10px #e8c020);}
+  45%    {filter:drop-shadow(0 0 30px #e8c020) brightness(1.3);}
+  50%    {filter:drop-shadow(0 0 6px #8800ff) hue-rotate(120deg) brightness(.8);}
+  55%    {filter:drop-shadow(0 0 30px #e8c020) brightness(1.3);}
+}
+@keyframes neonScan{
+  0%  {filter:drop-shadow(0 0 10px #00ffcc) brightness(1);}
+  25% {filter:drop-shadow(0 0 30px #00ffff) brightness(1.4) hue-rotate(20deg);}
+  50% {filter:drop-shadow(0 0 50px #00ffcc) brightness(1.8);}
+  75% {filter:drop-shadow(0 0 30px #00ffcc) brightness(1.4) hue-rotate(-20deg);}
+  100%{filter:drop-shadow(0 0 10px #00ffcc) brightness(1);}
+}
+@keyframes krakenTentacle{
+  0%  {filter:drop-shadow(0 0 15px #6020c0);}
+  33% {filter:drop-shadow(0 0 40px #9030e0) brightness(1.3);}
+  66% {filter:drop-shadow(0 0 25px #4010a0) brightness(.9);}
+  100%{filter:drop-shadow(0 0 15px #6020c0);}
+}
+@keyframes timeFreeze{
+  0%   {filter:drop-shadow(0 0 20px #c0e0ff) brightness(1);}
+  20%  {filter:drop-shadow(0 0 60px #ffffff) brightness(2.5) saturate(.2);}
+  25%  {filter:drop-shadow(0 0 20px #c0e0ff) brightness(1);}
+  100% {filter:drop-shadow(0 0 20px #c0e0ff) brightness(1);}
+}
+@keyframes timeClockSpin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes neonDataScroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-20px); }
+}
+@keyframes krakenWiggle {
+  0%,100% { transform: rotate(-3deg); }
+  50%     { transform: rotate(3deg); }
+}
+@keyframes pharaohScarabSpin {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* ════════════════════════════════════════════════════
+   🎣 FISHER SCREEN — Экран рыбака с экипировкой
+════════════════════════════════════════════════════ */
+#fisher-screen {
+  background: linear-gradient(160deg, #0a1a0e 0%, #050e08 60%, #030a06 100%);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 70px;
+}
+
+/* Анимированный фон */
+#fisher-bg-anim {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+}
+.fisher-bg-particle {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  animation: fisherBgFloat var(--fd, 8s) ease-in-out infinite alternate;
+  animation-delay: var(--fdelay, 0s);
+}
+@keyframes fisherBgFloat {
+  0%   { transform: translate(0,0) scale(1);   opacity: .08; }
+  50%  { transform: translate(var(--tx,10px), var(--ty,-15px)) scale(1.3); opacity: .18; }
+  100% { transform: translate(var(--tx2,-8px), var(--ty2,10px)) scale(.8); opacity: .06; }
+}
+
+/* Шапка экрана */
+#fisher-header {
+  position: relative; z-index: 5;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0 10px;
+}
+#fisher-title {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 24px; color: #c8e870;
+  text-shadow: 0 0 18px rgba(100,200,50,.7), 0 2px 4px rgba(0,0,0,.8);
+  letter-spacing: 2px;
+}
+#fisher-subtitle {
+  font-family: 'Neucha', cursive; font-size: 12px; color: rgba(180,220,130,.6);
+  margin-top: 2px; letter-spacing: 1px;
+}
+
+/* ── ГЛАВНЫЙ БЛОК: ФИГУРА РЫБАКА ── */
+#fisher-character-zone {
+  position: relative; z-index: 5;
+  width: 100%; height: 280px;
+  display: flex; align-items: flex-end; justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* Фон-сцена за персонажем */
+#fisher-scene-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 90%, rgba(10,60,20,.5), transparent);
+}
+.fisher-scene-glow {
+  position: absolute; border-radius: 50%; filter: blur(20px); pointer-events: none;
+}
+
+/* Платформа (земля) */
+#fisher-platform {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 28px;
+  background: linear-gradient(to bottom, #2a4a18 0%, #1a2e0e 100%);
+  border-radius: 50% 50% 0 0;
+  border-top: 2px solid rgba(80,160,40,.4);
+  box-shadow: 0 0 30px rgba(40,120,20,.3), inset 0 4px 8px rgba(0,0,0,.4);
+}
+#fisher-platform::before {
+  content: '';
+  position: absolute; top: -2px; left: 10%; right: 10%; height: 2px;
+  background: linear-gradient(to right, transparent, rgba(120,255,80,.3), transparent);
+  border-radius: 50%;
+}
+
+/* ── ПЕРСОНАЖ SVG ── */
+#fisher-char-wrap {
+  position: relative; z-index: 10;
+  display: flex; align-items: flex-end;
+  gap: 0;
+}
+
+#fisher-char-svg {
+  width: 120px; height: 220px;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.7));
+  animation: fisherIdle 3s ease-in-out infinite alternate;
+}
+@keyframes fisherIdle {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-4px) rotate(.5deg); }
+}
+
+/* Удочка рядом с персонажем */
+#fisher-rod-display {
+  position: absolute; right: -30px; bottom: 20px;
+  width: 24px; height: 200px;
+  transform-origin: bottom center;
+  animation: fisherRodSway 4s ease-in-out infinite alternate;
+  filter: var(--rod-glow, none);
+}
+@keyframes fisherRodSway {
+  0%   { transform: rotate(-5deg); }
+  100% { transform: rotate(2deg); }
+}
+
+/* Рыбалка анимация лески */
+#fisher-line-svg {
+  position: absolute; right: -30px; top: 0;
+  pointer-events: none; z-index: 20;
+  overflow: visible;
+}
+
+/* ── ПАНЕЛЬ ЭКИПИРОВКИ ── */
+#fisher-equip-panel {
+  position: relative; z-index: 5;
+  padding: 0 10px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.fisher-equip-section {
+  background: rgba(5,20,10,.85);
+  border: 1px solid rgba(60,120,30,.4);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,.5), inset 0 1px 0 rgba(80,160,40,.1);
+}
+.fisher-equip-section-title {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 13px; color: rgba(160,220,100,.8);
+  padding: 8px 14px 4px;
+  border-bottom: 1px solid rgba(60,120,30,.2);
+  display: flex; align-items: center; gap: 6px;
+  letter-spacing: 1px;
+}
+.fisher-equip-section-title::before {
+  content: ''; display: inline-block; width: 3px; height: 14px;
+  background: linear-gradient(to bottom, #80e040, #30a010);
+  border-radius: 2px;
+}
+
+/* Большая карточка удочки */
+#fisher-rod-card {
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(135deg, rgba(0,0,0,0), rgba(20,40,10,.3));
+}
+#fisher-rod-icon-big {
+  width: 64px; height: 64px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(20,40,10,.8), rgba(5,15,5,.95));
+  border: 2px solid rgba(80,160,40,.5);
+  border-radius: 12px;
+  box-shadow: 0 0 20px var(--rod-aura, rgba(80,160,40,.2));
+  position: relative; overflow: visible;
+}
+#fisher-rod-icon-big::after {
+  content: ''; position: absolute; inset: -4px;
+  border-radius: 14px;
+  background: conic-gradient(from 0deg, transparent 60%, var(--rod-aura-color, rgba(80,160,40,.3)) 80%, transparent 100%);
+  animation: fisherRodAura 3s linear infinite;
+  opacity: .6;
+}
+@keyframes fisherRodAura {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#fisher-rod-info { flex: 1; min-width: 0; }
+#fisher-rod-name-big {
+  font-family: 'UnifrakturMaguntia', cursive;
+  font-size: 17px; color: var(--rod-color, #80d040);
+  text-shadow: 0 0 10px var(--rod-color, #80d040);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#fisher-rod-stats-big {
+  font-family: 'Neucha', cursive; font-size: 11px;
+  color: rgba(160,200,130,.7); margin-top: 3px; line-height: 1.5;
+}
+#fisher-rod-rarity-badge {
+  font-family: 'Neucha', cursive; font-size: 9px;
+  padding: 2px 8px; border-radius: 6px; margin-top: 4px;
+  display: inline-block; letter-spacing: .5px;
+}
+
+/* Активная наживка и приманка */
+#fisher-bait-lure-row {
+  display: flex; gap: 8px; padding: 10px 14px;
+}
+.fisher-item-slot {
+  flex: 1; display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,.3); border: 1px solid rgba(60,120,30,.25);
+  border-radius: 10px; padding: 8px 10px;
+  transition: all .2s;
+}
+.fisher-item-slot:hover { border-color: rgba(80,160,40,.5); }
+.fisher-item-slot-icon { font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+.fisher-item-slot-info { min-width: 0; }
+.fisher-item-slot-name { font-family: 'Neucha', cursive; font-size: 11px; color: #c8e090; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fisher-item-slot-qty  { font-family: 'Neucha', cursive; font-size: 10px; color: rgba(150,200,100,.6); margin-top: 1px; }
+
+/* Улучшения */
+#fisher-upgrades-grid {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 10px 14px;
+}
+.fisher-upgrade-chip {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(10,30,15,.8);
+  border: 1px solid rgba(60,140,30,.4);
+  border-radius: 20px; padding: 4px 10px;
+  font-family: 'Neucha', cursive; font-size: 10px; color: #a0d060;
+  transition: all .3s;
+  animation: chipGlow 2s ease-in-out infinite alternate;
+  animation-delay: var(--chip-delay, 0s);
+}
+@keyframes chipGlow {
+  0%  { box-shadow: 0 0 4px rgba(60,160,30,.2); }
+  100%{ box-shadow: 0 0 10px rgba(80,200,40,.4), inset 0 0 6px rgba(40,100,20,.2); }
+}
+.fisher-upgrade-chip.inactive {
+  border-color: rgba(60,60,60,.4); color: rgba(100,100,100,.6);
+  animation: none; background: rgba(10,10,10,.6);
+}
+.fisher-upgrade-chip-icon { font-size: 14px; }
+
+/* ── СТАТИСТИКА РЫБАКА ── */
+#fisher-stats-panel {
+  position: relative; z-index: 5;
+  padding: 0 10px; margin-top: 4px;
+}
+.fisher-stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px; padding: 10px 14px;
+}
+.fisher-stat-card {
+  background: linear-gradient(135deg, rgba(5,20,10,.9), rgba(0,10,5,.8));
+  border: 1px solid rgba(60,120,30,.3);
+  border-radius: 10px; padding: 8px 10px;
+  display: flex; align-items: center; gap: 8px;
+  animation: statCardPulse 3s ease-in-out infinite alternate;
+  animation-delay: var(--sc-delay, 0s);
+}
+@keyframes statCardPulse {
+  0%  { border-color: rgba(60,120,30,.3); }
+  100%{ border-color: rgba(80,180,40,.5); box-shadow: 0 0 8px rgba(40,140,20,.2); }
+}
+.fisher-stat-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
+.fisher-stat-val { font-family: 'UnifrakturMaguntia', cursive; font-size: 18px; color: #c0e870; line-height: 1; }
+.fisher-stat-lbl { font-family: 'Neucha', cursive; font-size: 10px; color: rgba(160,200,100,.6); margin-top: 1px; }
+
+/* ── УРОВЕНЬ И XP ── */
+#fisher-level-bar-wrap {
+  padding: 4px 14px 10px;
+}
+#fisher-level-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Neucha', cursive; margin-bottom: 4px;
+}
+#fisher-level-label { font-size: 13px; color: #a0d060; }
+#fisher-xp-label { font-size: 11px; color: rgba(140,180,90,.7); }
+#fisher-xp-bar-bg {
+  height: 10px; background: rgba(0,0,0,.5); border-radius: 5px; overflow: hidden;
+  border: 1px solid rgba(60,120,30,.4);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.4);
+}
+#fisher-xp-fill {
+  height: 100%; border-radius: 5px; transition: width .8s ease-out;
+  background: linear-gradient(to right, #2a8010, #70d030, #c0ff60);
+  box-shadow: 0 0 8px rgba(80,200,30,.5);
+  position: relative; overflow: hidden;
+}
+#fisher-xp-fill::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.3) 50%, transparent 100%);
+  animation: xpShine 2s linear infinite;
+}
+@keyframes xpShine {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── БОЕВЫЕ ПАССИВКИ ── */
+#fisher-passives-list {
+  padding: 8px 14px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.fisher-passive-row {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Neucha', cursive; font-size: 11px;
+  padding: 5px 8px; border-radius: 8px;
+  background: rgba(0,0,0,.3);
+  border-left: 3px solid var(--passive-color, #60a030);
+  color: rgba(200,230,160,.8);
+}
+.fisher-passive-icon { font-size: 14px; width: 20px; text-align: center; }
+.fisher-passive-val { color: var(--passive-color, #80d040); font-weight: bold; margin-left: auto; }
+
+/* ── Анимация смены экрана ── */
+#fisher-screen.active {
+  animation: fisherScreenIn .35s ease-out;
+}
+@keyframes fisherScreenIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Полоса-разделитель с эффектом */
+.fisher-divider {
+  height: 1px; margin: 4px 14px;
+  background: linear-gradient(to right, transparent, rgba(80,160,40,.3), transparent);
+}
+
+/* Плавающие иконки рыбок над персонажем */
+.fisher-float-fish {
+  position: absolute;
+  font-size: 14px;
+  pointer-events: none;
+  animation: floatFishAnim var(--ff-dur, 4s) ease-in-out infinite;
+  animation-delay: var(--ff-delay, 0s);
+  opacity: 0;
+  z-index: 15;
+}
+@keyframes floatFishAnim {
+  0%   { transform: translate(0, 0)    rotate(-10deg) scale(.8); opacity: 0; }
+  20%  { opacity: .7; }
+  80%  { opacity: .5; }
+  100% { transform: translate(var(--ff-tx, 30px), -60px) rotate(10deg) scale(1.1); opacity: 0; }
+}
+
+/* Звёздочки уровня */
+.fisher-lvl-star {
+  display: inline-block;
+  animation: starTwinkle 1.5s ease-in-out infinite alternate;
+  animation-delay: var(--star-delay, 0s);
+}
+@keyframes starTwinkle {
+  0%   { opacity: .4; transform: scale(.8); }
+  100% { opacity: 1;  transform: scale(1.2); }
+}
 @keyframes dragonBreathe{0%{filter:drop-shadow(0 0 10px #cc2200)}50%{filter:drop-shadow(0 0 30px #ff4000) brightness(1.3)}100%{filter:drop-shadow(0 0 10px #cc2200)}}
 @keyframes poseidonWave{0%{filter:drop-shadow(0 0 12px #0060ff)}100%{filter:drop-shadow(0 0 32px #40a0ff) brightness(1.2)}}
 @keyframes quantumFlicker{0%{filter:drop-shadow(0 0 10px #ff00ff) hue-rotate(0deg)}50%{filter:drop-shadow(0 0 20px #00ffff) hue-rotate(180deg)}100%{filter:drop-shadow(0 0 10px #ff00ff) hue-rotate(360deg)}}
@@ -1861,6 +2250,10 @@ body {
 .rod-tier-cosmic  { background: linear-gradient(135deg,#200840,#8040d0); color:#e0c0ff; border:1px solid #c060ff; }
 .rod-tier-demonic { background: linear-gradient(135deg,#300010,#880020); color:#ffaaaa; border:1px solid #cc0030; }
 .rod-tier-godly   { background: linear-gradient(135deg,#402000,#c08000); color:#fff8a0; border:1px solid #ffd700; box-shadow:0 0 6px rgba(255,215,0,.4); }
+.rod-tier-pharaoh { background: linear-gradient(135deg,#402000,#d09010,#402000); background-size:200%;animation:ogRainbow 2s linear infinite; color:#fffbe0; border:1px solid #ffe060; box-shadow:0 0 8px rgba(255,200,0,.5); }
+.rod-tier-neon    { background: linear-gradient(135deg,#001a14,#00805040); color:#00ffcc; border:1px solid #00ffcc; box-shadow:0 0 8px rgba(0,255,200,.5); animation:neonScan 2s ease-in-out infinite; }
+.rod-tier-kraken  { background: linear-gradient(135deg,#100030,#4010a0); color:#c080ff; border:1px solid #7030d0; box-shadow:0 0 8px rgba(100,0,200,.6); }
+.rod-tier-time    { background: linear-gradient(135deg,#101828,#c0d8ff50); color:#c0e0ff; border:1px solid #c0d8ff; box-shadow:0 0 10px rgba(180,220,255,.6); }
 </style>
 <!-- Firebase compat SDK v9 — reliable CDN URLs, no dynamic import() needed -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -2456,6 +2849,14 @@ body {
 
   <!-- ===== NAV TABS ===== -->
   <div id="navtabs">
+    <div class="navtab" id="nav-fisher" onclick="switchScreen('fisher')" style="color:#90d040;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="7" r="4"/>
+        <path d="M6 21v-2a6 6 0 0112 0v2"/>
+        <circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none"/>
+      </svg>
+      Рыбак
+    </div>
     <div class="navtab active" id="nav-fish" onclick="switchScreen('fishing')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5Q7 4 12 9.5Q17 15 21 9.5"/><path d="M21 9.5 L18 6.5 M21 9.5 L18 12.5"/></svg>
       Рыбалка
@@ -2549,6 +2950,260 @@ body {
       <button class="boss-close-btn" onclick="closeBossFight()">🎣 Продолжить рыбалку!</button>
     </div>
   </div>
+
+  <!-- ===== 🎣 FISHER SCREEN — Экран рыбака ===== -->
+  <div id="fisher-screen" class="screen">
+    <!-- Анимированные частицы фона -->
+    <div id="fisher-bg-anim"></div>
+
+    <!-- Шапка -->
+    <div id="fisher-header">
+      <div id="fisher-title">⚔️ Рыбак</div>
+      <div id="fisher-subtitle">Снаряжение и статистика</div>
+    </div>
+
+    <!-- ЗОНА ПЕРСОНАЖА -->
+    <div id="fisher-character-zone">
+      <div id="fisher-scene-bg">
+        <!-- Атмосферные свечения -->
+        <div class="fisher-scene-glow" id="fisher-glow-1" style="width:160px;height:80px;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(40,120,20,.2);"></div>
+        <div class="fisher-scene-glow" id="fisher-glow-2" style="width:80px;height:80px;bottom:60px;left:50%;transform:translateX(-50%);background:var(--rod-aura, rgba(40,120,20,.15));"></div>
+      </div>
+      <div id="fisher-platform"></div>
+      <!-- Плавающие рыбки -->
+      <div class="fisher-float-fish" style="left:30%;bottom:160px;--ff-dur:5s;--ff-delay:0s;--ff-tx:-20px;">🐟</div>
+      <div class="fisher-float-fish" style="left:60%;bottom:140px;--ff-dur:4.5s;--ff-delay:1.5s;--ff-tx:25px;">🐠</div>
+      <div class="fisher-float-fish" style="left:45%;bottom:180px;--ff-dur:6s;--ff-delay:2.5s;--ff-tx:-15px;">🐡</div>
+
+      <div id="fisher-char-wrap">
+        <!-- SVG персонажа -->
+        <svg id="fisher-char-svg" viewBox="0 0 120 240" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="faceGrad" cx="40%" cy="35%">
+              <stop offset="0%" stop-color="#ffe0b0"/>
+              <stop offset="100%" stop-color="#c89060"/>
+            </radialGradient>
+            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#3a6a20"/>
+              <stop offset="100%" stop-color="#1e3a10"/>
+            </linearGradient>
+            <radialGradient id="hatGrad" cx="50%" cy="30%">
+              <stop offset="0%" stop-color="#7a5520"/>
+              <stop offset="100%" stop-color="#3a2508"/>
+            </radialGradient>
+            <filter id="charShadow">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,.5)"/>
+            </filter>
+          </defs>
+          <!-- Тень под персонажем -->
+          <ellipse cx="60" cy="238" rx="35" ry="6" fill="rgba(0,0,0,.4)"/>
+
+          <!-- Ноги -->
+          <rect x="42" y="190" width="16" height="45" rx="6" fill="#2a4a18"/>
+          <rect x="62" y="190" width="16" height="45" rx="6" fill="#2a4a18"/>
+          <!-- Ботинки -->
+          <ellipse cx="50" cy="235" rx="12" ry="6" fill="#2a1a08"/>
+          <ellipse cx="70" cy="235" rx="12" ry="6" fill="#2a1a08"/>
+          <rect x="38" y="228" width="24" height="7" rx="4" fill="#3a2808"/>
+          <rect x="58" y="228" width="24" height="7" rx="4" fill="#3a2808"/>
+
+          <!-- Тело — куртка рыбака -->
+          <rect x="30" y="130" width="60" height="65" rx="10" fill="url(#bodyGrad)" filter="url(#charShadow)"/>
+          <!-- Карман на куртке -->
+          <rect x="35" y="155" width="18" height="14" rx="3" fill="rgba(0,0,0,.25)" stroke="rgba(100,180,50,.3)" stroke-width="1"/>
+          <line x1="35" y1="162" x2="53" y2="162" stroke="rgba(100,180,50,.2)" stroke-width="1"/>
+          <!-- Пуговицы -->
+          <circle cx="60" cy="145" r="2.5" fill="#1a3008" stroke="rgba(100,180,50,.4)" stroke-width="1"/>
+          <circle cx="60" cy="158" r="2.5" fill="#1a3008" stroke="rgba(100,180,50,.4)" stroke-width="1"/>
+          <circle cx="60" cy="171" r="2.5" fill="#1a3008" stroke="rgba(100,180,50,.4)" stroke-width="1"/>
+          <!-- Воротник -->
+          <path d="M45,130 Q60,122 75,130 L72,140 Q60,133 48,140Z" fill="#2a5018"/>
+          <!-- Значок на куртке -->
+          <circle cx="75" cy="150" r="6" fill="rgba(200,160,40,.3)" stroke="rgba(200,160,40,.5)" stroke-width="1"/>
+          <text x="75" y="154" text-anchor="middle" font-size="7" fill="#c0a030">🎣</text>
+
+          <!-- Рукава -->
+          <rect x="15" y="130" width="22" height="50" rx="8" fill="#2a5018"/>
+          <rect x="83" y="130" width="22" height="50" rx="8" fill="#2a5018"/>
+          <!-- Манжеты -->
+          <rect x="13" y="168" width="26" height="12" rx="6" fill="#1e3a10"/>
+          <rect x="81" y="168" width="26" height="12" rx="6" fill="#1e3a10"/>
+          <!-- Руки (ладони) -->
+          <ellipse cx="26" cy="185" rx="11" ry="9" fill="url(#faceGrad)"/>
+          <ellipse cx="94" cy="185" rx="11" ry="9" fill="url(#faceGrad)"/>
+
+          <!-- Шея -->
+          <rect x="51" y="110" width="18" height="22" rx="6" fill="url(#faceGrad)"/>
+
+          <!-- Голова -->
+          <ellipse cx="60" cy="96" rx="28" ry="30" fill="url(#faceGrad)" filter="url(#charShadow)"/>
+
+          <!-- Шляпа -->
+          <ellipse cx="60" cy="72" rx="34" ry="7" fill="url(#hatGrad)"/>
+          <rect x="36" y="44" width="48" height="30" rx="8" fill="url(#hatGrad)"/>
+          <!-- Лента на шляпе -->
+          <rect x="36" y="60" width="48" height="8" rx="2" fill="#c08020" opacity=".7"/>
+          <!-- Перо в шляпе -->
+          <path d="M80,44 Q90,30 84,20 Q78,30 76,42" fill="rgba(200,100,40,.5)" stroke="#c06020" stroke-width="1"/>
+
+          <!-- Лицо — глаза -->
+          <ellipse cx="49" cy="95" rx="6" ry="7" fill="white"/>
+          <ellipse cx="71" cy="95" rx="6" ry="7" fill="white"/>
+          <ellipse cx="50" cy="96" rx="3.5" ry="4.5" fill="#1a1008"/>
+          <ellipse cx="72" cy="96" rx="3.5" ry="4.5" fill="#1a1008"/>
+          <!-- Блики глаз -->
+          <circle cx="51.5" cy="94" r="1.5" fill="rgba(255,255,255,.8)"/>
+          <circle cx="73.5" cy="94" r="1.5" fill="rgba(255,255,255,.8)"/>
+          <!-- Брови — довольное выражение -->
+          <path d="M44,87 Q49,84 54,87" stroke="#6a3808" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M66,87 Q71,84 76,87" stroke="#6a3808" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Нос -->
+          <circle cx="60" cy="102" r="2.5" fill="rgba(180,120,60,.6)"/>
+          <!-- Улыбка -->
+          <path d="M51,110 Q60,118 69,110" stroke="#8a5030" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- Румянец -->
+          <ellipse cx="45" cy="107" rx="7" ry="4" fill="rgba(255,100,80,.15)"/>
+          <ellipse cx="75" cy="107" rx="7" ry="4" fill="rgba(255,100,80,.15)"/>
+          <!-- Ухо -->
+          <ellipse cx="32" cy="96" rx="5" ry="7" fill="url(#faceGrad)"/>
+          <ellipse cx="88" cy="96" rx="5" ry="7" fill="url(#faceGrad)"/>
+
+          <!-- Правая рука держит удочку (поднята вверх) -->
+          <line x1="94" y1="178" x2="110" y2="80" stroke="#7a4a18" stroke-width="6" stroke-linecap="round"/>
+          <line x1="110" y1="80" x2="115" y2="20" stroke="#5a3410" stroke-width="4" stroke-linecap="round"/>
+
+          <!-- Кольца удочки -->
+          <line x1="110" y1="75" x2="117" y2="75" stroke="#aaa" stroke-width="2" stroke-linecap="round"/>
+          <line x1="112" y1="55" x2="118" y2="55" stroke="#aaa" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="113" y1="38" x2="118" y2="38" stroke="#aaa" stroke-width="1.5" stroke-linecap="round"/>
+
+          <!-- Леска -->
+          <path d="M115,20 Q120,40 118,55 Q116,68 115,80" stroke="rgba(200,190,150,.6)" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+
+          <!-- Катушка удочки -->
+          <circle cx="100" cy="162" r="9" fill="rgba(0,0,0,.5)" stroke="#888" stroke-width="2"/>
+          <circle cx="100" cy="162" r="5.5" fill="#666" stroke="#444" stroke-width="1"/>
+          <circle cx="100" cy="162" r="2" fill="#ccc"/>
+
+          <!-- Значок уровня над головой -->
+          <g id="fisher-lvl-badge-svg">
+            <rect x="42" y="28" width="36" height="14" rx="7" fill="rgba(0,0,0,.7)" stroke="#c0a030" stroke-width="1"/>
+            <text id="fisher-lvl-txt-svg" x="60" y="39" text-anchor="middle" font-family="Neucha, cursive" font-size="9" fill="#f0d050">Ур. 1</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ── ЭКИПИРОВКА ── -->
+    <div id="fisher-equip-panel">
+
+      <!-- Удочка -->
+      <div class="fisher-equip-section">
+        <div class="fisher-equip-section-title">🎣 Удочка</div>
+        <div id="fisher-rod-card">
+          <div id="fisher-rod-icon-big"></div>
+          <div id="fisher-rod-info">
+            <div id="fisher-rod-name-big">Деревенская</div>
+            <div id="fisher-rod-stats-big">Клёв: обычный</div>
+            <div id="fisher-rod-rarity-badge" class="rarity-common">Обычная</div>
+          </div>
+        </div>
+        <div class="fisher-divider"></div>
+        <!-- Пассивки удочки -->
+        <div id="fisher-passives-list"></div>
+      </div>
+
+      <!-- Наживка и Приманка -->
+      <div class="fisher-equip-section">
+        <div class="fisher-equip-section-title">🪱 Расходники</div>
+        <div id="fisher-bait-lure-row">
+          <div class="fisher-item-slot" id="fisher-bait-slot">
+            <div class="fisher-item-slot-icon">🪱</div>
+            <div class="fisher-item-slot-info">
+              <div class="fisher-item-slot-name">Нет наживки</div>
+              <div class="fisher-item-slot-qty">0 шт</div>
+            </div>
+          </div>
+          <div class="fisher-item-slot" id="fisher-lure-slot">
+            <div class="fisher-item-slot-icon">🪝</div>
+            <div class="fisher-item-slot-info">
+              <div class="fisher-item-slot-name">Нет приманки</div>
+              <div class="fisher-item-slot-qty">0 шт</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Улучшения -->
+      <div class="fisher-equip-section">
+        <div class="fisher-equip-section-title">⚡ Улучшения</div>
+        <div id="fisher-upgrades-grid"></div>
+      </div>
+
+    </div><!-- /equip-panel -->
+
+    <!-- ── СТАТЫ ── -->
+    <div id="fisher-stats-panel">
+      <div class="fisher-equip-section" style="margin:0 0 8px;">
+        <div class="fisher-equip-section-title">📊 Статистика</div>
+        <!-- Уровень + XP -->
+        <div id="fisher-level-bar-wrap">
+          <div id="fisher-level-row">
+            <div id="fisher-level-label">⭐ Уровень <span id="fisher-lvl-num">1</span></div>
+            <div id="fisher-xp-label"><span id="fisher-xp-cur">0</span> / <span id="fisher-xp-nxt">100</span> XP</div>
+          </div>
+          <div id="fisher-xp-bar-bg"><div id="fisher-xp-fill" style="width:0%"></div></div>
+        </div>
+        <div class="fisher-divider"></div>
+        <div class="fisher-stats-grid">
+          <div class="fisher-stat-card" style="--sc-delay:0s">
+            <div class="fisher-stat-icon">🐟</div>
+            <div>
+              <div class="fisher-stat-val" id="fs-fish-count">0</div>
+              <div class="fisher-stat-lbl">Рыб поймано</div>
+            </div>
+          </div>
+          <div class="fisher-stat-card" style="--sc-delay:.2s">
+            <div class="fisher-stat-icon">🪙</div>
+            <div>
+              <div class="fisher-stat-val" id="fs-coins">0</div>
+              <div class="fisher-stat-lbl">Монет</div>
+            </div>
+          </div>
+          <div class="fisher-stat-card" style="--sc-delay:.4s">
+            <div class="fisher-stat-icon">⭐</div>
+            <div>
+              <div class="fisher-stat-val" id="fs-score">0</div>
+              <div class="fisher-stat-lbl">Очков</div>
+            </div>
+          </div>
+          <div class="fisher-stat-card" style="--sc-delay:.6s">
+            <div class="fisher-stat-icon">🔥</div>
+            <div>
+              <div class="fisher-stat-val" id="fs-streak">0</div>
+              <div class="fisher-stat-lbl">Серия</div>
+            </div>
+          </div>
+          <div class="fisher-stat-card" style="--sc-delay:.8s">
+            <div class="fisher-stat-icon">⚡</div>
+            <div>
+              <div class="fisher-stat-val" id="fs-energy">0%</div>
+              <div class="fisher-stat-lbl">Энергия</div>
+            </div>
+          </div>
+          <div class="fisher-stat-card" style="--sc-delay:1s">
+            <div class="fisher-stat-icon">🎒</div>
+            <div>
+              <div class="fisher-stat-val" id="fs-inv">0</div>
+              <div class="fisher-stat-lbl">Улов в сумке</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:10px;"></div>
+  </div><!-- /fisher-screen -->
 
 </div><!-- /game -->
 </div><!-- /scale-wrapper -->
@@ -2726,6 +3381,12 @@ const RODS = [
   {id:'marble',  name:'Мраморная Удочка',    desc:'Высечена из чистейшего мрамора. Бросает мраморный шар в воду — ×2 к продаже!', price:750000, biteChance:40.0, catchMult:35.0, stats:'Клёв: x40 • x35 улов • Только OG+Легенды • ×2 цена продажи', detail:'🪨 МРАМОР', owned:false, equipped:false, special:'marble'},
   // ═══ ПРИЗРАК ═══
   {id:'ghost',   name:'Призрачная Удочка',   desc:'Удочка из другого измерения. Каждый заброс случайно меняет силу клёва — от слабой до x3!', price:15000, biteChance:1.0, catchMult:2.0, stats:'Клёв: СЛУЧАЙНЫЙ (x0.3–x3) • Только Легенды и ниже • Авантюра!', detail:'👻 ПРИЗРАК', owned:false, equipped:false, special:'ghost'},
+
+  // ═══ НОВЫЕ СУПЕРУДОЧКИ ═══
+  {id:'pharaoh',  name:'Удочка Фараона',      desc:'Золото Египта, проклятие пирамид! При каждом улове — все монеты удваиваются! Но иногда рыба ПРОКЛИНАЕТ тебя...', price:400000, biteChance:22.0, catchMult:18.0, stats:'Клёв: x22 • Улов: x18 • ×2 монеты • Проклятие (ред.) • Только OG+Легенды', detail:'🏺 ФАРАОН', owned:false, equipped:false, special:'pharaoh'},
+  {id:'neon',     name:'Неон-Турбо Удочка',   desc:'Из 2077 года! Каждый 5й заброс — АВТО-УЛОВ бесплатно. Чип улавливает биосигналы рыб через Wi-Fi!', price:300000, biteChance:28.0, catchMult:20.0, stats:'Клёв: x28 • Авто-улов каждые 5 забросов • Wi-Fi сканер рыб • Только OG', detail:'💻 НЕОН', owned:false, equipped:false, special:'neon'},
+  {id:'kraken',   name:'Щупальце Кракена',    desc:'Вырвано у живого кракена! При поимке легенды/OG — ОГРОМНЫЙ ВЗРЫВ монет +5000🪙 и мини-кракен пожирает слабых рыб!', price:600000, biteChance:35.0, catchMult:28.0, stats:'Клёв: x35 • Улов: x28 • +5000🪙 на OG/Легенды • Мини-кракен • Только OG', detail:'🐙 КРАКЕН', owned:false, equipped:false, special:'kraken'},
+  {id:'time',     name:'Удочка Времени',      desc:'ОСТАНАВЛИВАЕТ ВРЕМЯ при поклёвке! 10 секунд на подсечку. Ловит рыб из ПРОШЛОГО и БУДУЩЕГО — 3 рыбы за раз!', price:888888, biteChance:45.0, catchMult:35.0, stats:'Клёв: x45 • Улов: x35 • СТОП-ВРЕМЯ при клёве • 3 рыбы за раз • Любая редкость', detail:'⏳ ВРЕМЯ', owned:false, equipped:false, special:'time'},
 ];
 
 // ============================================================
@@ -3421,6 +4082,104 @@ function triggerBite() {
     return;
   }
 
+  // 🏺 Удочка Фараона — только OG + Легенды
+  if(gs.currentRod.id === 'pharaoh') {
+    const phPool = FISH_DATA.filter(f=>f.og||f.rar==='legend'||f.rar==='coastal_legend');
+    gs.fish = phPool[Math.floor(Math.random()*phPool.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // 💻 Нео-Турбо — только OG рыбы
+  if(gs.currentRod.id === 'neon') {
+    const neonPool = FISH_DATA.filter(f=>f.og);
+    const fallback = FISH_DATA.filter(f=>f.rar==='legend'||f.rar==='coastal_legend');
+    const nFish = neonPool.length > 0 ? neonPool : fallback;
+    gs.fish = nFish[Math.floor(Math.random()*nFish.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // 🐙 Кракен — только OG рыбы
+  if(gs.currentRod.id === 'kraken') {
+    const kPool = FISH_DATA.filter(f=>f.og);
+    const kFallback = FISH_DATA.filter(f=>f.rar==='legend'||f.rar==='coastal_legend');
+    const kFish = kPool.length > 0 ? kPool : kFallback;
+    gs.fish = kFish[Math.floor(Math.random()*kFish.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // ⏳ Удочка Времени — всё: от common до OG, без ограничений
+  // (обычный пул, но с сильно повышенным шансом редких через catchMult - уже покрыто)
+
+  // 🌌 Небесная — только OG + Легенды
+  if(gs.currentRod.id === 'celestial') {
+    const celPool = FISH_DATA.filter(f=>f.og||f.rar==='legend'||f.rar==='coastal_legend');
+    gs.fish = celPool[Math.floor(Math.random()*celPool.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // 😈 Демоническая — только OG + Легенды, +666🪙 уже в catchFish
+  if(gs.currentRod.id === 'demonic') {
+    const demPool = FISH_DATA.filter(f=>f.og||f.rar==='legend'||f.rar==='coastal_legend');
+    gs.fish = demPool[Math.floor(Math.random()*demPool.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // 🌌 Космическая — почти всегда OG: 70% OG, 30% легенды
+  if(gs.currentRod.id === 'cosmic') {
+    const ogFish = FISH_DATA.filter(f=>f.og);
+    const legFish = FISH_DATA.filter(f=>f.rar==='legend'||f.rar==='coastal_legend');
+    const cosmPool = Math.random() < 0.70 && ogFish.length > 0 ? ogFish : legFish;
+    gs.fish = cosmPool[Math.floor(Math.random()*cosmPool.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // ⚙️ Мех-удочка — OG 10% + Легенды 50% + Эпики 40%
+  if(gs.currentRod.id === 'mech') {
+    const r = Math.random();
+    let mechPool;
+    if(r < 0.10) mechPool = FISH_DATA.filter(f=>f.og);
+    else if(r < 0.60) mechPool = FISH_DATA.filter(f=>f.rar==='legend'||f.rar==='coastal_legend');
+    else mechPool = FISH_DATA.filter(f=>f.rar==='epic');
+    if(!mechPool || mechPool.length===0) mechPool = FISH_DATA.filter(f=>f.rar==='epic');
+    gs.fish = mechPool[Math.floor(Math.random()*mechPool.length)];
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([100,50,100]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
   // 🪨 Мраморная удочка — только OG+легенды, мрамор даёт ×2 к продаже
   const isMarble = gs.currentRod.id === 'marble';
   if(isMarble) {
@@ -3445,8 +4204,16 @@ function triggerBite() {
     if(isVoid && f.rar!=='legend'&&f.rar!=='og') w=0; // бездна — только легенды
     if(f.rar==='legend' && hasLucky) w*=1.5;
     if(f.rar!=='common') w *= (1+lureBonus);
+    // ✨ КРИСТАЛЬНАЯ: удвоенный шанс редких, эпиков, легенд
+    if(gs._crystalRareBoost && f.rar!=='common') w *= 2;
     // OG лура: в 35% случаев ловит OG
     if(ogLureActive && f.rar==='og') w = 35;
+    // catchMult повышает шансы редких рыб
+    const cm = gs.currentRod.catchMult || 1;
+    if(cm >= 5  && (f.rar==='common'||f.rar==='rare')) w *= Math.max(0.1, 1 - (cm-1)*0.15);
+    if(cm >= 5  && f.rar==='epic')   w *= 1 + (cm-1)*0.3;
+    if(cm >= 5  && f.rar==='legend') w *= 1 + (cm-1)*0.5;
+    if(cm >= 15 && f.rar==='og')     w *= 1 + (cm-10)*0.8;
     for(let i=0;i<Math.round(w);i++) pool.push(f);
   });
   if(pool.length===0) FISH_DATA.filter(f=>!f.coastal && f.rar==='epic').forEach(f=>pool.push(f));
@@ -3460,10 +4227,17 @@ function triggerBite() {
   if(navigator.vibrate) navigator.vibrate([100,50,100]);
   const autoReel = UPGRADES.find(u=>u.id==='auto_reel')?.owned;
   const isThunder = gs.currentRod.id === 'thunder';
-  if(autoReel || isThunder) {
-    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, isThunder ? 200 : 1200);
+  const isMech    = gs._mechAutoTarget;   // ⚙️ Мех: авто-прицел = мгновенная подсечка
+  const isNeonAR  = gs._neonAutoReel;    // 💻 Неон: авто-подсечка
+  const isMarbleAR= gs._marbleAutoReel;  // 🪨 Мрамор: авто-подсечка
+  const isApoc    = gs._apocalypseMode;  // 💀 Апок: уже обрабатывается выше
+  // ⏳ Время: 10 сек окно вместо 5
+  const biteWindow = gs._timeFreezeWindow ? 10000 : 5000;
+  if(autoReel || isThunder || isMech || isNeonAR || isMarbleAR) {
+    const delay = isThunder||isMech||isNeonAR||isMarbleAR ? 200 : 1200;
+    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, delay);
   } else {
-    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, biteWindow);
   }
 }
 
@@ -3638,6 +4412,110 @@ function catchFish() {
   if(gs.currentRod.id === 'marble' && f.marbleBonus) {
     showToast('🪨 Мрамор в воде! Цена ×2 — ' + Math.round(calcPrice(f)) + '🪙!');
   }
+
+  // 🐉 ДРАКОНЬЯ: вес рыбы x3 = мега-стоимость
+  if(gs._dragonMegaWeight && f) {
+    const origWeight = parseFloat(f.weight);
+    const megaWeight = (origWeight * 3).toFixed(2);
+    // Обновляем вес для расчёта цены
+    gs.currentCatch = {...gs.currentCatch, weight: megaWeight, _dragonBoosted: true};
+    document.getElementById('catch-weight-txt').textContent = megaWeight + ' кг • +' + f.pts*2 + ' ★ 🐉';
+    const newPrice = Math.round(calcPrice(gs.currentCatch) * getEventCoinMult());
+    document.getElementById('popup-sell-price').textContent = ' ' + newPrice + ' 🐉×3';
+    showToast('🐉 Драко-улов! Вес x3: ' + megaWeight + 'кг!');
+  }
+
+  // ☄️ МЕТЕОРИТНАЯ: случайный бонус монет 100-500 за улов
+  if(gs._meteorBonus) {
+    const mBonus = 100 + Math.floor(Math.random()*401);
+    gs.coins += mBonus;
+    updateCoins();
+    showToast('☄️ Метеоритный удар! +' + mBonus + '🪙 огненный бонус!');
+  }
+
+  // 😈 Демоническая удочка: +666🪙 за каждый улов
+  if(gs.currentRod.id === 'demonic') {
+    gs.coins += 666;
+    updateCoins();
+    showToast('😈 Тёмный бонус: +666🪙! Сила тьмы с тобой!');
+  }
+
+  // 🏺 УДОЧКА ФАРАОНА: удвоение монет + редкое проклятие
+  if(gs.currentRod.id === 'pharaoh') {
+    const cursed = Math.random() < 0.08; // 8% проклятие
+    if(cursed) {
+      // Проклятие: теряем 20% монет
+      const lost = Math.floor(gs.coins * 0.2);
+      gs.coins = Math.max(0, gs.coins - lost);
+      updateCoins();
+      showToast('💀 ПРОКЛЯТИЕ ФАРАОНА! -'+lost+'🪙! Берегитесь гнева богов!');
+      // Анимация проклятия
+      const game = document.getElementById('game');
+      const curse = document.createElement('div');
+      curse.style.cssText='position:absolute;inset:0;background:rgba(100,0,150,.3);z-index:9000;pointer-events:none;animation:pharaohCurse 1.5s ease-out forwards;border-radius:12px;';
+      game.appendChild(curse);
+      setTimeout(()=>curse.remove(), 1500);
+    } else {
+      // Удвоение монет за улов
+      const bonus = Math.floor(parseFloat(f.weight) * f.coins);
+      gs.coins += bonus;
+      updateCoins();
+      spawnGoldCoins(gs.bobX, gs.bobY);
+      showToast('🏺 Золото Фараона! ×2 монеты! +'+bonus+'🪙! 𓁹');
+    }
+  }
+
+  // 💻 НЕОН-ТУРБО: каждый 5й заброс — авто-улов бонус
+  if(gs.currentRod.id === 'neon') {
+    gs._neonCounter = (gs._neonCounter || 0) + 1;
+    if(gs._neonCounter >= 5) {
+      gs._neonCounter = 0;
+      // Авто-улов: добавляем ещё одну случайную OG рыбу
+      const ogFish = FISH_DATA.filter(x=>x.rar==='og');
+      if(ogFish.length > 0) {
+        const bonus = ogFish[Math.floor(Math.random()*ogFish.length)];
+        const bw = bonus.w[0] + Math.random()*(bonus.w[1]-bonus.w[0]);
+        gs.inventory.push({...bonus, weight: bw.toFixed(2), isBonus: true});
+        showToast('💻 Wi-Fi СКАН! Авто-улов OG: '+bonus.name+'! 🌐');
+        // Неоновый эффект
+        const game = document.getElementById('game');
+        const flash = document.createElement('div');
+        flash.style.cssText='position:absolute;inset:0;background:rgba(0,255,200,.15);z-index:9000;pointer-events:none;border-radius:12px;animation:neonScan .5s ease-out forwards;';
+        game.appendChild(flash);
+        setTimeout(()=>flash.remove(), 500);
+      }
+    } else {
+      showToast('💻 Нео-скан: '+gs._neonCounter+'/5 до авто-улова!');
+    }
+  }
+
+  // 🐙 КРАКЕН: при легенде/OG — взрыв монет +5000 и мини-кракен
+  if(gs.currentRod.id === 'kraken' && (f.rar === 'legend' || f.rar === 'og' || f.rar === 'coastal_legend')) {
+    gs.coins += 5000;
+    updateCoins();
+    spawnKrakenExplosion(gs.bobX, gs.bobY);
+    showToast('🐙 КРАКЕН АТАКУЕТ! +5000🪙! Слабая рыба поглощена!');
+  } else if(gs.currentRod.id === 'kraken') {
+    showToast('🐙 Кракен ждёт... Поймай легенду или OG для взрыва!');
+  }
+
+  // ⏳ УДОЧКА ВРЕМЕНИ: 3 рыбы за раз
+  if(gs.currentRod.id === 'time') {
+    // Добавляем ещё 2 случайные рыбы
+    for(let ti=0; ti<2; ti++) {
+      const pool = FISH_DATA.filter(x=>x.rar!=='og' || Math.random()<.3);
+      const bonus = pool[Math.floor(Math.random()*pool.length)];
+      const bw = bonus.w[0] + Math.random()*(bonus.w[1]-bonus.w[0]);
+      if(gs.inventory.length < gs.maxInv) gs.inventory.push({...bonus, weight: bw.toFixed(2)});
+    }
+    // Временная остановка — анимация freeze
+    const game = document.getElementById('game');
+    const freeze = document.createElement('div');
+    freeze.style.cssText='position:absolute;inset:0;background:rgba(180,220,255,.12);z-index:9000;pointer-events:none;border-radius:12px;border:2px solid rgba(180,220,255,.4);animation:timeFreeze .8s ease-out forwards;';
+    game.appendChild(freeze);
+    setTimeout(()=>freeze.remove(), 800);
+    showToast('⏳ ВРЕМЯ ОСТАНОВИЛОСЬ! Поймано 3 рыбы сразу!');
+  }
   // Удочка Бездны: только легенды
   if(gs.currentRod.id === 'void' && f.rar !== 'legend' && f.rar !== 'coastal_legend') {
     gs.inventory.pop(); // убрать если не легенда
@@ -3665,7 +4543,56 @@ function catchFish() {
 
 function calcPrice(f) {
   const base = Math.round(parseFloat(f.weight) * f.coins);
-  return f.marbleBonus ? base * 2 : base;
+  const withMarble = f.marbleBonus ? base * 2 : base;
+  // Используем сохранённый множитель удочки (для рыб в инвентаре) или текущей удочки
+  const mult = f._rodMult || (gs.currentRod && gs.currentRod.catchMult > 1 ? gs.currentRod.catchMult : 1);
+  return Math.round(withMarble * mult);
+}
+
+// 🐙 Взрыв кракена
+function spawnKrakenExplosion(x, y) {
+  const game = document.getElementById('game');
+  const tentacles = ['🐙','🦑','💜','🌊','⚡'];
+  for(let i=0;i<15;i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.style.cssText = `position:absolute;font-size:${14+Math.random()*12}px;pointer-events:none;z-index:10000;left:${x-10}px;top:${y-10}px;`;
+      el.textContent = tentacles[Math.floor(Math.random()*tentacles.length)];
+      const angle = Math.random()*Math.PI*2;
+      const dist = 40+Math.random()*120;
+      el.style.setProperty('--px', Math.cos(angle)*dist+'px');
+      el.style.setProperty('--py', Math.sin(angle)*dist+'px');
+      el.style.setProperty('--pr', (Math.random()*720-360)+'deg');
+      el.style.animation='petalFly 1.4s ease-out forwards';
+      game.appendChild(el);
+      setTimeout(()=>el.remove(), 1500);
+    }, i*30);
+  }
+  // Purple flash
+  const flash = document.createElement('div');
+  flash.style.cssText='position:absolute;inset:0;background:rgba(80,0,160,.25);z-index:9000;pointer-events:none;border-radius:12px;animation:krakenTentacle .6s ease-out forwards;';
+  game.appendChild(flash);
+  setTimeout(()=>flash.remove(), 600);
+}
+
+// 💰 Золотые монеты фараона
+function spawnGoldCoins(x, y) {
+  const game = document.getElementById('game');
+  for(let i=0;i<12;i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.style.cssText = `position:absolute;font-size:${12+Math.random()*10}px;pointer-events:none;z-index:10000;left:${x-8}px;top:${y-8}px;`;
+      el.textContent = ['🪙','💛','✨','𓁹'][Math.floor(Math.random()*4)];
+      const angle = Math.random()*Math.PI*2;
+      const dist = 30+Math.random()*100;
+      el.style.setProperty('--px', Math.cos(angle)*dist+'px');
+      el.style.setProperty('--py', Math.sin(angle)*dist+'px');
+      el.style.setProperty('--pr', (Math.random()*540-270)+'deg');
+      el.style.animation='petalFly 1.2s ease-out forwards';
+      game.appendChild(el);
+      setTimeout(()=>el.remove(), 1300);
+    }, i*35);
+  }
 }
 
 function spawnMarbleSplash() {
@@ -3739,7 +4666,7 @@ function keepFish() {
   if(gs.inventory.length >= gs.maxInv) {
     showToast('🎒 Инвентарь полон! Продай рыбу.'); afterCatch(); return;
   }
-  gs.inventory.push({...f});
+  gs.inventory.push({...f, _rodMult: gs.currentRod.catchMult || 1});
   showToast(`🐟 ${f.name} добавлена в сумку!`);
   afterCatch(); saveGame();
 }
@@ -3870,8 +4797,8 @@ function switchScreen(name) {
     updatePlayerLocation('leaderboard');
     return;
   }
-  const map={fishing:'fishing-screen',shop:'shop-screen',inventory:'inventory-screen',multi:'multi-screen',garden:'garden-screen',event:'event-screen'};
-  const navMap={fishing:'nav-fish',shop:'nav-shop',inventory:'nav-inv',multi:'nav-multi',garden:'nav-garden',event:'nav-event'};
+  const map={fishing:'fishing-screen',shop:'shop-screen',inventory:'inventory-screen',multi:'multi-screen',garden:'garden-screen',event:'event-screen',fisher:'fisher-screen'};
+  const navMap={fishing:'nav-fish',shop:'nav-shop',inventory:'nav-inv',multi:'nav-multi',garden:'nav-garden',event:'nav-event',fisher:'nav-fisher'};
   const screenEl = document.getElementById(map[name]);
   const navEl = document.getElementById(navMap[name]);
   if(screenEl) screenEl.classList.add('active');
@@ -3881,13 +4808,176 @@ function switchScreen(name) {
   if(name==='garden')    renderGarden();
   if(name==='multi')     renderMultiScreen();
   if(name==='event')     renderEasterEventScreen();
+  if(name==='fisher')    renderFisherScreen();
   // Update location in Firebase if in a room
   updatePlayerLocation(name);
 }
 
 // ============================================================
-// SHOP RENDER
+// 🎣 FISHER SCREEN — Render function
 // ============================================================
+function renderFisherScreen() {
+  const rod = gs.currentRod;
+
+  // ── Цвета удочки ──
+  const rc = ROD_COLORS[rod.id] || ROD_COLORS.wood;
+  const rodColor = rc.color || '#80d040';
+  const hasGlow  = rc.glow !== 'none';
+  const rodAura  = hasGlow ? rodColor + '40' : 'rgba(40,120,20,.15)';
+
+  // Обновляем CSS-переменные для ауры
+  const charZone = document.getElementById('fisher-character-zone');
+  charZone.style.setProperty('--rod-aura', rodAura);
+  charZone.style.setProperty('--rod-aura-color', rodColor + '50');
+  document.getElementById('fisher-glow-2').style.background = rodAura;
+
+  const rodIconBig = document.getElementById('fisher-rod-icon-big');
+  rodIconBig.style.setProperty('--rod-aura', rodAura);
+  rodIconBig.innerHTML = rodIconSVG(rod);
+
+  document.getElementById('fisher-rod-name-big').textContent = rod.name;
+  document.getElementById('fisher-rod-name-big').style.color = rodColor;
+  document.getElementById('fisher-rod-name-big').style.textShadow = hasGlow ? `0 0 10px ${rodColor}` : 'none';
+
+  document.getElementById('fisher-rod-stats-big').textContent = rod.stats || 'Клёв: обычный';
+
+  // Редкость удочки
+  const rarEl = document.getElementById('fisher-rod-rarity-badge');
+  let rarClass = 'rarity-common';
+  let rarLabel = '🪵 Обычная';
+  if(rod.id === 'godly')   { rarClass = 'rarity-og';     rarLabel = '✨ БОГ-ТИЕР'; }
+  else if(rod.detail === 'БОГ-ТИЕР')   { rarClass = 'rarity-og';   rarLabel = '✨ БОГ-ТИЕР'; }
+  else if(rod.special === 'flower' || rod.craftType === 'flower') { rarClass = 'rarity-flower'; rarLabel = '🌸 Цветочная'; }
+  else if(rod.special === 'shark')     { rarClass = 'rarity-og';   rarLabel = '🦈 Акулья'; }
+  else if(rod.detail === 'Гипер-Детальная') { rarClass = 'rarity-legend'; rarLabel = '💎 Ультра'; }
+  else if(rod.price >= 100000)         { rarClass = 'rarity-legend'; rarLabel = '👑 Легенда'; }
+  else if(rod.price >= 10000)          { rarClass = 'rarity-epic';   rarLabel = '⚡ Эпическая'; }
+  else if(rod.price >= 1000)           { rarClass = 'rarity-rare';   rarLabel = '🔵 Редкая'; }
+  rarEl.className = rarClass;
+  rarEl.textContent = rarLabel;
+
+  // Значок уровня на персонаже
+  const lvl = Math.floor((gs.xp || 0) / 100) + 1;
+  const lvlEl = document.getElementById('fisher-lvl-txt-svg');
+  if(lvlEl) lvlEl.textContent = 'Ур. ' + lvl;
+
+  // ── Пассивки удочки ──
+  const passList = document.getElementById('fisher-passives-list');
+  passList.innerHTML = '';
+  const passives = [];
+
+  if(rod.biteChance >= 10) passives.push({ icon: '⚡', txt: `Клёв x${rod.biteChance}`, color: '#60d0ff' });
+  else if(rod.biteChance >= 5) passives.push({ icon: '🎯', txt: `Клёв x${rod.biteChance}`, color: '#80e040' });
+  else if(rod.biteChance > 1) passives.push({ icon: '🎯', txt: `Клёв x${rod.biteChance}`, color: '#a0c060' });
+
+  if(rod.catchMult >= 10) passives.push({ icon: '💎', txt: `Улов x${rod.catchMult}`, color: '#c060ff' });
+  else if(rod.catchMult >= 5) passives.push({ icon: '✨', txt: `Улов x${rod.catchMult}`, color: '#d0a030' });
+  else if(rod.catchMult > 1) passives.push({ icon: '📈', txt: `Улов x${rod.catchMult}`, color: '#90c050' });
+
+  if(rod.special === 'shark')   passives.push({ icon: '🦈', txt: 'Мини-акулы на OG', color: '#40c0e0' });
+  if(rod.special === 'duck')    passives.push({ icon: '🦆', txt: 'Только Эпики+', color: '#e0c020' });
+  if(rod.id === 'poseidon')     passives.push({ icon: '🔱', txt: 'Авто-улов каждые 3с', color: '#40a0ff' });
+  if(rod.id === 'quantum')      passives.push({ icon: '🌀', txt: '2 рыбы за раз', color: '#ff40ff' });
+  if(rod.craftType === 'flower')passives.push({ icon: '🌸', txt: 'Бафф сада при улове', color: '#ff80c0' });
+  if(rod.craftType === 'easter')passives.push({ icon: '🐰', txt: '+10000🪙 Денежный Кролик', color: '#ff80c0' });
+  if(rod.id === 'marble')       passives.push({ icon: '🪨', txt: '×2 цена продажи', color: '#c0b0e0' });
+  if(rod.id === 'ghost')        passives.push({ icon: '👻', txt: 'Клёв случайный x0.3-x3', color: '#80ffb0' });
+
+  if(passives.length === 0) passives.push({ icon: '🎣', txt: 'Базовая удочка', color: '#80a060' });
+
+  passives.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'fisher-passive-row';
+    el.style.setProperty('--passive-color', p.color);
+    el.innerHTML = `<span class="fisher-passive-icon">${p.icon}</span><span>${p.txt}</span><span class="fisher-passive-val">${p.icon}</span>`;
+    passList.appendChild(el);
+  });
+
+  // ── Наживка ──
+  const baitSlot = document.getElementById('fisher-bait-slot');
+  const activeBait = BAITS.find(b => b.qty > 0);
+  if(activeBait) {
+    baitSlot.querySelector('.fisher-item-slot-icon').textContent = activeBait.icon;
+    baitSlot.querySelector('.fisher-item-slot-name').textContent = activeBait.name;
+    baitSlot.querySelector('.fisher-item-slot-qty').textContent = activeBait.qty + ' шт • Клёв +' + Math.round(activeBait.biteBonus*100)+'%';
+    baitSlot.style.borderColor = 'rgba(80,200,40,.4)';
+  } else {
+    baitSlot.querySelector('.fisher-item-slot-icon').textContent = '🪱';
+    baitSlot.querySelector('.fisher-item-slot-name').textContent = 'Нет наживки';
+    baitSlot.querySelector('.fisher-item-slot-qty').textContent = '0 шт';
+    baitSlot.style.borderColor = '';
+  }
+
+  // ── Приманка ──
+  const lureSlot = document.getElementById('fisher-lure-slot');
+  const activeLure = LURES.find(l => l.qty > 0);
+  if(activeLure) {
+    lureSlot.querySelector('.fisher-item-slot-icon').textContent = activeLure.icon;
+    lureSlot.querySelector('.fisher-item-slot-name').textContent = activeLure.name;
+    lureSlot.querySelector('.fisher-item-slot-qty').textContent = activeLure.qty + ' шт • Редкость +' + Math.round(activeLure.rareBonus*100)+'%';
+    lureSlot.style.borderColor = 'rgba(80,200,40,.4)';
+  } else {
+    lureSlot.querySelector('.fisher-item-slot-icon').textContent = '🪝';
+    lureSlot.querySelector('.fisher-item-slot-name').textContent = 'Нет приманки';
+    lureSlot.querySelector('.fisher-item-slot-qty').textContent = '0 шт';
+    lureSlot.style.borderColor = '';
+  }
+
+  // ── Улучшения ──
+  const upgradeGrid = document.getElementById('fisher-upgrades-grid');
+  upgradeGrid.innerHTML = '';
+  const upgradeIcons = { bigger_bag:'🎒', fish_radar:'📡', auto_reel:'⚡', lucky_charm:'🍀', fast_bite:'🎣' };
+  UPGRADES.forEach((u, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'fisher-upgrade-chip' + (u.owned ? '' : ' inactive');
+    chip.style.setProperty('--chip-delay', (i*0.2)+'s');
+    chip.innerHTML = `<span class="fisher-upgrade-chip-icon">${upgradeIcons[u.id]||'✨'}</span>${u.name}`;
+    upgradeGrid.appendChild(chip);
+  });
+
+  // ── XP и уровень ──
+  const xp = gs.xp || 0;
+  const xpPerLevel = 100;
+  const curLvl = Math.floor(xp / xpPerLevel) + 1;
+  const xpInLevel = xp % xpPerLevel;
+  const xpPct = (xpInLevel / xpPerLevel) * 100;
+
+  document.getElementById('fisher-lvl-num').textContent = curLvl;
+  document.getElementById('fisher-xp-cur').textContent = xpInLevel;
+  document.getElementById('fisher-xp-nxt').textContent = xpPerLevel;
+  document.getElementById('fisher-xp-fill').style.width = xpPct + '%';
+
+  // Звёздочки уровня
+  const lvlLabel = document.getElementById('fisher-level-label');
+  const stars = Math.min(curLvl, 5);
+  let starStr = '⭐ Уровень <span id="fisher-lvl-num">' + curLvl + '</span> ';
+  for(let i=0;i<stars;i++) starStr += `<span class="fisher-lvl-star" style="--star-delay:${i*.15}s">★</span>`;
+  lvlLabel.innerHTML = starStr;
+
+  // ── Статы ──
+  document.getElementById('fs-fish-count').textContent = (gs.fishCount || 0).toLocaleString('ru');
+  document.getElementById('fs-coins').textContent = (gs.coins || 0).toLocaleString('ru');
+  document.getElementById('fs-score').textContent = (gs.score || 0).toLocaleString('ru');
+  document.getElementById('fs-streak').textContent = gs.catchStreak || 0;
+  document.getElementById('fs-energy').textContent = Math.round(gs.energy || 0) + '%';
+  document.getElementById('fs-inv').textContent = (gs.inventory || []).length + '/' + (gs.maxInv || 20);
+
+  // ── Фоновые частицы (один раз) ──
+  const bgAnim = document.getElementById('fisher-bg-anim');
+  if(!bgAnim._init) {
+    bgAnim._init = true;
+    for(let i=0;i<12;i++) {
+      const p = document.createElement('div');
+      p.className = 'fisher-bg-particle';
+      const sz = 30 + Math.random()*80;
+      const col = ['rgba(40,120,20,.08)','rgba(60,160,30,.06)','rgba(20,80,10,.1)','rgba(100,200,40,.05)'][i%4];
+      p.style.cssText = `width:${sz}px;height:${sz}px;background:${col};left:${Math.random()*100}%;top:${Math.random()*100}%;--fd:${5+Math.random()*8}s;--fdelay:${Math.random()*5}s;--tx:${-20+Math.random()*40}px;--ty:${-20+Math.random()*30}px;--tx2:${-15+Math.random()*30}px;--ty2:${-10+Math.random()*25}px;`;
+      bgAnim.appendChild(p);
+    }
+  }
+}
+
+
 let currentShopTab='rods';
 function switchShopTab(tab, el) {
   currentShopTab=tab;
@@ -4425,15 +5515,199 @@ function rodIconSVG(rod) {
       <!-- Катушка — прозрачная -->
       <circle cx="18" cy="40" r="7" fill="rgba(128,255,200,.1)" stroke="rgba(128,255,200,.7)" stroke-width="1.8" stroke-dasharray="4,3"/>
       <circle cx="18" cy="40" r="4" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.5)" stroke-width="1"/>
-      <circle cx="18" cy="40" r="1.5" fill="rgba(200,255,230,.8)"/>
-      <!-- Потусторонняя леска — мерцающая -->
-      <line x1="38" y1="10" x2="44" y2="34" stroke="rgba(128,255,200,.5)" stroke-width="0.8" stroke-dasharray="3,2"/>
-      <!-- Мини призрачные рыбки вдоль лески (намёк на механику) -->
-      <ellipse cx="42" cy="22" rx="3" ry="2" fill="rgba(128,255,200,.25)" stroke="rgba(128,255,200,.5)" stroke-width="0.7"/>
-      <ellipse cx="44" cy="30" rx="2.5" ry="1.5" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.4)" stroke-width="0.7"/>
-      <!-- Поплавок-призрак -->
-      <circle cx="44" cy="36" r="5" fill="rgba(180,255,220,.3)" stroke="rgba(128,255,200,.7)" stroke-width="1.2" stroke-dasharray="3,2"/>
-      <text x="44" y="39" text-anchor="middle" font-size="6" fill="rgba(128,255,200,.9)">👻</text>`,
+      <circle cx="18" cy="40" r="1.5" fill="rgba(200,255,230,.8)"/>`,
+
+    // ═══ НОВАЯ: Удочка Фараона ═══
+    pharaoh: `
+      <defs>
+        <linearGradient id="phGold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#c09010"/>
+          <stop offset="40%" stop-color="#ffe060"/>
+          <stop offset="100%" stop-color="#a07010"/>
+        </linearGradient>
+        <radialGradient id="phScarab" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#40c060"/>
+          <stop offset="100%" stop-color="#106030"/>
+        </radialGradient>
+        <filter id="phGlow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Золотой посох фараона с иероглифами -->
+      <rect x="24" y="7" width="6" height="38" rx="2" fill="url(#phGold)" stroke="#a07010" stroke-width="1" filter="url(#phGlow)"/>
+      <!-- Иероглифы на посохе -->
+      <text x="27" y="17" text-anchor="middle" font-size="4.5" fill="#8a5010" opacity=".8">𓂀</text>
+      <text x="27" y="26" text-anchor="middle" font-size="4" fill="#8a5010" opacity=".7">𓆣</text>
+      <text x="27" y="35" text-anchor="middle" font-size="4" fill="#8a5010" opacity=".8">𓁹</text>
+      <!-- Скарабей наверху — крутится -->
+      <g style="transform-origin:27px 7px;animation:pharaohScarabSpin 4s linear infinite;">
+        <ellipse cx="27" cy="7" rx="7" ry="5" fill="url(#phScarab)" stroke="#20a040" stroke-width="1"/>
+        <ellipse cx="27" cy="7" rx="4" ry="3" fill="#50e080" opacity=".6"/>
+        <!-- Крылышки скарабея -->
+        <path d="M20,6 Q16,3 18,8 Q20,9 22,7" fill="#30b060" opacity=".8"/>
+        <path d="M34,6 Q38,3 36,8 Q34,9 32,7" fill="#30b060" opacity=".8"/>
+        <circle cx="27" cy="7" r="1.5" fill="#90ff80" opacity=".9"/>
+      </g>
+      <!-- Анк (египетский крест) на рукоятке -->
+      <ellipse cx="27" cy="42" rx="4" ry="3" fill="none" stroke="#ffe060" stroke-width="1.5"/>
+      <line x1="27" y1="45" x2="27" y2="50" stroke="#ffe060" stroke-width="1.5"/>
+      <line x1="24" y1="47" x2="30" y2="47" stroke="#ffe060" stroke-width="1.5"/>
+      <!-- Кольца — иероглифические -->
+      <ellipse cx="33" cy="16" rx="5" ry="3" fill="none" stroke="#ffe060" stroke-width="1.5"/>
+      <ellipse cx="35" cy="26" rx="4" ry="2.5" fill="none" stroke="#d4a030" stroke-width="1.3"/>
+      <ellipse cx="36" cy="35" rx="3" ry="2" fill="none" stroke="#c09020" stroke-width="1.2"/>
+      <!-- Проклятые иероглифы вокруг -->
+      <text x="14" y="20" font-size="7" fill="rgba(255,200,0,.5)">𓁹</text>
+      <text x="40" y="30" font-size="6" fill="rgba(255,200,0,.4)">𓂀</text>
+      <!-- Леска из золотой нити -->
+      <line x1="27" y1="7" x2="48" y2="25" stroke="#d4a020" stroke-width="1" stroke-dasharray="2,1" opacity=".8"/>
+      <!-- Поплавок — саркофаг -->
+      <rect x="44" y="24" width="8" height="12" rx="3" fill="#c09010" stroke="#806010" stroke-width="1"/>
+      <ellipse cx="48" cy="24" rx="4" ry="2.5" fill="#d4a020" stroke="#806010" stroke-width="1"/>
+      <line x1="46" y1="27" x2="50" y2="27" stroke="#806010" stroke-width="0.8"/>
+      <line x1="46" y1="30" x2="50" y2="30" stroke="#806010" stroke-width="0.8"/>`,
+
+    // ═══ НОВАЯ: Неон-Турбо Удочка ═══
+    neon: `
+      <defs>
+        <linearGradient id="neonBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#003020"/>
+          <stop offset="50%" stop-color="#00604040"/>
+          <stop offset="100%" stop-color="#003020"/>
+        </linearGradient>
+        <filter id="neonBlur"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Футуристичный корпус -->
+      <rect x="24" y="7" width="6" height="38" rx="2.5" fill="#0a1a14" stroke="#00ffcc" stroke-width="1" filter="url(#neonBlur)"/>
+      <!-- Неоновые полосы -->
+      <line x1="24" y1="7" x2="24" y2="45" stroke="#00ffcc" stroke-width="1.5" opacity=".8"/>
+      <line x1="30" y1="7" x2="30" y2="45" stroke="#00e0cc" stroke-width="1.5" opacity=".8"/>
+      <!-- Скроллящиеся данные Wi-Fi -->
+      <rect x="25" y="8" width="4" height="36" rx="1" fill="rgba(0,0,0,.6)" clip-path="url(#neonClip)"/>
+      <defs><clipPath id="neonClip"><rect x="25" y="8" width="4" height="36" rx="1"/></clipPath></defs>
+      <text x="27" y="14" text-anchor="middle" font-size="3.5" fill="#00ffcc" opacity=".7" style="animation:neonDataScroll 1s linear infinite;">10</text>
+      <text x="27" y="19" text-anchor="middle" font-size="3.5" fill="#00ccff" opacity=".6">01</text>
+      <text x="27" y="24" text-anchor="middle" font-size="3.5" fill="#00ffaa" opacity=".7">11</text>
+      <text x="27" y="29" text-anchor="middle" font-size="3.5" fill="#00ffcc" opacity=".6">00</text>
+      <text x="27" y="34" text-anchor="middle" font-size="3.5" fill="#00ccff" opacity=".7">10</text>
+      <text x="27" y="39" text-anchor="middle" font-size="3.5" fill="#00ffcc" opacity=".6">11</text>
+      <!-- Wi-Fi антенна сверху -->
+      <line x1="27" y1="7" x2="27" y2="2" stroke="#00ffcc" stroke-width="2" stroke-linecap="round"/>
+      <!-- Wi-Fi кольца -->
+      <path d="M22,4 Q27,0 32,4" stroke="#00ffcc" stroke-width="1.5" fill="none" opacity=".9"/>
+      <path d="M20,6 Q27,-1 34,6" stroke="#00ffcc" stroke-width="1" fill="none" opacity=".5"/>
+      <!-- Сканирующий луч -->
+      <line x1="27" y1="2" x2="50" y2="20" stroke="#00ffcc" stroke-width="0.8" stroke-dasharray="3,2" opacity=".6"/>
+      <!-- Чип-иконка на корпусе -->
+      <rect x="18" y="22" width="8" height="6" rx="1" fill="#001a14" stroke="#00ffcc" stroke-width="0.8"/>
+      <circle cx="22" cy="25" r="1.5" fill="#00ffcc" opacity=".8"/>
+      <line x1="18" y1="25" x2="16" y2="25" stroke="#00ffcc" stroke-width="0.6"/>
+      <line x1="26" y1="25" x2="28" y2="25" stroke="#00ffcc" stroke-width="0.6"/>
+      <!-- Кольца — голографические -->
+      <ellipse cx="34" cy="15" rx="5" ry="3" fill="none" stroke="#00ffcc" stroke-width="1.5" opacity=".9"/>
+      <ellipse cx="36" cy="25" rx="4" ry="2.5" fill="none" stroke="#00e0ff" stroke-width="1.3" opacity=".8"/>
+      <ellipse cx="37" cy="34" rx="3.5" ry="2" fill="none" stroke="#00ffaa" stroke-width="1.2" opacity=".7"/>
+      <!-- Поплавок-дрон -->
+      <rect x="44" y="19" width="10" height="6" rx="3" fill="#001a14" stroke="#00ffcc" stroke-width="1"/>
+      <circle cx="49" cy="22" r="2" fill="#00ffcc" opacity=".8"/>
+      <line x1="44" y1="22" x2="42" y2="22" stroke="#00ffcc" stroke-width="1" stroke-linecap="round"/>
+      <line x1="54" y1="22" x2="56" y2="22" stroke="#00ffcc" stroke-width="1" stroke-linecap="round"/>
+      <line x1="47" y1="19" x2="47" y2="17" stroke="#00ffcc" stroke-width="0.8"/>
+      <line x1="51" y1="19" x2="51" y2="17" stroke="#00ffcc" stroke-width="0.8"/>`,
+
+    // ═══ НОВАЯ: Щупальце Кракена ═══
+    kraken: `
+      <defs>
+        <linearGradient id="krkBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1a0840"/>
+          <stop offset="50%" stop-color="#4010a0"/>
+          <stop offset="100%" stop-color="#1a0840"/>
+        </linearGradient>
+        <radialGradient id="krkEye" cx="40%" cy="35%">
+          <stop offset="0%" stop-color="#ff4040"/>
+          <stop offset="100%" stop-color="#800000"/>
+        </radialGradient>
+        <filter id="krkGlow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Основное щупальце — скрученное -->
+      <path d="M26,7 Q22,15 26,23 Q30,31 26,39 Q24,43 26,46" stroke="url(#krkBody)" stroke-width="7" fill="none" stroke-linecap="round" filter="url(#krkGlow)"/>
+      <path d="M26,7 Q22,15 26,23 Q30,31 26,39 Q24,43 26,46" stroke="#8030e0" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>
+      <!-- Присоски вдоль щупальца -->
+      ${[12,20,28,36,42].map((y,i)=>
+        `<circle cx="${24+i%2*4}" cy="${y}" r="${2.5-i*.1}" fill="rgba(0,0,0,.7)" stroke="#9040d0" stroke-width="1" opacity="${.9-i*.05}"/>`+
+        `<circle cx="${24+i%2*4}" cy="${y}" r="${1.2-i*.05}" fill="rgba(120,50,200,.5)"/>`
+      ).join('')}
+      <!-- Маленькие дополнительные щупальца -->
+      <path d="M26,20 Q18,14 16,18" stroke="#6020b0" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M26,30 Q34,24 36,28" stroke="#6020b0" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Жуткий глаз кракена сверху -->
+      <ellipse cx="26" cy="6" rx="8" ry="7" fill="#0a0420" stroke="#6020c0" stroke-width="1.5" filter="url(#krkGlow)"/>
+      <ellipse cx="26" cy="6" rx="5" ry="5" fill="url(#krkEye)"/>
+      <ellipse cx="26" cy="6" rx="2.5" ry="3" fill="#1a0000"/>
+      <circle cx="27.5" cy="4.5" r="1.2" fill="rgba(255,255,255,.7)"/>
+      <!-- Светящийся вертикальный зрачок -->
+      <ellipse cx="26" cy="6" rx="1" ry="2.5" fill="rgba(0,0,0,.9)"/>
+      <!-- Чернильный след (леска) -->
+      <path d="M26,6 Q38,10 48,22" stroke="rgba(80,0,160,.7)" stroke-width="1.5" fill="none" stroke-dasharray="3,2"/>
+      <!-- Поплавок — голова осьминога -->
+      <ellipse cx="48" cy="24" rx="6" ry="5" fill="#1a0840" stroke="#8030e0" stroke-width="1.5"/>
+      <ellipse cx="48" cy="22" rx="3" ry="2" fill="rgba(100,40,180,.4)"/>
+      <circle cx="46" cy="21" r="1" fill="#ff4040"/>
+      <circle cx="50" cy="21" r="1" fill="#ff4040"/>
+      <!-- Мини щупальца поплавка -->
+      <path d="M44,28 Q42,32 44,34" stroke="#6020b0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M48,29 Q48,33 46,35" stroke="#6020b0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M52,28 Q54,32 52,34" stroke="#6020b0" stroke-width="1.5" fill="none" stroke-linecap="round"/>`,
+
+    // ═══ НОВАЯ: Удочка Времени ═══
+    time: `
+      <defs>
+        <linearGradient id="tmBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#8090b0"/>
+          <stop offset="50%" stop-color="#e0f0ff"/>
+          <stop offset="100%" stop-color="#8090b0"/>
+        </linearGradient>
+        <radialGradient id="tmOrb" cx="35%" cy="30%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="50%" stop-color="#c0e0ff"/>
+          <stop offset="100%" stop-color="#4080c0"/>
+        </radialGradient>
+        <filter id="tmGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело из замёрзшего хрусталя времени -->
+      <rect x="24" y="7" width="6" height="38" rx="3" fill="url(#tmBody)" stroke="#c0e0ff" stroke-width="1" filter="url(#tmGlow)" opacity=".9"/>
+      <!-- Временны́е трещины (застывшие моменты) -->
+      <line x1="24" y1="12" x2="30" y2="18" stroke="rgba(255,255,255,.7)" stroke-width=".8"/>
+      <line x1="30" y1="22" x2="24" y2="28" stroke="rgba(255,255,255,.6)" stroke-width=".8"/>
+      <line x1="24" y1="32" x2="30" y2="38" stroke="rgba(255,255,255,.5)" stroke-width=".8"/>
+      <!-- Туманные тени прошлого -->
+      <rect x="21" y="10" width="4" height="30" rx="2" fill="rgba(180,210,255,.08)"/>
+      <rect x="29" y="10" width="4" height="30" rx="2" fill="rgba(180,210,255,.08)"/>
+      <!-- БОЛЬШИЕ ЧАСЫ на вершине -->
+      <circle cx="27" cy="7" r="8" fill="rgba(5,15,30,.9)" stroke="#c0e0ff" stroke-width="1.5" filter="url(#tmGlow)"/>
+      <circle cx="27" cy="7" r="6.5" fill="rgba(10,20,40,.8)" stroke="#8090b0" stroke-width=".8"/>
+      <!-- Циферблат -->
+      ${[0,1,2,3,4,5,6,7,8,9,10,11].map(i=>{
+        const a=i*30*Math.PI/180; const r1=5.5; const r2=6;
+        return `<line x1="${27+Math.sin(a)*r1}" y1="${7-Math.cos(a)*r1}" x2="${27+Math.sin(a)*r2}" y2="${7-Math.cos(a)*r2}" stroke="rgba(180,220,255,.5)" stroke-width="${i%3===0?1.2:.6}"/>`;
+      }).join('')}
+      <!-- Стрелки -->
+      <line x1="27" y1="7" x2="27" y2="2.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="27" y1="7" x2="31" y2="8.5" stroke="#c0e0ff" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- Секундная (быстрая) -->
+      <line x1="27" y1="7" x2="23" y2="3.5" stroke="#ff8040" stroke-width=".8" stroke-linecap="round" style="animation:timeClockSpin 4s linear infinite;transform-origin:27px 7px;"/>
+      <!-- Кольца — временны́е вихри -->
+      <ellipse cx="34" cy="16" rx="5" ry="3" fill="none" stroke="#c0e0ff" stroke-width="1.5" opacity=".8"/>
+      <ellipse cx="34" cy="16" rx="7" ry="5" fill="none" stroke="rgba(180,220,255,.3)" stroke-width="1" opacity=".5"/>
+      <ellipse cx="36" cy="26" rx="4" ry="2.5" fill="none" stroke="#a0c0e0" stroke-width="1.3" opacity=".8"/>
+      <ellipse cx="37" cy="35" rx="3" ry="2" fill="none" stroke="#8090b0" stroke-width="1.2" opacity=".7"/>
+      <!-- Три параллельные лески (3 рыбы!) -->
+      <line x1="27" y1="7" x2="46" y2="22" stroke="rgba(200,220,255,.5)" stroke-width="1"/>
+      <line x1="27" y1="7" x2="48" y2="24" stroke="rgba(180,200,255,.35)" stroke-width=".7" stroke-dasharray="2,2"/>
+      <line x1="27" y1="7" x2="50" y2="26" stroke="rgba(160,180,255,.25)" stroke-width=".5" stroke-dasharray="2,3"/>
+      <!-- Поплавок — замёрзший пузырь времени -->
+      <circle cx="48" cy="24" r="5.5" fill="url(#tmOrb)" stroke="#c0e0ff" stroke-width="1.5" opacity=".9" filter="url(#tmGlow)"/>
+      <circle cx="46" cy="22" r="2" fill="rgba(255,255,255,.5)"/>
+      <text x="48" y="26.5" text-anchor="middle" font-size="5" fill="rgba(60,80,120,.8)">⏳</text>`,
+
   };
 
   // Общий шаблон удочки с кольцами и катушкой
@@ -4559,7 +5833,30 @@ function equipRod(id) {
   gs.currentRod=rod;
   document.getElementById('current-rod-name').textContent='Удочка: '+rod.name;
   renderShop();
-  showToast(`🎣 Надета: ${rod.name}`); saveGame();
+  // Подсказки механик при экипировке
+  const rodTips = {
+    thunder:    '⚡ Громовая активна: мгновенная подсечка!',
+    mech:       '⚙️ Мех-прицел: авто-подсечка + Эпики/Легенды/OG!',
+    neon:       '💻 Неон: авто-подсечка + авто-улов каждые 5 забросов!',
+    marble:     '🪨 Мрамор: авто-подсечка, только OG+Легенды, ×2 цена!',
+    poseidon:   '🔱 Посейдон активен: авто-заброс каждые 3 сек!',
+    godly:      '👑 Удочка Богов: авто-подсечка + все рыбы!',
+    quantum:    '⚛️ Квантум: каждый улов = 2 рыбы!',
+    crystal:    '✨ Кристальная: шанс редких/эпик/легенд x2!',
+    dragon:     '🐉 Драконья: вес рыбы x3 = мега-цена!',
+    meteor:     '☄️ Метеоритная: +100-500🪙 огненный бонус!',
+    time:       '⏳ Время: 10 сек на подсечку + 3 рыбы за раз!',
+    apocalypse: '💀 АПОКАЛИПСИС: всегда OG, мгновенно!',
+    celestial:  '🌌 Небесная: только OG + Легенды!',
+    demonic:    '😈 Демоническая: +666🪙 каждый улов!',
+    cosmic:     '🌀 Космическая: 70% шанс OG рыбы!',
+    void:       '🕳️ Бездны: только легенды!',
+    rubberduck: '🦆 Утка: только Эпики+ и +1-100🪙 за улов!',
+    pharaoh:    '🏺 Фараон: только OG+Легенды, ×2 монеты за улов!',
+    kraken:     '🐙 Кракен: только OG + взрыв +5000🪙!',
+  };
+  showToast(rodTips[rod.id] || '🎣 Надета: '+rod.name);
+  saveGame();
   updateRodVisual();
 }
 
@@ -6269,6 +7566,10 @@ const ROD_COLORS = {
   apocalypse: {color:'#ff0000', glow:'0 0 80px rgba(255,0,0,1.0)'},
   marble:     {color:'#c0b0e0', glow:'0 0 40px rgba(200,180,255,.9)'},
   ghost:      {color:'#80ffcc', glow:'0 0 30px rgba(80,255,180,.8)'},
+  pharaoh:    {color:'#e8c020', glow:'0 0 50px rgba(255,200,0,1.0)'},
+  neon:       {color:'#00ffcc', glow:'0 0 55px rgba(0,255,200,1.0)'},
+  kraken:     {color:'#6020c0', glow:'0 0 60px rgba(120,0,220,1.0)'},
+  time:       {color:'#c0e0ff', glow:'0 0 70px rgba(180,220,255,1.0)'},
 };
 
 // Рисуем вертикальную удочку в игре — красиво, как в магазине, но вертикально
@@ -6997,6 +8298,217 @@ function makeIngameRodSVG(rod) {
       <ellipse cx="10" cy="345" rx="3" ry="2" fill="rgba(200,255,230,.7)"/>
       <!-- Ручка -->
       <rect x="6" y="360" width="8" height="35" rx="4" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.5)" stroke-width="1" stroke-dasharray="4,3"/>`,
+
+    // ═══ Удочка Фараона — вертикаль ═══
+    pharaoh: `
+      <defs>
+        <linearGradient id="phvGold" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#906010"/>
+          <stop offset="35%" stop-color="#ffe060"/>
+          <stop offset="65%" stop-color="#e8c020"/>
+          <stop offset="100%" stop-color="#906010"/>
+        </linearGradient>
+        <radialGradient id="phvScarab" cx="50%" cy="35%">
+          <stop offset="0%" stop-color="#60e080"/>
+          <stop offset="100%" stop-color="#206040"/>
+        </radialGradient>
+      </defs>
+      <!-- Золотой посох с насечкой ромбами -->
+      <rect x="7" y="0" width="6" height="360" rx="2.5" fill="url(#phvGold)" stroke="#c09010" stroke-width="1"/>
+      <!-- Иероглифы вдоль -->
+      <text x="10" y="50"  text-anchor="middle" font-size="6" fill="#8a5010" opacity=".7">𓁹</text>
+      <text x="10" y="110" text-anchor="middle" font-size="6" fill="#8a5010" opacity=".7">𓂀</text>
+      <text x="10" y="170" text-anchor="middle" font-size="6" fill="#8a5010" opacity=".6">𓆣</text>
+      <text x="10" y="230" text-anchor="middle" font-size="6" fill="#8a5010" opacity=".6">𓁹</text>
+      <text x="10" y="290" text-anchor="middle" font-size="6" fill="#8a5010" opacity=".5">𓂀</text>
+      <!-- Скарабей на вершине -->
+      <g style="transform-origin:10px -5px;animation:pharaohScarabSpin 4s linear infinite;">
+        <ellipse cx="10" cy="-5" rx="9" ry="6" fill="url(#phvScarab)" stroke="#20a040" stroke-width="1.5"/>
+        <ellipse cx="10" cy="-5" rx="5" ry="3.5" fill="#50e080" opacity=".5"/>
+        <!-- Крылышки -->
+        <path d="M1,-4 Q-5,-9 -3,-3 Q0,0 3,-2" fill="#30b060" opacity=".8"/>
+        <path d="M19,-4 Q25,-9 23,-3 Q20,0 17,-2" fill="#30b060" opacity=".8"/>
+        <circle cx="10" cy="-5" r="2" fill="#a0ff90" opacity=".9"/>
+      </g>
+      <!-- Кольца — египетские браслеты -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#ffe060" stroke-width="2.5" opacity="${.9-i*.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="#a07010" stroke-width="1" opacity=".5"/>
+        <!-- Монетка-медальон -->
+        <circle cx="${10+w+4}" cy="${y}" r="4" fill="#e8c020" stroke="#a07010" stroke-width="1" opacity=".85"/>
+        <text x="${10+w+4}" y="${y+1.5}" text-anchor="middle" font-size="4" fill="#8a5010">𓁹</text>
+      `;}).join('')}
+      <!-- Анк на ручке -->
+      <ellipse cx="10" cy="356" rx="5" ry="4" fill="none" stroke="#ffe060" stroke-width="2"/>
+      <line x1="10" y1="360" x2="10" y2="375" stroke="#ffe060" stroke-width="2"/>
+      <line x1="5" y1="365" x2="15" y2="365" stroke="#ffe060" stroke-width="2"/>
+      <!-- Катушка-саркофаг -->
+      <ellipse cx="10" cy="340" rx="12" ry="8" fill="rgba(30,20,5,.9)" stroke="#ffe060" stroke-width="2"/>
+      <ellipse cx="10" cy="340" rx="7" ry="4.5" fill="#8a6010" stroke="#c09010" stroke-width="1.5"/>
+      <text x="10" y="342" text-anchor="middle" font-size="5" fill="#ffe060">𓁹</text>`,
+
+    // ═══ Неон-Турбо Удочка — вертикаль ═══
+    neon: `
+      <defs>
+        <linearGradient id="neonVBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#001a14"/>
+          <stop offset="50%" stop-color="#004030"/>
+          <stop offset="100%" stop-color="#001a14"/>
+        </linearGradient>
+      </defs>
+      <!-- Корпус -->
+      <rect x="7" y="0" width="6" height="360" rx="2.5" fill="url(#neonVBody)" stroke="#00ffcc" stroke-width="1"/>
+      <!-- Неоновые боковые полосы -->
+      <line x1="7"  y1="0" x2="7"  y2="360" stroke="#00ffcc" stroke-width="1.5" opacity=".8"/>
+      <line x1="13" y1="0" x2="13" y2="360" stroke="#00ccff" stroke-width="1.5" opacity=".8"/>
+      <!-- Центральная LED-полоса с бегущим огнём -->
+      <line x1="10" y1="0" x2="10" y2="360" stroke="rgba(0,255,180,.2)" stroke-width="2"/>
+      <!-- Бинарные данные вдоль -->
+      ${[30,60,90,120,150,180,210,240,270,300,330].map((y,i)=>
+        `<text x="10" y="${y+4}" text-anchor="middle" font-size="5" fill="rgba(0,255,200,.5)">${['10','01','11','00'][i%4]}</text>`
+      ).join('')}
+      <!-- Wi-Fi антенна сверху -->
+      <line x1="10" y1="0" x2="10" y2="-12" stroke="#00ffcc" stroke-width="2" stroke-linecap="round"/>
+      <path d="M2,-10 Q10,-15 18,-10" stroke="#00ffcc" stroke-width="1.5" fill="none" opacity=".9"/>
+      <path d="M-2,-7 Q10,-14 22,-7" stroke="#00ffcc" stroke-width="1" fill="none" opacity=".5"/>
+      <circle cx="10" cy="-12" r="2.5" fill="#00ffcc" opacity=".9"/>
+      <!-- Чип-панели по бокам -->
+      ${[80,160,250,320].map((y,i)=>`
+        <rect x="-6" y="${y}" width="7" height="10" rx="1.5" fill="rgba(0,30,20,.9)" stroke="#00ffcc" stroke-width=".8"/>
+        <circle cx="-2.5" cy="${y+5}" r="1.5" fill="#00ffcc" opacity=".8"/>
+        <line x1="-6" y1="${y+5}" x2="7" y2="${y+5}" stroke="rgba(0,255,200,.3)" stroke-width=".5"/>
+      `).join('')}
+      <!-- Кольца — голографические -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#00ffcc" stroke-width="2" opacity="${.9-i*.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="4.5" fill="none" stroke="rgba(0,255,200,.2)" stroke-width="1.5"/>
+      `;}).join('')}
+      <!-- Катушка-реактор -->
+      <ellipse cx="10" cy="340" rx="14" ry="9" fill="rgba(0,20,15,.95)" stroke="#00ffcc" stroke-width="2"/>
+      <ellipse cx="10" cy="340" rx="8" ry="5" fill="rgba(0,80,60,.6)" stroke="#00ccff" stroke-width="1.5"/>
+      <ellipse cx="10" cy="340" rx="4" ry="2.5" fill="#00ffcc" opacity=".9"/>
+      <circle cx="10" cy="340" r="1.5" fill="#fff" opacity=".9"/>
+      <!-- Ручка карбон -->
+      <rect x="6" y="360" width="8" height="35" rx="4" fill="#001a14" stroke="#00ffcc" stroke-width="1.5"/>
+      <line x1="7" y1="360" x2="7" y2="395" stroke="#00ffcc" stroke-width=".8" opacity=".6"/>
+      <line x1="13" y1="360" x2="13" y2="395" stroke="#00ccff" stroke-width=".8" opacity=".6"/>`,
+
+    // ═══ Щупальце Кракена — вертикаль ═══
+    kraken: `
+      <defs>
+        <linearGradient id="krkVBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#0a0220"/>
+          <stop offset="40%" stop-color="#3010a0"/>
+          <stop offset="100%" stop-color="#0a0220"/>
+        </linearGradient>
+        <radialGradient id="krkEyeV" cx="40%" cy="35%">
+          <stop offset="0%" stop-color="#ff4030"/>
+          <stop offset="100%" stop-color="#600000"/>
+        </radialGradient>
+      </defs>
+      <!-- Тело — скрученное щупальце (волнистое) -->
+      <path d="M10,0 Q14,40 8,80 Q12,120 8,160 Q12,200 8,240 Q12,280 8,320 Q10,350 10,360" stroke="url(#krkVBody)" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M10,0 Q14,40 8,80 Q12,120 8,160 Q12,200 8,240 Q12,280 8,320 Q10,350 10,360" stroke="#5020c0" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>
+      <!-- Присоски вдоль -->
+      ${[20,50,80,110,140,170,200,230,260,290,320].map((y,i)=>{
+        const x = i%2===0 ? 14 : 6;
+        const r = 4-i*.15;
+        return `
+          <circle cx="${x}" cy="${y}" r="${r}" fill="rgba(0,0,0,.8)" stroke="#7030d0" stroke-width="${1.2-i*.02}" opacity="${.9-i*.03}"/>
+          <circle cx="${x}" cy="${y}" r="${r*.5}" fill="rgba(100,40,180,.6)"/>
+        `;
+      }).join('')}
+      <!-- Боковые щупальца (3 штуки, расположены в разных местах) -->
+      <path d="M10,80 Q-10,70 -15,85 Q-8,90 10,80" stroke="#5020a0" stroke-width="3" fill="#2010600.4" stroke-linecap="round"/>
+      <path d="M10,180 Q25,170 30,185 Q25,190 10,180" stroke="#5020a0" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M10,270 Q-12,260 -16,275 Q-9,282 10,270" stroke="#4010a0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Жуткий глаз на вершине -->
+      <ellipse cx="10" cy="-8" rx="10" ry="9" fill="#060115" stroke="#7030c0" stroke-width="1.5"/>
+      <ellipse cx="10" cy="-8" rx="7" ry="6" fill="url(#krkEyeV)"/>
+      <ellipse cx="10" cy="-8" rx="3" ry="4" fill="#0a0000"/>
+      <circle cx="12" cy="-10" r="1.5" fill="rgba(255,255,255,.7)"/>
+      <!-- Вертикальный зрачок кракена -->
+      <ellipse cx="10" cy="-8" rx="1.2" ry="3.5" fill="rgba(0,0,0,.9)"/>
+      <!-- Маленькие tentacle-щупальца из глаза -->
+      <path d="M10,-1 Q7,5 4,8" stroke="#4010a0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M10,-1 Q13,5 16,8" stroke="#4010a0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- Кольца — чернильные вихри -->
+      ${[80,150,220,290].map((y,i)=>{const w=9-i*1.5; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#7030d0" stroke-width="2" opacity="${.8-i*.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w+4}" ry="5" fill="none" stroke="rgba(100,30,200,.2)" stroke-width="2"/>
+      `;}).join('')}
+      <!-- Катушка — пасть кракена -->
+      <ellipse cx="10" cy="342" rx="13" ry="8" fill="rgba(5,2,15,.95)" stroke="#6020c0" stroke-width="2"/>
+      <path d="M0,342 Q5,338 10,342 Q15,338 20,342 Q15,346 10,342 Q5,346 0,342" fill="#3010a0" stroke="#7030d0" stroke-width="1"/>
+      <circle cx="10" cy="342" r="2" fill="#ff4030"/>
+      <!-- Ручка — скользкое щупальце -->
+      <path d="M7,360 Q5,372 8,380 Q11,388 8,395" stroke="#3010a0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M13,360 Q15,372 12,380 Q9,388 12,395" stroke="#4020b0" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+
+    // ═══ Удочка Времени — вертикаль ═══
+    time: `
+      <defs>
+        <linearGradient id="tmVBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#6070a0"/>
+          <stop offset="50%" stop-color="#d0e8ff"/>
+          <stop offset="100%" stop-color="#6070a0"/>
+        </linearGradient>
+        <radialGradient id="tmVOrb" cx="35%" cy="30%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="60%" stop-color="#90c0f0"/>
+          <stop offset="100%" stop-color="#2060a0"/>
+        </radialGradient>
+      </defs>
+      <!-- Хрустальное тело времени -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#tmVBody)" stroke="#c0d8ff" stroke-width="1" opacity=".95"/>
+      <!-- Застывшие временны́е трещины -->
+      <line x1="7"  y1="0"   x2="13" y2="60"  stroke="rgba(255,255,255,.4)" stroke-width=".8"/>
+      <line x1="13" y1="60"  x2="7"  y2="120" stroke="rgba(255,255,255,.35)" stroke-width=".8"/>
+      <line x1="7"  y1="120" x2="13" y2="180" stroke="rgba(255,255,255,.3)" stroke-width=".8"/>
+      <line x1="13" y1="180" x2="7"  y2="240" stroke="rgba(255,255,255,.25)" stroke-width=".8"/>
+      <line x1="7"  y1="240" x2="13" y2="300" stroke="rgba(255,255,255,.2)" stroke-width=".8"/>
+      <!-- Тени прошлого вдоль тела -->
+      <rect x="4" y="0" width="3" height="360" rx="1.5" fill="rgba(150,180,255,.07)"/>
+      <rect x="13" y="0" width="3" height="360" rx="1.5" fill="rgba(150,180,255,.07)"/>
+      <!-- ЧАСЫ на вершине — большие -->
+      <circle cx="10" cy="-10" r="12" fill="rgba(5,10,25,.92)" stroke="#c0d8ff" stroke-width="2"/>
+      <circle cx="10" cy="-10" r="10" fill="rgba(10,15,35,.8)" stroke="#8090b0" stroke-width="1"/>
+      <!-- Циферблат часов -->
+      ${Array.from({length:12},(_,i)=>{
+        const a=i*30*Math.PI/180; const r1=8; const r2=9.5;
+        return `<line x1="${10+Math.sin(a)*r1}" y1="${-10-Math.cos(a)*r1}" x2="${10+Math.sin(a)*r2}" y2="${-10-Math.cos(a)*r2}" stroke="rgba(180,210,255,.6)" stroke-width="${i%3===0?1.5:.7}"/>`;
+      }).join('')}
+      <!-- Минутная стрелка -->
+      <line x1="10" y1="-10" x2="10" y2="-19" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+      <!-- Часовая стрелка -->
+      <line x1="10" y1="-10" x2="16" y2="-7" stroke="#c0d8ff" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Секундная (спиннинг) -->
+      <line x1="10" y1="-10" x2="4" y2="-14" stroke="#ff8040" stroke-width="1" stroke-linecap="round" style="transform-origin:10px -10px;animation:timeClockSpin 4s linear infinite;"/>
+      <circle cx="10" cy="-10" r="1.5" fill="#c0d8ff"/>
+      <!-- Надпись XII, III, VI, IX -->
+      <text x="10" y="-20" text-anchor="middle" font-size="3.5" fill="rgba(180,210,255,.6)">XII</text>
+      <text x="19" y="-9" text-anchor="middle" font-size="3.5" fill="rgba(180,210,255,.5)">III</text>
+      <text x="10" y="-0.5" text-anchor="middle" font-size="3.5" fill="rgba(180,210,255,.5)">VI</text>
+      <text x="1" y="-9" text-anchor="middle" font-size="3.5" fill="rgba(180,210,255,.5)">IX</text>
+      <!-- Три лески (3 рыбы одновременно!) -->
+      <!-- Пространственно-временны́е вихри-кольца -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#c0d8ff" stroke-width="2" opacity="${.9-i*.06}"/>
+        <ellipse cx="10" cy="${y}" rx="${w+5}" ry="5.5" fill="none" stroke="rgba(180,210,255,.15)" stroke-width="1.5"/>
+        <!-- Маленькие звёздочки на кольцах -->
+        <circle cx="${10+w+2}" cy="${y}" r="1.5" fill="rgba(200,220,255,.6)"/>
+        <circle cx="${10-w-2}" cy="${y}" r="1.5" fill="rgba(200,220,255,.6)"/>
+      `;}).join('')}
+      <!-- Катушка — воронка времени -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(5,10,25,.95)" stroke="#c0d8ff" stroke-width="2"/>
+      <ellipse cx="10" cy="342" rx="9" ry="5.5" fill="rgba(30,50,90,.7)" stroke="#a0c0e0" stroke-width="1.5"/>
+      <!-- Спираль внутри катушки -->
+      <path d="M4,342 Q7,339 10,342 Q13,345 16,342" stroke="rgba(180,210,255,.7)" stroke-width="1" fill="none"/>
+      <circle cx="10" cy="342" r="2.5" fill="url(#tmVOrb)"/>
+      <circle cx="10" cy="342" r="1" fill="#ffffff" opacity=".9"/>
+      <!-- Ручка — кристалл-призма -->
+      <rect x="6" y="360" width="8" height="35" rx="3" fill="rgba(80,100,150,.6)" stroke="#c0d8ff" stroke-width="1.5"/>
+      <line x1="10" y1="360" x2="10" y2="395" stroke="rgba(200,220,255,.4)" stroke-width="1"/>`,
   };
 
   // Используем специальный вариант если есть, иначе дефолтный
@@ -7007,7 +8519,11 @@ function makeIngameRodSVG(rod) {
 
   const anim = rod.id === 'apocalypse' ? 'animation:apocalypseShake .3s steps(3) infinite;' :
                rod.id === 'quantum'    ? 'animation:quantumFlicker .8s steps(2) infinite;' :
-               rod.id === 'thunder'    ? 'animation:thunderZap 3s steps(1) infinite;' : '';
+               rod.id === 'thunder'    ? 'animation:thunderZap 3s steps(1) infinite;' :
+               rod.id === 'pharaoh'   ? 'animation:pharaohGlow 2s ease-in-out infinite alternate;' :
+               rod.id === 'neon'      ? 'animation:neonScan 1.5s ease-in-out infinite;' :
+               rod.id === 'kraken'    ? 'animation:krakenTentacle 2.5s ease-in-out infinite;' :
+               rod.id === 'time'      ? 'animation:timeFreeze 5s ease-in-out infinite;' : '';
 
   return `<svg id="rod-svg-ingame" viewBox="-15 -15 50 420"
     xmlns="http://www.w3.org/2000/svg"
@@ -8154,21 +9670,48 @@ window.updateRodVisual = function() {
   _updateRodVisualOrigRef();
   const rod = gs.currentRod;
   if(rod.id === 'apocalypse') shakeScreen();
+
+  // ── 🔱 ПОСЕЙДОН: авто-заброс + авто-подсечка каждые 3 сек ──────────────
+  clearInterval(gs._poseidonInterval);
+  clearInterval(gs._godlyInterval);
   if(rod.id === 'poseidon') {
-    clearInterval(gs._poseidonInterval);
     gs._poseidonInterval = setInterval(()=>{
       if(gs.currentScreen!=='fishing') return;
       if(gs.phase==='waiting') {
         showToast('🔱 Посейдон: рыба сама прыгнула!');
         triggerBite();
+        setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, 1500);
+      } else if(gs.phase==='idle') {
+        const ax = 130 + Math.floor(Math.random()*100);
+        castTo(ax, 360 + Math.floor(Math.random()*60));
       }
     }, 3000);
-  } else {
-    clearInterval(gs._poseidonInterval);
   }
-  gs._quantumDouble = rod.id === 'quantum';
-  gs._celestialMode = rod.id === 'celestial';
-  gs._apocalypseMode = rod.id === 'apocalypse';
+
+  // ── 👑 УДОЧКА БОГОВ: авто-заброс + авто-подсечка ─────────────────────────
+  if(rod.id === 'godly') {
+    gs._godlyInterval = setInterval(()=>{
+      if(gs.currentScreen!=='fishing') return;
+      if(gs.phase==='bite') {
+        catchFish();
+      } else if(gs.phase==='idle') {
+        const ax = 130 + Math.floor(Math.random()*100);
+        castTo(ax, 360 + Math.floor(Math.random()*60));
+      }
+    }, 1000);
+  }
+
+  // флаги механик
+  gs._quantumDouble    = rod.id === 'quantum';
+  gs._celestialMode    = rod.id === 'celestial';
+  gs._apocalypseMode   = rod.id === 'apocalypse';
+  gs._mechAutoTarget   = rod.id === 'mech';
+  gs._crystalRareBoost = rod.id === 'crystal';
+  gs._dragonMegaWeight = rod.id === 'dragon';
+  gs._meteorBonus      = rod.id === 'meteor';
+  gs._neonAutoReel     = rod.id === 'neon';
+  gs._timeFreezeWindow = rod.id === 'time';
+  gs._marbleAutoReel   = rod.id === 'marble';
 };
 
 // ============================================================
@@ -8204,20 +9747,36 @@ window.triggerBite = function() {
   gs._celestialMode = false;
 };
 
-// Also add quantum double-catch at keepFish:
+// ⚛️ КВАНТУМ: 2 рыбы при любом улове (keep или sell) — вторая в инвентарь
+function _quantumBonusFish() {
+  if(!gs._quantumDouble) return;
+  const pool2 = FISH_DATA.filter(f=>!f.coastal && (f.rar==='rare'||f.rar==='epic'||f.rar==='legend'||f.rar==='og'));
+  if(!pool2.length) return;
+  const f2 = pool2[Math.floor(Math.random()*pool2.length)];
+  const fish2 = {...f2, weight:(f2.w[0]+Math.random()*(f2.w[1]-f2.w[0])).toFixed(2), _rodMult: gs.currentRod.catchMult||1};
+  if(gs.inventory.length < gs.maxInv) {
+    gs.inventory.push(fish2);
+    showToast('⚛️ Квантум: +' + fish2.name + ' в сумку (2-я рыба)!');
+  } else {
+    // инвентарь полон — авто-продать
+    const price = calcPrice(fish2);
+    gs.coins += price;
+    updateCoins();
+    showToast('⚛️ Квантум: 2-я рыба ' + fish2.name + ' авто-продана за ' + price + '🪙!');
+  }
+  saveGame();
+}
+
 const _keepFishOrigRef = keepFish;
 window.keepFish = function() {
   _keepFishOrigRef();
-  if(gs._quantumDouble && Math.random() < 0.5) {
-    const pool2 = FISH_DATA.filter(f=>!f.coastal && (f.rar==='rare'||f.rar==='epic'||f.rar==='legend'||f.rar==='og'));
-    if(pool2.length && gs.inventory.length < gs.maxInv) {
-      const f2 = pool2[Math.floor(Math.random()*pool2.length)];
-      const fish2 = {...f2, weight:(f2.w[0]+Math.random()*(f2.w[1]-f2.w[0])).toFixed(2)};
-      gs.inventory.push(fish2);
-      showToast(`⚛️ Квантум: +${fish2.name} (двойной улов)!`);
-      saveGame();
-    }
-  }
+  _quantumBonusFish();
+};
+
+const _sellFishOrigRef = sellFish;
+window.sellFish = function() {
+  _sellFishOrigRef();
+  _quantumBonusFish();
 };
 
 // ============================================================
@@ -8262,6 +9821,10 @@ ROD_COLORS.mech    = {color:'#80c8e0', glow:'0 0 30px rgba(100,200,240,.9)'};
 ROD_COLORS.cosmic  = {color:'#c060ff', glow:'0 0 50px rgba(180,50,255,1.0)'};
 ROD_COLORS.demonic = {color:'#cc0020', glow:'0 0 50px rgba(200,0,30,1.0)'};
 ROD_COLORS.godly   = {color:'#ffd700', glow:'0 0 60px rgba(255,215,0,1.0)'};
+ROD_COLORS.pharaoh = {color:'#e8c020', glow:'0 0 50px rgba(255,200,0,1.0)'};
+ROD_COLORS.neon    = {color:'#00ffcc', glow:'0 0 55px rgba(0,255,200,1.0)'};
+ROD_COLORS.kraken  = {color:'#6020c0', glow:'0 0 60px rgba(120,0,220,1.0)'};
+ROD_COLORS.time    = {color:'#c0e0ff', glow:'0 0 70px rgba(180,220,255,1.0)'};
 ROD_COLORS.flower  = {color:'#ff80c0', glow:'0 0 60px rgba(255,100,200,1.0)'};
 ROD_COLORS.easter  = {color:'#ff80c0', glow:'0 0 60px rgba(255,128,192,1.0)'};
 
@@ -8827,12 +10390,16 @@ const HARDCORE_ROD_SVGS = {
   window.renderRods = function(body) {
     // Config for ultra rods
     const ULTRA_RODS = {
-      mech:    { tier:'МЕХТИР',    tierClass:'rod-tier-mech',    borderColor:'#40c0e0', bgGrad:'rgba(0,40,60,.95),rgba(0,20,40,.9)',    anim:'mechPulse 1.5s ease-in-out infinite' },
-      cosmic:  { tier:'КОСМОС',    tierClass:'rod-tier-cosmic',   borderColor:'#c060ff', bgGrad:'rgba(20,0,60,.95),rgba(10,0,40,.9)',    anim:'cosmicSpin 3s linear infinite' },
-      demonic: { tier:'ДЕМОН',     tierClass:'rod-tier-demonic',  borderColor:'#cc0020', bgGrad:'rgba(50,0,10,.95),rgba(30,0,5,.9)',     anim:'demonicPulse 1.2s ease-in-out infinite' },
-      godly:   { tier:'БОГ-ТИЕР',  tierClass:'rod-tier-godly',    borderColor:'#ffd700', bgGrad:'rgba(50,35,0,.95),rgba(30,20,0,.9)',    anim:'godlyShine 1.8s ease-in-out infinite' },
-      flower:  { tier:'🌸 ЦВЕТОК', tierClass:'rod-tier-flower',   borderColor:'#ff80c0', bgGrad:'rgba(60,0,40,.97),rgba(30,0,25,.95)',   anim:'flowerRodGlow 1.5s ease-in-out infinite' },
-      easter:  { tier:'🐰 ПАСХА',  tierClass:'rod-tier-easter',   borderColor:'#ff80c0', bgGrad:'rgba(60,0,50,.97),rgba(35,0,30,.95)',   anim:'easterRodGlow 1.5s ease-in-out infinite' },
+      mech:    { tier:'МЕХТИР',      tierClass:'rod-tier-mech',    borderColor:'#40c0e0', bgGrad:'rgba(0,40,60,.95),rgba(0,20,40,.9)',    anim:'mechPulse 1.5s ease-in-out infinite' },
+      cosmic:  { tier:'КОСМОС',      tierClass:'rod-tier-cosmic',   borderColor:'#c060ff', bgGrad:'rgba(20,0,60,.95),rgba(10,0,40,.9)',    anim:'cosmicSpin 3s linear infinite' },
+      demonic: { tier:'ДЕМОН',       tierClass:'rod-tier-demonic',  borderColor:'#cc0020', bgGrad:'rgba(50,0,10,.95),rgba(30,0,5,.9)',     anim:'demonicPulse 1.2s ease-in-out infinite' },
+      godly:   { tier:'БОГ-ТИЕР',   tierClass:'rod-tier-godly',    borderColor:'#ffd700', bgGrad:'rgba(50,35,0,.95),rgba(30,20,0,.9)',    anim:'godlyShine 1.8s ease-in-out infinite' },
+      flower:  { tier:'🌸 ЦВЕТОК',  tierClass:'rod-tier-flower',   borderColor:'#ff80c0', bgGrad:'rgba(60,0,40,.97),rgba(30,0,25,.95)',   anim:'flowerRodGlow 1.5s ease-in-out infinite' },
+      easter:  { tier:'🐰 ПАСХА',   tierClass:'rod-tier-easter',   borderColor:'#ff80c0', bgGrad:'rgba(60,0,50,.97),rgba(35,0,30,.95)',   anim:'easterRodGlow 1.5s ease-in-out infinite' },
+      pharaoh: { tier:'🏺 ФАРАОН',  tierClass:'rod-tier-pharaoh',  borderColor:'#ffe060', bgGrad:'rgba(40,25,0,.97),rgba(20,10,0,.95)',   anim:'pharaohGlow 2s ease-in-out infinite alternate' },
+      neon:    { tier:'💻 НЕОН',     tierClass:'rod-tier-neon',     borderColor:'#00ffcc', bgGrad:'rgba(0,15,12,.97),rgba(0,8,6,.95)',     anim:'neonScan 1.5s ease-in-out infinite' },
+      kraken:  { tier:'🐙 КРАКЕН',  tierClass:'rod-tier-kraken',   borderColor:'#7030d0', bgGrad:'rgba(10,0,30,.97),rgba(5,0,20,.95)',    anim:'krakenTentacle 2.5s ease-in-out infinite' },
+      time:    { tier:'⏳ ВРЕМЯ',    tierClass:'rod-tier-time',     borderColor:'#c0d8ff', bgGrad:'rgba(8,12,22,.97),rgba(4,6,14,.95)',    anim:'timeFreeze 5s ease-in-out infinite' },
     };
 
     RODS.forEach(rod=>{
