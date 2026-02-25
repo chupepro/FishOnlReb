@@ -12360,6 +12360,44 @@ try {
 } catch(e) {}
 
 // ════════════════════════════════════════════════════════════
+// 🎁 РАЗДАЧА ЛИМИТОК ВСЕМ — Хаги Ваги + Бакинца
+// Выдаём всем игрокам, флаги гарантируют что сброс не сработает
+// ════════════════════════════════════════════════════════════
+(function giveAllLimitedRods() {
+  try {
+    const raw2 = localStorage.getItem('fishing_reborn_extra2');
+    const ex2 = raw2 ? JSON.parse(raw2) : {};
+
+    // Выдаём Хаги Ваги
+    const hugRod = RODS.find(r => r.id === 'hugiwugi');
+    if (hugRod) hugRod.owned = true;
+    gs._hugiwugiGiven = true;
+    ex2._hugiwugiGiven = true;
+
+    // Выдаём Бакинца
+    const bakRod = RODS.find(r => r.id === 'bakintsa');
+    if (bakRod) bakRod.owned = true;
+    gs._bakintsaGiven = true;
+    ex2._bakintsaGiven = true;
+
+    localStorage.setItem('fishing_reborn_extra2', JSON.stringify(ex2));
+
+    // Показать попап с поздравлением (после загрузки DOM)
+    setTimeout(() => {
+      if (typeof showAdminPopup === 'function') {
+        showAdminPopup('🎁 РАЗДАЧА ОТ АДМИНИСТРАТОРА!',
+          '🇦🇿 Удочка Бакинца\n💙 Удочка Хаги Ваги\n\nОбе удочки добавлены в ваш инвентарь!\nНайди их в магазине → Рыбак!');
+      } else {
+        // Простой тост если попап ещё не готов
+        if (typeof showToast === 'function') {
+          showToast('🎁 Подарок от Админа: Хаги Ваги + Бакинца!');
+        }
+      }
+    }, 2000);
+  } catch(e) {}
+})();
+
+// ════════════════════════════════════════════════════════════
 // CSS ANIMATIONS for new features (inject into style)
 // ════════════════════════════════════════════════════════════
 const newStyles = document.createElement('style');
