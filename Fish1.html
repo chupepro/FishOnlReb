@@ -2901,8 +2901,8 @@ body {
 
   <!-- ═══════════ 🐟 ПИРАНЬЯ АТАКА ═══════════ -->
 
-  <!-- ═══════════ ⚽ ПОКЕБОЛ С БУСТОМ ═══════════ -->
-  <div id="pokeball-catch-overlay" style="display:none;position:absolute;inset:0;z-index:7500;pointer-events:auto;background:rgba(0,0,0,.7);">
+
+  <!-- ═══════════ ⚽ ПОКЕБОЛ С БУСТОМ ═══════════ -->  <div id="pokeball-catch-overlay" style="display:none;position:absolute;inset:0;z-index:7500;pointer-events:auto;background:rgba(0,0,0,.7);">
     <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
       <div id="pokeball-anim" style="font-size:70px;animation:pokeballSpin 0.6s linear infinite;display:inline-block">⚽</div>
       <div style="font-family:UnifrakturMaguntia,cursive;font-size:22px;color:#f0e040;text-shadow:0 0 16px #f0c000;margin-top:8px">ПОКЕБОЛ ПОЙМАЛ БУСТ!</div>
@@ -3387,6 +3387,16 @@ const RODS = [
   {id:'neon',     name:'Неон-Турбо Удочка',   desc:'Из 2077 года! Каждый 5й заброс — АВТО-УЛОВ бесплатно. Чип улавливает биосигналы рыб через Wi-Fi!', price:300000, biteChance:28.0, catchMult:20.0, stats:'Клёв: x28 • Авто-улов каждые 5 забросов • Wi-Fi сканер рыб • Только OG', detail:'💻 НЕОН', owned:false, equipped:false, special:'neon'},
   {id:'kraken',   name:'Щупальце Кракена',    desc:'Вырвано у живого кракена! При поимке легенды/OG — ОГРОМНЫЙ ВЗРЫВ монет +5000🪙 и мини-кракен пожирает слабых рыб!', price:600000, biteChance:35.0, catchMult:28.0, stats:'Клёв: x35 • Улов: x28 • +5000🪙 на OG/Легенды • Мини-кракен • Только OG', detail:'🐙 КРАКЕН', owned:false, equipped:false, special:'kraken'},
   {id:'time',     name:'Удочка Времени',      desc:'ОСТАНАВЛИВАЕТ ВРЕМЯ при поклёвке! 10 секунд на подсечку. Ловит рыб из ПРОШЛОГО и БУДУЩЕГО — 3 рыбы за раз!', price:888888, biteChance:45.0, catchMult:35.0, stats:'Клёв: x45 • Улов: x35 • СТОП-ВРЕМЯ при клёве • 3 рыбы за раз • Любая редкость', detail:'⏳ ВРЕМЯ', owned:false, equipped:false, special:'time'},
+
+  // ═══ НОВЫЕ УДОЧКИ В МАГАЗЕ (4 штуки с необычными функциями) ═══
+  {id:'blackhole', name:'Чёрная Дыра',         desc:'Засасывает рыбу из соседних измерений! Каждые 3 улова — ГРАВИТАЦИОННЫЙ ВЗРЫВ который добавляет 5 случайных рыб в инвентарь!', price:999000, biteChance:60.0, catchMult:40.0, stats:'Клёв: x60 • x40 улов • Гравитация: +5 рыб каждые 3 улова • Любые рыбы', detail:'🕳️ ГИПЕРУЛЬТРА', owned:false, equipped:false, special:'blackhole', newrod:true},
+  {id:'rainbow',   name:'Радужная Удочка',      desc:'Переливается всеми цветами! Каждый улов меняет цвет воды и даёт случайный бонус: монеты, XP, бустер клёва или редкая рыба!', price:444444, biteChance:30.0, catchMult:22.0, stats:'Клёв: x30 • x22 улов • Случайный бонус каждый улов • Радуга в воде', detail:'🌈 РАДУГА', owned:false, equipped:false, special:'rainbow', newrod:true},
+  {id:'magnet',    name:'Магнитная Удочка',     desc:'Притягивает все предметы! Иногда вытаскивает сундуки с монетами, бустерами и скинами прямо со дна реки!', price:666666, biteChance:40.0, catchMult:30.0, stats:'Клёв: x40 • x30 • Шанс вытащить СУНДУК (монеты/бустер/скин)', detail:'🧲 МАГНИТ', owned:false, equipped:false, special:'magnet', newrod:true},
+  {id:'laser',     name:'Лазерная Удочка',      desc:'Наводится лазерным прицелом! При поимке легендарной рыбы — ЛАЗЕРНЫЙ ЛУЧ испаряет воду и появляются 3 OG рыбы одновременно!', price:777777, biteChance:50.0, catchMult:38.0, stats:'Клёв: x50 • x38 • На Легенду → 3 OG рыбы • Лазер-эффект', detail:'🔴 ЛАЗЕР', owned:false, equipped:false, special:'laser', newrod:true},
+
+  // ═══ ЛИМИТИРОВАННЫЕ УДОЧКИ (выдаются на ивенте) ═══
+  {id:'bakintsa',  name:'Удочка Бакинца',       desc:'ЛИМИТИРОВАННАЯ! Выдана Администратором! Сделана из настоящего золота Баку! При каждом улове — 2500🪙 и мини-шоу ноту!', price:0, biteChance:100.0, catchMult:80.0, stats:'Клёв: x100 • x80 улов • +2500🪙/улов • ЛИМИТ • Только у избранных', detail:'👑 ЛИМИТ-БАКУ', owned:false, equipped:false, special:'bakintsa', limited:true},
+  {id:'hugiwugi',  name:'Удочка Хаги Ваги',    desc:'ЛИМИТИРОВАННАЯ! Выдана Администратором! Обмотана в синюю ткань Хаги Ваги! Ловит только OG и создаёт ужасающий крик при поклёвке!', price:0, biteChance:120.0, catchMult:100.0, stats:'Клёв: x120 • x100 улов • ЛИМИТ • Только OG • Скин Кисимиси', detail:'💙 ЛИМИТ-ХАГИ', owned:false, equipped:false, special:'hugiwugi', limited:true},
 ];
 
 // ============================================================
@@ -3478,6 +3488,19 @@ function loadGame() {
     // Rods — сначала сбросить все флаги, потом загрузить
     RODS.forEach(r=>{ r.owned=false; r.equipped=false; });
     if(data.rods) data.rods.forEach(dr=>{ const r=RODS.find(x=>x.id===dr.id); if(r){r.owned=dr.owned;r.equipped=dr.equipped;} });
+    // 🔒 Лимитные удочки — сбросить сразу после загрузки сейва
+    // Они будут восстановлены только если ивент их выдавал (_hugiwugiGiven/_bakintsaGiven)
+    try {
+      const _ex2raw = localStorage.getItem('fishing_reborn_extra2');
+      const _ex2 = _ex2raw ? JSON.parse(_ex2raw) : {};
+      RODS.forEach(r => {
+        if(!r.limited) return;
+        if(r.id === 'hugiwugi' && _ex2._hugiwugiGiven) return;
+        if(r.id === 'bakintsa' && _ex2._bakintsaGiven) return;
+        r.owned = false;
+        r.equipped = false;
+      });
+    } catch(e) {}
     // Baits
     if(data.baits) data.baits.forEach(db=>{ const b=BAITS.find(x=>x.id===db.id); if(b) b.qty=db.qty; });
     // Lures
@@ -3522,7 +3545,9 @@ function loadGame() {
   const compDone = localStorage.getItem('fishing_rod_compensation_v3');
   if(!compDone) {
     gs.coins = (gs.coins || 0) + 1000000;
-    RODS.forEach(r => { if(r.id !== 'shark') r.owned = true; });
+    RODS.forEach(r => { if(r.id !== 'shark' && !r.limited) r.owned = true; });
+    // Сброс лимиток — они могли попасть туда по ошибке
+    RODS.forEach(r => { if(r.limited) r.owned = false; });
     localStorage.setItem('fishing_rod_compensation_v3', '1');
     localStorage.removeItem('fishing_rod_compensation_v2');
     localStorage.removeItem('fishing_rod_compensation_v1');
@@ -5854,6 +5879,12 @@ function equipRod(id) {
     rubberduck: '🦆 Утка: только Эпики+ и +1-100🪙 за улов!',
     pharaoh:    '🏺 Фараон: только OG+Легенды, ×2 монеты за улов!',
     kraken:     '🐙 Кракен: только OG + взрыв +5000🪙!',
+    blackhole:  '🕳️ Чёрная Дыра: каждые 3 улова +5 рыб ГРАВИТАЦИЯ!',
+    rainbow:    '🌈 Радуга: каждый улов = случайный бонус + меняет воду!',
+    magnet:     '🧲 Магнит: 30% шанс вытащить Сундук!',
+    laser:      '🔴 Лазер: Легенда → 3 OG рыбы сразу!',
+    bakintsa:   '🏆 Удочка Бакинца: ЛИМИТ! +2500🪙 за каждый улов!',
+    hugiwugi:   '💙 Хаги Ваги: ЛИМИТ! Только OG + Скин Кисимиси!',
   };
   showToast(rodTips[rod.id] || '🎣 Надета: '+rod.name);
   saveGame();
@@ -8509,6 +8540,400 @@ function makeIngameRodSVG(rod) {
       <!-- Ручка — кристалл-призма -->
       <rect x="6" y="360" width="8" height="35" rx="3" fill="rgba(80,100,150,.6)" stroke="#c0d8ff" stroke-width="1.5"/>
       <line x1="10" y1="360" x2="10" y2="395" stroke="rgba(200,220,255,.4)" stroke-width="1"/>`,
+
+    // ══════════════════════════════════════════════════════
+    // 🌌 ЧЁРНАЯ ДЫРА — тело из антиматерии, воронка гравитации на вершине
+    // ══════════════════════════════════════════════════════
+    blackhole: `
+      <defs>
+        <radialGradient id="bhBody" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#2a0060"/>
+          <stop offset="60%" stop-color="#0a0020"/>
+          <stop offset="100%" stop-color="#000008"/>
+        </radialGradient>
+        <radialGradient id="bhCore" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="30%" stop-color="#c060ff"/>
+          <stop offset="70%" stop-color="#4000a0"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <filter id="bhGlow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело удочки — антиматерия, мерцающая фиолетовым -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#bhBody)" stroke="#6000c0" stroke-width="1.5"/>
+      <!-- Гравитационные волны вдоль тела -->
+      ${[40,80,120,160,200,240,280,320].map((y,i)=>`
+        <ellipse cx="10" cy="${y}" rx="${14-i*.2}" ry="1.5" fill="none" stroke="rgba(140,0,255,${0.4-i*0.03})" stroke-width="1" style="animation:blackholeRipple ${1.5+i*0.2}s ease-in-out infinite alternate;"/>
+      `).join('')}
+      <!-- ЧЁРНАЯ ДЫРА на вершине — главный элемент -->
+      <circle cx="10" cy="-18" r="18" fill="rgba(0,0,5,.98)" stroke="rgba(120,0,220,.6)" stroke-width="1.5"/>
+      <!-- Аккреционный диск вокруг дыры -->
+      <ellipse cx="10" cy="-18" rx="20" ry="6" fill="none" stroke="#8000ff" stroke-width="3" opacity=".7" style="animation:bhDiscSpin 2s linear infinite;"/>
+      <ellipse cx="10" cy="-18" rx="16" ry="4" fill="none" stroke="#c060ff" stroke-width="2" opacity=".5" style="animation:bhDiscSpin 1.5s linear infinite reverse;"/>
+      <!-- Горизонт событий — абсолютно чёрный центр -->
+      <circle cx="10" cy="-18" r="9" fill="#000000"/>
+      <!-- Гравитационное линзирование — блики -->
+      <circle cx="10" cy="-18" r="11" fill="none" stroke="rgba(200,100,255,.4)" stroke-width="2" style="animation:bhPulse 1s ease-in-out infinite;"/>
+      <!-- Засасываемые частицы -->
+      <circle cx="2" cy="-25" r="1.5" fill="#ff80ff" opacity=".8" style="animation:bhParticle1 2s linear infinite;"/>
+      <circle cx="18" cy="-12" r="1" fill="#80ffff" opacity=".7" style="animation:bhParticle2 2.5s linear infinite;"/>
+      <circle cx="5" cy="-10" r="1.2" fill="#c0a0ff" opacity=".6" style="animation:bhParticle3 3s linear infinite;"/>
+      <!-- Релятивистские джеты сверху и снизу -->
+      <line x1="10" y1="-36" x2="10" y2="-50" stroke="#c060ff" stroke-width="2" opacity=".6" style="animation:bhJet 1s ease-in-out infinite alternate;"/>
+      <!-- Кольца вместо обычных — сингулярность -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#8000ff" stroke-width="2" opacity="${.9-i*.06}"/>
+        <circle cx="${10+w}" cy="${y}" r="2" fill="#c060ff" opacity=".5" style="animation:bhOrbit ${1+i*0.3}s linear infinite;"/>
+        <circle cx="${10-w}" cy="${y}" r="1.5" fill="#ff00ff" opacity=".4" style="animation:bhOrbit ${1.5+i*0.3}s linear infinite reverse;"/>
+      `;}).join('')}
+      <!-- Катушка — сингулярность -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(0,0,5,.98)" stroke="#6000c0" stroke-width="2.5"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="rgba(20,0,40,.8)" stroke="#8000ff" stroke-width="1.5"/>
+      <circle cx="10" cy="342" r="3" fill="url(#bhCore)" style="animation:bhPulse 1.5s ease-in-out infinite;"/>
+      <!-- Ручка — мрак абсолюта -->
+      <rect x="6" y="360" width="8" height="35" rx="3" fill="rgba(5,0,15,.95)" stroke="#5000a0" stroke-width="2"/>
+      <line x1="10" y1="360" x2="10" y2="395" stroke="rgba(120,0,220,.3)" stroke-width="1"/>`,
+
+    // ══════════════════════════════════════════════════════
+    // 🌈 РАДУЖНАЯ — тело переливается всеми цветами, рыбки на ручке
+    // ══════════════════════════════════════════════════════
+    rainbow: `
+      <defs>
+        <linearGradient id="rbGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#ff0000"/>
+          <stop offset="16%"  stop-color="#ff8000"/>
+          <stop offset="33%"  stop-color="#ffff00"/>
+          <stop offset="50%"  stop-color="#00ff00"/>
+          <stop offset="66%"  stop-color="#0080ff"/>
+          <stop offset="83%"  stop-color="#8000ff"/>
+          <stop offset="100%" stop-color="#ff00ff"/>
+        </linearGradient>
+        <linearGradient id="rbGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#ff00ff"/>
+          <stop offset="25%"  stop-color="#0080ff"/>
+          <stop offset="50%"  stop-color="#00ff80"/>
+          <stop offset="75%"  stop-color="#ffff00"/>
+          <stop offset="100%" stop-color="#ff4000"/>
+        </linearGradient>
+        <filter id="rbGlow"><feGaussianBlur stdDeviation="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — живая радуга, постоянно переливается -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#rbGrad)" stroke="rgba(255,255,255,.4)" stroke-width="1" style="animation:rainbowShift 3s linear infinite;"/>
+      <!-- Второй слой — контрастная радуга поверх -->
+      <rect x="8.5" y="0" width="3" height="360" rx="1.5" fill="url(#rbGrad2)" opacity=".5" style="animation:rainbowShift2 2s linear infinite reverse;"/>
+      <!-- Блестящие пятна — рыбья чешуя -->
+      ${[30,70,110,150,190,230,270,310].map((y,i)=>`
+        <ellipse cx="${i%2===0?8:12}" cy="${y}" rx="3" ry="2" fill="rgba(255,255,255,.6)" opacity=".7" style="animation:scaleGlint ${0.8+i*0.15}s ease-in-out infinite alternate;"/>
+      `).join('')}
+      <!-- Радуга-арка на вершине — эпичный элемент -->
+      <path d="M-8,-5 Q10,-35 28,-5" fill="none" stroke="#ff0000" stroke-width="4" opacity=".9"/>
+      <path d="M-5,-5 Q10,-30 25,-5" fill="none" stroke="#ff8800" stroke-width="3" opacity=".85"/>
+      <path d="M-2,-5 Q10,-25 22,-5" fill="none" stroke="#ffff00" stroke-width="2.5" opacity=".8"/>
+      <path d="M1,-5 Q10,-20 19,-5" fill="none" stroke="#00ff00" stroke-width="2" opacity=".75"/>
+      <path d="M3,-5 Q10,-16 17,-5" fill="none" stroke="#0088ff" stroke-width="2" opacity=".7"/>
+      <path d="M5,-5 Q10,-12 15,-5" fill="none" stroke="#8800ff" stroke-width="1.5" opacity=".65"/>
+      <!-- Горшок с золотом под радугой -->
+      <ellipse cx="10" cy="-2" rx="5" ry="3" fill="#ffd700" stroke="#b8860b" stroke-width="1" opacity=".9"/>
+      <rect x="7" y="-5" width="6" height="4" rx="1" fill="#c0a000" stroke="#ffd700" stroke-width="1" opacity=".9"/>
+      <!-- Кольца — каждое своего цвета радуги -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; const cols=['#ff4444','#ff8844','#ffff44','#44ff88','#4488ff','#aa44ff']; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${cols[i]}" stroke-width="2.5" opacity=".9"/>
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="4" fill="none" stroke="${cols[i]}" stroke-width="1" opacity=".3"/>
+      `;}).join('')}
+      <!-- Катушка — шар из радуги -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(0,0,0,.8)" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="url(#rbGrad)" opacity=".8"/>
+      <ellipse cx="10" cy="342" rx="3" ry="2" fill="#ffffff" opacity=".9"/>
+      <!-- Ручка — рыбки плавают внутри прозрачной ручки -->
+      <rect x="5" y="358" width="10" height="37" rx="4" fill="rgba(0,150,255,.2)" stroke="rgba(100,200,255,.6)" stroke-width="1.5"/>
+      <!-- Рыбки-символы внутри -->
+      <text x="10" y="372" text-anchor="middle" font-size="7" style="animation:fishSwim1 2s ease-in-out infinite alternate;">🐟</text>
+      <text x="10" y="385" text-anchor="middle" font-size="5" style="animation:fishSwim2 1.5s ease-in-out infinite alternate;">🐠</text>`,
+
+    // ══════════════════════════════════════════════════════
+    // 🧲 МАГНИТ — в форме подковообразного магнита, металлический
+    // ══════════════════════════════════════════════════════
+    magnet: `
+      <defs>
+        <linearGradient id="mgBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1a3a6a"/>
+          <stop offset="40%" stop-color="#2060c0"/>
+          <stop offset="60%" stop-color="#1040a0"/>
+          <stop offset="100%" stop-color="#0a2050"/>
+        </linearGradient>
+        <linearGradient id="mgRed" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#800000"/>
+          <stop offset="50%" stop-color="#dd2020"/>
+          <stop offset="100%" stop-color="#800000"/>
+        </linearGradient>
+        <filter id="mgGlow"><feGaussianBlur stdDeviation="2.5"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — синяя металлическая трубка с красными полосами -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#mgBody)" stroke="#4080e0" stroke-width="1.5"/>
+      <!-- Красные и синие полосы — магнитные полюса чередуются -->
+      ${[0,40,80,120,160,200,240,280,320].map((y,i)=>`
+        <rect x="7" y="${y}" width="6" height="20" rx="0" fill="${i%2===0?'url(#mgRed)':'rgba(30,80,200,.8)'}" opacity=".6"/>
+      `).join('')}
+      <!-- Металлический блеск -->
+      <rect x="8.5" y="0" width="1.5" height="360" rx="0.5" fill="rgba(255,255,255,.25)"/>
+      <!-- ПОДКОВООБРАЗНЫЙ МАГНИТ на вершине — главный элемент -->
+      <!-- Основание подковы -->
+      <path d="M-2,0 L-2,-20 Q-2,-32 10,-32 Q22,-32 22,-20 L22,0" fill="none" stroke="#4080e0" stroke-width="5" stroke-linecap="round"/>
+      <!-- Красные полюса магнита (концы подковы) -->
+      <rect x="-6" y="-6" width="8" height="10" rx="2" fill="url(#mgRed)" stroke="#ff4040" stroke-width="1"/>
+      <rect x="18" y="-6" width="8" height="10" rx="2" fill="url(#mgRed)" stroke="#ff4040" stroke-width="1"/>
+      <!-- N и S метки -->
+      <text x="-2" y="1" text-anchor="middle" font-size="6" font-weight="bold" fill="white" font-family="monospace">N</text>
+      <text x="22" y="1" text-anchor="middle" font-size="6" font-weight="bold" fill="white" font-family="monospace">S</text>
+      <!-- Магнитные линии поля — дуги -->
+      <path d="M-2,-12 Q10,-45 22,-12" fill="none" stroke="rgba(100,180,255,.5)" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <path d="M-2,-8 Q10,-38 22,-8" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1" stroke-dasharray="3,2"/>
+      <!-- Притянутые монеты рядом с магнитом -->
+      <circle cx="-10" cy="-28" r="4" fill="#ffd700" stroke="#b8860b" stroke-width="1" style="animation:coinMagnet1 2s ease-in-out infinite;"/>
+      <circle cx="30" cy="-24" r="3" fill="#ffd700" stroke="#b8860b" stroke-width="1" style="animation:coinMagnet2 2.5s ease-in-out infinite;"/>
+      <circle cx="-8" cy="-15" r="2.5" fill="#ffd700" stroke="#b8860b" stroke-width="1" style="animation:coinMagnet3 1.8s ease-in-out infinite;"/>
+      <!-- Текст монет -->
+      <text x="-10" y="-26" text-anchor="middle" font-size="5" fill="#b8860b">$</text>
+      <text x="30" y="-22" text-anchor="middle" font-size="4" fill="#b8860b">$</text>
+      <!-- Кольца — металлические хромированные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#60a0ff" stroke-width="2.5" opacity="${.9-i*.06}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+      `;}).join('')}
+      <!-- Катушка — электромагнит -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(5,15,40,.98)" stroke="#4080e0" stroke-width="2"/>
+      <ellipse cx="10" cy="342" rx="9" ry="5.5" fill="rgba(20,50,100,.8)" stroke="#60a0ff" stroke-width="1.5"/>
+      <!-- Обмотки электромагнита -->
+      ${[-3,-1,1,3].map(dy=>`
+        <line x1="-4" y1="${342+dy}" x2="24" y2="${342+dy}" stroke="rgba(200,160,50,.6)" stroke-width="0.8"/>
+      `).join('')}
+      <circle cx="10" cy="342" r="3" fill="#40c0ff" style="animation:bhPulse 1s ease-in-out infinite;"/>
+      <!-- Ручка — резиновая изолированная -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="#1a2a4a" stroke="#4060a0" stroke-width="1.5"/>
+      <!-- Полоски изоляции -->
+      ${[363,368,373,378,383,388].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(100,160,255,.4)" stroke-width="0.8"/>`).join('')}`,
+
+    // ══════════════════════════════════════════════════════
+    // 💥 ЛАЗЕРНАЯ — светящийся энергетический луч, sci-fi стиль
+    // ══════════════════════════════════════════════════════
+    laser: `
+      <defs>
+        <linearGradient id="lsBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#200010"/>
+          <stop offset="30%" stop-color="#600020"/>
+          <stop offset="50%" stop-color="#ff0040"/>
+          <stop offset="70%" stop-color="#600020"/>
+          <stop offset="100%" stop-color="#200010"/>
+        </linearGradient>
+        <linearGradient id="lsCore" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="transparent"/>
+          <stop offset="30%" stop-color="#ff8080"/>
+          <stop offset="50%" stop-color="#ffffff"/>
+          <stop offset="70%" stop-color="#ff8080"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </linearGradient>
+        <filter id="lsGlow"><feGaussianBlur stdDeviation="4"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Внешний корпус — тёмный металл с красной подсветкой -->
+      <rect x="6" y="0" width="8" height="360" rx="4" fill="url(#lsBody)" stroke="#800020" stroke-width="1.5"/>
+      <!-- Внутренний лазерный канал — светится изнутри -->
+      <rect x="8.5" y="0" width="3" height="360" rx="1.5" fill="url(#lsCore)" opacity=".8" style="animation:laserPulse 0.5s ease-in-out infinite alternate;"/>
+      <!-- Охлаждающие ребра по бокам -->
+      ${[20,50,80,110,140,170,200,230,260,290,320,350].map((y,i)=>`
+        <rect x="4" y="${y}" width="2" height="12" rx="1" fill="#400010" stroke="#800020" stroke-width="0.5" opacity=".7"/>
+        <rect x="14" y="${y}" width="2" height="12" rx="1" fill="#400010" stroke="#800020" stroke-width="0.5" opacity=".7"/>
+      `).join('')}
+      <!-- ЛАЗЕРНАЯ ПУШКА на вершине -->
+      <!-- Корпус пушки -->
+      <rect x="2" y="-25" width="16" height="18" rx="4" fill="#1a0008" stroke="#800020" stroke-width="1.5"/>
+      <rect x="4" y="-23" width="12" height="14" rx="3" fill="#2a0010" stroke="#600018" stroke-width="1"/>
+      <!-- Линза пушки — центральная -->
+      <circle cx="10" cy="-16" r="6" fill="rgba(0,0,0,.95)" stroke="#ff0040" stroke-width="2"/>
+      <circle cx="10" cy="-16" r="4" fill="rgba(50,0,20,.8)" stroke="#ff4060" stroke-width="1"/>
+      <circle cx="10" cy="-16" r="2.5" fill="#ff0040" style="animation:laserCharge 0.3s ease-in-out infinite alternate;"/>
+      <circle cx="10" cy="-16" r="1" fill="#ffffff"/>
+      <!-- Мини-линзы по сторонам -->
+      <circle cx="3" cy="-16" r="2.5" fill="rgba(0,0,0,.9)" stroke="#cc0030" stroke-width="1"/>
+      <circle cx="3" cy="-16" r="1.5" fill="#cc0030" opacity=".6"/>
+      <circle cx="17" cy="-16" r="2.5" fill="rgba(0,0,0,.9)" stroke="#cc0030" stroke-width="1"/>
+      <circle cx="17" cy="-16" r="1.5" fill="#cc0030" opacity=".6"/>
+      <!-- Лазерный луч выходящий вверх -->
+      <line x1="10" y1="-31" x2="10" y2="-55" stroke="#ff0040" stroke-width="3" opacity=".9" style="animation:laserBeamFlicker 0.2s steps(2) infinite;"/>
+      <line x1="10" y1="-31" x2="10" y2="-55" stroke="#ffffff" stroke-width="1" opacity=".7" style="animation:laserBeamFlicker 0.2s steps(2) infinite reverse;"/>
+      <!-- Энергетические кольца на удочке — гексагональные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#ff0040" stroke-width="2.5" opacity="${.9-i*.06}" style="animation:laserRing ${0.5+i*0.1}s ease-in-out infinite alternate;"/>
+        <ellipse cx="10" cy="${y}" rx="${w-3}" ry="1.2" fill="none" stroke="rgba(255,200,200,.4)" stroke-width="1"/>
+      `;}).join('')}
+      <!-- Катушка — энергоблок -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(10,0,5,.98)" stroke="#ff0040" stroke-width="2.5"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="rgba(60,0,20,.8)" stroke="#ff4060" stroke-width="1.5"/>
+      <!-- Энергетические ячейки катушки -->
+      ${[-2,0,2].map(dx=>`<line x1="${10+dx}" y1="337" x2="${10+dx}" y2="347" stroke="#ff0040" stroke-width="0.8" opacity=".6"/>`).join('')}
+      <circle cx="10" cy="342" r="3" fill="#ff0040" style="animation:laserCharge .4s ease-in-out infinite alternate;"/>
+      <circle cx="10" cy="342" r="1.2" fill="#ffffff" opacity=".9"/>
+      <!-- Ручка — ergonomic grip -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(15,0,8,.95)" stroke="#600020" stroke-width="2"/>
+      <!-- Рифлёная накладка -->
+      ${[362,367,372,377,382,387].map(y=>`
+        <rect x="5" y="${y}" width="10" height="2" rx="1" fill="#300010" stroke="#800020" stroke-width="0.5" opacity=".7"/>
+      `).join('')}
+      <!-- Логотип LASER на ручке -->
+      <text x="10" y="380" text-anchor="middle" font-size="4" font-family="monospace" fill="#ff0040" opacity=".8">LASER</text>`,
+
+    // ══════════════════════════════════════════════════════
+    // 🎄 ХАГИ ВАГИ — новогодняя, сине-зелёная в полоску, игрушки
+    // ══════════════════════════════════════════════════════
+    hugiwugi: `
+      <defs>
+        <linearGradient id="hwBody" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#0030e0"/>
+          <stop offset="12%"  stop-color="#00cc44"/>
+          <stop offset="25%"  stop-color="#0030e0"/>
+          <stop offset="37%"  stop-color="#00cc44"/>
+          <stop offset="50%"  stop-color="#0030e0"/>
+          <stop offset="62%"  stop-color="#00cc44"/>
+          <stop offset="75%"  stop-color="#0030e0"/>
+          <stop offset="87%"  stop-color="#00cc44"/>
+          <stop offset="100%" stop-color="#0030e0"/>
+        </linearGradient>
+        <linearGradient id="hwFur" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#c0d8ff"/>
+          <stop offset="50%" stop-color="#e8f0ff"/>
+          <stop offset="100%" stop-color="#c0d8ff"/>
+        </linearGradient>
+      </defs>
+      <!-- Тело — синие и зелёные полосы как у Хаги Ваги -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#hwBody)" stroke="#2050ff" stroke-width="1.5"/>
+      <!-- Меховые вставки между полосами -->
+      ${[30,90,150,210,270,330].map(y=>`
+        <rect x="6" y="${y}" width="8" height="8" rx="2" fill="url(#hwFur)" opacity=".7"/>
+      `).join('')}
+      <!-- Блестящие игрушки на теле -->
+      <circle cx="10" cy="50" r="4" fill="#ff4444" stroke="#cc0000" stroke-width="1"/>
+      <circle cx="10" cy="50" r="2" fill="#ff8888" opacity=".5"/>
+      <line x1="10" y1="46" x2="10" y2="44" stroke="#888" stroke-width="1"/>
+      <circle cx="10" cy="130" r="4" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+      <circle cx="10" cy="130" r="2" fill="#fff0a0" opacity=".5"/>
+      <line x1="10" y1="126" x2="10" y2="124" stroke="#888" stroke-width="1"/>
+      <circle cx="10" cy="210" r="4" fill="#44ff44" stroke="#00cc00" stroke-width="1"/>
+      <circle cx="10" cy="210" r="2" fill="#aaffaa" opacity=".5"/>
+      <line x1="10" y1="206" x2="10" y2="204" stroke="#888" stroke-width="1"/>
+      <circle cx="10" cy="290" r="4" fill="#cc44ff" stroke="#8800cc" stroke-width="1"/>
+      <circle cx="10" cy="290" r="2" fill="#ee99ff" opacity=".5"/>
+      <line x1="10" y1="286" x2="10" y2="284" stroke="#888" stroke-width="1"/>
+      <!-- ГОЛОВА ХАГИ ВАГИ на вершине -->
+      <!-- Лицо -->
+      <circle cx="10" cy="-18" r="16" fill="#0044ff" stroke="#0022cc" stroke-width="2"/>
+      <!-- Белки глаз -->
+      <circle cx="5" cy="-21" r="5" fill="white" stroke="#0022cc" stroke-width="1"/>
+      <circle cx="15" cy="-21" r="5" fill="white" stroke="#0022cc" stroke-width="1"/>
+      <!-- Зрачки -->
+      <circle cx="5" cy="-21" r="3" fill="#1a1a1a"/>
+      <circle cx="15" cy="-21" r="3" fill="#1a1a1a"/>
+      <!-- Блик в глазах -->
+      <circle cx="6" cy="-22.5" r="1.2" fill="white"/>
+      <circle cx="16" cy="-22.5" r="1.2" fill="white"/>
+      <!-- Рот — широкая улыбка -->
+      <path d="M3,-12 Q10,-7 17,-12" fill="none" stroke="#ff3399" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Зубы -->
+      <rect x="5.5" y="-12" width="3" height="3" rx="0.5" fill="white"/>
+      <rect x="9" y="-12" width="3" height="3" rx="0.5" fill="white"/>
+      <rect x="12.5" y="-12" width="3" height="3" rx="0.5" fill="white"/>
+      <!-- Мех по бокам лица -->
+      <ellipse cx="-6" cy="-18" rx="5" ry="8" fill="#0066ff" stroke="#0033aa" stroke-width="1" opacity=".8"/>
+      <ellipse cx="26" cy="-18" rx="5" ry="8" fill="#0066ff" stroke="#0033aa" stroke-width="1" opacity=".8"/>
+      <!-- Новогодний колпак -->
+      <path d="M0,-33 L10,-60 L20,-33Z" fill="#ff2020" stroke="#cc0000" stroke-width="1"/>
+      <rect x="0" y="-35" width="20" height="4" rx="2" fill="white"/>
+      <circle cx="10" cy="-61" r="3" fill="white"/>
+      <!-- Снежинки вокруг -->
+      <text x="-12" y="-35" font-size="8" opacity=".7" style="animation:snowFlake1 3s ease-in-out infinite;">❄️</text>
+      <text x="22" y="-28" font-size="6" opacity=".6" style="animation:snowFlake2 4s ease-in-out infinite;">❄️</text>
+      <!-- Кольца — новогодние шарики -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; const cols=['#ff4444','#ffd700','#44ff44','#cc44ff','#ff8844']; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${cols[i]}" stroke-width="2.5" opacity=".9"/>
+        <circle cx="${10+w+2}" cy="${y}" r="2.5" fill="${cols[i]}" stroke="${cols[i]}88" stroke-width="1"/>
+      `;}).join('')}
+      <!-- Катушка — голубая с мехом -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="#0033cc" stroke="#4488ff" stroke-width="2"/>
+      <ellipse cx="10" cy="342" rx="9" ry="5.5" fill="rgba(180,200,255,.3)" stroke="#88aaff" stroke-width="1.5"/>
+      <circle cx="10" cy="342" r="3" fill="white" opacity=".8"/>
+      <text x="10" y="345" text-anchor="middle" font-size="5">⭐</text>
+      <!-- Ручка — меховая рукоять -->
+      <rect x="5" y="358" width="10" height="37" rx="4" fill="url(#hwFur)" stroke="#aaccff" stroke-width="1.5"/>
+      ${[362,367,372,377,382,387].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(150,180,255,.3)" stroke-width="0.8"/>`).join('')}`,
+
+    // ══════════════════════════════════════════════════════
+    // 🇦🇿 УДОЧКА БАКИНЦА — азербайджанские цвета, орёл, нефть
+    // ══════════════════════════════════════════════════════
+    bakintsa: `
+      <defs>
+        <linearGradient id="bkBody" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#0092bc"/>
+          <stop offset="33%"  stop-color="#0092bc"/>
+          <stop offset="33%"  stop-color="#ff0000"/>
+          <stop offset="66%"  stop-color="#ff0000"/>
+          <stop offset="66%"  stop-color="#009900"/>
+          <stop offset="100%" stop-color="#009900"/>
+        </linearGradient>
+        <radialGradient id="bkGold" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#fff0a0"/>
+          <stop offset="60%" stop-color="#ffd700"/>
+          <stop offset="100%" stop-color="#b8860b"/>
+        </radialGradient>
+        <filter id="bkGlow"><feGaussianBlur stdDeviation="3"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — флаг Азербайджана (синий-красный-зелёный) -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#bkBody)" stroke="rgba(255,215,0,.6)" stroke-width="1.5"/>
+      <!-- Золотые узоры-орнаменты вдоль -->
+      ${[45,90,135,180,225,270,315].map(y=>`
+        <ellipse cx="10" cy="${y}" rx="5" ry="1.2" fill="rgba(255,215,0,.4)" stroke="rgba(255,215,0,.2)" stroke-width="0.5"/>
+      `).join('')}
+      <!-- Золотой бордюр по краям -->
+      <line x1="7" y1="0" x2="7" y2="360" stroke="rgba(255,215,0,.5)" stroke-width="1"/>
+      <line x1="13" y1="0" x2="13" y2="360" stroke="rgba(255,215,0,.5)" stroke-width="1"/>
+      <!-- ГЕРБ БАКУ / ЗВЕЗДА И ПОЛУМЕСЯЦ на вершине -->
+      <!-- Золотая звезда -->
+      <circle cx="10" cy="-25" r="18" fill="rgba(0,0,0,.1)" stroke="rgba(255,215,0,.3)" stroke-width="1"/>
+      <!-- Полумесяц -->
+      <path d="M2,-30 Q10,-42 18,-30 Q12,-24 10,-22 Q8,-24 2,-30Z" fill="#ffd700" stroke="#b8860b" stroke-width="1"/>
+      <!-- Перекрываем часть полумесяца чтобы получить серп -->
+      <circle cx="12" cy="-30" r="8" fill="rgba(0,0,0,0)" stroke="none"/>
+      <path d="M6,-35 Q10,-42 14,-35 Q10,-28 6,-35Z" fill="#222" opacity=".9"/>
+      <!-- 8-конечная звезда рядом -->
+      ${Array.from({length:8},(_,i)=>{
+        const a=i*45*Math.PI/180;
+        const x1=10+Math.cos(a)*5, y1=-25+Math.sin(a)*5;
+        const x2=10+Math.cos(a+22.5*Math.PI/180)*9, y2=-25+Math.sin(a+22.5*Math.PI/180)*9;
+        return `<polygon points="${x1},${y1-2} ${x2},${y2} ${x1},${y1+2}" fill="#ffd700"/>`;
+      }).join('')}
+      <!-- Пламя Вечного Огня Баку -->
+      <path d="M8,-45 Q10,-58 10,-65 Q12,-55 14,-48 Q11,-50 10,-44Z" fill="#ff6600" style="animation:bkuFlame 1s ease-in-out infinite alternate;"/>
+      <path d="M9,-47 Q10,-55 11,-47 Q10,-43 9,-47Z" fill="#ffdd00" opacity=".8"/>
+      <!-- Нефтяные капли вдоль тела -->
+      <ellipse cx="10" cy="80" rx="2" ry="3.5" fill="#1a1a1a" opacity=".6"/>
+      <ellipse cx="10" cy="160" rx="2" ry="3.5" fill="#1a1a1a" opacity=".5"/>
+      <ellipse cx="10" cy="240" rx="2" ry="3.5" fill="#1a1a1a" opacity=".6"/>
+      <!-- Кольца — золотые ажурные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#ffd700" stroke-width="2.5" opacity="${.9-i*.06}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/>
+        <circle cx="${10+w+1}" cy="${y}" r="2" fill="url(#bkGold)"/>
+        <circle cx="${10-w-1}" cy="${y}" r="2" fill="url(#bkGold)"/>
+      `;}).join('')}
+      <!-- Катушка — золотая с флагом -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(0,0,0,.9)" stroke="#ffd700" stroke-width="2.5"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="url(#bkGold)"/>
+      <ellipse cx="10" cy="342" rx="3" ry="2" fill="#b8860b"/>
+      <text x="10" y="345" text-anchor="middle" font-size="5">🌙</text>
+      <!-- Ручка — роскошная золотая -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(0,0,0,.9)" stroke="#ffd700" stroke-width="2"/>
+      <!-- Ромбический орнамент ручки -->
+      ${[362,367,372,377,382,387,392].map(y=>`
+        <line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(255,215,0,.5)" stroke-width="0.8"/>
+      `).join('')}
+      <text x="10" y="380" text-anchor="middle" font-size="4" font-family="serif" fill="#ffd700" opacity=".9">🇦🇿</text>`,
   };
 
   // Используем специальный вариант если есть, иначе дефолтный
@@ -8523,7 +8948,12 @@ function makeIngameRodSVG(rod) {
                rod.id === 'pharaoh'   ? 'animation:pharaohGlow 2s ease-in-out infinite alternate;' :
                rod.id === 'neon'      ? 'animation:neonScan 1.5s ease-in-out infinite;' :
                rod.id === 'kraken'    ? 'animation:krakenTentacle 2.5s ease-in-out infinite;' :
-               rod.id === 'time'      ? 'animation:timeFreeze 5s ease-in-out infinite;' : '';
+               rod.id === 'time'      ? 'animation:timeFreeze 5s ease-in-out infinite;' :
+               rod.id === 'blackhole' ? 'animation:bhPulse 1s ease-in-out infinite;' :
+               rod.id === 'rainbow'   ? 'animation:rainbowShift 3s linear infinite;' :
+               rod.id === 'laser'     ? 'animation:laserPulse 0.5s ease-in-out infinite alternate;' :
+               rod.id === 'hugiwugi'  ? 'animation:neonScan 2s ease-in-out infinite;' :
+               rod.id === 'bakintsa'  ? 'animation:pharaohGlow 1.5s ease-in-out infinite alternate;' : '';
 
   return `<svg id="rod-svg-ingame" viewBox="-15 -15 50 420"
     xmlns="http://www.w3.org/2000/svg"
@@ -9827,6 +10257,136 @@ ROD_COLORS.kraken  = {color:'#6020c0', glow:'0 0 60px rgba(120,0,220,1.0)'};
 ROD_COLORS.time    = {color:'#c0e0ff', glow:'0 0 70px rgba(180,220,255,1.0)'};
 ROD_COLORS.flower  = {color:'#ff80c0', glow:'0 0 60px rgba(255,100,200,1.0)'};
 ROD_COLORS.easter  = {color:'#ff80c0', glow:'0 0 60px rgba(255,128,192,1.0)'};
+// Новые удочки
+ROD_COLORS.blackhole = {color:'#8000ff', glow:'0 0 80px rgba(120,0,255,1.0)'};
+ROD_COLORS.rainbow   = {color:'#ff80ff', glow:'0 0 60px rgba(255,128,255,.9)'};
+ROD_COLORS.magnet    = {color:'#40c0ff', glow:'0 0 50px rgba(50,180,255,.9)'};
+ROD_COLORS.laser     = {color:'#ff2020', glow:'0 0 70px rgba(255,0,0,1.0)'};
+ROD_COLORS.bakintsa  = {color:'#ffd700', glow:'0 0 90px rgba(255,215,0,1.0)'};
+ROD_COLORS.hugiwugi  = {color:'#4060ff', glow:'0 0 80px rgba(60,80,255,1.0)'};
+
+// ════════════════════════════════════════════════════════════
+// 🎨 СКИНЫ УДОЧКИ — визуальное изменение в игре
+// Когда скин экипирован, он меняет цвет и анимацию удочки
+// ════════════════════════════════════════════════════════════
+const SKIN_OVERRIDES = {
+  'skin_wood_golden':    { color:'#ffd700', glow:'0 0 20px rgba(255,200,30,.9)', anim:'', label:'✨ Золото' },
+  'skin_bamboo_neon':    { color:'#00ff80', glow:'0 0 25px rgba(0,255,128,.9)', anim:'animation:neonScan 1.5s ease-in-out infinite;', label:'💡 Неон' },
+  'skin_carbon_fire':    { color:'#ff6020', glow:'0 0 30px rgba(255,80,0,1.0)', anim:'animation:meteorPulse 1s ease-in-out infinite alternate;', label:'🔥 Огонь' },
+  'skin_magic_galaxy':   { color:'#c060ff', glow:'0 0 40px rgba(180,50,255,1.0)', anim:'animation:cosmicSpin 3s linear infinite;', label:'🌌 Галактика' },
+  'skin_golden_royal':   { color:'#ffd700', glow:'0 0 50px rgba(255,215,0,1.0)', anim:'animation:pharaohGlow 2s ease-in-out infinite alternate;', label:'👑 Королева' },
+  'skin_crystal_ice':    { color:'#a0f0ff', glow:'0 0 40px rgba(150,240,255,.9)', anim:'animation:timeFreeze 4s ease-in-out infinite;', label:'🧊 Лёд' },
+  'skin_hugiwugi_kisimisi': { color:'#80ff80', glow:'0 0 50px rgba(0,255,0,.8)', anim:'animation:neonScan 2s ease-in-out infinite;', label:'🎄 Кисимиси' },
+  'skin_bakintsa_baku':  { color:'#009900', glow:'0 0 60px rgba(0,180,0,.9)', anim:'animation:pharaohGlow 1.5s ease-in-out infinite alternate;', label:'🇦🇿 Баку' },
+  'skin_rainbow_full':   { color:'#ff80ff', glow:'0 0 60px rgba(255,0,255,.9)', anim:'animation:quantumFlicker .5s steps(2) infinite;', label:'🌈 Радуга' },
+  'skin_blackhole_dark': { color:'#4000c0', glow:'0 0 80px rgba(100,0,220,1.0)', anim:'animation:demonicPulse 1s ease-in-out infinite;', label:'⬛ Тёмная' },
+  'skin_laser_neon':     { color:'#ff0040', glow:'0 0 70px rgba(255,0,60,1.0)',  anim:'animation:dragonBreathe 1s ease-in-out infinite alternate;', label:'🔴 Неон' },
+  'skin_magnet_steel':   { color:'#80c0ff', glow:'0 0 40px rgba(100,180,255,.8)', anim:'animation:mechPulse 2s ease-in-out infinite;', label:'🔩 Хром' },
+  'skin_fish_rainbow':   { color:'#ff80ff', glow:'0 0 20px rgba(255,128,255,.6)', anim:'', label:'🌈 Рыбки' },
+  'skin_fish_golden':    { color:'#ffd700', glow:'0 0 25px rgba(255,200,0,.7)',   anim:'', label:'✨ Рыбки' },
+  'skin_fish_neon':      { color:'#00ffcc', glow:'0 0 30px rgba(0,255,200,.8)',   anim:'', label:'💡 Рыбки' },
+};
+
+// Patch updateRodVisual to apply equipped skin
+const _updateRodVisualBeforeSkin = updateRodVisual;
+window.updateRodVisual = function() {
+  _updateRodVisualBeforeSkin();
+
+  const rod = gs.currentRod;
+  const equippedSkinId = gs.equippedSkins ? gs.equippedSkins[rod.id] : null;
+  if(!equippedSkinId) return;
+
+  const skinOverride = SKIN_OVERRIDES[equippedSkinId];
+  if(!skinOverride) return;
+
+  // Apply skin to rod wrapper
+  const rodWrapper = document.getElementById('rod-wrapper');
+  if(rodWrapper) {
+    rodWrapper.style.filter = `drop-shadow(0 0 8px ${skinOverride.color})`;
+  }
+  // Apply to rod SVG — полностью перезаписываем filter и добавляем анимацию
+  const rodSvg = document.getElementById('rod-svg-ingame');
+  if(rodSvg) {
+    // Достаём text-shadow из style
+    const baseStyle = rodSvg.getAttribute('style') || '';
+    // Убираем старые filter из style, добавляем новый
+    const cleaned = baseStyle.replace(/filter:[^;]+;?/g, '');
+    rodSvg.setAttribute('style', cleaned + `;filter:drop-shadow(0 0 12px ${skinOverride.color}) drop-shadow(0 0 25px ${skinOverride.color}80);${skinOverride.anim}`);
+  }
+  // Apply color to rod name label
+  const nameEl = document.getElementById('current-rod-name');
+  if(nameEl) {
+    nameEl.style.color = skinOverride.color;
+    nameEl.style.textShadow = `0 0 8px ${skinOverride.color}`;
+    nameEl.textContent = '🎨 ' + rod.name + ' [' + skinOverride.label + ']';
+  }
+
+  // Fish skin — make fish SVG in catch popup glow
+  if(equippedSkinId.startsWith('skin_fish_')) {
+    const catchSvg = document.getElementById('catch-fish-svg');
+    if(catchSvg) {
+      catchSvg.style.filter = `drop-shadow(0 0 10px ${skinOverride.color})`;
+    }
+  }
+};
+
+// Add equippedSkins to gs
+gs.equippedSkins = gs.equippedSkins || {};
+
+// Update equipRodUpgrade to also handle skins
+window.equipRodSkin = function(skinId) {
+  const rodId = gs.currentRod.id;
+  gs.equippedSkins = gs.equippedSkins || {};
+  if(gs.equippedSkins[rodId] === skinId) {
+    delete gs.equippedSkins[rodId];
+    showToast('🎨 Скин снят!');
+  } else {
+    gs.equippedSkins[rodId] = skinId;
+    showToast('🎨 Скин надет! Посмотри в Рыбалке!');
+  }
+  updateRodVisual();
+  saveGame();
+  if(gs.currentScreen === 'fisher') renderFisherScreen();
+};
+
+// Patch renderFisherScreen to show skins with "надеть" button
+const _renderFisherScreenWithSkins = window.renderFisherScreen;
+window.renderFisherScreen = function() {
+  if(_renderFisherScreenWithSkins) _renderFisherScreenWithSkins();
+
+  const equip = document.getElementById('fisher-equip-panel');
+  if(!equip) return;
+
+  const oldSec = document.getElementById('fisher-skin-section');
+  if(oldSec) oldSec.remove();
+
+  const curRodSkins2 = (gs.rodSkins||[]).filter(s=>s.rod===gs.currentRod.id || s.rod===null);
+  if(curRodSkins2.length === 0) return;
+
+  const rarColors2 = {common:'#a0c080',rare:'#4090f0',epic:'#c040ff',legend:'#f0c030',og:'#ff4060'};
+  const sec2 = document.createElement('div');
+  sec2.id = 'fisher-skin-section';
+  sec2.className = 'fisher-equip-section';
+  sec2.style.marginTop = '8px';
+  sec2.innerHTML = '<div class="fisher-equip-section-title">🎨 Скины удочки</div>';
+
+  const grid2 = document.createElement('div');
+  grid2.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;';
+
+  curRodSkins2.forEach(skin => {
+    const isEquipped = gs.equippedSkins && gs.equippedSkins[gs.currentRod.id] === skin.id;
+    const override = SKIN_OVERRIDES[skin.id];
+    const chipColor = override ? override.color : rarColors2[skin.rarity] || '#fff';
+    const chip = document.createElement('div');
+    chip.onclick = () => equipRodSkin(skin.id);
+    chip.style.cssText = `display:flex;align-items:center;gap:5px;background:rgba(10,20,30,.9);border:2px solid ${isEquipped ? chipColor : chipColor+'40'};border-radius:20px;padding:5px 10px;cursor:pointer;font-family:Neucha,cursive;font-size:10px;color:${chipColor};${isEquipped ? `box-shadow:0 0 10px ${chipColor}60;` : ''}`;
+    chip.innerHTML = `<span style="font-size:14px;">${skin.icon}</span>${skin.name}${isEquipped ? ' ✅' : ''}`;
+    if(override && override.anim) chip.style.cssText += override.anim;
+    grid2.appendChild(chip);
+  });
+  sec2.appendChild(grid2);
+  equip.appendChild(sec2);
+};
 
 // ════════════════════════════════════════════════════════════
 // 🌸 ЦВЕТОЧНАЯ УДОЧКА — SVG, крафт, логика
@@ -10400,11 +10960,23 @@ const HARDCORE_ROD_SVGS = {
       neon:    { tier:'💻 НЕОН',     tierClass:'rod-tier-neon',     borderColor:'#00ffcc', bgGrad:'rgba(0,15,12,.97),rgba(0,8,6,.95)',     anim:'neonScan 1.5s ease-in-out infinite' },
       kraken:  { tier:'🐙 КРАКЕН',  tierClass:'rod-tier-kraken',   borderColor:'#7030d0', bgGrad:'rgba(10,0,30,.97),rgba(5,0,20,.95)',    anim:'krakenTentacle 2.5s ease-in-out infinite' },
       time:    { tier:'⏳ ВРЕМЯ',    tierClass:'rod-tier-time',     borderColor:'#c0d8ff', bgGrad:'rgba(8,12,22,.97),rgba(4,6,14,.95)',    anim:'timeFreeze 5s ease-in-out infinite' },
+      // Новые удочки
+      blackhole:{ tier:'🌌 БЕЗДНА', tierClass:'rod-tier-demonic',  borderColor:'#8000ff', bgGrad:'rgba(5,0,20,.98),rgba(0,0,10,.98)',     anim:'bhPulse 1s ease-in-out infinite' },
+      rainbow:  { tier:'🌈 РАДУГА', tierClass:'rod-tier-cosmic',   borderColor:'#ff80ff', bgGrad:'rgba(20,0,30,.95),rgba(0,10,20,.95)',   anim:'rainbowShift 3s linear infinite' },
+      magnet:   { tier:'🧲 МАГНИТ', tierClass:'rod-tier-mech',     borderColor:'#40c0ff', bgGrad:'rgba(0,20,40,.97),rgba(0,10,25,.97)',   anim:'mechPulse 1.5s ease-in-out infinite' },
+      laser:    { tier:'💥 ЛАЗЕР',  tierClass:'rod-tier-demonic',  borderColor:'#ff2020', bgGrad:'rgba(40,0,10,.98),rgba(20,0,5,.98)',    anim:'laserPulse 0.5s ease-in-out infinite alternate' },
+      // Лимитки — тоже красиво если выданы
+      hugiwugi: { tier:'🎄 ЛИМИТ', tierClass:'rod-tier-godly',    borderColor:'#4060ff', bgGrad:'rgba(0,10,60,.98),rgba(0,5,40,.98)',   anim:'neonScan 2s ease-in-out infinite' },
+      bakintsa: { tier:'🇦🇿 ЛИМИТ',tierClass:'rod-tier-godly',    borderColor:'#ffd700', bgGrad:'rgba(30,20,0,.98),rgba(15,10,0,.98)',  anim:'pharaohGlow 1.5s ease-in-out infinite alternate' },
     };
 
     RODS.forEach(rod=>{
       const owned=rod.owned||false;
       const equipped=rod.equipped||false;
+
+      // ⭐ ЛИМИТНЫЕ удочки — скрывать из магазина если не выданы!
+      if(rod.limited && !owned && !equipped) return;
+
       let btnHtml;
 
       if(rod.craftable && !owned) {
@@ -11048,6 +11620,807 @@ window.renderGarden = function() {
   }
 })();
 
+// ════════════════════════════════════════════════════════════
+// 🎵 ЗВУКИ ИГРЫ (Web Audio API)
+// ════════════════════════════════════════════════════════════
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getAudioCtx() {
+  if(!audioCtx) { try { audioCtx = new AudioCtx(); } catch(e){} }
+  return audioCtx;
+}
+
+function playSound(type) {
+  try {
+    const ctx = getAudioCtx();
+    if(!ctx) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    const now = ctx.currentTime;
+    switch(type) {
+      case 'cast':
+        o.frequency.setValueAtTime(400, now); o.frequency.linearRampToValueAtTime(200, now+0.3);
+        g.gain.setValueAtTime(0.3, now); g.gain.linearRampToValueAtTime(0, now+0.3);
+        o.start(now); o.stop(now+0.3); break;
+      case 'bite':
+        o.type='square';
+        o.frequency.setValueAtTime(800, now); o.frequency.linearRampToValueAtTime(1200, now+0.1); o.frequency.linearRampToValueAtTime(600, now+0.2);
+        g.gain.setValueAtTime(0.4, now); g.gain.linearRampToValueAtTime(0, now+0.3);
+        o.start(now); o.stop(now+0.3); break;
+      case 'catch':
+        o.type='sine';
+        [0, 0.1, 0.2].forEach((t,i)=>{
+          const o2=ctx.createOscillator(); o2.connect(g);
+          o2.frequency.value=[523,659,784][i];
+          o2.start(now+t); o2.stop(now+t+0.15);
+        });
+        g.gain.setValueAtTime(0.3, now); g.gain.linearRampToValueAtTime(0, now+0.35);
+        o.start(now); o.stop(now+0.01); break;
+      case 'miss':
+        o.type='sawtooth';
+        o.frequency.setValueAtTime(300, now); o.frequency.linearRampToValueAtTime(100, now+0.3);
+        g.gain.setValueAtTime(0.2, now); g.gain.linearRampToValueAtTime(0, now+0.3);
+        o.start(now); o.stop(now+0.3); break;
+      case 'coin':
+        o.type='sine';
+        o.frequency.setValueAtTime(1000, now); o.frequency.linearRampToValueAtTime(1400, now+0.1);
+        g.gain.setValueAtTime(0.2, now); g.gain.linearRampToValueAtTime(0, now+0.2);
+        o.start(now); o.stop(now+0.2); break;
+      case 'legend':
+        o.type='sine';
+        [0,0.08,0.16,0.24,0.32].forEach((t,i)=>{
+          const o2=ctx.createOscillator(); o2.connect(g);
+          o2.type='sine'; o2.frequency.value=[523,659,784,1047,1319][i];
+          o2.start(now+t); o2.stop(now+t+0.12);
+        });
+        g.gain.setValueAtTime(0.35, now); g.gain.linearRampToValueAtTime(0, now+0.5);
+        o.start(now); o.stop(now+0.01); break;
+      case 'disco':
+        o.type='square';
+        const notes = [440,554,659,880,1047];
+        notes.forEach((freq,i)=>{
+          const o2=ctx.createOscillator(); o2.connect(g);
+          o2.frequency.value=freq; o2.start(now+i*0.1); o2.stop(now+i*0.1+0.08);
+        });
+        g.gain.setValueAtTime(0.4, now); g.gain.linearRampToValueAtTime(0, now+0.6);
+        o.start(now); o.stop(now+0.01); break;
+      case 'lootbox':
+        o.type='sine';
+        [0,0.05,0.1,0.15,0.2,0.25,0.3].forEach((t,i)=>{
+          const o2=ctx.createOscillator(); o2.connect(g);
+          o2.frequency.value=200+i*150; o2.start(now+t); o2.stop(now+t+0.07);
+        });
+        g.gain.setValueAtTime(0.35, now); g.gain.linearRampToValueAtTime(0, now+0.45);
+        o.start(now); o.stop(now+0.01); break;
+      case 'hugiwugi':
+        o.type='sawtooth';
+        o.frequency.setValueAtTime(50, now); o.frequency.linearRampToValueAtTime(300, now+0.15); o.frequency.linearRampToValueAtTime(80, now+0.35);
+        g.gain.setValueAtTime(0.5, now); g.gain.linearRampToValueAtTime(0, now+0.45);
+        o.start(now); o.stop(now+0.45); break;
+      case 'promo':
+        o.type='sine';
+        [523,784,1047,1319].forEach((freq,i)=>{
+          const o2=ctx.createOscillator(); o2.connect(g);
+          o2.frequency.value=freq; o2.start(now+i*0.07); o2.stop(now+i*0.07+0.1);
+        });
+        g.gain.setValueAtTime(0.3, now); g.gain.linearRampToValueAtTime(0, now+0.4);
+        o.start(now); o.stop(now+0.01); break;
+    }
+  } catch(e){}
+}
+
+// Хук звуков на игровые события
+const _origAnimateCast = animateCast;
+window.animateCast = function(x,y,cb){ playSound('cast'); _origAnimateCast(x,y,cb); };
+
+const _origTriggerBite = triggerBite;
+window.triggerBite = function(){ playSound('bite'); _origTriggerBite(); };
+
+const _origMiss = miss;
+window.miss = function(){ playSound('miss'); _origMiss(); };
+
+// Sound on fish catch popup
+const _origCatchFishForSound = catchFish;
+window.catchFish = function() {
+  const f = gs.currentCatch;
+  if(f) {
+    if(f.rar==='og'||f.rar==='flower') playSound('legend');
+    else if(f.rar==='legend'||f.rar==='coastal_legend') playSound('legend');
+    else playSound('catch');
+  }
+  _origCatchFishForSound();
+};
+
+// ════════════════════════════════════════════════════════════
+// 🎁 ЛУТБОКСЫ (LOOTBOXES)
+// ════════════════════════════════════════════════════════════
+const LOOTBOX_TYPES = [
+  {id:'rainbow_box', name:'Радужный Лутбокс', icon:'🌈', price:5000, color:'#ff80ff',
+   desc:'Содержит улучшения удочек и редкие скины!'},
+  {id:'gold_box',    name:'Золотой Лутбокс',  icon:'🥇', price:10000, color:'#ffd700',
+   desc:'Лучший шанс на легендарные улучшения!'},
+  {id:'basic_box',   name:'Простой Лутбокс',  icon:'📦', price:2000, color:'#a0c080',
+   desc:'Базовые улучшения и скины'},
+];
+
+const ROD_UPGRADES_POOL = [
+  // Улучшения для каждой удочки
+  {id:'upg_wood_ext', name:'Удлинитель Деревянной', icon:'🔧', rod:'wood', desc:'Дальность заброса +30%', effect:'ext', rarity:'common'},
+  {id:'upg_wood_reel', name:'Катушка Деревянной', icon:'⚙️', rod:'wood', desc:'Скорость подсечки +25%', effect:'reel', rarity:'common'},
+  {id:'upg_bamboo_spring', name:'Пружинный Бамбук', icon:'🌿', rod:'bamboo', desc:'Клёв +50% дополнительно', effect:'bite', rarity:'common'},
+  {id:'upg_carbon_tip', name:'Карбон-Наконечник', icon:'⬛', rod:'carbon', desc:'Чувствительность поклёвки +40%', effect:'sense', rarity:'rare'},
+  {id:'upg_magic_rune', name:'Древняя Руна Магии', icon:'✨', rod:'magic', desc:'Шанс OG рыбы +15%', effect:'og_chance', rarity:'rare'},
+  {id:'upg_golden_core', name:'Золотой Сердечник', icon:'💛', rod:'golden', desc:'+500🪙 за каждый улов', effect:'coins', rarity:'epic'},
+  {id:'upg_crystal_lens', name:'Кристальная Линза', icon:'🔮', rod:'crystal', desc:'Редкость рыб x3 вместо x2', effect:'rare_x3', rarity:'epic'},
+  {id:'upg_thunder_coil', name:'Громовая Катушка', icon:'⚡', rod:'thunder', desc:'Авто-подсечка 100%', effect:'auto', rarity:'epic'},
+  {id:'upg_void_eye', name:'Глаз Бездны', icon:'👁️', rod:'void', desc:'Легенды всегда OG', effect:'void_og', rarity:'legend'},
+  {id:'upg_ghost_soul', name:'Призрачная Душа', icon:'👻', rod:'ghost', desc:'Случайный клёв x0.5–x5', effect:'ghost_boost', rarity:'legend'},
+  {id:'upg_pharaoh_scarab', name:'Скарабей Фараона', icon:'🪲', rod:'pharaoh', desc:'Монеты x3 вместо x2', effect:'coins_x3', rarity:'legend'},
+  {id:'upg_kraken_ink', name:'Чернила Кракена', icon:'🦑', rod:'kraken', desc:'+10000🪙 на OG вместо 5000', effect:'kraken_bonus', rarity:'legend'},
+  {id:'upg_time_hourglass', name:'Песочные Часы', icon:'⌛', rod:'time', desc:'5 рыб за раз вместо 3', effect:'time_fish5', rarity:'legend'},
+  {id:'upg_bakintsa_gold', name:'Бакинское Золото', icon:'🏆', rod:'bakintsa', desc:'+5000🪙 вместо 2500 за улов', effect:'baku_bonus', rarity:'og'},
+  {id:'upg_hugiwugi_scream', name:'Ультра-Крик Хаги', icon:'😱', rod:'hugiwugi', desc:'Крик оглушает — рыба не уплывает 15 сек', effect:'hagi_stun', rarity:'og'},
+  {id:'upg_rainbow_shimmer', name:'Радужный Блеск', icon:'🌈', rod:'rainbow', desc:'Бонус всегда x3 монеты', effect:'rainbow_x3', rarity:'epic'},
+  {id:'upg_blackhole_warp', name:'Варп Чёрной Дыры', icon:'🌀', rod:'blackhole', desc:'Гравитация +10 рыб каждые 2 улова', effect:'bh_boost', rarity:'og'},
+];
+
+const ROD_SKINS_POOL = [
+  {id:'skin_wood_golden', name:'Золотая Деревянная', icon:'🪵✨', rod:'wood', desc:'Деревянная в золоте', rarity:'rare'},
+  {id:'skin_bamboo_neon', name:'Неоновый Бамбук', icon:'🟢', rod:'bamboo', desc:'Светится в темноте', rarity:'rare'},
+  {id:'skin_carbon_fire', name:'Огненный Карбон', icon:'🔥', rod:'carbon', desc:'Огненный след при забросе', rarity:'epic'},
+  {id:'skin_magic_galaxy', name:'Галактическая Волшебная', icon:'🌌', rod:'magic', desc:'Галактика в удочке', rarity:'epic'},
+  {id:'skin_golden_royal', name:'Королевская Золотая', icon:'👑', rod:'golden', desc:'Корона на удочке', rarity:'legend'},
+  {id:'skin_crystal_ice', name:'Ледяная Кристальная', icon:'🧊', rod:'crystal', desc:'Ледяные кристаллы', rarity:'legend'},
+  {id:'skin_hugiwugi_kisimisi', name:'Кисимиси Хаги Ваги', icon:'🎄', rod:'hugiwugi', desc:'Новогодний скин Хаги Ваги!', rarity:'og'},
+  {id:'skin_bakintsa_baku', name:'Флаг Баку', icon:'🇦🇿', rod:'bakintsa', desc:'Флаг Азербайджана на удочке', rarity:'og'},
+  {id:'skin_rainbow_full', name:'Полная Радуга', icon:'🌈🌟', rod:'rainbow', desc:'Все цвета радуги 100%', rarity:'epic'},
+  {id:'skin_blackhole_dark', name:'Тёмная Материя', icon:'⬛🌀', rod:'blackhole', desc:'Пространство искажается', rarity:'og'},
+  {id:'skin_laser_neon', name:'Неон Лазер', icon:'🔴💫', rod:'laser', desc:'Неоновый лазерный прицел', rarity:'epic'},
+  {id:'skin_magnet_steel', name:'Стальной Магнит', icon:'🧲🔩', rod:'magnet', desc:'Хромированный магнит', rarity:'rare'},
+  // Скины рыбок
+  {id:'skin_fish_rainbow', name:'Радужная Рыбка', icon:'🐠🌈', rod:null, desc:'Все рыбки переливаются', rarity:'rare'},
+  {id:'skin_fish_golden', name:'Золотые Рыбки', icon:'🐟✨', rod:null, desc:'Рыбки из золота', rarity:'epic'},
+  {id:'skin_fish_neon', name:'Неоновые Рыбки', icon:'🐡💡', rod:null, desc:'Светящиеся рыбки', rarity:'legend'},
+];
+
+gs.lootboxes = gs.lootboxes || {};
+gs.rodUpgrades = gs.rodUpgrades || [];
+gs.rodSkins = gs.rodSkins || [];
+gs.equippedUpgrades = gs.equippedUpgrades || {};
+
+function openLootbox(typeId) {
+  const type = LOOTBOX_TYPES.find(t=>t.id===typeId);
+  if(!type) return;
+  if((gs.lootboxes[typeId]||0) <= 0) { showToast('❌ Нет лутбоксов этого типа!'); return; }
+  gs.lootboxes[typeId]--;
+  playSound('lootbox');
+
+  // Rarity roll
+  const roll = Math.random();
+  let rarity;
+  if(typeId === 'gold_box') {
+    if(roll < 0.02) rarity = 'og';
+    else if(roll < 0.10) rarity = 'legend';
+    else if(roll < 0.30) rarity = 'epic';
+    else if(roll < 0.60) rarity = 'rare';
+    else rarity = 'common';
+  } else if(typeId === 'rainbow_box') {
+    if(roll < 0.05) rarity = 'og';
+    else if(roll < 0.18) rarity = 'legend';
+    else if(roll < 0.40) rarity = 'epic';
+    else if(roll < 0.70) rarity = 'rare';
+    else rarity = 'common';
+  } else {
+    if(roll < 0.01) rarity = 'og';
+    else if(roll < 0.05) rarity = 'legend';
+    else if(roll < 0.15) rarity = 'epic';
+    else if(roll < 0.40) rarity = 'rare';
+    else rarity = 'common';
+  }
+
+  // 50/50 upgrade or skin
+  const pool = Math.random() < 0.5
+    ? ROD_UPGRADES_POOL.filter(u => u.rarity === rarity || (rarity==='common' && u.rarity==='common'))
+    : ROD_SKINS_POOL.filter(s => s.rarity === rarity || (rarity==='common' && s.rarity==='rare'));
+
+  const fallback = Math.random() < 0.5 ? ROD_UPGRADES_POOL : ROD_SKINS_POOL;
+  const items = pool.length > 0 ? pool : fallback;
+  const item = items[Math.floor(Math.random()*items.length)];
+
+  // Check if upgrade or skin
+  if(ROD_UPGRADES_POOL.includes(item)) {
+    gs.rodUpgrades.push({...item, obtainedAt: Date.now()});
+  } else {
+    gs.rodSkins.push({...item, obtainedAt: Date.now()});
+  }
+
+  saveGame();
+  showLootboxResult(item, type);
+}
+
+function showLootboxResult(item, type) {
+  const overlay = document.getElementById('lootbox-overlay');
+  if(!overlay) return;
+  const rarColors = {common:'#a0c080', rare:'#4090f0', epic:'#c040ff', legend:'#f0c030', og:'#ff4060'};
+  document.getElementById('lb-item-icon').textContent = item.icon;
+  document.getElementById('lb-item-name').textContent = item.name;
+  document.getElementById('lb-item-desc').textContent = item.desc;
+  const rarEl = document.getElementById('lb-item-rarity');
+  rarEl.textContent = item.rarity.toUpperCase();
+  rarEl.style.color = rarColors[item.rarity] || '#fff';
+  rarEl.style.textShadow = `0 0 10px ${rarColors[item.rarity]}`;
+  overlay.style.display = 'block';
+}
+
+// Add lootbox tab to shop
+const _origSwitchShopTab = switchShopTab;
+window.switchShopTab = function(tab, el) {
+  if(tab === 'lootbox') {
+    currentShopTab = 'lootbox';
+    document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));
+    if(el) el.classList.add('active');
+    const body = document.getElementById('shop-body');
+    renderLootboxes(body);
+    return;
+  }
+  if(tab === 'promo') {
+    currentShopTab = 'promo';
+    document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));
+    if(el) el.classList.add('active');
+    renderPromoScreen(document.getElementById('shop-body'));
+    return;
+  }
+  _origSwitchShopTab(tab, el);
+};
+
+function renderLootboxes(body) {
+  body.innerHTML = '';
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-family:UnifrakturMaguntia,cursive;font-size:18px;color:#ffd700;text-align:center;padding:12px 0 6px;text-shadow:0 0 12px rgba(255,200,0,.6);';
+  hdr.textContent = '🎁 Лутбоксы';
+  body.appendChild(hdr);
+
+  const inv = document.createElement('div');
+  inv.style.cssText = 'font-family:Neucha,cursive;font-size:12px;color:#c0e080;text-align:center;padding:4px 0 10px;';
+  inv.textContent = 'Твои лутбоксы: ' + LOOTBOX_TYPES.map(t=>`${t.icon}×${gs.lootboxes[t.id]||0}`).join(' | ');
+  body.appendChild(inv);
+
+  LOOTBOX_TYPES.forEach(type => {
+    const card = document.createElement('div');
+    card.style.cssText = `margin:6px 8px;border-radius:14px;background:linear-gradient(135deg,rgba(10,20,5,.9),rgba(5,15,3,.95));border:2px solid ${type.color}40;padding:12px;display:flex;align-items:center;gap:10px;`;
+    card.innerHTML = `
+      <div style="font-size:36px;filter:drop-shadow(0 0 10px ${type.color});">${type.icon}</div>
+      <div style="flex:1;">
+        <div style="font-family:UnifrakturMaguntia,cursive;font-size:14px;color:${type.color};">${type.name}</div>
+        <div style="font-family:Neucha,cursive;font-size:10px;color:rgba(180,220,130,.7);">${type.desc}</div>
+        <div style="font-family:Neucha,cursive;font-size:11px;color:#ffd700;margin-top:3px;">У тебя: ${gs.lootboxes[type.id]||0} шт</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <button onclick="buyLootbox('${type.id}')" style="font-family:Neucha,cursive;font-size:11px;background:linear-gradient(135deg,#2a5010,#1a3008);border:1px solid #60a030;border-radius:8px;color:#a0e040;padding:6px 10px;cursor:pointer;">🪙${type.price.toLocaleString('ru')}</button>
+        <button onclick="openLootbox('${type.id}')" style="font-family:Neucha,cursive;font-size:11px;background:linear-gradient(135deg,#4a1a60,#2a0a40);border:1px solid #9030d0;border-radius:8px;color:#e080ff;padding:6px 10px;cursor:pointer;">🎁 Открыть</button>
+      </div>
+    `;
+    body.appendChild(card);
+  });
+
+  // Show owned upgrades/skins
+  if(gs.rodUpgrades.length > 0 || gs.rodSkins.length > 0) {
+    const secHdr = document.createElement('div');
+    secHdr.style.cssText = 'font-family:UnifrakturMaguntia,cursive;font-size:14px;color:#c0a030;text-align:center;padding:10px 0 4px;';
+    secHdr.textContent = '✨ Твои улучшения и скины';
+    body.appendChild(secHdr);
+    [...gs.rodUpgrades, ...gs.rodSkins].slice(-10).forEach(item=>{
+      const el = document.createElement('div');
+      el.style.cssText = 'margin:4px 8px;border-radius:8px;background:rgba(10,25,5,.8);border:1px solid rgba(80,160,30,.3);padding:8px 10px;display:flex;align-items:center;gap:8px;font-family:Neucha,cursive;';
+      const rarColors = {common:'#a0c080',rare:'#4090f0',epic:'#c040ff',legend:'#f0c030',og:'#ff4060'};
+      el.innerHTML = `<span style="font-size:20px;">${item.icon}</span><div><div style="font-size:12px;color:#c8e090;">${item.name}</div><div style="font-size:10px;color:rgba(150,200,100,.6);">${item.desc}</div></div><div style="margin-left:auto;font-size:10px;color:${rarColors[item.rarity]||'#fff'};">${item.rarity.toUpperCase()}</div>`;
+      body.appendChild(el);
+    });
+  }
+}
+
+function buyLootbox(typeId) {
+  const type = LOOTBOX_TYPES.find(t=>t.id===typeId);
+  if(!type) return;
+  if(gs.coins < type.price) { showToast(`❌ Нужно ${type.price.toLocaleString('ru')}🪙!`); return; }
+  gs.coins -= type.price;
+  gs.lootboxes[typeId] = (gs.lootboxes[typeId]||0) + 1;
+  updateCoins();
+  renderLootboxes(document.getElementById('shop-body'));
+  playSound('coin');
+  showToast(`🎁 ${type.name} куплен!`);
+  saveGame();
+}
+
+// ════════════════════════════════════════════════════════════
+// 🎟️ ПРОМОКОДЫ
+// ════════════════════════════════════════════════════════════
+const PROMO_CODES = {
+  'ахаааад': {
+    used: false,
+    rewards: [
+      {type:'lootbox', id:'rainbow_box', qty:2, label:'2 Радужных Лутбокса'},
+    ],
+    label: '🌈 Старт-Пакет!'
+  },
+  'дискобаку': {
+    used: false,
+    rewards: [
+      {type:'coins', qty:50000, label:'50 000🪙'},
+    ],
+    label: '🪩 Диско Монеты!'
+  },
+  'хагиимба': {
+    used: false,
+    rewards: [
+      {type:'lootbox', id:'gold_box', qty:1, label:'1 Золотой Лутбокс'},
+    ],
+    label: '👑 Золото Хаги!'
+  },
+};
+gs.usedPromos = gs.usedPromos || {};
+
+function renderPromoScreen(body) {
+  body.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'padding:16px;';
+  wrap.innerHTML = `
+    <div style="font-family:UnifrakturMaguntia,cursive;font-size:18px;color:#ffd700;text-align:center;margin-bottom:12px;text-shadow:0 0 12px rgba(255,200,0,.6);">🎟️ Промокод</div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <input id="promo-input" placeholder="Введи промокод..." maxlength="20"
+        style="flex:1;font-family:Neucha,cursive;font-size:14px;background:rgba(0,0,0,.5);border:1px solid rgba(80,160,30,.4);border-radius:8px;padding:8px 12px;color:#c0e090;outline:none;"/>
+      <button onclick="applyPromo()" style="font-family:Neucha,cursive;font-size:13px;background:linear-gradient(135deg,#2a6010,#1a4008);border:2px solid #60b030;border-radius:8px;color:#a0e040;padding:8px 14px;cursor:pointer;">✅ Активировать</button>
+    </div>
+    <div id="promo-result" style="font-family:Neucha,cursive;font-size:13px;text-align:center;min-height:24px;margin-bottom:12px;"></div>
+    <div style="font-family:Neucha,cursive;font-size:11px;color:rgba(150,200,100,.5);text-align:center;">Промокоды дают лутбоксы, монеты и особые предметы!</div>
+  `;
+  body.appendChild(wrap);
+}
+
+function applyPromo() {
+  const input = document.getElementById('promo-input');
+  if(!input) return;
+  const code = input.value.trim().toLowerCase();
+  const resEl = document.getElementById('promo-result');
+
+  if(!code) { if(resEl) resEl.style.color='#ff8060', resEl.textContent='❌ Введи промокод!'; return; }
+  if(gs.usedPromos[code]) { if(resEl) resEl.style.color='#ff8060', resEl.textContent='❌ Этот код уже использован!'; return; }
+
+  const promo = PROMO_CODES[code];
+  if(!promo) { if(resEl) resEl.style.color='#ff8060', resEl.textContent='❌ Неверный промокод!'; return; }
+
+  // Apply
+  gs.usedPromos[code] = true;
+  const labels = [];
+  promo.rewards.forEach(r=>{
+    if(r.type === 'lootbox') { gs.lootboxes[r.id] = (gs.lootboxes[r.id]||0) + r.qty; }
+    else if(r.type === 'coins') { gs.coins += r.qty; updateCoins(); coinBurst(180, 350); }
+    else if(r.type === 'rod') { const rod = RODS.find(x=>x.id===r.id); if(rod) rod.owned=true; }
+    labels.push(r.label);
+  });
+
+  playSound('promo');
+  if(resEl) { resEl.style.color='#80e040'; resEl.textContent=`✅ ${promo.label} Получено: ${labels.join(', ')}!`; }
+  input.value = '';
+  saveGame();
+  showToast(`🎟️ Промокод "${code}" активирован! ${promo.label}`);
+}
+
+// ════════════════════════════════════════════════════════════
+// 🪩 ДИСКОТЕКА + ИВЕНТ 25 ФЕВРАЛЯ 14:30 (Азербайджан = UTC+4)
+// ════════════════════════════════════════════════════════════
+let discoActive = false;
+let discoInterval = null;
+
+function startDisco() {
+  if(discoActive) return;
+  discoActive = true;
+  playSound('disco');
+  showToast('🪩 ДИСКОТЕКА НАЧАЛАСЬ! Клёв x5 на время ивента!');
+
+  const game = document.getElementById('game');
+  // Add disco ball
+  const discoBall = document.createElement('div');
+  discoBall.id = 'disco-ball';
+  discoBall.innerHTML = '🪩';
+  discoBall.style.cssText = 'position:absolute;top:60px;left:50%;transform:translateX(-50%);font-size:36px;z-index:5000;animation:discoBallSpin 1s linear infinite;pointer-events:none;filter:drop-shadow(0 0 20px #ff80ff);';
+  game.appendChild(discoBall);
+
+  // Disco lights
+  discoInterval = setInterval(()=>{
+    const colors = ['#ff0080','#0080ff','#00ff80','#ff8000','#8000ff','#ffff00'];
+    const col = colors[Math.floor(Math.random()*colors.length)];
+    const light = document.createElement('div');
+    light.style.cssText = `position:absolute;inset:0;background:${col};opacity:0.08;z-index:4999;pointer-events:none;border-radius:12px;animation:discoFlash .15s ease-out forwards;`;
+    game.appendChild(light);
+    setTimeout(()=>light.remove(), 200);
+    playSound('disco');
+  }, 800);
+}
+
+function stopDisco() {
+  discoActive = false;
+  clearInterval(discoInterval);
+  const ball = document.getElementById('disco-ball');
+  if(ball) ball.remove();
+}
+
+// Admin popup notification
+function showAdminPopup(msg, delay) {
+  setTimeout(()=>{
+    const popup = document.createElement('div');
+    popup.style.cssText = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,#1a0a30,#2a1050);border:3px solid #ff80ff;border-radius:16px;padding:16px 20px;text-align:center;max-width:300px;box-shadow:0 0 40px rgba(255,0,255,.5);animation:adminPopIn .5s cubic-bezier(.34,1.56,.64,1) forwards;`;
+    popup.innerHTML = `
+      <div style="font-size:28px;margin-bottom:6px;">👑</div>
+      <div style="font-family:UnifrakturMaguntia,cursive;font-size:14px;color:#ff80ff;margin-bottom:6px;text-shadow:0 0 10px rgba(255,128,255,.8);">СООБЩЕНИЕ АДМИНИСТРАТОРА</div>
+      <div style="font-family:Neucha,cursive;font-size:13px;color:#c0e0ff;line-height:1.4;">${msg}</div>
+      <button onclick="this.parentNode.remove()" style="margin-top:10px;font-family:Neucha,cursive;font-size:12px;background:linear-gradient(135deg,#4a0080,#2a0050);border:1px solid #ff80ff;border-radius:8px;color:#ff80ff;padding:6px 16px;cursor:pointer;">✅ Понял!</button>
+    `;
+    document.getElementById('game').appendChild(popup);
+    setTimeout(()=>popup.remove(), 15000);
+  }, delay);
+}
+
+// Event scheduler for Feb 25 14:30 Baku time (UTC+4)
+function checkEventTime() {
+  const now = new Date();
+  const bakuOffset = 4 * 60; // UTC+4
+  const bakuNow = new Date(now.getTime() + (bakuOffset - now.getTimezoneOffset()) * 60000);
+  const month = bakuNow.getMonth() + 1; // 1-based
+  const day = bakuNow.getDate();
+  const h = bakuNow.getHours();
+  const m = bakuNow.getMinutes();
+
+  // Check if Feb 25
+  if(month === 2 && day === 25) {
+    // 14:30 - Disco starts + event begins
+    if(h === 14 && m >= 30 && m < 35 && !gs._eventStarted) {
+      gs._eventStarted = true;
+      startDisco();
+      showAdminPopup('🎉 ИВЕНТ НАЧАЛСЯ!<br>Диско включён!<br>Раздача удочек стартует!', 500);
+    }
+    // 14:35 - Hugiwugi rod given
+    if(h === 14 && m >= 35 && m < 40 && !gs._hugiwugiGiven) {
+      gs._hugiwugiGiven = true;
+      const hugRod = RODS.find(r=>r.id==='hugiwugi');
+      if(hugRod) hugRod.owned = true;
+      playSound('hugiwugi');
+      showAdminPopup('💙 АДМИН ВЫДАЛ ВАМ:<br><strong>Удочка Хаги Ваги</strong><br>ЛИМИТИРОВАННАЯ!', 200);
+      showToast('💙 Удочка Хаги Ваги добавлена!');
+      saveGame();
+    }
+    // 14:40 - Bakintsa rod given
+    if(h === 14 && m >= 40 && m < 50 && !gs._bakintsaGiven) {
+      gs._bakintsaGiven = true;
+      const bakRod = RODS.find(r=>r.id==='bakintsa');
+      if(bakRod) bakRod.owned = true;
+      showAdminPopup('🏆 АДМИН ВЫДАЛ ВАМ:<br><strong>Удочка Бакинца</strong><br>ЛИМИТИРОВАННАЯ! 🇦🇿', 200);
+      showToast('🏆 Удочка Бакинца добавлена!');
+      saveGame();
+    }
+    // 14:50 - Event ends
+    if(h === 14 && m >= 50 && gs._eventStarted && !gs._eventEnded) {
+      gs._eventEnded = true;
+      stopDisco();
+      showAdminPopup('🌅 Ивент завершился!<br>Спасибо за участие!<br>Ваши удочки остаются! 🎣', 200);
+    }
+  }
+}
+setInterval(checkEventTime, 10000);
+// Run immediately
+setTimeout(checkEventTime, 2000);
+
+// ════════════════════════════════════════════════════════════
+// ⚙️ НОВЫЕ УДОЧКИ — МЕХАНИКИ
+// ════════════════════════════════════════════════════════════
+
+// 🕳️ Чёрная Дыра — гравитационный взрыв каждые 3 улова
+gs._blackholeCatches = 0;
+
+// 🌈 Радужная — случайный бонус каждый улов
+// 🧲 Магнитная — шанс вытащить сундук
+// 🔴 Лазерная — на легенду → 3 OG рыбы
+
+// Patch catchFish for new rods
+const _catchFishNewRods = window.catchFish || function(){};
+window.catchFish = function() {
+  const rod = gs.currentRod;
+  _catchFishNewRods();
+
+  if(rod.id === 'blackhole') {
+    gs._blackholeCatches = (gs._blackholeCatches||0) + 1;
+    if(gs._blackholeCatches % 3 === 0) {
+      // Gravity explosion — add 5 random fish
+      const allFish = FISH_DATA.filter(f=>!f.flower);
+      for(let i=0;i<5;i++) {
+        if(gs.inventory.length < gs.maxInv) {
+          const f = allFish[Math.floor(Math.random()*allFish.length)];
+          gs.inventory.push({...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)});
+        }
+      }
+      showToast('🕳️ ГРАВИТАЦИОННЫЙ ВЗРЫВ! +5 рыб засосано!');
+      // Visual effect
+      const game = document.getElementById('game');
+      const exp = document.createElement('div');
+      exp.style.cssText='position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:60px;z-index:9000;pointer-events:none;animation:coinBurstAnim .8s ease-out forwards;';
+      exp.textContent='🕳️'; game.appendChild(exp);
+      setTimeout(()=>exp.remove(), 900);
+      renderInventory();
+    }
+  }
+
+  if(rod.id === 'rainbow') {
+    const bonuses = [
+      ()=>{ gs.coins += 1000; updateCoins(); showToast('🌈 Радуга: +1000🪙!'); playSound('coin'); },
+      ()=>{ addXP(200); showToast('🌈 Радуга: +200 XP!'); },
+      ()=>{ gs._biteBoostEnd = Date.now() + 30000; showToast('🌈 Радуга: Клёв x3 на 30 сек!'); },
+      ()=>{ const og = FISH_DATA.filter(f=>f.og); if(og.length && gs.inventory.length < gs.maxInv) { const f=og[Math.floor(Math.random()*og.length)]; gs.inventory.push({...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)}); renderInventory(); showToast('🌈 Радуга: Редкая OG рыба!'); } },
+    ];
+    bonuses[Math.floor(Math.random()*bonuses.length)]();
+    // Change water color
+    const colors = ['#0060ff','#00c060','#ff0080','#8000ff','#ff6000'];
+    document.getElementById('water-bg').style.background = `linear-gradient(to bottom, ${colors[Math.floor(Math.random()*colors.length)]}60, ${colors[Math.floor(Math.random()*colors.length)]}20)`;
+    setTimeout(()=>{ document.getElementById('water-bg').style.background=''; }, 3000);
+  }
+
+  if(rod.id === 'magnet') {
+    if(Math.random() < 0.3) {
+      // Chest found!
+      const chests = [
+        { label:'🪙 Монетный Сундук', action: ()=>{ gs.coins += 5000; updateCoins(); coinBurst(180,350); showToast('🧲 СУНДУК: +5000🪙!'); } },
+        { label:'🎁 Лутбокс-Сундук', action: ()=>{ gs.lootboxes['rainbow_box'] = (gs.lootboxes['rainbow_box']||0)+1; showToast('🧲 СУНДУК: Радужный Лутбокс!'); } },
+        { label:'⬆️ XP Сундук', action: ()=>{ addXP(500); showToast('🧲 СУНДУК: +500 XP!'); } },
+      ];
+      const chest = chests[Math.floor(Math.random()*chests.length)];
+      chest.action();
+      playSound('coin');
+    }
+  }
+
+  if(rod.id === 'laser') {
+    const f = gs.currentCatch;
+    if(f && (f.rar==='legend'||f.rar==='coastal_legend'||f.rar==='og')) {
+      // Laser beam — 3 OG fish
+      const ogFish = FISH_DATA.filter(f=>f.og);
+      for(let i=0;i<3;i++) {
+        if(gs.inventory.length < gs.maxInv && ogFish.length) {
+          const bonus = ogFish[Math.floor(Math.random()*ogFish.length)];
+          gs.inventory.push({...bonus, weight:(bonus.w[0]+Math.random()*(bonus.w[1]-bonus.w[0])).toFixed(2)});
+        }
+      }
+      // Laser effect
+      const game = document.getElementById('game');
+      const laser = document.createElement('div');
+      laser.style.cssText='position:absolute;top:0;left:50%;transform:translateX(-50%);width:4px;height:100%;background:linear-gradient(to bottom,transparent,#ff0000,transparent);z-index:9000;pointer-events:none;animation:discoFlash .3s ease-out forwards;opacity:0.8;';
+      game.appendChild(laser);
+      setTimeout(()=>laser.remove(), 350);
+      showToast('🔴 ЛАЗЕР! Легенда → 3 OG рыбы!');
+      renderInventory();
+    }
+  }
+
+  if(rod.id === 'bakintsa') {
+    gs.coins += 2500; updateCoins(); playSound('coin');
+    showToast('🏆 Удочка Бакинца: +2500🪙!');
+  }
+  if(rod.id === 'hugiwugi') {
+    playSound('hugiwugi');
+    showToast('💙 Хаги Ваги: СКРИМЕР УЖАСА!');
+    // Screen shake
+    const game = document.getElementById('game');
+    game.style.animation = 'apocalypseShake .5s ease-out';
+    setTimeout(()=>game.style.animation='', 500);
+  }
+};
+
+// bite pools for new rods
+const _origTriggerBiteCheck = window.triggerBite;
+window.triggerBite = function() {
+  const rod = gs.currentRod;
+  if(rod && rod.id === 'hugiwugi') {
+    const ogFish = FISH_DATA.filter(f=>f.og);
+    gs.currentCatch = {...ogFish[Math.floor(Math.random()*ogFish.length)], weight:(ogFish[0].w[0]+Math.random()*(ogFish[0].w[1]-ogFish[0].w[0])).toFixed(2)};
+    gs.phase = 'bite';
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    const biteEl2 = document.getElementById('bite-indicator');
+    if(biteEl2) biteEl2.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 8000);
+    return;
+  }
+  _origTriggerBiteCheck();
+};
+
+// ════════════════════════════════════════════════════════════
+// 🧑‍🎣 FISHER TAB — Улучшения из лутбоксов
+// ════════════════════════════════════════════════════════════
+// Patch renderFisherScreen to show upgrades section
+const _origRenderFisherScreen = window.renderFisherScreen;
+window.renderFisherScreen = function() {
+  if(_origRenderFisherScreen) _origRenderFisherScreen();
+
+  // Add upgrades from lootbox to fisher screen
+  const equip = document.getElementById('fisher-equip-panel');
+  if(!equip) return;
+
+  // Remove old lootbox upgrade section
+  const oldSec = document.getElementById('fisher-lootbox-section');
+  if(oldSec) oldSec.remove();
+
+  const curRodUpgrades = (gs.rodUpgrades||[]).filter(u=>u.rod===gs.currentRod.id || u.rod===null);
+  // Скины показываются в fisher-skin-section (патч выше) — тут только улучшения
+
+  if(curRodUpgrades.length === 0) {
+    const sec = document.createElement('div');
+    sec.id = 'fisher-lootbox-section';
+    sec.className = 'fisher-equip-section';
+    sec.style.marginTop = '8px';
+    sec.innerHTML = `<div class="fisher-equip-section-title">⚡ Улучшения удочки</div><div style="font-family:Neucha,cursive;font-size:11px;color:rgba(150,200,100,.4);padding:10px 14px;">Нет улучшений. Открой 🎁 Лутбоксы в магазине!</div>`;
+    equip.appendChild(sec);
+    return;
+  }
+
+  const sec = document.createElement('div');
+  sec.id = 'fisher-lootbox-section';
+  sec.className = 'fisher-equip-section';
+  sec.style.marginTop = '8px';
+  sec.innerHTML = `<div class="fisher-equip-section-title">⚡ Улучшения удочки</div>`;
+
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;';
+
+  curRodUpgrades.forEach(u => {
+    const isEquipped = gs.equippedUpgrades && gs.equippedUpgrades[gs.currentRod.id] === u.id;
+    const rarColors3 = {common:'rgba(60,140,30,.4)',rare:'#4090f0',epic:'#c040ff',legend:'#f0c030',og:'#ff4060'};
+    const borderCol = isEquipped ? '#a0e040' : rarColors3[u.rarity] || 'rgba(60,140,30,.4)';
+    const chip = document.createElement('div');
+    chip.onclick = () => equipRodUpgrade(u.id);
+    chip.style.cssText = `display:flex;align-items:center;gap:5px;background:rgba(10,30,15,.8);border:2px solid ${borderCol};border-radius:20px;padding:5px 10px;cursor:pointer;font-family:Neucha,cursive;font-size:10px;color:#a0d060;${isEquipped ? 'box-shadow:0 0 8px rgba(80,200,40,.4);' : ''}`;
+    chip.innerHTML = `<span style="font-size:14px;">${u.icon}</span>${u.name}${isEquipped ? ' ✅' : ''}`;
+    grid.appendChild(chip);
+  });
+
+  sec.appendChild(grid);
+  equip.appendChild(sec);
+};
+
+function equipRodUpgrade(id) {
+  const rodId = gs.currentRod.id;
+  if(gs.equippedUpgrades[rodId] === id) {
+    delete gs.equippedUpgrades[rodId];
+    showToast('⬇️ Улучшение снято!');
+  } else {
+    gs.equippedUpgrades[rodId] = id;
+    showToast('⬆️ Улучшение надето!');
+  }
+  saveGame();
+  if(typeof renderFisherScreen === 'function') renderFisherScreen();
+}
+
+// ════════════════════════════════════════════════════════════
+// 🛒 ДОБАВИТЬ ВКЛАДКИ В МАГАЗИН
+// ════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.getElementById('shop-tabs');
+  if(tabs) {
+    const lb = document.createElement('div');
+    lb.className = 'shop-tab';
+    lb.onclick = function(){ switchShopTab('lootbox', this); };
+    lb.textContent = '🎁 Лутбоксы';
+    tabs.appendChild(lb);
+
+    const pr = document.createElement('div');
+    pr.className = 'shop-tab';
+    pr.onclick = function(){ switchShopTab('promo', this); };
+    pr.textContent = '🎟️ Промокод';
+    tabs.appendChild(pr);
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// PATCH SAVE/LOAD for new data
+// ════════════════════════════════════════════════════════════
+const _origSaveGame = saveGame;
+window.saveGame = function() {
+  _origSaveGame();
+  try {
+    const extra2 = {
+      lootboxes: gs.lootboxes || {},
+      rodUpgrades: gs.rodUpgrades || [],
+      rodSkins: gs.rodSkins || [],
+      equippedUpgrades: gs.equippedUpgrades || {},
+      equippedSkins: gs.equippedSkins || {},      // ← СКИНЫ
+      usedPromos: gs.usedPromos || {},
+      _eventStarted: gs._eventStarted || false,
+      _hugiwugiGiven: gs._hugiwugiGiven || false,
+      _bakintsaGiven: gs._bakintsaGiven || false,
+      _eventEnded: gs._eventEnded || false,
+    };
+    localStorage.setItem('fishing_reborn_extra2', JSON.stringify(extra2));
+  } catch(e) {}
+};
+
+// Load new data
+try {
+  const raw2 = localStorage.getItem('fishing_reborn_extra2');
+  if(raw2) {
+    const ex2 = JSON.parse(raw2);
+    gs.lootboxes = ex2.lootboxes || {};
+    gs.rodUpgrades = ex2.rodUpgrades || [];
+    gs.rodSkins = ex2.rodSkins || [];
+    gs.equippedUpgrades = ex2.equippedUpgrades || {};
+    gs.equippedSkins = ex2.equippedSkins || {};    // ← СКИНЫ
+    gs.usedPromos = ex2.usedPromos || {};
+    gs._eventStarted = ex2._eventStarted || false;
+    gs._hugiwugiGiven = ex2._hugiwugiGiven || false;
+    gs._bakintsaGiven = ex2._bakintsaGiven || false;
+    gs._eventEnded = ex2._eventEnded || false;
+  }
+} catch(e) {}
+
+// ════════════════════════════════════════════════════════════
+// CSS ANIMATIONS for new features (inject into style)
+// ════════════════════════════════════════════════════════════
+const newStyles = document.createElement('style');
+newStyles.textContent = `
+@keyframes discoBallSpin { 0%{transform:translateX(-50%) rotate(0deg);filter:drop-shadow(0 0 20px #ff80ff);} 50%{filter:drop-shadow(0 0 30px #80ffff);} 100%{transform:translateX(-50%) rotate(360deg);filter:drop-shadow(0 0 20px #ff80ff);} }
+@keyframes discoFlash { 0%{opacity:.15} 50%{opacity:.25} 100%{opacity:0} }
+@keyframes adminPopIn { 0%{transform:translate(-50%,-50%) scale(0)} 100%{transform:translate(-50%,-50%) scale(1)} }
+@keyframes lootboxShake { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+
+/* ═══ BLACKHOLE ROD ═══ */
+@keyframes bhPulse { 0%{opacity:.6;transform:scale(.9)} 100%{opacity:1;transform:scale(1.1)} }
+@keyframes bhDiscSpin { 0%{transform-origin:10px -18px;transform:rotateX(70deg) rotate(0deg)} 100%{transform-origin:10px -18px;transform:rotateX(70deg) rotate(360deg)} }
+@keyframes bhParticle1 { 0%{transform:translate(0,0);opacity:.8} 100%{transform:translate(8px,-8px);opacity:0} }
+@keyframes bhParticle2 { 0%{transform:translate(0,0);opacity:.7} 100%{transform:translate(-8px,-6px);opacity:0} }
+@keyframes bhParticle3 { 0%{transform:translate(0,0);opacity:.6} 100%{transform:translate(5px,-10px);opacity:0} }
+@keyframes bhJet { 0%{opacity:.3;stroke-width:1} 100%{opacity:.8;stroke-width:3} }
+@keyframes bhOrbit { 0%{transform-origin:10px 0;transform:rotate(0deg) translateX(2px)} 100%{transform-origin:10px 0;transform:rotate(360deg) translateX(2px)} }
+@keyframes blackholeRipple { 0%{opacity:.1;rx:8} 100%{opacity:.4;rx:18} }
+
+/* ═══ RAINBOW ROD ═══ */
+@keyframes rainbowShift { 0%{filter:hue-rotate(0deg)} 100%{filter:hue-rotate(360deg)} }
+@keyframes rainbowShift2 { 0%{filter:hue-rotate(180deg)} 100%{filter:hue-rotate(540deg)} }
+@keyframes scaleGlint { 0%{opacity:.3;transform:scale(.8)} 100%{opacity:.9;transform:scale(1.2)} }
+@keyframes fishSwim1 { 0%{transform:scaleX(1) translateX(-2px)} 100%{transform:scaleX(-1) translateX(2px)} }
+@keyframes fishSwim2 { 0%{transform:scaleX(-1) translateX(2px)} 100%{transform:scaleX(1) translateX(-2px)} }
+
+/* ═══ MAGNET ROD ═══ */
+@keyframes coinMagnet1 { 0%{transform:translate(0,0);opacity:.8} 50%{transform:translate(5px,5px);opacity:1} 100%{transform:translate(0,0);opacity:.8} }
+@keyframes coinMagnet2 { 0%{transform:translate(0,0)} 50%{transform:translate(-6px,4px)} 100%{transform:translate(0,0)} }
+@keyframes coinMagnet3 { 0%{transform:translate(0,0);opacity:.6} 50%{transform:translate(4px,6px);opacity:1} 100%{transform:translate(0,0);opacity:.6} }
+@keyframes mechPulse { 0%{filter:brightness(1)} 50%{filter:brightness(1.4)} 100%{filter:brightness(1)} }
+
+/* ═══ LASER ROD ═══ */
+@keyframes laserPulse { 0%{opacity:.5;filter:brightness(.8)} 100%{opacity:1;filter:brightness(1.5)} }
+@keyframes laserBeamFlicker { 0%{opacity:1;stroke-width:3} 100%{opacity:.4;stroke-width:1} }
+@keyframes laserCharge { 0%{fill:#ff0040;r:2} 100%{fill:#ff8080;r:3.5} }
+@keyframes laserRing { 0%{opacity:.5;stroke-width:1.5} 100%{opacity:1;stroke-width:3} }
+
+/* ═══ HUGIWUGI ROD ═══ */
+@keyframes snowFlake1 { 0%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-5px) rotate(180deg)} 100%{transform:translateY(0) rotate(360deg)} }
+@keyframes snowFlake2 { 0%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(5px) rotate(-180deg)} 100%{transform:translateY(0) rotate(-360deg)} }
+
+/* ═══ BAKINTSA ROD ═══ */
+@keyframes bkuFlame { 0%{transform:scaleX(.8) scaleY(.9)} 100%{transform:scaleX(1.2) scaleY(1.1)} }
+
+#lootbox-overlay {
+  display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.88);
+  align-items:center; justify-content:center; flex-direction:column;
+  padding:20px; box-sizing:border-box;
+}
+#lootbox-overlay.show { display:flex; }
+#lb-result-card {
+  background:linear-gradient(135deg,#1a0a30,#2a1060);
+  border:3px solid #c040ff; border-radius:20px; padding:24px 20px; text-align:center;
+  width:90%; max-width:320px; box-shadow:0 0 60px rgba(200,50,255,.5);
+  animation:adminPopIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  position:relative; z-index:100000;
+}
+`;
+document.head.appendChild(newStyles);
+
 
 </script>
 
@@ -11536,12 +12909,12 @@ window.renderGarden = function() {
     </div>
 
     <div id="fw-offline-notice">
-      <div class="fw-off-title">📡 Мультиплеер отключён</div>
+      <div class="fw-off-title">🌐 Поддержка Игры Возвращается!</div>
       <div class="fw-off-sub">
-        Онлайн функции, рейтинг и<br>
-        глобальный чат больше не работают.<br><br>
-        Твои сохранения остаются 💾<br><br>
-        Ну всё... 🌅
+        Все онлайн функции доступны!<br>
+        Рейтинг, глобальный чат, мультиплеер — 🟢<br><br>
+        Добро пожаловать назад! 🎣<br><br>
+        Удачи на рыбалке! 🐟
       </div>
     </div>
 
@@ -11564,8 +12937,8 @@ window.renderGarden = function() {
         -webkit-tap-highlight-color:rgba(80,200,30,.3);
         margin-bottom:30px;
       ">
-      🎣 Продолжить рыбалку<br>
-      <span style="font-size:12px;color:#608030;">(без онлайна)</span>
+      🎣 Войти в игру<br>
+      <span style="font-size:12px;color:#60c030;">🌐 Онлайн активен!</span>
     </div>
   </div>
 </div>
@@ -11692,7 +13065,7 @@ window.renderGarden = function() {
 
     // Disable multiplayer hint
     setTimeout(() => {
-      if(typeof showToast === 'function') showToast('📡 Мультиплеер отключён навсегда...');
+      if(typeof showToast === 'function') showToast('🌐 Онлайн функции активны! Добро пожаловать!');
     }, 2200);
   };
 
@@ -11700,11 +13073,9 @@ window.renderGarden = function() {
     if(window._farewellClosed) return;
     window._farewellClosed = true;
 
-    // Kill all online
-    window.initFirebase = async function() { return false; };
-    window.syncLeaderboard = function() {};
-    window.firebaseDB = null;
-    try { if(window.fb && window.fb.off) window.fb.off('global_chat'); } catch(e){}
+    // Online is back! Don't kill anything.
+    // Try to init Firebase
+    if(typeof initFirebase === 'function') { try { initFirebase(); } catch(e){} }
 
     // Hide overlay with fade
     const ov = document.getElementById('farewell-overlay');
@@ -11714,11 +13085,11 @@ window.renderGarden = function() {
       ov.style.display = 'none';
       const multiTab = document.getElementById('nav-multi');
       if(multiTab) {
-        multiTab.style.opacity = '.4';
-        multiTab.style.pointerEvents = 'none';
+        multiTab.style.opacity = '1';
+        multiTab.style.pointerEvents = 'auto';
       }
       if(typeof showToast === 'function') {
-        showToast('📡 Поддержка игры закончилась. Удачной рыбалки! 🎣');
+        showToast('🌐 Поддержка игры возвращена! Онлайн работает! 🎣');
       }
     }, 800);
   };
@@ -11748,6 +13119,18 @@ window.renderGarden = function() {
   }
 })();
 </script>
+
+<!-- ═══════════ 🎁 ЛУТБОКС РЕЗУЛЬТАТ — вне контейнера для корректного fixed ═══════════ -->
+<div id="lootbox-overlay">
+  <div id="lb-result-card">
+    <div style="font-size:60px;margin-bottom:10px;" id="lb-item-icon">🎁</div>
+    <div style="font-family:UnifrakturMaguntia,cursive;font-size:20px;color:#e080ff;margin-bottom:6px;text-shadow:0 0 12px rgba(200,80,255,.8);">ПОЛУЧЕНО!</div>
+    <div style="font-family:UnifrakturMaguntia,cursive;font-size:16px;color:#ffd700;margin-bottom:8px;" id="lb-item-name">Предмет</div>
+    <div style="font-family:Neucha,cursive;font-size:12px;color:#c0d0ff;margin-bottom:10px;line-height:1.4;" id="lb-item-desc">Описание</div>
+    <div style="font-family:Neucha,cursive;font-size:15px;font-weight:bold;margin-bottom:16px;" id="lb-item-rarity">РЕДКОСТЬ</div>
+    <button onclick="document.getElementById('lootbox-overlay').classList.remove('show');document.getElementById('lootbox-overlay').style.display='none';" style="font-family:Neucha,cursive;font-size:16px;background:linear-gradient(135deg,#4a0080,#2a0050);border:2px solid #c040ff;border-radius:12px;color:#e080ff;padding:12px 28px;cursor:pointer;min-width:140px;">✨ Отлично!</button>
+  </div>
+</div>
 
 </body>
 </html>
