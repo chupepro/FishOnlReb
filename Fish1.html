@@ -70,7 +70,7 @@ body {
 .screen {
   position:absolute; inset:0;
   display:none; z-index:5;
-  padding-bottom:60px; /* space for navtabs */
+  padding-bottom:104px; /* space for navtabs */
 }
 .screen.active { display:block; }
 
@@ -265,7 +265,7 @@ body {
 /* WATER */
 #water {
   position:absolute;
-  top:auto; bottom:60px; left:0; right:0;
+  top:auto; bottom:104px; left:0; right:0;
   height:58%; /* water zone */
   overflow:hidden;
 }
@@ -309,7 +309,7 @@ body {
 
 /* Fog */
 #fog {
-  position:absolute; bottom:60px; left:0; right:0; height:40%;
+  position:absolute; bottom:104px; left:0; right:0; height:40%;
   background:linear-gradient(to top,rgba(150,180,160,.15) 0%,transparent 100%);
   pointer-events:none; opacity:0; transition:opacity 3s; z-index:9;
 }
@@ -360,14 +360,14 @@ body {
 /* ============================================================
    DOCK
    ============================================================ */
-#dock { position:absolute; bottom:60px; right:0; width:90px; height:75%; z-index:10; pointer-events:none; }
+#dock { position:absolute; bottom:104px; right:0; width:90px; height:75%; z-index:10; pointer-events:none; }
 #dock svg { width:90px; height:100%; }
 
 /* ============================================================
    FISHING ROD
    ============================================================ */
 #rod-wrapper {
-  position:absolute; bottom:60px; right:18px;
+  position:absolute; bottom:104px; right:18px;
   width:35px; height:85%; z-index:15; pointer-events:none;
   transform-origin:bottom center;
   overflow:visible;
@@ -395,7 +395,7 @@ body {
 
 /* ROD 2 */
 #rod-wrapper2 {
-  position:absolute; bottom:60px; left:18px;
+  position:absolute; bottom:104px; left:18px;
   width:35px; height:85%; z-index:15; pointer-events:none;
   transform-origin:bottom center; transform:scaleX(-1);
 }
@@ -407,7 +407,7 @@ body {
 }
 
 
-#linecanvas { position:absolute; top:54px; left:0; width:100%; bottom:60px; pointer-events:none; z-index:16; }
+#linecanvas { position:absolute; top:54px; left:0; width:100%; bottom:104px; pointer-events:none; z-index:16; }
 
 /* ============================================================
    BOBBER
@@ -560,7 +560,7 @@ body {
    TOOLBAR (fishing screen)
    ============================================================ */
 #toolbar {
-  position:absolute; bottom:60px; left:0; right:0; height:80px;
+  position:absolute; bottom:104px; left:0; right:0; height:80px;
   z-index:200; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:16px;
 }
 #toolbar-bg {
@@ -622,6 +622,41 @@ body {
 @keyframes fishBlink{0%,100%{opacity:1}50%{opacity:0.3}}
 @keyframes finWave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}
 @keyframes fishWiggle{0%,100%{transform:rotate(-3deg) scaleX(1)}25%{transform:rotate(3deg) scaleX(1.05)}50%{transform:rotate(-2deg) scaleX(.98)}75%{transform:rotate(4deg) scaleX(1.03)}}
+@keyframes jellyPulse{0%{transform:scaleX(1) scaleY(1)}100%{transform:scaleX(1.13) scaleY(0.91)}}
+@keyframes tentacleWave0{0%{transform:rotate(-16deg)}100%{transform:rotate(16deg)}}
+@keyframes tentacleWave1{0%{transform:rotate(11deg)}100%{transform:rotate(-13deg)}}
+@keyframes tentacleWave2{0%{transform:rotate(-9deg)}100%{transform:rotate(19deg)}}
+@keyframes crabBob{0%{transform:translateY(0) rotate(-2deg)}100%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes clawSnap{0%{transform:rotate(-22deg)}100%{transform:rotate(22deg)}}
+@keyframes legWalk0{0%{transform:rotate(-11deg)}100%{transform:rotate(11deg)}}
+@keyframes legWalk1{0%{transform:rotate(9deg)}100%{transform:rotate(-9deg)}}
+@keyframes legWalk2{0%{transform:rotate(-13deg)}100%{transform:rotate(13deg)}}
+@keyframes eelWiggle{0%{transform:skewX(-9deg)}100%{transform:skewX(9deg)}}
+@keyframes eelAura{0%{opacity:0.04}100%{opacity:0.16}}
+@keyframes zapFlash{0%{opacity:0;transform:scale(0.7)}100%{opacity:1;transform:scale(1.25)}}
+@keyframes lanternGlow{0%{opacity:0.45;transform:scale(0.88)}100%{opacity:1;transform:scale(1.18)}}
+@keyframes krakenFloat{0%{transform:translateY(0)}100%{transform:translateY(-7px)}}
+@keyframes krakenTentacle0{0%{transform:rotate(-22deg)}100%{transform:rotate(22deg)}}
+@keyframes krakenTentacle1{0%{transform:rotate(16deg)}100%{transform:rotate(-16deg)}}
+@keyframes krakenTentacle2{0%{transform:rotate(-11deg)}100%{transform:rotate(26deg)}}
+@keyframes krakenTentacle3{0%{transform:rotate(6deg)}100%{transform:rotate(-21deg)}}
+@keyframes dragonSwim{0%{transform:translateY(0) rotate(-2deg)}100%{transform:translateY(-6px) rotate(1.5deg)}}
+@keyframes dragonTail{0%{transform:rotate(-27deg)}100%{transform:rotate(22deg)}}
+@keyframes dragonHead{0%{transform:rotate(-6deg)}100%{transform:rotate(6deg)}}
+@keyframes dragonFire{0%{opacity:0.5;transform:scaleX(0.7)}100%{opacity:1;transform:scaleX(1.4)}}
+@keyframes leviathanHeave{0%{transform:translateY(0)}100%{transform:translateY(-5px)}}
+@keyframes leviathanTail{0%{transform:rotate(-22deg)}100%{transform:rotate(17deg)}}
+@keyframes leviathanEye{0%{opacity:0.04;transform:scale(0.88)}100%{opacity:0.22;transform:scale(1.25)}}
+@keyframes voidMorph{0%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1.09) rotate(2.5deg)}}
+@keyframes voidCore{0%{transform:scale(0.88) rotate(6deg)}100%{transform:scale(1.12) rotate(-6deg)}}
+@keyframes eyeBlink0{0%,84%,100%{transform:scaleY(1)}89%,94%{transform:scaleY(0.08)}}
+@keyframes eyeBlink1{0%,79%,100%{transform:scaleY(1)}82%,87%{transform:scaleY(0.08)}}
+@keyframes eyeBlink2{0%,74%,100%{transform:scaleY(1)}77%,81%{transform:scaleY(0.08)}}
+@keyframes eyePulse{0%{opacity:0.45}100%{opacity:1}}
+@keyframes crackFlash{0%{opacity:0}100%{opacity:0.92}}
+@keyframes voidTentacle0{0%{transform:rotate(-19deg)}100%{transform:rotate(19deg)}}
+@keyframes voidTentacle1{0%{transform:rotate(13deg)}100%{transform:rotate(-23deg)}}
+@keyframes voidTentacle2{0%{transform:rotate(-9deg)}100%{transform:rotate(16deg)}}
 @keyframes marbleSplashAnim{0%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(0.2) translateY(-40px);opacity:0}}
 @keyframes marbleRodGlow{0%{opacity:.9}100%{opacity:1;filter:drop-shadow(0 0 6px rgba(200,180,255,.7))}}
 #catch-name-txt { font-family:'Neucha',cursive; font-size:20px; color:#f5e0a0; text-align:center; text-shadow:0 1px 3px rgba(0,0,0,.7); margin-top:6px; }
@@ -640,24 +675,52 @@ body {
    NAV TABS
    ============================================================ */
 #navtabs {
-  position:absolute; bottom:0; left:0; right:0; height:60px; z-index:300;
-  display:flex;
+  position:absolute; bottom:0; left:0; right:0; z-index:300;
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  grid-template-columns:repeat(5,1fr);
+  height:104px;
+  border-top:3px solid var(--wood-dark);
+  background:linear-gradient(to bottom,#5a3410,#3a1e08);
+}
+#navtabs::after {
+  content:''; position:absolute; left:0; right:0; top:50%;
+  height:1px; background:rgba(0,0,0,.35); pointer-events:none;
 }
 .navtab {
-  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  font-family:'Neucha',cursive; font-size:11px; color:#c8a050; cursor:pointer; gap:3px;
-  background:
-    repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.06) 18px,rgba(0,0,0,.06) 19px),
-    linear-gradient(to bottom,#7a4818,#4a2808);
-  border-top:3px solid var(--wood-dark); border-right:1px solid var(--wood-dark);
-  transition:all .15s; position:relative; text-shadow:0 1px 2px rgba(0,0,0,.8);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'Neucha',cursive; font-size:9.5px; color:#c8a050; cursor:pointer; gap:2px;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.05) 18px,rgba(0,0,0,.05) 19px),linear-gradient(to bottom,#6a3a14,#3e2008);
+  border-right:1px solid rgba(0,0,0,.3);
+  border-bottom:1px solid rgba(0,0,0,.2);
+  transition:background .15s,color .15s;
+  position:relative; text-shadow:0 1px 2px rgba(0,0,0,.8);
+  padding:3px 1px; overflow:hidden; white-space:nowrap; min-width:0;
 }
-.navtab:last-child{border-right:none;}
-.navtab.active { background:repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.06) 18px,rgba(0,0,0,.06) 19px),linear-gradient(to bottom,#a06828,#6a3810); color:#f0d878; box-shadow:0 -3px 0 #d4a030 inset; }
-.navtab svg { width:22px; height:22px; transition:transform .2s; }
-.navtab:hover svg { transform:scale(1.15); }
-.navtab.active svg { animation:navIconBounce .4s ease-out; }
-@keyframes navIconBounce { 0%{transform:scale(.8)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+.navtab:nth-child(5n){border-right:none;}
+.navtab.active{background:repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.05) 18px,rgba(0,0,0,.05) 19px),linear-gradient(to bottom,#9a5820,#5a2e0a);color:#f0d878;box-shadow:0 -2px 0 #d4a030 inset;}
+.navtab svg{width:20px;height:20px;flex-shrink:0;transition:transform .2s;}
+.navtab:hover{background:linear-gradient(to bottom,#804820,#482408);}
+.navtab:hover svg{transform:scale(1.15);}
+.navtab.active svg{animation:navIconBounce .4s ease-out;}
+@keyframes navIconBounce{0%{transform:scale(.8)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+/* Settings screen */
+.stt-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,200,100,.12);border-radius:14px;padding:12px 10px;margin-bottom:12px;}
+.stt-section-title{font-family:'UnifrakturMaguntia',cursive;font-size:15px;color:var(--accent-gold);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(212,160,48,.2);}
+.stt-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,200,100,.08);border-radius:10px;padding:10px;margin-bottom:7px;}
+.stt-row:last-child{margin-bottom:0;}
+.stt-row-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+.stt-row-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center;}
+.stt-row-name{font-family:'Neucha',cursive;font-size:13px;color:#e0c880;}
+.stt-row-desc{font-family:'Neucha',cursive;font-size:10px;color:#706040;line-height:1.3;margin-top:1px;}
+.stt-toggle{width:44px;height:24px;flex-shrink:0;background:#332010;border-radius:12px;border:1px solid #554020;position:relative;cursor:pointer;transition:background .25s,border-color .25s;}
+.stt-toggle.on{background:#2a7010;border-color:#4ab020;}
+.stt-thumb{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#a07040;border-radius:50%;transition:transform .25s,background .25s;box-shadow:0 1px 4px rgba(0,0,0,.5);}
+.stt-toggle.on .stt-thumb{transform:translateX(20px);background:#90e040;}
+.stt-slider{-webkit-appearance:none;height:6px;border-radius:3px;background:#332010;outline:none;border:1px solid #554020;}
+.stt-slider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffd060,#c08020);border:2px solid #a06010;cursor:pointer;}
+body.lowend-mode *{animation:none!important;transition:none!important;}
+body.lowend-mode #stars,body.lowend-mode #clouds,body.lowend-mode .lily{display:none!important;}
 
 /* ============================================================
    SHOP SCREEN
@@ -760,7 +823,7 @@ body {
 #multi-screen {
   background:linear-gradient(to bottom,#080c20 0%,#040810 100%);
   display:none; flex-direction:column; align-items:flex-start;
-  overflow:hidden; overflow-y:auto; top:0; padding-bottom:60px; padding-top:54px;
+  overflow:hidden; overflow-y:auto; top:0; padding-bottom:104px; padding-top:54px;
 }
 #multi-screen.active { display:flex; }
 .multi-header { width:100%; padding:12px 16px 6px; font-family:'UnifrakturMaguntia',cursive; font-size:22px; color:#8090ff; text-shadow:0 0 16px rgba(100,120,255,.7); }
@@ -816,11 +879,11 @@ body {
   background:linear-gradient(to bottom,#1a3a70 0%,#2a6040 100%);
 }
 .gdn-ground {
-  position:absolute; bottom:60px; left:0; right:0; height:320px;
+  position:absolute; bottom:104px; left:0; right:0; height:320px;
   background:linear-gradient(to bottom,#2a5015 0%,#1a3a0a 100%);
 }
 .gdn-path {
-  position:absolute; bottom:60px; left:50%; transform:translateX(-50%);
+  position:absolute; bottom:104px; left:50%; transform:translateX(-50%);
   width:70px; height:340px;
   background:repeating-linear-gradient(to bottom, #8a6030 0, #6a4818 12px, #7a5520 12px, #8a6030 24px);
   border-left:3px solid #5a3808; border-right:3px solid #5a3808;
@@ -828,10 +891,10 @@ body {
 }
 .gdn-path:active { filter:brightness(1.2); }
 .gdn-path-label { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Neucha',cursive; font-size:11px; color:rgba(255,220,150,.7); text-align:center; pointer-events:none; white-space:nowrap; }
-.gdn-tree { position:absolute; bottom:60px; pointer-events:none; }
+.gdn-tree { position:absolute; bottom:104px; pointer-events:none; }
 .gdn-tree-trunk { width:14px; height:50px; background:linear-gradient(to right,#3a1e08,#7a4a18,#3a1e08); border-radius:4px 4px 2px 2px; margin:0 auto; }
 .gdn-tree-top { width:60px; height:70px; background:radial-gradient(circle at 50% 60%,#2a6a10,#0e3808); border-radius:50% 50% 40% 40%; margin:0 auto; transform:translateY(8px); }
-.gdn-flower-bed { position:absolute; bottom:60px; display:flex; flex-wrap:wrap; gap:4px; padding:6px; z-index:3; }
+.gdn-flower-bed { position:absolute; bottom:104px; display:flex; flex-wrap:wrap; gap:4px; padding:6px; z-index:3; }
 .gdn-plot { width:55px; height:55px; border:2px solid #3a2008; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:.15s; position:relative; }
 .gdn-plot.empty { background:rgba(40,20,5,.6); }
 .gdn-plot.seeded { background:rgba(30,60,10,.6); }
@@ -923,7 +986,7 @@ body {
 }
 /* Ground / grass under building */
 .shop-ground {
-  position:absolute; bottom:60px; left:0; right:0; height:80px;
+  position:absolute; bottom:104px; left:0; right:0; height:80px;
   background:linear-gradient(to bottom,#2a5015,#1a3a0a);
   z-index:1;
 }
@@ -934,7 +997,7 @@ body {
 }
 /* Road perspective effect */
 .road-path-visual {
-  position:absolute; bottom:60px; left:50%; transform:translateX(-50%);
+  position:absolute; bottom:104px; left:50%; transform:translateX(-50%);
   width:80px; height:580px;
   background:repeating-linear-gradient(to bottom, #8a6030 0, #6a4818 16px, #7a5520 16px, #8a6030 32px);
   border-left:3px solid #5a3808; border-right:3px solid #5a3808;
@@ -943,7 +1006,7 @@ body {
 }
 /* Side grass strips */
 .road-grass-left, .road-grass-right {
-  position:absolute; top:0; bottom:60px; width:calc(50% - 43px);
+  position:absolute; top:0; bottom:104px; width:calc(50% - 43px);
   background:linear-gradient(to bottom,#1a4010,#0e2808);
 }
 .road-grass-left { left:0; }
@@ -1163,7 +1226,7 @@ body {
 #leaderboard-screen {
   background:linear-gradient(to bottom,#08081a 0%,#04040e 100%);
   display:none; flex-direction:column; align-items:flex-start;
-  overflow:hidden; overflow-y:auto; top:0; padding-bottom:60px; padding-top:54px;
+  overflow:hidden; overflow-y:auto; top:0; padding-bottom:104px; padding-top:54px;
 }
 #leaderboard-screen.active { display:flex; }
 .lb-header {
@@ -2440,7 +2503,17 @@ body {
     <div id="coast-mode-badge">🏖️ ПОБЕРЕЖЬЕ ЛЕГЕНДАРОК</div>
     <div id="hardcore-mode-badge">💀 ХАРДКОР КАРТА — БОССЫ АТАКУЮТ!</div>
     <div id="bum-mode-badge">🧟 БОМЖАТСКАЯ КАРТА — накопи 1000🪙 чтобы уйти!</div>
-    <!-- HC Boss bar (shown during hardcore boss encounter) -->
+    <div id="abyss-mode-badge" style="display:none;background:linear-gradient(90deg,rgba(0,20,60,.95),rgba(0,60,120,.95),rgba(0,20,60,.95));border-bottom:1px solid rgba(0,200,255,.4);padding:3px 8px;font-family:'Neucha',cursive;font-size:11px;color:#00d8ff;text-align:center;text-shadow:0 0 8px rgba(0,200,255,.8);">🌊 КАРТА БЕЗДНЫ — Существа из глубин!</div>
+    <!-- Abyss Boss bar -->
+    <div id="abyss-boss-bar" style="display:none;background:rgba(0,10,30,.9);border:2px solid rgba(0,200,255,.5);border-radius:8px;margin:2px 6px;padding:5px 8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div id="abyss-boss-name" style="font-family:'Neucha',cursive;font-size:11px;color:#00d8ff;">🌊 Босс</div>
+        <div style="font-family:'Neucha',cursive;font-size:9px;color:#406080;">Лови рыбу — атака!</div>
+      </div>
+      <div style="background:rgba(0,0,0,.5);border-radius:4px;height:7px;overflow:hidden;margin-top:3px;">
+        <div id="abyss-boss-hp-fill" style="height:100%;width:100%;background:linear-gradient(90deg,#0040a0,#00d8ff);transition:width .3s;box-shadow:0 0 5px #00d8ff;"></div>
+      </div>
+    </div>
     <div id="hc-boss-bar">
       <div id="hc-boss-name">👹 ???</div>
       <div id="hc-boss-hp-bg"><div id="hc-boss-hp-fill" style="width:100%"></div></div>
@@ -2478,7 +2551,7 @@ body {
       <div class="map-btn active" id="map-btn-normal" onclick="setMap('normal')">🌊 Обычная</div>
       <div class="map-btn" id="map-btn-pokemon" onclick="setMap('pokemon')">⚡ Покемон</div>
       <div class="map-btn" id="map-btn-coast" onclick="setMap('coast')" style="color:#60c0ff;border-color:#2080c0;">🏖️ Побережье</div>
-      <div class="map-btn" id="map-btn-easter" onclick="setMap('easter')" style="color:#ff80c0;border-color:#c04090;">🐰 Пасха</div>
+      <div class="map-btn" id="map-btn-abyss" onclick="setMap('abyss')" style="color:#00d8ff;border-color:#0080c0;">🌊 Бездна</div>
       <div class="map-btn" id="map-btn-hardcore" onclick="setMap('hardcore')" style="color:#ff4040;border-color:#aa0000;display:none;">💀 ХАРДКОР</div>
       <div class="map-btn" id="map-btn-hobo" onclick="setMap('hobo')" style="color:#a08060;border-color:#604020;display:none;">🏚️ Бомжатня</div>
       <div class="map-btn" id="map-btn-bum" onclick="tryLeaveBumMap()" style="color:#a06020;border-color:#604010;display:none;">🧟 Бомжатник</div>
@@ -2836,63 +2909,152 @@ body {
     </div>
   </div>
 
-  <!-- ===== EASTER EVENT SCREEN ===== -->
-  <div class="screen easter-screen" id="event-screen">
-    <div style="padding:10px;overflow-y:auto;height:100%;">
-      <div style="text-align:center;margin-bottom:10px;">
-        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:26px;color:#ff80c0;text-shadow:0 0 12px #ff80c055;">🐰 Пасхальный Ивент</div>
-        <div style="font-family:'Neucha',cursive;font-size:12px;color:#c080a0;margin-top:3px;">Лови кроликов с баффом Cha Cha!</div>
+  <!-- ===== 🌊 ИВЕНТ: ГЛУБИНЫ БЕЗДНЫ ===== -->
+  <div class="screen abyss-event-screen" id="event-screen">
+    <div style="padding:10px;overflow-y:auto;height:100%;background:radial-gradient(ellipse at 50% 0%,rgba(0,40,80,.6) 0%,transparent 70%);">
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:28px;color:#00d8ff;text-shadow:0 0 20px rgba(0,200,255,.8),0 0 40px rgba(0,100,200,.4);animation:abyssGlow 2s ease-in-out infinite alternate;">🌊 Глубины Бездны</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#80d8ff;margin-top:4px;">Что скрывается на дне океана...</div>
       </div>
-      <div id="easter-event-content"></div>
+      <div id="abyss-event-content"></div>
+      <div id="easter-event-content" style="display:none;"></div>
     </div>
   </div>
 
-  <!-- ===== NAV TABS ===== -->
-  <div id="navtabs">
-    <div class="navtab" id="nav-fisher" onclick="switchScreen('fisher')" style="color:#90d040;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="7" r="4"/>
-        <path d="M6 21v-2a6 6 0 0112 0v2"/>
-        <circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none"/>
-      </svg>
-      Рыбак
+  <!-- ===== ⚙️ НАСТРОЙКИ ===== -->
+  <div class="screen" id="settings-screen" style="background:linear-gradient(180deg,#0d0905 0%,#1a1008 100%);overflow-y:auto;">
+    <div style="padding:54px 12px 120px 12px;">
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:24px;color:var(--accent-gold);text-shadow:0 0 16px rgba(212,160,48,.5);">⚙️ Настройки</div>
+      </div>
+      <div class="stt-section">
+        <div class="stt-section-title">📱 Производительность</div>
+        <div class="stt-row" style="background:rgba(255,80,0,.08);border-color:rgba(255,80,0,.3);">
+          <div class="stt-row-left"><div class="stt-row-icon">🐢</div><div><div class="stt-row-name">Режим слабого устройства</div><div class="stt-row-desc">Отключает частицы, анимации волн, звёзды — игра работает плавно на старом телефоне</div></div></div>
+          <div class="stt-toggle" id="tog-lowend" onclick="settingToggle('lowend')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">✨</div><div><div class="stt-row-name">Частицы и спецэффекты</div><div class="stt-row-desc">Взрывы монет, брызги воды</div></div></div>
+          <div class="stt-toggle" id="tog-particles" onclick="settingToggle('particles')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">🌊</div><div><div class="stt-row-name">Анимация воды и неба</div><div class="stt-row-desc">Волны, облака, звёзды, луна</div></div></div>
+          <div class="stt-toggle" id="tog-wateranim" onclick="settingToggle('wateranim')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">🎞️</div><div><div class="stt-row-name">Анимации рыб в попапе</div><div class="stt-row-desc">SVG-анимации улова в окне поимки</div></div></div>
+          <div class="stt-toggle" id="tog-fishanim" onclick="settingToggle('fishanim')"><div class="stt-thumb"></div></div>
+        </div>
+      </div>
+      <div class="stt-section">
+        <div class="stt-section-title">🔊 Звук</div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">🔔</div><div><div class="stt-row-name">Звуковые эффекты</div><div class="stt-row-desc">Поклёвка, улов, монеты</div></div></div>
+          <div class="stt-toggle" id="tog-sound" onclick="settingToggle('sound')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">📳</div><div><div class="stt-row-name">Вибрация</div><div class="stt-row-desc">Тактильная отдача при поклёвке</div></div></div>
+          <div class="stt-toggle" id="tog-vibro" onclick="settingToggle('vibro')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%;"><div class="stt-row-icon">🔉</div><div class="stt-row-name">Громкость</div><div style="font-family:'Neucha',cursive;font-size:13px;color:var(--accent-gold);margin-left:auto;" id="stt-vol-label">70%</div></div>
+          <input type="range" min="0" max="100" value="70" id="stt-volume-slider" class="stt-slider" oninput="settingVolume(this.value)" style="width:100%;">
+        </div>
+      </div>
+      <div class="stt-section">
+        <div class="stt-section-title">🎮 Геймплей</div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">🤖</div><div><div class="stt-row-name">Автозаброс</div><div class="stt-row-desc">Автоматически забрасывать удочку после улова</div></div></div>
+          <div class="stt-toggle" id="tog-autocast" onclick="settingToggle('autocast')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">⚡</div><div><div class="stt-row-name">Автопродажа обычных</div><div class="stt-row-desc">Автоматически продавать Common рыб</div></div></div>
+          <div class="stt-toggle" id="tog-autosell" onclick="settingToggle('autosell')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">🏃</div><div><div class="stt-row-name">Быстрый попап</div><div class="stt-row-desc">Попап улова закрывается через 2 секунды сам</div></div></div>
+          <div class="stt-toggle" id="tog-quickpop" onclick="settingToggle('quickpop')"><div class="stt-thumb"></div></div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-row-left"><div class="stt-row-icon">🔑</div><div><div class="stt-row-name">Подтверждение продажи редких</div><div class="stt-row-desc">Спрашивать перед продажей epic/legend/og рыб</div></div></div>
+          <div class="stt-toggle" id="tog-sellconfirm" onclick="settingToggle('sellconfirm')"><div class="stt-thumb"></div></div>
+        </div>
+      </div>
+      <div class="stt-section">
+        <div class="stt-section-title">👤 Аккаунт и данные</div>
+        <div class="stt-row" style="cursor:pointer;" onclick="sttChangeNick()">
+          <div class="stt-row-left"><div class="stt-row-icon">✏️</div><div><div class="stt-row-name">Изменить никнейм</div><div class="stt-row-desc" id="stt-nick-current">Текущий: Рыбак</div></div></div>
+          <div style="font-size:18px;color:#a07040;">›</div>
+        </div>
+        <div class="stt-row" style="cursor:pointer;" onclick="sttExportSave()">
+          <div class="stt-row-left"><div class="stt-row-icon">💾</div><div><div class="stt-row-name">Экспорт сохранения</div><div class="stt-row-desc">Скопировать код сохранения</div></div></div>
+          <div style="font-size:18px;color:#a07040;">›</div>
+        </div>
+        <div class="stt-row" style="cursor:pointer;" onclick="sttImportSave()">
+          <div class="stt-row-left"><div class="stt-row-icon">📥</div><div><div class="stt-row-name">Импорт сохранения</div><div class="stt-row-desc">Вставить код сохранения</div></div></div>
+          <div style="font-size:18px;color:#a07040;">›</div>
+        </div>
+        <div class="stt-row" style="cursor:pointer;" onclick="sttResetConfirm()">
+          <div class="stt-row-left"><div class="stt-row-icon">⚠️</div><div><div class="stt-row-name" style="color:#e05030;">Сбросить прогресс</div><div class="stt-row-desc">Удалить всё сохранение и начать заново</div></div></div>
+          <div style="font-size:18px;color:#e05030;">›</div>
+        </div>
+      </div>
+      <div class="stt-section">
+        <div class="stt-section-title">ℹ️ О игре</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#806040;line-height:1.8;padding:4px;">
+          🎣 <b style="color:#c09050;">Рыбалка Онлайн: Реборн</b><br>
+          Рыб в базе: <span id="stt-fish-count" style="color:#a07030;">—</span> видов<br>
+          Удочек: <span id="stt-rod-count" style="color:#a07030;">—</span><br>
+          <span style="color:#504030;">Сделано с ❤️ для рыбаков</span>
+        </div>
+      </div>
     </div>
+  </div>
+
+
+  <!-- ===== NAV TABS (2 rows × 5) ===== -->
+  <div id="navtabs">
+    <!-- РЯД 1 -->
     <div class="navtab active" id="nav-fish" onclick="switchScreen('fishing')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5Q7 4 12 9.5Q17 15 21 9.5"/><path d="M21 9.5 L18 6.5 M21 9.5 L18 12.5"/></svg>
-      Рыбалка
-      <div class="nav-player-dot" id="nav-fish-dot"></div>
+      Рыбалка<div class="nav-player-dot" id="nav-fish-dot"></div>
     </div>
     <div class="navtab" id="nav-shop" onclick="switchScreen('shop')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18l-2 9H5L3 3z"/><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>
-      Лавка
-      <div class="nav-player-dot" id="nav-shop-dot"></div>
+      Лавка<div class="nav-player-dot" id="nav-shop-dot"></div>
     </div>
     <div class="navtab" id="nav-inv" onclick="switchScreen('inventory')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Инвентарь
-      <div class="nav-player-dot" id="nav-inv-dot"></div>
+      Инвентарь<div class="nav-player-dot" id="nav-inv-dot"></div>
     </div>
     <div class="navtab" id="nav-garden" onclick="switchScreen('garden')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6 8 4 14 12 22c8-8 6-14 0-22z"/><path d="M12 22V10"/></svg>
-      Сад
-      <div class="nav-player-dot" id="nav-garden-dot"></div>
+      Сад<div class="nav-player-dot" id="nav-garden-dot"></div>
     </div>
-    <div class="navtab" id="nav-multi" onclick="switchScreen('multi')">
+    <div class="navtab" id="nav-multi" onclick="switchScreen('multi')" style="color:#60d0ff;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><circle cx="15" cy="7" r="4"/><path d="M3 21v-2a7 7 0 0114 0v2"/></svg>
-      Онлайн
-      <div class="nav-player-dot" id="nav-multi-dot"></div>
+      Онлайн<div class="nav-player-dot" id="nav-multi-dot"></div>
     </div>
-    <div class="navtab" id="nav-achieve" onclick="switchScreen('achievements')">
+    <!-- РЯД 2 -->
+    <div class="navtab" id="nav-fisher" onclick="switchScreen('fisher')" style="color:#90d040;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a6 6 0 0112 0v2"/><circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none"/></svg>
+      Рыбак
+    </div>
+    <div class="navtab" id="nav-achieve" onclick="switchScreen('achievements')" style="color:#f0c030;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
       Успехи
     </div>
-    <div class="navtab" id="nav-lb" onclick="switchScreen('leaderboard')">
+    <div class="navtab" id="nav-lb" onclick="switchScreen('leaderboard')" style="color:#c080ff;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
       Топ
     </div>
-    <div class="navtab" id="nav-event" onclick="switchScreen('event')" style="color:#ff80c0;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M6 8 Q4 14 12 20 Q20 14 18 8"/><path d="M9 8 Q12 12 15 8"/></svg>
+    <div class="navtab" id="nav-event" onclick="switchScreen('event')" style="color:#00d8ff;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 18 Q5 14 8 18 Q11 22 14 18 Q17 14 20 18"/><path d="M2 12 Q5 8 8 12 Q11 16 14 12 Q17 8 20 12"/><circle cx="12" cy="5" r="2" fill="currentColor" stroke="none" opacity=".8"/></svg>
       Ивент
+    </div>
+    <div class="navtab" id="nav-settings" onclick="switchScreen('settings')" style="color:#c0a050;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Настройки
     </div>
   </div>
 
@@ -2967,7 +3129,7 @@ body {
       <div id="fisher-scene-bg">
         <!-- Атмосферные свечения -->
         <div class="fisher-scene-glow" id="fisher-glow-1" style="width:160px;height:80px;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(40,120,20,.2);"></div>
-        <div class="fisher-scene-glow" id="fisher-glow-2" style="width:80px;height:80px;bottom:60px;left:50%;transform:translateX(-50%);background:var(--rod-aura, rgba(40,120,20,.15));"></div>
+        <div class="fisher-scene-glow" id="fisher-glow-2" style="width:80px;height:80px;bottom:104px;left:50%;transform:translateX(-50%);background:var(--rod-aura, rgba(40,120,20,.15));"></div>
       </div>
       <div id="fisher-platform"></div>
       <!-- Плавающие рыбки -->
@@ -3393,6 +3555,9 @@ const RODS = [
   {id:'rainbow',   name:'Радужная Удочка',      desc:'Переливается всеми цветами! Каждый улов меняет цвет воды и даёт случайный бонус: монеты, XP, бустер клёва или редкая рыба!', price:444444, biteChance:30.0, catchMult:22.0, stats:'Клёв: x30 • x22 улов • Случайный бонус каждый улов • Радуга в воде', detail:'🌈 РАДУГА', owned:false, equipped:false, special:'rainbow', newrod:true},
   {id:'magnet',    name:'Магнитная Удочка',     desc:'Притягивает все предметы! Иногда вытаскивает сундуки с монетами, бустерами и скинами прямо со дна реки!', price:666666, biteChance:40.0, catchMult:30.0, stats:'Клёв: x40 • x30 • Шанс вытащить СУНДУК (монеты/бустер/скин)', detail:'🧲 МАГНИТ', owned:false, equipped:false, special:'magnet', newrod:true},
   {id:'laser',     name:'Лазерная Удочка',      desc:'Наводится лазерным прицелом! При поимке легендарной рыбы — ЛАЗЕРНЫЙ ЛУЧ испаряет воду и появляются 3 OG рыбы одновременно!', price:777777, biteChance:50.0, catchMult:38.0, stats:'Клёв: x50 • x38 • На Легенду → 3 OG рыбы • Лазер-эффект', detail:'🔴 ЛАЗЕР', owned:false, equipped:false, special:'laser', newrod:true},
+
+  // ═══ УДОЧКА БЕЗДНЫ — разблокируется через ивент (100% глубины) ═══
+  {id:'abyssrod', name:'Удочка Бездны', desc:'Выкована в глубинах океана! Призывает существ прямо из бездны! Боссы появляются в 2 раза чаще но дают x3 награды! Левиафан — 5% шанс!', price:0, biteChance:90.0, catchMult:70.0, stats:'Клёв: x90 • x70 • Боссы x2 • Награды x3 • Левиафан 5%', detail:'🌊 БЕЗДНА', owned:false, equipped:false, special:'abyssrod', limited:true},
 
   // ═══ ЛИМИТИРОВАННЫЕ УДОЧКИ (выдаются на ивенте) ═══
   {id:'bakintsa',  name:'Удочка Бакинца',       desc:'ЛИМИТИРОВАННАЯ! Выдана Администратором! Сделана из настоящего золота Баку! При каждом улове — 2500🪙 и мини-шоу ноту!', price:0, biteChance:100.0, catchMult:80.0, stats:'Клёв: x100 • x80 улов • +2500🪙/улов • ЛИМИТ • Только у избранных', detail:'👑 ЛИМИТ-БАКУ', owned:false, equipped:false, special:'bakintsa', limited:true},
@@ -4267,6 +4432,12 @@ function triggerBite() {
 }
 
 
+function hideBobber() {
+  bobWrap.style.display = 'none';
+  bobWrap.style.animation = '';
+  lctx.clearRect(0, 0, 360, 700);
+}
+
 function miss() {
   gs.phase='idle';
   gs.catchStreak = 0; // сброс серии при промахе
@@ -4676,10 +4847,12 @@ function updateStreakUI() {
 // KEEP / SELL (popup buttons)
 // ============================================================
 function resetCatchPopup() {
-  document.getElementById('catch-fish-svg').style.display = '';
-  document.getElementById('catch-pokemon-emoji').style.display = 'none';
-  document.getElementById('catch-pokemon-emoji').textContent = '';
-  document.getElementById('catch-sell-btn').style.display = '';
+  const svg=document.getElementById('catch-fish-svg');
+  if(svg){ svg.style.display=''; svg.style.filter=''; svg.setAttribute('viewBox','0 0 100 55'); svg.setAttribute('height','55'); }
+  const pe=document.getElementById('catch-pokemon-emoji');
+  if(pe){ pe.style.display='none'; pe.textContent=''; }
+  const sb=document.getElementById('catch-sell-btn');
+  if(sb) sb.style.display='';
 }
 
 function keepFish() {
@@ -4803,6 +4976,11 @@ rainLoop();
 // SCREEN SWITCH
 // ============================================================
 function switchScreen(name) {
+  if(gs.currentScreen === 'fishing' && name !== 'fishing') {
+    clearTimeout(gs.biteTimer); clearTimeout(gs.biteTimeout);
+    gs.biteTimer = null; gs.biteTimeout = null;
+    if(gs.phase !== 'idle') { gs.phase = 'idle'; biteEl.classList.remove('visible'); if(typeof hideBobber==='function') hideBobber(); }
+  }
   gs.currentScreen=name;
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
@@ -4822,8 +5000,8 @@ function switchScreen(name) {
     updatePlayerLocation('leaderboard');
     return;
   }
-  const map={fishing:'fishing-screen',shop:'shop-screen',inventory:'inventory-screen',multi:'multi-screen',garden:'garden-screen',event:'event-screen',fisher:'fisher-screen'};
-  const navMap={fishing:'nav-fish',shop:'nav-shop',inventory:'nav-inv',multi:'nav-multi',garden:'nav-garden',event:'nav-event',fisher:'nav-fisher'};
+  const map={fishing:'fishing-screen',shop:'shop-screen',inventory:'inventory-screen',multi:'multi-screen',garden:'garden-screen',event:'event-screen',fisher:'fisher-screen',settings:'settings-screen'};
+  const navMap={fishing:'nav-fish',shop:'nav-shop',inventory:'nav-inv',multi:'nav-multi',garden:'nav-garden',event:'nav-event',fisher:'nav-fisher',settings:'nav-settings'};
   const screenEl = document.getElementById(map[name]);
   const navEl = document.getElementById(navMap[name]);
   if(screenEl) screenEl.classList.add('active');
@@ -4834,6 +5012,7 @@ function switchScreen(name) {
   if(name==='multi')     renderMultiScreen();
   if(name==='event')     renderEasterEventScreen();
   if(name==='fisher')    renderFisherScreen();
+  if(name==='settings')  { if(typeof renderSettingsUI==='function') renderSettingsUI(); }
   // Update location in Firebase if in a room
   updatePlayerLocation(name);
 }
@@ -6208,8 +6387,17 @@ function buySeed(id) {
 // ============================================================
 let firebaseApp=null, firebaseDB=null;
 let currentRoomId=null;
-let myPlayerId='player_'+Math.random().toString(36).substr(2,8);
-let myPlayerName='Рыбак '+Math.floor(Math.random()*999);
+// ── Постоянный ID и имя — никогда не меняются при перезагрузке ──
+(function(){
+  const ID_KEY='fishing_reborn_player_id', NM_KEY='fishing_reborn_player_name';
+  let sid=localStorage.getItem(ID_KEY);
+  if(!sid){ sid='player_'+Math.random().toString(36).substr(2,8); localStorage.setItem(ID_KEY,sid); }
+  window.myPlayerId=sid;
+  window.myPlayerName=localStorage.getItem(NM_KEY)||null;
+})();
+// These vars must exist as lets for legacy code that assigns to them
+let myPlayerId=window.myPlayerId;
+let myPlayerName=window.myPlayerName||'Рыбак';
 let playersData={};
 let heartbeatInterval=null;
 let connectionStatus='offline';
@@ -8542,7 +8730,75 @@ function makeIngameRodSVG(rod) {
       <line x1="10" y1="360" x2="10" y2="395" stroke="rgba(200,220,255,.4)" stroke-width="1"/>`,
 
     // ══════════════════════════════════════════════════════
-    // 🌌 ЧЁРНАЯ ДЫРА — тело из антиматерии, воронка гравитации на вершине
+    // 🌊 УДОЧКА БЕЗДНЫ — живая вода, левиафан на вершине
+    // ══════════════════════════════════════════════════════
+    abyssrod: `
+      <defs>
+        <linearGradient id="abBody" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#000820"/>
+          <stop offset="30%" stop-color="#002060"/>
+          <stop offset="50%" stop-color="#00d8ff"/>
+          <stop offset="70%" stop-color="#002060"/>
+          <stop offset="100%" stop-color="#000820"/>
+        </linearGradient>
+        <linearGradient id="abWater" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#00d8ff"/>
+          <stop offset="50%" stop-color="#0040a0"/>
+          <stop offset="100%" stop-color="#000820"/>
+        </linearGradient>
+        <radialGradient id="abGlow" cx="50%" cy="50%">
+          <stop offset="0%" stop-color="#80ffff"/>
+          <stop offset="50%" stop-color="#00d8ff"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <filter id="abFilter"><feGaussianBlur stdDeviation="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — живая тёмная вода с токами -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#abBody)" stroke="#00d8ff" stroke-width="1" opacity=".9"/>
+      <!-- Водяные токи вдоль тела -->
+      ${[0,30,60,90,120,150,180,210,240,270,300,330].map((y,i)=>`
+        <path d="M7,${y} Q10,${y+8} 13,${y+15} Q10,${y+22} 7,${y+30}" fill="none" stroke="rgba(0,200,255,${0.15+Math.random()*.2})" stroke-width="1.5" style="animation:abyssFloat ${2+i*.3}s ease-in-out infinite;"/>
+      `).join('')}
+      <!-- Светящиеся пузырьки -->
+      ${[40,90,150,200,260,310].map((y,i)=>`
+        <circle cx="${8+i%3*2}" cy="${y}" r="${1+Math.random()}" fill="#00d8ff" opacity="${0.3+Math.random()*.4}" style="animation:abyssParticle ${1+i*.4}s ease-in-out infinite alternate;"/>
+      `).join('')}
+      <!-- ЛЕВИАФАН на вершине — огромная волна -->
+      <!-- Тёмный океан под ним -->
+      <ellipse cx="10" cy="-5" rx="20" ry="8" fill="rgba(0,10,30,.9)" stroke="#00d8ff" stroke-width="1" opacity=".8"/>
+      <!-- Волны -->
+      <path d="M-8,-8 Q-2,-15 4,-8 Q10,-15 16,-8 Q22,-15 28,-8" fill="none" stroke="#00d8ff" stroke-width="2.5" opacity=".9" style="animation:abyssFloat 2s ease-in-out infinite;"/>
+      <path d="M-6,-12 Q0,-20 6,-12 Q12,-20 18,-12 Q24,-20 30,-12" fill="none" stroke="#80ffff" stroke-width="1.5" opacity=".6" style="animation:abyssFloat 3s ease-in-out infinite reverse;"/>
+      <!-- Глаза Левиафана в глубине -->
+      <ellipse cx="4" cy="-3" rx="5" ry="3" fill="rgba(0,0,20,.8)"/>
+      <circle cx="4" cy="-3" r="3" fill="rgba(0,0,10,.9)" stroke="#00d8ff" stroke-width="1"/>
+      <circle cx="4" cy="-3" r="2" fill="#000814"/>
+      <circle cx="4" cy="-3" r="1" fill="#00d8ff" style="animation:laserCharge 1s ease-in-out infinite alternate;"/>
+      <ellipse cx="16" cy="-3" rx="5" ry="3" fill="rgba(0,0,20,.8)"/>
+      <circle cx="16" cy="-3" r="3" fill="rgba(0,0,10,.9)" stroke="#00d8ff" stroke-width="1"/>
+      <circle cx="16" cy="-3" r="2" fill="#000814"/>
+      <circle cx="16" cy="-3" r="1" fill="#00d8ff" style="animation:laserCharge 1.2s ease-in-out infinite alternate;"/>
+      <!-- Щупальца Левиафана -->
+      <path d="M-5,2 Q-12,10 -8,20" stroke="#00d8ff" stroke-width="2" fill="none" opacity=".6" style="animation:krakenTentacle 3s ease-in-out infinite;"/>
+      <path d="M25,2 Q32,10 28,20" stroke="#00d8ff" stroke-width="2" fill="none" opacity=".6" style="animation:krakenTentacle 3s ease-in-out infinite reverse;"/>
+      <path d="M-2,5 Q-5,18 -1,28" stroke="#0080c0" stroke-width="1.5" fill="none" opacity=".5"/>
+      <path d="M22,5 Q25,18 21,28" stroke="#0080c0" stroke-width="1.5" fill="none" opacity=".5"/>
+      <!-- Кольца — водяные вихри -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#00d8ff" stroke-width="2" opacity="${.9-i*.06}" style="animation:abyssParticle ${1+i*.3}s ease-in-out infinite alternate;"/>
+        <ellipse cx="10" cy="${y}" rx="${w+4}" ry="5" fill="none" stroke="rgba(0,200,255,.15)" stroke-width="1.5"/>
+        <circle cx="${10+w+2}" cy="${y}" r="2" fill="#00d8ff" opacity=".5" style="animation:bhOrbit ${1+i*0.4}s linear infinite;"/>
+      `;}).join('')}
+      <!-- Катушка — водяной вихрь -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(0,10,30,.98)" stroke="#00d8ff" stroke-width="2.5"/>
+      <ellipse cx="10" cy="342" rx="9" ry="5.5" fill="rgba(0,30,80,.8)" stroke="#80e0ff" stroke-width="1.5"/>
+      <path d="M4,342 Q7,339 10,342 Q13,345 16,342 Q13,339 10,342" stroke="rgba(0,200,255,.8)" stroke-width="1.5" fill="none" style="animation:abyssFloat 2s linear infinite;"/>
+      <circle cx="10" cy="342" r="3" fill="url(#abGlow)" style="animation:bhPulse 1.5s ease-in-out infinite;"/>
+      <!-- Ручка — тёмная вода -->
+      <rect x="5" y="358" width="10" height="37" rx="4" fill="rgba(0,10,25,.95)" stroke="#00d8ff" stroke-width="2"/>
+      ${[362,367,372,377,382,387].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(0,180,220,.2)" stroke-width="0.8"/>`).join('')}
+      <text x="10" y="380" text-anchor="middle" font-size="5" font-family="serif" fill="#00d8ff" opacity=".8">🌊</text>`,
+    // — тело из антиматерии, воронка гравитации на вершине
     // ══════════════════════════════════════════════════════
     blackhole: `
       <defs>
@@ -8953,7 +9209,8 @@ function makeIngameRodSVG(rod) {
                rod.id === 'rainbow'   ? 'animation:rainbowShift 3s linear infinite;' :
                rod.id === 'laser'     ? 'animation:laserPulse 0.5s ease-in-out infinite alternate;' :
                rod.id === 'hugiwugi'  ? 'animation:neonScan 2s ease-in-out infinite;' :
-               rod.id === 'bakintsa'  ? 'animation:pharaohGlow 1.5s ease-in-out infinite alternate;' : '';
+               rod.id === 'bakintsa'  ? 'animation:pharaohGlow 1.5s ease-in-out infinite alternate;' :
+               rod.id === 'abyssrod'  ? 'animation:abyssGlow 2s ease-in-out infinite alternate;' : '';
 
   return `<svg id="rod-svg-ingame" viewBox="-15 -15 50 420"
     xmlns="http://www.w3.org/2000/svg"
@@ -9121,7 +9378,8 @@ setTimeout(()=>{
   updateStreakUI();
   if(gs.mapMode === 'pokemon') setMap('pokemon');
   if(gs.mapMode === 'coast') setMap('coast');
-  if(gs.mapMode === 'easter') setMap('easter');
+  if(gs.mapMode === 'easter') setMap('abyss'); // Пасха заменена Бездной
+  else if(gs.mapMode === 'abyss') setTimeout(()=>applyAbyssMap(), 300);
   // Побережье: кнопку показывать только если разблокирована
   if(!gs.coastUnlocked) {
     const cb = document.getElementById('map-btn-coast');
@@ -9696,14 +9954,531 @@ const HOBO_FISH = [
 // ============================================================
 // 🐰 EASTER EVENT DATA
 // ============================================================
-const EASTER_RABBITS = [
-  {name:'Белый Кролик',     emoji:'🐰', pts:200, coins:300,  rar:'common', label:'🐰 Обычный'},
-  {name:'Серый Кролик',     emoji:'🐰', pts:250, coins:350,  rar:'common', label:'🐰 Обычный'},
-  {name:'Рыжий Кролик',     emoji:'🐇', pts:400, coins:400,  rar:'rare',   label:'🌟 Редкий'},
-  {name:'Пасхальный Кролик',emoji:'🥚', pts:500, coins:500,  rar:'rare',   label:'🌟 Редкий'},
-  {name:'Радужный Кролик',  emoji:'🌈', pts:700, coins:700,  rar:'epic',   label:'💜 Эпический'},
-  {name:'Золотой Кролик',   emoji:'✨', pts:1000,coins:1000, rar:'legend', label:'👑 ЛЕГЕНДА'},
+// ════════════════════════════════════════════════════════════
+// 🌊 ОБНОВЛЕНИЕ v4.0 «ГЛУБИНЫ БЕЗДНЫ»
+// Новая карта, существа, удочки, боссы, система Артефактов
+// ════════════════════════════════════════════════════════════
+
+// ── Существа Бездны ──────────────────────────────────────────
+const ABYSS_CREATURES = [
+  {name:'Светящаяся Медуза',   emoji:'🪼',svgId:'jellyfish',   pts:300,  coins:400,  rar:'common',label:'🌊 Обычный',  glow:'#80ffff',bonus:null},
+  {name:'Глубоководный Краб',  emoji:'🦀',svgId:'crab',        pts:350,  coins:450,  rar:'common',label:'🌊 Обычный',  glow:'#ff8040',bonus:null},
+  {name:'Электрический Угорь', emoji:'⚡',svgId:'eel',         pts:500,  coins:700,  rar:'rare',  label:'💙 Редкий',  glow:'#ffff00',bonus:'zap'},
+  {name:'Рыба-Фонарь',        emoji:'🐡',svgId:'lanternfish', pts:600,  coins:900,  rar:'rare',  label:'💙 Редкий',  glow:'#ffcc00',bonus:'light'},
+  {name:'Кракен-Детёныш',     emoji:'🐙',svgId:'kraken_baby', pts:900,  coins:1500, rar:'epic',  label:'🔵 Эпический',glow:'#8040ff',bonus:'ink'},
+  {name:'Морской Дракон',     emoji:'🐉',svgId:'sea_dragon',  pts:1200, coins:2500, rar:'epic',  label:'🔵 Эпический',glow:'#00ff80',bonus:'fire'},
+  {name:'Левиафан',           emoji:'🌊',svgId:'leviathan',   pts:2000, coins:5000, rar:'legend',label:'👑 ЛЕГЕНДА',  glow:'#00d8ff',bonus:'abyss'},
+  {name:'Первозданная Тьма',  emoji:'⬛',svgId:'void_creature',pts:5000,coins:15000,rar:'og',    label:'👁️ OG БЕЗДНА',glow:'#ff00ff',bonus:'void'},
 ];
+
+// ── SVG рендерер для существ Бездны ─────────────────────────────
+function renderAbyssCreatureSVG(creature) {
+  const svg = document.getElementById('catch-fish-svg');
+  if(!svg) return;
+  svg.setAttribute('viewBox','0 0 100 75');
+  svg.setAttribute('height','75');
+  svg.style.filter = 'drop-shadow(0 0 12px '+creature.glow+')';
+  const g = 'ag'+Math.floor(Math.random()*999999);
+  const gl = creature.glow;
+  const id = creature.svgId || '';
+  if(id==='jellyfish') {
+    svg.innerHTML='<defs><radialGradient id="'+g+'" cx="50%" cy="40%"><stop offset="0%" stop-color="'+gl+'" stop-opacity="0.9"/><stop offset="70%" stop-color="'+gl+'" stop-opacity="0.3"/><stop offset="100%" stop-color="'+gl+'" stop-opacity="0"/></radialGradient></defs><g style="animation:jellyPulse 1.4s ease-in-out infinite alternate;transform-origin:50px 26px;"><ellipse cx="50" cy="26" rx="28" ry="20" fill="url(#'+g+')" stroke="'+gl+'" stroke-width="1.5"/><ellipse cx="50" cy="26" rx="20" ry="12" fill="'+gl+'" opacity="0.12"/></g>'+[32,37,42,47,52,57,62,67].map((x,i)=>'<path d="M'+x+',44 Q'+(x+(i%2?6:-6))+',58 '+x+',73" stroke="'+gl+'" stroke-width="1.8" fill="none" opacity="0.85" style="animation:tentacleWave'+(i%3)+' '+(1.2+i*0.18)+'s ease-in-out infinite alternate;transform-origin:'+x+'px 44px;"/>').join('');
+  } else if(id==='crab') {
+    svg.innerHTML='<defs><radialGradient id="'+g+'" cx="50%" cy="45%"><stop offset="0%" stop-color="#ff9060"/><stop offset="100%" stop-color="#c03010"/></radialGradient></defs><g style="animation:crabBob 1s ease-in-out infinite alternate;transform-origin:50px 40px;"><ellipse cx="50" cy="42" rx="26" ry="17" fill="url(#'+g+')" stroke="#801808" stroke-width="1.5"/><line x1="42" y1="27" x2="39" y2="18" stroke="#c04020" stroke-width="2"/><line x1="58" y1="27" x2="61" y2="18" stroke="#c04020" stroke-width="2"/><circle cx="39" cy="16" r="4" fill="#0a0200" stroke="'+gl+'" stroke-width="1.5"/><circle cx="61" cy="16" r="4" fill="#0a0200" stroke="'+gl+'" stroke-width="1.5"/><circle cx="38" cy="15" r="1.5" fill="white" opacity="0.7"/><circle cx="60" cy="15" r="1.5" fill="white" opacity="0.7"/><g style="animation:clawSnap 0.8s ease-in-out infinite alternate;transform-origin:22px 36px;"><ellipse cx="22" cy="36" rx="10" ry="7" fill="#c03010" stroke="#801808" stroke-width="1.2"/><path d="M12,31 Q8,27 13,33" stroke="#801808" stroke-width="2" fill="none"/><path d="M12,41 Q8,45 13,39" stroke="#801808" stroke-width="2" fill="none"/></g><g style="animation:clawSnap 0.8s 0.4s ease-in-out infinite alternate;transform-origin:78px 36px;"><ellipse cx="78" cy="36" rx="10" ry="7" fill="#c03010" stroke="#801808" stroke-width="1.2"/><path d="M88,31 Q92,27 87,33" stroke="#801808" stroke-width="2" fill="none"/><path d="M88,41 Q92,45 87,39" stroke="#801808" stroke-width="2" fill="none"/></g>'+[[30,37],[28,43],[26,49]].map(([x,y],i)=>'<line x1="'+x+'" y1="'+y+'" x2="'+(x-8)+'" y2="'+(y+13)+'" stroke="#a01808" stroke-width="1.5" style="animation:legWalk'+i+' 0.6s ease-in-out infinite alternate;"/><line x1="'+(100-x)+'" y1="'+y+'" x2="'+(100-x+8)+'" y2="'+(y+13)+'" stroke="#a01808" stroke-width="1.5" style="animation:legWalk'+i+' 0.6s '+(i*0.2)+'s ease-in-out infinite alternate;"/>').join('')+'</g>';
+  } else if(id==='eel') {
+    svg.innerHTML='<defs><linearGradient id="'+g+'" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#303000"/><stop offset="60%" stop-color="#808000"/><stop offset="100%" stop-color="'+gl+'"/></linearGradient></defs><g style="animation:eelWiggle 0.7s ease-in-out infinite alternate;transform-origin:50px 38px;"><path d="M5,40 Q20,20 38,40 Q54,58 70,40 Q84,22 95,36" stroke="url(#'+g+')" stroke-width="13" fill="none" stroke-linecap="round"/><path d="M5,40 Q20,20 38,40 Q54,58 70,40 Q84,22 95,36" stroke="'+gl+'" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.4"/><path d="M30,34 L25,26 L33,24 L28,17" stroke="'+gl+'" stroke-width="1.5" fill="none" style="animation:zapFlash 0.4s ease-in-out infinite alternate;"/><path d="M60,46 L66,40 L60,35 L67,28" stroke="'+gl+'" stroke-width="1.5" fill="none" style="animation:zapFlash 0.4s 0.2s ease-in-out infinite alternate;"/><circle cx="10" cy="38" r="5.5" fill="#111100" stroke="'+gl+'" stroke-width="2"/><circle cx="10" cy="38" r="3" fill="'+gl+'" opacity="0.85"/><circle cx="9" cy="37" r="1" fill="white"/></g>';
+  } else if(id==='lanternfish') {
+    svg.innerHTML='<defs><radialGradient id="'+g+'a" cx="33%" cy="42%"><stop offset="0%" stop-color="#fff8c0"/><stop offset="50%" stop-color="'+gl+'"/><stop offset="100%" stop-color="#503800"/></radialGradient><radialGradient id="'+g+'b" cx="50%" cy="50%"><stop offset="0%" stop-color="'+gl+'"/><stop offset="100%" stop-color="'+gl+'" stop-opacity="0"/></radialGradient></defs><g style="animation:fishWiggle 1.1s ease-in-out infinite alternate;transform-origin:50px 38px;"><circle cx="28" cy="30" r="18" fill="url(#'+g+'b)" opacity="0.38" style="animation:lanternGlow 0.8s ease-in-out infinite alternate;"/><ellipse cx="54" cy="38" rx="30" ry="20" fill="url(#'+g+'a)" stroke="#302000" stroke-width="1.5"/><line x1="26" y1="20" x2="23" y2="10" stroke="#a08020" stroke-width="2"/><circle cx="23" cy="8" r="5" fill="'+gl+'" style="animation:lanternGlow 0.8s ease-in-out infinite alternate;"/><circle cx="23" cy="8" r="9" fill="'+gl+'" opacity="0.2" style="animation:lanternGlow 0.8s ease-in-out infinite alternate;"/><circle cx="29" cy="32" r="8.5" fill="#080600" stroke="'+gl+'" stroke-width="1.5"/><circle cx="29" cy="32" r="5.5" fill="'+gl+'" opacity="0.7"/><circle cx="27" cy="30" r="2.2" fill="white" opacity="0.9"/><polygon points="84,24 98,18 98,58 84,52" fill="#604010" stroke="#302000" stroke-width="1" style="animation:finWave 0.6s ease-in-out infinite alternate;transform-origin:84px 38px;"/></g>';
+  } else if(id==='kraken_baby') {
+    svg.innerHTML='<defs><radialGradient id="'+g+'" cx="50%" cy="38%"><stop offset="0%" stop-color="#d090ff"/><stop offset="100%" stop-color="#2a0055"/></radialGradient></defs><g style="animation:krakenFloat 1.5s ease-in-out infinite alternate;transform-origin:50px 30px;"><ellipse cx="50" cy="28" rx="24" ry="22" fill="url(#'+g+')" stroke="#6020c0" stroke-width="1.5"/><ellipse cx="39" cy="24" rx="8.5" ry="9.5" fill="#000010" stroke="'+gl+'" stroke-width="2"/><ellipse cx="61" cy="24" rx="8.5" ry="9.5" fill="#000010" stroke="'+gl+'" stroke-width="2"/><ellipse cx="39" cy="24" rx="5.5" ry="6.5" fill="'+gl+'" opacity="0.6"/><ellipse cx="61" cy="24" rx="5.5" ry="6.5" fill="'+gl+'" opacity="0.6"/><circle cx="37" cy="22" r="2.2" fill="white" opacity="0.85"/><circle cx="59" cy="22" r="2.2" fill="white" opacity="0.85"/><path d="M43,40 Q50,47 57,40 Q50,50 43,40" fill="#150028" stroke="'+gl+'" stroke-width="1"/></g>'+[27,33,39,45,51,57,63,69].map((x,i)=>'<path d="M'+x+',48 C'+(x+(i%2?7:-7))+',58 '+(x+(i%2?-3:3))+',65 '+(x+(i%2?5:-5))+',73" stroke="'+gl+'" stroke-width="'+(3-i*0.15)+'" fill="none" stroke-linecap="round" style="animation:krakenTentacle'+(i%4)+' '+(1+i*0.2)+'s ease-in-out infinite alternate;transform-origin:'+x+'px 48px;" opacity="'+(0.95-i*0.04)+'"/>').join('');
+  } else if(id==='sea_dragon') {
+    svg.innerHTML='<defs><linearGradient id="'+g+'" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ff90"/><stop offset="50%" stop-color="#008040"/><stop offset="100%" stop-color="#003820"/></linearGradient></defs><g style="animation:dragonSwim 1.2s ease-in-out infinite alternate;transform-origin:50px 36px;"><path d="M86,58 Q92,48 90,38 Q94,33 90,28" stroke="url(#'+g+')" stroke-width="9" fill="none" stroke-linecap="round" style="animation:dragonTail 0.8s ease-in-out infinite alternate;transform-origin:88px 43px;"/><path d="M90,33 Q76,18 60,28 Q44,38 34,26 Q24,14 13,23" stroke="url(#'+g+')" stroke-width="15" fill="none" stroke-linecap="round"/><g style="animation:dragonHead 1.2s ease-in-out infinite alternate;transform-origin:12px 24px;"><ellipse cx="12" cy="24" rx="13" ry="10" fill="#005828" stroke="'+gl+'" stroke-width="1.5"/><path d="M7,16 Q4,8 8,12" stroke="'+gl+'" stroke-width="2" fill="none"/><circle cx="7" cy="22" r="4.5" fill="#001008" stroke="'+gl+'" stroke-width="1.5"/><circle cx="7" cy="22" r="2.8" fill="'+gl+'" opacity="0.8"/><circle cx="6" cy="21" r="1.1" fill="white"/><path d="M1,27 Q-5,23 -3,29" stroke="#ff8000" stroke-width="2" fill="none" style="animation:dragonFire 0.4s ease-in-out infinite alternate;" opacity="0.9"/></g></g>';
+  } else if(id==='leviathan') {
+    svg.innerHTML='<defs><linearGradient id="'+g+'" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#002850"/><stop offset="45%" stop-color="#0070b0"/><stop offset="100%" stop-color="'+gl+'"/></linearGradient></defs><g style="animation:leviathanHeave 2s ease-in-out infinite alternate;transform-origin:48px 38px;"><polygon points="80,38 98,17 98,59" fill="#005890" stroke="'+gl+'" stroke-width="1.5" style="animation:leviathanTail 1s ease-in-out infinite alternate;transform-origin:80px 38px;"/><ellipse cx="45" cy="38" rx="43" ry="26" fill="#001e38" stroke="'+gl+'" stroke-width="2"/><path d="M25,13 Q38,3 53,13" stroke="'+gl+'" stroke-width="2" fill="rgba(0,170,210,0.22)" style="animation:finWave 1s ease-in-out infinite alternate;transform-origin:39px 13px;"/><circle cx="13" cy="31" r="9.5" fill="#000618" stroke="'+gl+'" stroke-width="2"/><circle cx="13" cy="31" r="6.5" fill="'+gl+'" opacity="0.48"/><circle cx="13" cy="31" r="3.2" fill="white" opacity="0.92"/><circle cx="11" cy="29" r="1.3" fill="white"/><circle cx="13" cy="31" r="14" fill="'+gl+'" opacity="0.07" style="animation:leviathanEye 1s ease-in-out infinite alternate;"/>'+[24,34,44,54,64].map((x,i)=>'<path d="M'+x+',63 Q'+(x+(i%2?5:-5))+',69 '+x+',74" stroke="'+gl+'" stroke-width="2.2" fill="none" opacity="0.55" style="animation:tentacleWave'+(i%3)+' '+(1+i*0.15)+'s ease-in-out infinite alternate;"/>').join('')+'</g>';
+  } else if(id==='void_creature') {
+    svg.innerHTML='<defs><radialGradient id="'+g+'" cx="50%" cy="50%"><stop offset="0%" stop-color="white"/><stop offset="18%" stop-color="'+gl+'"/><stop offset="55%" stop-color="#180018"/><stop offset="100%" stop-color="#000000"/></radialGradient></defs><g style="animation:voidMorph 1.8s ease-in-out infinite alternate;transform-origin:50px 38px;"><path d="M50,11 Q69,14 77,30 Q83,50 69,63 Q50,73 31,63 Q17,50 23,30 Q29,14 50,11" fill="#080008" stroke="'+gl+'" stroke-width="2"/><ellipse cx="50" cy="40" rx="21" ry="19" fill="url(#'+g+')" opacity="0.82" style="animation:voidCore 0.9s ease-in-out infinite alternate;"/>'+[[34,28],[50,22],[66,28],[41,46],[59,46],[50,55]].map(([x,y],i)=>'<circle cx="'+x+'" cy="'+y+'" r="'+(3.5+i%2*0.5)+'" fill="#000" stroke="'+gl+'" stroke-width="1.8" style="animation:eyeBlink'+(i%3)+' '+(2+i*0.4)+'s ease-in-out infinite;"/><circle cx="'+x+'" cy="'+y+'" r="'+(2+i%2*0.4)+'" fill="'+gl+'" opacity="0.9" style="animation:eyePulse '+(1+i*0.3)+'s ease-in-out infinite alternate;"/>').join('')+[19,31,43,55,67,79].map((x,i)=>'<path d="M'+x+',65 Q'+(x+(i%2?9:-9))+',70 '+(x+(i%2?5:-5))+',75" stroke="'+gl+'" stroke-width="'+(2.8-i*0.2)+'" fill="none" stroke-linecap="round" style="animation:voidTentacle'+(i%3)+' '+(1.3+i*0.2)+'s ease-in-out infinite alternate;" opacity="0.8"/>').join('')+'</g>';
+  } else {
+    svg.innerHTML='<defs><radialGradient id="'+g+'" cx="33%" cy="40%"><stop offset="0%" stop-color="'+gl+'" stop-opacity="0.85"/><stop offset="100%" stop-color="#001020"/></radialGradient></defs><g style="animation:fishWiggle 1s ease-in-out infinite alternate;transform-origin:50px 38px;"><ellipse cx="50" cy="38" rx="32" ry="20" fill="url(#'+g+')" stroke="'+gl+'" stroke-width="1.5"/><polygon points="82,38 98,24 98,52" fill="'+gl+'" opacity="0.7"/><circle cx="22" cy="34" r="6.5" fill="#000820" stroke="'+gl+'" stroke-width="2"/><circle cx="22" cy="34" r="4" fill="'+gl+'" opacity="0.7"/><circle cx="21" cy="33" r="1.6" fill="white"/></g>';
+  }
+}
+
+// ── Удочки ивента ─────────────────────────────────────────────
+// Удочка Бездны — крафтится через систему Артефактов
+// (добавлена в RODS как крафтовая)
+
+// ── Артефакты Бездны — новая система коллекционирования ──────
+const ABYSS_ARTIFACTS = [
+  {id:'artifact_shell',    name:'Раковина Бездны',   emoji:'🐚', rarity:'common', effect:'bite+10%',    desc:'+10% к клёву'},
+  {id:'artifact_pearl',   name:'Тёмная Жемчужина',  emoji:'🖤', rarity:'rare',   effect:'coins+200',   desc:'+200🪙 с каждой рыбы'},
+  {id:'artifact_crystal', name:'Кристалл Глубин',   emoji:'💎', rarity:'epic',   effect:'rare+15%',    desc:'+15% шанс редкой рыбы'},
+  {id:'artifact_trident', name:'Трезубец Посейдона',emoji:'🔱', rarity:'legend', effect:'auto_cast',   desc:'Автозаброс каждые 5с'},
+  {id:'artifact_eye',     name:'Глаз Левиафана',    emoji:'👁️', rarity:'og',    effect:'leviathan',   desc:'Шанс поймать Левиафана x10'},
+];
+
+// ── Боссы Бездны ──────────────────────────────────────────────
+const ABYSS_BOSSES = [
+  {name:'Гигантская Медуза',  emoji:'🪼', hp:400,  reward:{coins:5000,  artifact:'artifact_shell'},  phase:'pulse'},
+  {name:'Морской Змей',       emoji:'🐍', hp:700,  reward:{coins:10000, artifact:'artifact_pearl'},  phase:'coil'},
+  {name:'Кракен',             emoji:'🐙', hp:1200, reward:{coins:25000, artifact:'artifact_crystal'}, phase:'tentacles'},
+  {name:'ЛЕВИАФАН',           emoji:'🌊', hp:3000, reward:{coins:100000,artifact:'artifact_eye'},     phase:'void'},
+];
+
+let abyssBossState = {active:false, current:null, hp:0, maxHp:0, idx:0, timer:null, attackTimer:null};
+
+// ── Состояние ивента ──────────────────────────────────────────
+gs.abyssCreaturesCaught = gs.abyssCreaturesCaught || 0;
+gs.abyssArtifacts       = gs.abyssArtifacts || [];
+gs.abyssAbyssDepth      = gs.abyssAbyssDepth || 0; // 0-100, растёт с каждым уловом
+gs._abyssRodGiven       = gs._abyssRodGiven || false;
+
+// ── setMap для Бездны ─────────────────────────────────────────
+const _origSetMap = window.setMap || setMap;
+window.setMap = function(mode) {
+  // Убираем easter-кнопку из активных
+  const eBtn = document.getElementById('map-btn-easter');
+  if(eBtn) eBtn.style.display = 'none';
+
+  if(mode === 'abyss') {
+    gs.mapMode = 'abyss';
+    ['normal','pokemon','coast','hardcore','hobo','bum','abyss'].forEach(m=>{
+      const b = document.getElementById('map-btn-'+m);
+      if(b) b.classList.toggle('active', m==='abyss');
+    });
+    const badge = document.getElementById('abyss-mode-badge');
+    if(badge) badge.style.display='block';
+    const hcBadge = document.getElementById('hardcore-mode-badge');
+    if(hcBadge) hcBadge.style.display='none';
+    const bumBadge = document.getElementById('bum-mode-badge');
+    if(bumBadge) bumBadge.style.display='none';
+    applyAbyssMap();
+    showToast('🌊 БЕЗДНА! Что-то огромное движется в глубинах...');
+    saveGame();
+    return;
+  }
+  // Скрыть бейдж бездны при смене карты
+  const badge2 = document.getElementById('abyss-mode-badge');
+  if(badge2) badge2.style.display='none';
+  stopAbyssBoss();
+  _origSetMap(mode);
+};
+
+// ── Применить визуал карты Бездны ─────────────────────────────
+function applyAbyssMap() {
+  const water = document.getElementById('water');
+  if(water) {
+    water.style.background = 'linear-gradient(180deg,#000820 0%,#001840 30%,#002060 60%,#001030 100%)';
+  }
+  const sky = document.getElementById('sky');
+  if(sky) {
+    sky.style.background = 'linear-gradient(180deg,#000010 0%,#000820 40%,#001040 100%)';
+    sky.innerHTML = `
+      <div style="position:absolute;width:100%;height:100%;overflow:hidden;">
+        ${Array.from({length:20},(_,i)=>`
+          <div style="position:absolute;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px;
+            background:#00d8ff;border-radius:50%;opacity:${0.3+Math.random()*.5};
+            left:${Math.random()*100}%;top:${Math.random()*100}%;
+            animation:abyssParticle ${3+Math.random()*4}s ease-in-out infinite alternate;
+            animation-delay:${Math.random()*3}s;
+            box-shadow:0 0 6px #00d8ff;"></div>
+        `).join('')}
+        <!-- Светящиеся рыбы в фоне -->
+        <div style="position:absolute;font-size:20px;left:10%;top:40%;opacity:.15;animation:abyssFloat 8s ease-in-out infinite;">🪼</div>
+        <div style="position:absolute;font-size:16px;left:70%;top:60%;opacity:.1;animation:abyssFloat 12s ease-in-out infinite reverse;">🐙</div>
+        <div style="position:absolute;font-size:24px;left:40%;top:70%;opacity:.12;animation:abyssFloat 10s ease-in-out infinite;">🐠</div>
+      </div>`;
+  }
+  // Старт босс-цикла Бездны
+  scheduleAbyssBoss();
+}
+
+// ── Поймать существо Бездны ───────────────────────────────────
+function catchAbyssCreature(creature) {
+  gs.abyssCreaturesCaught = (gs.abyssCreaturesCaught||0) + 1;
+  gs.abyssAbyssDepth      = Math.min(100, (gs.abyssAbyssDepth||0) + (creature.rar==='og'?20:creature.rar==='legend'?10:creature.rar==='epic'?5:creature.rar==='rare'?2:1));
+  gs.coins += creature.coins;
+  gs.score += creature.pts;
+  gs.fishCount++;
+
+  updateCoins();
+  updateDepthUI();
+
+  // Бонус от существа
+  if(creature.bonus === 'zap') {
+    showToast('⚡ Удар тока! Следующие 10с клёв x3!');
+    gs._abyssZapActive = true;
+    setTimeout(()=>{ gs._abyssZapActive = false; }, 10000);
+  } else if(creature.bonus === 'light') {
+    showToast('💡 Свет фонаря! Видишь на 60с вперёд!');
+    gs._abyssLightActive = true;
+    setTimeout(()=>{ gs._abyssLightActive = false; }, 60000);
+  } else if(creature.bonus === 'ink') {
+    const bonus = Math.floor(Math.random()*3000)+1000;
+    gs.coins += bonus;
+    updateCoins();
+    showToast(`🐙 Чернила Кракена! +${bonus}🪙!`);
+  } else if(creature.bonus === 'fire') {
+    showToast('🔥 Огонь Дракона! Все рыбы x2 монет 30с!');
+    gs._abyssDragonFire = true;
+    setTimeout(()=>{ gs._abyssDragonFire = false; }, 30000);
+  } else if(creature.bonus === 'abyss') {
+    // Левиафан — шанс получить артефакт!
+    showToast('🌊 ЛЕВИАФАН ПОЙМАН! Невероятно!');
+    tryGiveAbyssArtifact('artifact_eye');
+    spawnAbyssExplosion();
+  } else if(creature.bonus === 'void') {
+    // OG Первозданная тьма — всё меняется
+    showToast('👁️ ПЕРВОЗДАННАЯ ТЬМА! Мир изменился!');
+    spawnAbyssExplosion();
+    spawnAbyssExplosion();
+    setTimeout(spawnAbyssExplosion, 500);
+    tryGiveAbyssArtifact('artifact_trident');
+  }
+
+  // Показать попап
+  document.getElementById('catch-header').textContent = creature.rar==='og' ? '👁️ ПЕРВОЗДАННОЕ!' : creature.rar==='legend' ? '🌊 ЛЕГЕНДА БЕЗДНЫ!' : '🌊 Существо Бездны!';
+  document.getElementById('catch-name-txt').textContent = creature.name;
+  document.getElementById('catch-weight-txt').textContent = `+${creature.pts} ★ • +${creature.coins}🪙`;
+  const rarEl = document.getElementById('catch-rarity');
+  rarEl.textContent = creature.label;
+  rarEl.style.color = creature.glow;
+  rarEl.style.textShadow = `0 0 10px ${creature.glow}`;
+  document.getElementById('catch-fish-svg').innerHTML = '';
+  renderAbyssCreatureSVG(creature);
+  document.getElementById('catch-sell-btn').style.display='none';
+  document.getElementById('catch-popup').classList.add('show');
+  makeRipple(gs.bobX, gs.bobY, 80);
+  spawnAbyssParticles(gs.bobX, gs.bobY, creature.glow);
+
+  // Глубина 100 — выдать удочку Бездны
+  if(gs.abyssAbyssDepth >= 100 && !gs._abyssRodGiven) {
+    gs._abyssRodGiven = true;
+    const abyssRod = RODS.find(r=>r.id==='abyssrod');
+    if(abyssRod && !abyssRod.owned) {
+      abyssRod.owned = true;
+      setTimeout(()=>{
+        showToast('🌊 ГЛУБИНА 100%! Удочка Бездны разблокирована!');
+        if(typeof showAdminPopup==='function') showAdminPopup('🌊 УДОЧКА БЕЗДНЫ!', 'Ты достиг дна океана!\nУдочка Бездны добавлена в магазин!\nОна призывает существ из глубин...');
+      }, 1500);
+    }
+    saveGame();
+  }
+
+  saveGame();
+}
+
+// ── Артефакты ─────────────────────────────────────────────────
+function tryGiveAbyssArtifact(id) {
+  if(gs.abyssArtifacts.includes(id)) return;
+  gs.abyssArtifacts.push(id);
+  const art = ABYSS_ARTIFACTS.find(a=>a.id===id);
+  if(art) {
+    setTimeout(()=>{
+      showToast(`${art.emoji} АРТЕФАКТ: ${art.name}! ${art.desc}`);
+      applyAbyssArtifact(art);
+    }, 800);
+  }
+  saveGame();
+}
+
+function applyAbyssArtifact(art) {
+  if(art.id==='artifact_shell')  gs._abyssShellActive = true;
+  if(art.id==='artifact_pearl')  gs._abyssPearlActive = true;
+  if(art.id==='artifact_crystal') gs._abyssCrystalActive = true;
+  if(art.id==='artifact_eye')    gs._abyssEyeActive = true;
+  if(art.id==='artifact_trident') {
+    clearInterval(gs._abyssTridentInterval);
+    gs._abyssTridentInterval = setInterval(()=>{
+      if(gs.mapMode!=='abyss'||gs.currentScreen!=='fishing') return;
+      if(gs.phase==='idle') { castTo(130+Math.random()*100, 360+Math.random()*60); }
+      else if(gs.phase==='bite') catchFish();
+    }, 5000);
+  }
+}
+
+// Применить артефакты при загрузке
+function reapplyAbyssArtifacts() {
+  (gs.abyssArtifacts||[]).forEach(id=>{
+    const art = ABYSS_ARTIFACTS.find(a=>a.id===id);
+    if(art) applyAbyssArtifact(art);
+  });
+}
+setTimeout(reapplyAbyssArtifacts, 500);
+
+// ── Визуальный взрыв Бездны ───────────────────────────────────
+function spawnAbyssExplosion() {
+  const game = document.getElementById('game');
+  if(!game) return;
+  const ex = document.createElement('div');
+  ex.style.cssText = `position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:200px;height:200px;border-radius:50%;pointer-events:none;z-index:999;
+    background:radial-gradient(circle,rgba(0,220,255,.6) 0%,rgba(0,100,200,.3) 50%,transparent 100%);
+    animation:abyssExplode .8s ease-out forwards;`;
+  game.appendChild(ex);
+  setTimeout(()=>ex.remove(), 900);
+}
+
+function spawnAbyssParticles(cx, cy, color) {
+  const game = document.getElementById('game');
+  if(!game) return;
+  const emojis = ['🌊','💧','✨','🫧','⭐'];
+  for(let i=0;i<8;i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.style.cssText = `position:absolute;font-size:${12+Math.random()*16}px;pointer-events:none;z-index:900;
+        left:${cx}px;top:${cy}px;text-shadow:0 0 8px ${color};
+        animation:abyssParticleFloat 1.2s ease-out forwards;
+        --px:${(Math.random()-0.5)*120}px;--py:${-(40+Math.random()*80)}px;`;
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      game.appendChild(el);
+      setTimeout(()=>el.remove(), 1300);
+    }, i*60);
+  }
+}
+
+// ── Боссы Бездны ──────────────────────────────────────────────
+function scheduleAbyssBoss() {
+  if(gs.mapMode !== 'abyss') return;
+  clearTimeout(abyssBossState.timer);
+  abyssBossState.timer = setTimeout(spawnAbyssBoss, 20000 + Math.random()*25000);
+}
+
+function stopAbyssBoss() {
+  clearTimeout(abyssBossState.timer);
+  clearInterval(abyssBossState.attackTimer);
+  abyssBossState.active = false;
+  const bar = document.getElementById('abyss-boss-bar');
+  if(bar) bar.style.display='none';
+}
+
+function spawnAbyssBoss() {
+  if(gs.mapMode !== 'abyss') return;
+  const boss = ABYSS_BOSSES[abyssBossState.idx % ABYSS_BOSSES.length];
+  abyssBossState.active = true;
+  abyssBossState.current = boss;
+  abyssBossState.hp = boss.hp;
+  abyssBossState.maxHp = boss.hp;
+
+  const bar = document.getElementById('abyss-boss-bar');
+  if(bar) {
+    bar.style.display = 'flex';
+    bar.querySelector('#abyss-boss-name').textContent = boss.emoji + ' ' + boss.name;
+    bar.querySelector('#abyss-boss-hp-fill').style.width = '100%';
+  }
+
+  showToast(`⚠️ ${boss.emoji} ${boss.name} появился! Лови рыбу чтобы атаковать!`);
+  playSound && playSound('bite');
+
+  // Босс атакует каждые 8 секунд — крадёт монеты
+  abyssBossState.attackTimer = setInterval(()=>{
+    if(!abyssBossState.active||gs.mapMode!=='abyss') return;
+    const steal = Math.floor(boss.hp/10);
+    gs.coins = Math.max(0, (gs.coins||0) - steal);
+    updateCoins();
+    showToast(`💀 ${boss.emoji} ${boss.name} атакует! -${steal}🪙!`);
+    playSound && playSound('miss');
+  }, 8000);
+}
+
+function hitAbyssBoss(damage) {
+  if(!abyssBossState.active) return;
+  abyssBossState.hp = Math.max(0, abyssBossState.hp - damage);
+  const pct = abyssBossState.hp / abyssBossState.maxHp * 100;
+  const fill = document.getElementById('abyss-boss-hp-fill');
+  if(fill) fill.style.width = pct + '%';
+
+  if(abyssBossState.hp <= 0) {
+    // Победа!
+    clearInterval(abyssBossState.attackTimer);
+    abyssBossState.active = false;
+    const boss = abyssBossState.current;
+    const bar = document.getElementById('abyss-boss-bar');
+    if(bar) bar.style.display='none';
+    gs.coins += boss.reward.coins;
+    updateCoins();
+    showToast(`🏆 ${boss.emoji} ПОВЕРЖЕН! +${boss.reward.coins}🪙!`);
+    spawnAbyssExplosion();
+    spawnAbyssExplosion();
+    if(boss.reward.artifact) tryGiveAbyssArtifact(boss.reward.artifact);
+    abyssBossState.idx++;
+    saveGame();
+    scheduleAbyssBoss(); // следующий
+  }
+}
+
+// ── Обновление глубины UI ─────────────────────────────────────
+function updateDepthUI() {
+  const el = document.getElementById('abyss-depth-bar-fill');
+  if(el) el.style.width = (gs.abyssAbyssDepth||0) + '%';
+  const el2 = document.getElementById('abyss-depth-txt');
+  if(el2) el2.textContent = `🌊 Глубина: ${gs.abyssAbyssDepth||0}%`;
+}
+
+// ── Рендер экрана ивента ──────────────────────────────────────
+function renderEasterEventScreen() {
+  const ad=document.getElementById('abyss-event-content'), ed=document.getElementById('easter-event-content');
+  if(gs.mapMode==='easter'){if(ad)ad.style.display='none';if(ed)ed.style.display='block';renderEasterEventScreenEaster();}
+  else{if(ed)ed.style.display='none';if(ad)ad.style.display='block';renderAbyssEventScreen();}
+}
+function renderAbyssEventScreen() {
+  const content = document.getElementById('abyss-event-content');
+  if(!content) return;
+  const caught = gs.abyssCreaturesCaught || 0;
+  const depth  = gs.abyssAbyssDepth || 0;
+  const arts   = gs.abyssArtifacts || [];
+  const abyssRod = RODS.find(r=>r.id==='abyssrod');
+  const rarCols = {common:'#80d8ff',rare:'#4090ff',epic:'#8040ff',legend:'#00d8ff',og:'#ff00ff'};
+
+  content.innerHTML = `
+    <!-- Глубина -->
+    <div style="background:rgba(0,80,120,.2);border:1px solid rgba(0,200,255,.3);border-radius:12px;padding:12px;margin-bottom:10px;">
+      <div style="font-family:'Neucha',cursive;font-size:13px;color:#00d8ff;margin-bottom:6px;">🌊 Глубина Бездны</div>
+      <div style="font-family:'UnifrakturMaguntia',cursive;font-size:24px;color:#fff;text-align:center;">${depth}%</div>
+      <div style="background:rgba(0,0,0,.4);border-radius:8px;height:10px;overflow:hidden;margin:6px 0;">
+        <div id="abyss-depth-bar-fill" style="height:100%;width:${depth}%;background:linear-gradient(90deg,#004080,#00d8ff,#80ffff);border-radius:8px;transition:width .5s;box-shadow:0 0 8px #00d8ff;"></div>
+      </div>
+      <div style="font-family:'Neucha',cursive;font-size:10px;color:#80d8ff;text-align:center;">Поймано существ: ${caught} • До удочки Бездны: ${Math.max(0,100-depth)}%</div>
+    </div>
+
+    <!-- Удочка Бездны -->
+    <div style="background:rgba(0,40,80,.3);border:2px solid ${depth>=100?'#00d8ff':'rgba(0,150,200,.3)'};border-radius:12px;padding:12px;margin-bottom:10px;${depth>=100?'box-shadow:0 0 20px rgba(0,200,255,.4);':''}">
+      <div style="font-family:'Neucha',cursive;font-size:14px;color:#00d8ff;margin-bottom:4px;">🌊 Удочка Бездны</div>
+      <div style="font-family:'Neucha',cursive;font-size:10px;color:#80a8c0;margin-bottom:8px;">Призывает существ из глубин. Достигни 100% Глубины!</div>
+      ${abyssRod && abyssRod.owned
+        ? `<div style="color:#00d8ff;font-family:'Neucha',cursive;font-size:13px;text-align:center;">✅ Разблокирована! Надевай в магазине!</div>`
+        : depth>=100
+          ? `<div style="color:#00ff80;font-family:'Neucha',cursive;font-size:13px;text-align:center;animation:abyssGlow 1s ease-in-out infinite alternate;">🌊 РАЗБЛОКИРОВАНО! Проверь инвентарь!</div>`
+          : `<div style="color:#406080;font-family:'Neucha',cursive;font-size:11px;text-align:center;">🔒 Нужно ${100-depth}% глубины</div>`
+      }
+    </div>
+
+    <!-- Артефакты -->
+    <div style="font-family:'Neucha',cursive;font-size:13px;color:#00d8ff;margin-bottom:6px;">🏺 Артефакты Бездны (${arts.length}/${ABYSS_ARTIFACTS.length})</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+      ${ABYSS_ARTIFACTS.map(a=>{
+        const owned = arts.includes(a.id);
+        const rarC = {common:'#80d8ff',rare:'#4090ff',epic:'#8040ff',legend:'#00d8ff',og:'#ff00ff'}[a.rarity]||'#80d8ff';
+        return `<div style="background:rgba(0,20,40,.8);border:2px solid ${owned?rarC:rarC+'30'};border-radius:12px;padding:6px 10px;font-family:'Neucha',cursive;font-size:10px;color:${owned?rarC:'#406080'};${owned?'box-shadow:0 0 8px '+rarC+'44;':''}">
+          ${a.emoji} ${a.name}${owned?' ✅':' 🔒'}<br>
+          <span style="font-size:9px;opacity:.7;">${a.desc}</span>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Существа -->
+    <div style="font-family:'Neucha',cursive;font-size:13px;color:#00d8ff;margin-bottom:6px;">🌊 Существа Бездны:</div>
+    ${ABYSS_CREATURES.map(c=>`
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(0,20,40,.6);border:1px solid rgba(0,150,200,.2);border-radius:10px;padding:8px 10px;margin-bottom:5px;">
+        <div style="font-size:24px;text-shadow:0 0 8px ${c.glow};">${c.emoji}</div>
+        <div style="flex:1;">
+          <div style="font-family:'Neucha',cursive;font-size:12px;color:${c.glow};">${c.name}</div>
+          <div style="font-family:'Neucha',cursive;font-size:10px;color:#4080a0;">${c.label} • +${c.coins}🪙${c.bonus?` • 🎁 ${c.bonus.toUpperCase()} бонус!`:''}</div>
+        </div>
+      </div>`).join('')}
+
+    <button onclick="setMap('abyss');switchScreen('fishing');" style="width:100%;margin-top:8px;padding:12px;font-family:'Neucha',cursive;font-size:15px;background:linear-gradient(135deg,#001840,#002860);border:2px solid #00d8ff;border-radius:12px;color:#00d8ff;cursor:pointer;text-shadow:0 0 8px rgba(0,200,255,.6);box-shadow:0 0 20px rgba(0,150,220,.3);">
+      🌊 Нырнуть в Бездну
+    </button>
+  `;
+}
+
+// ── Патч triggerBite для карты Бездны ────────────────────────
+const _triggerBiteBeforeAbyss = window.triggerBite;
+window.triggerBite = function() {
+  if(gs.mapMode==='abyss') {
+    // Используем стандартный triggerBite но с бонусами артефактов
+    if(typeof _triggerBiteBeforeAbyss==='function') _triggerBiteBeforeAbyss();
+    // Артефакт Раковины — +10% клёв
+    // (учитывается в biteChance через флаг)
+    return;
+  }
+  if(typeof _triggerBiteBeforeAbyss==='function') _triggerBiteBeforeAbyss();
+};
+
+// ── Патч catchFish для карты Бездны ──────────────────────────
+const _catchFishBeforeAbyss = window.catchFish;
+window.catchFish = function() {
+  if(gs.mapMode === 'abyss') {
+    if(gs.phase !== 'bite') return;
+    gs.phase = 'idle';
+    clearTimeout(gs.biteTimeout);
+    hideBobber();
+
+    // Выбор существа по глубине и рандому
+    const depth = gs.abyssAbyssDepth || 0;
+    let pool;
+    const r = Math.random();
+    // Глаз Левиафана — x10 шанс
+    const eyeMult = gs._abyssEyeActive ? 10 : 1;
+    if(r < 0.005 * eyeMult)      pool = ABYSS_CREATURES.filter(c=>c.rar==='og');
+    else if(r < 0.02)            pool = ABYSS_CREATURES.filter(c=>c.rar==='legend');
+    else if(r < 0.08 + depth*0.003) pool = ABYSS_CREATURES.filter(c=>c.rar==='epic');
+    else if(r < 0.25)            pool = ABYSS_CREATURES.filter(c=>c.rar==='rare');
+    else                         pool = ABYSS_CREATURES.filter(c=>c.rar==='common');
+    if(!pool||!pool.length) pool = ABYSS_CREATURES.filter(c=>c.rar==='common');
+
+    const creature = pool[Math.floor(Math.random()*pool.length)];
+
+    // Артефакты: жемчужина +200, дракон x2
+    let bonusCoins = creature.coins;
+    if(gs._abyssPearlActive)   bonusCoins += 200;
+    if(gs._abyssDragonFire)    bonusCoins *= 2;
+    const finalCreature = {...creature, coins: bonusCoins};
+
+    // Бьём по боссу если активен
+    if(abyssBossState.active) {
+      const dmg = 50 + Math.floor(Math.random()*100);
+      hitAbyssBoss(dmg);
+      showScorePop(`⚔️ -${dmg}hp`, gs.bobX, gs.bobY-30);
+    }
+
+    gs.phase = 'idle';
+    catchAbyssCreature(finalCreature);
+    scheduleNextEvent && scheduleNextEvent();
+    return;
+  }
+  if(typeof _catchFishBeforeAbyss==='function') _catchFishBeforeAbyss();
+};
+
+// ── pickFish для Бездны ───────────────────────────────────────
+const _pickFishBeforeAbyss = window.pickFish;
+window.pickFish = function() {
+  if(gs.mapMode === 'abyss') {
+    // Возвращаем обычную рыбу-заглушку (catchFish перехватит)
+    return ABYSS_CREATURES[0];
+  }
+  if(typeof _pickFishBeforeAbyss==='function') return _pickFishBeforeAbyss();
+  return null;
+};
+
+// ── Загрузка состояния ─────────────────────────────────────────
+try {
+  const _raw2b = localStorage.getItem('fishing_reborn_extra2');
+  if(_raw2b) {
+    const _ex2b = JSON.parse(_raw2b);
+    gs.abyssCreaturesCaught = _ex2b.abyssCreaturesCaught || 0;
+    gs.abyssArtifacts       = _ex2b.abyssArtifacts || [];
+    gs.abyssAbyssDepth      = _ex2b.abyssAbyssDepth || 0;
+    gs._abyssRodGiven       = _ex2b._abyssRodGiven || false;
+  }
+} catch(e) {}
+
+// ── Патч saveGame для новых полей ────────────────────────────
+const _saveGameBeforeAbyss = window.saveGame;
+window.saveGame = function() {
+  _saveGameBeforeAbyss();
+  try {
+    const _s = localStorage.getItem('fishing_reborn_extra2');
+    const _d = _s ? JSON.parse(_s) : {};
+    _d.abyssCreaturesCaught = gs.abyssCreaturesCaught || 0;
+    _d.abyssArtifacts       = gs.abyssArtifacts || [];
+    _d.abyssAbyssDepth      = gs.abyssAbyssDepth || 0;
+    _d._abyssRodGiven       = gs._abyssRodGiven || false;
+    localStorage.setItem('fishing_reborn_extra2', JSON.stringify(_d));
+  } catch(e) {}
+};
+
+// Restore abyss map on load
+if(gs.mapMode === 'abyss') setTimeout(()=>applyAbyssMap(), 200);
 
 // ============================================================
 // 💀 HARDCORE MAP — BOSS LOOP
@@ -10258,7 +11033,7 @@ ROD_COLORS.time    = {color:'#c0e0ff', glow:'0 0 70px rgba(180,220,255,1.0)'};
 ROD_COLORS.flower  = {color:'#ff80c0', glow:'0 0 60px rgba(255,100,200,1.0)'};
 ROD_COLORS.easter  = {color:'#ff80c0', glow:'0 0 60px rgba(255,128,192,1.0)'};
 // Новые удочки
-ROD_COLORS.blackhole = {color:'#8000ff', glow:'0 0 80px rgba(120,0,255,1.0)'};
+ROD_COLORS.abyssrod = {color:'#00d8ff', glow:'0 0 80px rgba(0,200,255,1.0)'};
 ROD_COLORS.rainbow   = {color:'#ff80ff', glow:'0 0 60px rgba(255,128,255,.9)'};
 ROD_COLORS.magnet    = {color:'#40c0ff', glow:'0 0 50px rgba(50,180,255,.9)'};
 ROD_COLORS.laser     = {color:'#ff2020', glow:'0 0 70px rgba(255,0,0,1.0)'};
@@ -10594,7 +11369,7 @@ function spawnEasterConfetti() {
   }
 }
 
-function renderEasterEventScreen() {
+function renderEasterEventScreenEaster() {
   const content = document.getElementById('easter-event-content');
   if(!content) return;
   const kills = gs.easterChaChaKills || 0;
@@ -10965,6 +11740,7 @@ const HARDCORE_ROD_SVGS = {
       rainbow:  { tier:'🌈 РАДУГА', tierClass:'rod-tier-cosmic',   borderColor:'#ff80ff', bgGrad:'rgba(20,0,30,.95),rgba(0,10,20,.95)',   anim:'rainbowShift 3s linear infinite' },
       magnet:   { tier:'🧲 МАГНИТ', tierClass:'rod-tier-mech',     borderColor:'#40c0ff', bgGrad:'rgba(0,20,40,.97),rgba(0,10,25,.97)',   anim:'mechPulse 1.5s ease-in-out infinite' },
       laser:    { tier:'💥 ЛАЗЕР',  tierClass:'rod-tier-demonic',  borderColor:'#ff2020', bgGrad:'rgba(40,0,10,.98),rgba(20,0,5,.98)',    anim:'laserPulse 0.5s ease-in-out infinite alternate' },
+      abyssrod: { tier:'🌊 БЕЗДНА', tierClass:'rod-tier-time',     borderColor:'#00d8ff', bgGrad:'rgba(0,10,30,.98),rgba(0,5,20,.98)',    anim:'abyssGlow 2s ease-in-out infinite alternate' },
       // Лимитки — тоже красиво если выданы
       hugiwugi: { tier:'🎄 ЛИМИТ', tierClass:'rod-tier-godly',    borderColor:'#4060ff', bgGrad:'rgba(0,10,60,.98),rgba(0,5,40,.98)',   anim:'neonScan 2s ease-in-out infinite' },
       bakintsa: { tier:'🇦🇿 ЛИМИТ',tierClass:'rod-tier-godly',    borderColor:'#ffd700', bgGrad:'rgba(30,20,0,.98),rgba(15,10,0,.98)',  anim:'pharaohGlow 1.5s ease-in-out infinite alternate' },
@@ -11193,7 +11969,7 @@ fishingScreen.addEventListener('click', function() {
 });
 
 // Patch setMap to handle hardcore
-const _origSetMap = window.setMap;
+const _origSetMap2 = window.setMap;
 window.setMap = function(mode) {
   // Clear hardcore-specific state
   clearTimeout(hcBossTimer);
@@ -11220,7 +11996,7 @@ window.setMap = function(mode) {
     // Can't leave directly — handled by tryLeaveBumMap
     return;
   }
-  _origSetMap(mode);
+  _origSetMap2(mode);
 };
 
 // Unlock hardcore when boss is killed
@@ -12407,6 +13183,19 @@ newStyles.textContent = `
 @keyframes adminPopIn { 0%{transform:translate(-50%,-50%) scale(0)} 100%{transform:translate(-50%,-50%) scale(1)} }
 @keyframes lootboxShake { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
 
+@keyframes discoBallSpin { 0%{transform:translateX(-50%) rotate(0deg);filter:drop-shadow(0 0 20px #ff80ff);} 50%{filter:drop-shadow(0 0 30px #80ffff);} 100%{transform:translateX(-50%) rotate(360deg);filter:drop-shadow(0 0 20px #ff80ff);} }
+@keyframes discoFlash { 0%{opacity:.15} 50%{opacity:.25} 100%{opacity:0} }
+@keyframes adminPopIn { 0%{transform:translate(-50%,-50%) scale(0)} 100%{transform:translate(-50%,-50%) scale(1)} }
+@keyframes lootboxShake { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+
+/* ═══ ABYSS EVENT ═══ */
+@keyframes abyssGlow { 0%{text-shadow:0 0 10px rgba(0,200,255,.6),0 0 20px rgba(0,100,200,.3);} 100%{text-shadow:0 0 20px rgba(0,220,255,1),0 0 40px rgba(0,150,255,.6),0 0 60px rgba(0,80,200,.3);} }
+@keyframes abyssParticle { 0%{transform:translateY(0) scale(1);opacity:.3;} 100%{transform:translateY(-15px) scale(1.3);opacity:.7;} }
+@keyframes abyssFloat { 0%{transform:translateX(0) translateY(0);} 33%{transform:translateX(15px) translateY(-10px);} 66%{transform:translateX(-10px) translateY(10px);} 100%{transform:translateX(0) translateY(0);} }
+@keyframes abyssExplode { 0%{transform:translate(-50%,-50%) scale(0);opacity:1;} 100%{transform:translate(-50%,-50%) scale(3);opacity:0;} }
+@keyframes abyssParticleFloat { 0%{transform:translate(0,0);opacity:1;} 100%{transform:translate(var(--px),var(--py));opacity:0;} }
+.abyss-event-screen { background:linear-gradient(180deg,#000820 0%,#001040 100%); }
+
 /* ═══ BLACKHOLE ROD ═══ */
 @keyframes bhPulse { 0%{opacity:.6;transform:scale(.9)} 100%{opacity:1;transform:scale(1.1)} }
 @keyframes bhDiscSpin { 0%{transform-origin:10px -18px;transform:rotateX(70deg) rotate(0deg)} 100%{transform-origin:10px -18px;transform:rotateX(70deg) rotate(360deg)} }
@@ -13170,5 +13959,338 @@ document.head.appendChild(newStyles);
   </div>
 </div>
 
+<script>
+// ═══════════════════════════════════════════════════════════
+//  ⚙️ SETTINGS ENGINE
+// ═══════════════════════════════════════════════════════════
+const SETTINGS_KEY = 'fishing_reborn_settings_v1';
+const ST_DEFAULTS = {
+  lowend:false, particles:true, wateranim:true, fishanim:true,
+  sound:true, vibro:true, volume:70,
+  autocast:false, autosell:false, quickpop:false, sellconfirm:false,
+};
+let ST = {};
+
+function loadSettings() {
+  try { const r=localStorage.getItem(SETTINGS_KEY); ST=r?{...ST_DEFAULTS,...JSON.parse(r)}:{...ST_DEFAULTS}; }
+  catch(e){ ST={...ST_DEFAULTS}; }
+}
+
+function saveSettings() {
+  try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(ST)); }catch(e){}
+}
+
+function g(id){ return document.getElementById(id); }
+
+function applyAllSettings() {
+  document.body.classList.toggle('lowend-mode', ST.lowend);
+  const stars=g('stars'), clouds=g('clouds');
+  if(stars)  stars.style.display  = (ST.wateranim&&!ST.lowend)?'':'none';
+  if(clouds) clouds.style.display = (ST.wateranim&&!ST.lowend)?'':'none';
+  document.querySelectorAll('.lily').forEach(l=>l.style.display=(ST.lowend?'none':''));
+  const svg=g('catch-fish-svg');
+  if(svg) svg.style.animation=(ST.fishanim&&!ST.lowend)?'fishWigglePop .6s ease-in-out infinite alternate':'none';
+  window._STsound  = ST.sound;
+  window._STvibro  = ST.vibro;
+  window._STvolume = ST.volume/100;
+}
+
+function renderSettingsUI() {
+  const keys={lowend:'tog-lowend',particles:'tog-particles',wateranim:'tog-wateranim',fishanim:'tog-fishanim',
+               sound:'tog-sound',vibro:'tog-vibro',autocast:'tog-autocast',autosell:'tog-autosell',
+               quickpop:'tog-quickpop',sellconfirm:'tog-sellconfirm'};
+  Object.entries(keys).forEach(([k,id])=>{
+    const el=g(id); if(el) el.classList.toggle('on',!!ST[k]);
+  });
+  const sl=g('stt-volume-slider'); if(sl) sl.value=ST.volume;
+  const vl=g('stt-vol-label'); if(vl) vl.textContent=ST.volume+'%';
+  const nc=g('stt-nick-current'); if(nc) nc.textContent='Текущий: '+(window.myPlayerName||'Рыбак');
+  const fc=g('stt-fish-count'); if(fc) fc.textContent=typeof FISH_DATA!=='undefined'?FISH_DATA.length:'—';
+  const rc=g('stt-rod-count'); if(rc) rc.textContent=typeof RODS!=='undefined'?RODS.length:'—';
+}
+
+window.settingToggle = function(key) {
+  if(!(key in ST)) return;
+  ST[key]=!ST[key];
+  if(key==='lowend'&&ST.lowend){ ST.particles=false; ST.wateranim=false; ST.fishanim=false; }
+  if(key==='lowend'&&!ST.lowend){ ST.particles=true; ST.wateranim=true; ST.fishanim=true; }
+  saveSettings(); applyAllSettings(); renderSettingsUI();
+  if(key==='lowend') showToast&&showToast(ST.lowend?'🐢 Режим слабого устройства включён!':'✨ Эффекты включены!');
+};
+
+window.settingVolume = function(val) {
+  ST.volume=parseInt(val); window._STvolume=ST.volume/100;
+  const vl=g('stt-vol-label'); if(vl) vl.textContent=val+'%';
+  saveSettings();
+};
+
+// ── Патч звука ──
+const _origPS = window.playSound;
+window.playSound = function(type) { if(window._STsound!==false && _origPS) _origPS(type); };
+
+// ── Патч вибрации ──
+const _origVib = navigator.vibrate ? navigator.vibrate.bind(navigator) : null;
+navigator.vibrate = function(p) { if(window._STvibro!==false && _origVib) return _origVib(p); };
+
+// ── Патч частиц ──
+const _origRipple=window.makeRipple, _origCoinB=window.coinBurst;
+window.makeRipple=function(x,y,s){ if(!ST.lowend&&ST.particles&&_origRipple) _origRipple(x,y,s); };
+window.coinBurst =function(x,y){   if(!ST.lowend&&ST.particles&&_origCoinB)  _origCoinB(x,y); };
+
+// ── Автозаброс ──
+const _origAC=window.afterCatch;
+window.afterCatch=function(){
+  if(_origAC) _origAC();
+  if(ST.autocast) setTimeout(()=>{ if(gs&&gs.phase==='idle'&&gs.currentScreen==='fishing') { const x=110+Math.random()*130,y=300+Math.random()*120; if(typeof castTo==='function') castTo(x,y); }},900);
+};
+
+// ── Автопродажа / быстрый попап ──
+const _origUCPF=window.updateCatchPopupFish;
+window.updateCatchPopupFish=function(f){
+  if(_origUCPF) _origUCPF(f);
+  if(ST.autosell&&f&&f.rar==='common') setTimeout(()=>{ const p=g('catch-popup'); if(p&&p.classList.contains('show')) sellFish&&sellFish(); },350);
+  else if(ST.quickpop) setTimeout(()=>{ const p=g('catch-popup'); if(p&&p.classList.contains('show')) keepFish&&keepFish(); },2000);
+};
+
+// ── Подтверждение продажи ──
+const _origSF=window.sellFish;
+window.sellFish=function(){
+  if(ST.sellconfirm&&gs&&gs.currentCatch&&['epic','legend','og'].includes(gs.currentCatch.rar)){
+    if(!confirm('Продать '+gs.currentCatch.name+'?')) return;
+  }
+  if(_origSF) _origSF();
+};
+
+// ── Аккаунт ──
+window.sttChangeNick=function(){
+  const cur=window.myPlayerName||'Рыбак';
+  const n=prompt('Новый никнейм (до 20 символов):',cur);
+  if(n&&n.trim().length>=2&&n.trim().length<=20){
+    window.myPlayerName=n.trim(); window.myPlayerId&&null;
+    try{localStorage.setItem('fishing_reborn_player_name',window.myPlayerName);}catch(e){}
+    renderSettingsUI(); showToast&&showToast('✏️ Имя изменено: '+window.myPlayerName);
+  }
+};
+window.sttExportSave=function(){
+  try{
+    const data={main:localStorage.getItem('fishing_reborn_v2')||localStorage.getItem('fishing_reborn'),
+                extra:localStorage.getItem('fishing_reborn_extra'),extra2:localStorage.getItem('fishing_reborn_extra2'),
+                pid:localStorage.getItem('fishing_reborn_player_id'),name:localStorage.getItem('fishing_reborn_player_name')};
+    const code=btoa(JSON.stringify(data));
+    navigator.clipboard.writeText(code).then(()=>showToast&&showToast('💾 Сохранение скопировано! ('+code.length+' симв.)')).catch(()=>prompt('Код:',code));
+  }catch(e){showToast&&showToast('❌ Ошибка экспорта');}
+};
+window.sttImportSave=function(){
+  const code=prompt('Вставь код сохранения:');
+  if(!code) return;
+  try{
+    const d=JSON.parse(atob(code.trim()));
+    if(d.main)  localStorage.setItem('fishing_reborn_v2',d.main);
+    if(d.extra) localStorage.setItem('fishing_reborn_extra',d.extra);
+    if(d.extra2)localStorage.setItem('fishing_reborn_extra2',d.extra2);
+    if(d.pid)   localStorage.setItem('fishing_reborn_player_id',d.pid);
+    if(d.name)  localStorage.setItem('fishing_reborn_player_name',d.name);
+    showToast&&showToast('📥 Сохранение загружено! Перезагрузка...');
+    setTimeout(()=>location.reload(),1500);
+  }catch(e){showToast&&showToast('❌ Неверный код');}
+};
+window.sttResetConfirm=function(){
+  if(confirm('⚠️ Удалить ВЕСЬ прогресс?')&&confirm('Точно уверен? Это нельзя отменить!')){
+    ['fishing_reborn_v2','fishing_reborn','fishing_reborn_extra','fishing_reborn_extra2','fishing_reborn_settings_v1']
+      .forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+    showToast&&showToast('🗑️ Прогресс сброшен...');
+    setTimeout(()=>location.reload(),1200);
+  }
+};
+
+loadSettings();
+document.addEventListener('DOMContentLoaded', function(){ applyAllSettings(); renderSettingsUI(); });
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  🎣 ЭКРАН ПРИВЕТСТВИЯ + КОМПЕНСАЦИЯ v4 + ВОЗВРАТ ПРОГРЕССА
+// ═══════════════════════════════════════════════════════════
+(function(){
+  const NM_KEY   = 'fishing_reborn_player_name';
+  const COMP_KEY = 'fishing_reborn_comp_v4';
+
+  // Ждём загрузки DOM
+  function init() {
+    const savedName = localStorage.getItem(NM_KEY);
+    if(savedName) {
+      window.myPlayerName = savedName;
+      // Уже входил — показываем экран возврата прогресса если компенсация ещё не выдана
+      if(!localStorage.getItem(COMP_KEY)) {
+        showReturnScreen(savedName);
+      }
+    } else {
+      // Первый вход — показываем экран с именем
+      showWelcomeScreen();
+    }
+  }
+
+  // ── Экран ВОЗВРАТА ПРОГРЕССА (для тех кто уже играл) ──
+  function showReturnScreen(name) {
+    const overlay = document.createElement('div');
+    overlay.id = 'return-overlay';
+    overlay.style.cssText='position:absolute;inset:0;z-index:99999;background:linear-gradient(160deg,#0a0805,#1a1008 50%,#0d0508);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML = `
+      <div style="position:relative;z-index:1;text-align:center;width:100%;max-width:340px;">
+        <div style="font-size:48px;margin-bottom:8px;">🛠️</div>
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:24px;color:#d4a030;text-shadow:0 0 16px rgba(212,160,48,.5);margin-bottom:4px;">Технический перерыв</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#806040;margin-bottom:20px;">Приносим извинения, ${name}!</div>
+
+        <div style="background:rgba(212,160,0,.1);border:1px solid rgba(212,160,0,.35);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left;font-family:'Neucha',cursive;">
+          <div style="font-size:14px;color:#ffd060;margin-bottom:10px;text-align:center;">💰 Укажи что потерял — мы вернём!</div>
+          <div style="font-size:11px;color:#a08040;margin-bottom:12px;text-align:center;">Введи примерные значения. Это разовая компенсация.</div>
+
+          <div style="margin-bottom:8px;">
+            <div style="font-size:11px;color:#c09050;margin-bottom:3px;">🪙 Монеты:</div>
+            <input id="ret-coins" type="number" min="0" max="99999999" placeholder="0" style="width:100%;box-sizing:border-box;background:rgba(255,200,80,.08);border:1px solid rgba(212,160,0,.3);border-radius:8px;padding:8px 10px;font-family:'Neucha',cursive;font-size:14px;color:#f0d080;outline:none;">
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:11px;color:#c09050;margin-bottom:3px;">⭐ Очки (Score):</div>
+            <input id="ret-score" type="number" min="0" max="99999999" placeholder="0" style="width:100%;box-sizing:border-box;background:rgba(255,200,80,.08);border:1px solid rgba(212,160,0,.3);border-radius:8px;padding:8px 10px;font-family:'Neucha',cursive;font-size:14px;color:#f0d080;outline:none;">
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:11px;color:#ffcc00;margin-bottom:3px;">⚡ Пика-монеты:</div>
+            <input id="ret-pika" type="number" min="0" max="99999" placeholder="0" style="width:100%;box-sizing:border-box;background:rgba(255,200,80,.08);border:1px solid rgba(212,160,0,.3);border-radius:8px;padding:8px 10px;font-family:'Neucha',cursive;font-size:14px;color:#f0d080;outline:none;">
+          </div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:11px;color:#60d0ff;margin-bottom:3px;">🏅 XP:</div>
+            <input id="ret-xp" type="number" min="0" max="99999999" placeholder="0" style="width:100%;box-sizing:border-box;background:rgba(255,200,80,.08);border:1px solid rgba(212,160,0,.3);border-radius:8px;padding:8px 10px;font-family:'Neucha',cursive;font-size:14px;color:#f0d080;outline:none;">
+          </div>
+        </div>
+
+        <div style="font-family:'Neucha',cursive;font-size:10px;color:#605040;margin-bottom:14px;">
+          + Бонус за неудобства: 500 000🪙 и все базовые удочки
+        </div>
+
+        <button onclick="applyReturnComp()" style="width:100%;padding:13px;background:linear-gradient(135deg,#4a7010,#2a4008);border:2px solid #6aaa20;border-radius:12px;font-family:'Neucha',cursive;font-size:16px;color:#c0f060;cursor:pointer;margin-bottom:8px;">
+          ✅ Вернуть прогресс
+        </button>
+        <button onclick="skipReturnComp()" style="width:100%;padding:9px;background:transparent;border:1px solid rgba(200,160,0,.2);border-radius:10px;font-family:'Neucha',cursive;font-size:12px;color:#705030;cursor:pointer;">
+          Пропустить (ничего не терял)
+        </button>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    window.applyReturnComp = function() {
+      const coins = Math.min(parseInt(document.getElementById('ret-coins').value)||0, 50000000);
+      const score = Math.min(parseInt(document.getElementById('ret-score').value)||0, 50000000);
+      const pika  = Math.min(parseInt(document.getElementById('ret-pika').value)||0, 99999);
+      const xp    = Math.min(parseInt(document.getElementById('ret-xp').value)||0, 10000000);
+
+      // Применяем возврат + бонус
+      gs.coins      = (gs.coins  ||0) + coins + 500000;
+      gs.score      = (gs.score  ||0) + score;
+      gs.pikaCoins  = (gs.pikaCoins||0) + pika;
+      gs.xp         = (gs.xp    ||0) + xp + 50000;
+
+      // Все базовые удочки
+      if(typeof RODS!=='undefined') RODS.forEach(r=>{ if(!r.limited&&!r.special) r.owned=true; });
+
+      localStorage.setItem(COMP_KEY,'1');
+      if(typeof updateCoins==='function') updateCoins();
+      if(typeof saveGame==='function') saveGame();
+
+      overlay.style.transition='opacity .4s';
+      overlay.style.opacity='0';
+      setTimeout(()=>overlay.remove(),450);
+      setTimeout(()=>{ if(typeof showToast==='function'){ showToast('💰 Возвращено: +'+coins.toLocaleString()+'🪙 +'+xp.toLocaleString()+' XP!'); } },500);
+      setTimeout(()=>{ if(typeof showToast==='function') showToast('🎣 Все удочки разблокированы! +500 000🪙 бонус!'); },2500);
+    };
+
+    window.skipReturnComp = function() {
+      // Только бонус без возврата
+      gs.coins = (gs.coins||0) + 500000;
+      gs.xp    = (gs.xp   ||0) + 50000;
+      if(typeof RODS!=='undefined') RODS.forEach(r=>{ if(!r.limited&&!r.special) r.owned=true; });
+      localStorage.setItem(COMP_KEY,'1');
+      if(typeof updateCoins==='function') updateCoins();
+      if(typeof saveGame==='function') saveGame();
+      overlay.style.transition='opacity .4s';
+      overlay.style.opacity='0';
+      setTimeout(()=>overlay.remove(),450);
+      setTimeout(()=>{ if(typeof showToast==='function') showToast('🎁 Бонус получен: +500 000🪙!'); },500);
+    };
+  }
+
+  // ── Экран ПРИВЕТСТВИЯ (первый запуск) ──
+  function showWelcomeScreen() {
+    const overlay = document.createElement('div');
+    overlay.id = 'welcome-overlay';
+    overlay.style.cssText='position:absolute;inset:0;z-index:99999;background:linear-gradient(160deg,#0a0805,#1a1008 50%,#0d0508);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML = `
+      <div style="position:relative;z-index:1;text-align:center;width:100%;max-width:340px;">
+        <div style="font-size:56px;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(212,160,48,.5));">🎣</div>
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:28px;color:#d4a030;text-shadow:0 0 20px rgba(212,160,48,.5);margin-bottom:2px;">Рыбалка Онлайн</div>
+        <div style="font-family:'Neucha',cursive;font-size:14px;color:#80a040;letter-spacing:2px;margin-bottom:22px;">РЕБОРН</div>
+
+        <div style="background:rgba(212,160,0,.1);border:1px solid rgba(212,160,0,.35);border-radius:14px;padding:14px 16px;margin-bottom:20px;font-family:'Neucha',cursive;text-align:left;">
+          <div style="font-size:14px;color:#ffd060;margin-bottom:6px;text-align:center;">🎁 Подарок новому игроку!</div>
+          <div style="font-size:11px;color:#c09040;line-height:1.8;">
+            💰 <span style="color:#ffd060;">+500 000 монет</span><br>
+            🎣 <span style="color:#a0ff60;">Все базовые удочки бесплатно</span><br>
+            ⭐ <span style="color:#60d0ff;">+50 000 XP</span>
+          </div>
+        </div>
+
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#c09050;margin-bottom:6px;text-align:left;">Введи своё имя рыбака:</div>
+        <div style="font-family:'Neucha',cursive;font-size:10px;color:#806040;margin-bottom:10px;text-align:left;">Например: Рыбак 165 · Имя видно в лидерборде</div>
+        <input id="wlc-name" type="text" maxlength="20" placeholder="Рыбак 165"
+          style="width:100%;box-sizing:border-box;background:rgba(255,200,80,.08);border:2px solid rgba(212,160,0,.4);border-radius:10px;padding:12px 14px;font-family:'Neucha',cursive;font-size:16px;color:#f0d080;outline:none;margin-bottom:6px;"
+          oninput="wlcValidate()"/>
+        <div id="wlc-hint" style="font-family:'Neucha',cursive;font-size:10px;color:#806040;margin-bottom:14px;min-height:14px;"></div>
+        <button id="wlc-btn" onclick="wlcConfirm()" disabled
+          style="width:100%;padding:14px;background:linear-gradient(135deg,#3a2010,#201008);border:2px solid #504020;border-radius:12px;font-family:'Neucha',cursive;font-size:16px;color:#806040;cursor:not-allowed;">
+          Начать рыбалку 🎣
+        </button>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    window.wlcValidate = function() {
+      const v=(document.getElementById('wlc-name')||{}).value||'';
+      const t=v.trim(), btn=document.getElementById('wlc-btn'), hint=document.getElementById('wlc-hint');
+      if(!btn) return;
+      if(t.length<2){ hint.textContent='Минимум 2 символа'; hint.style.color='#a05030'; btn.disabled=true; btn.style.cursor='not-allowed'; btn.style.color='#806040'; btn.style.background='linear-gradient(135deg,#3a2010,#201008)'; btn.style.borderColor='#504020'; return; }
+      hint.textContent='✓ Отличное имя!'; hint.style.color='#60c040';
+      btn.disabled=false; btn.style.cursor='pointer'; btn.style.color='#c0f060'; btn.style.background='linear-gradient(135deg,#4a7010,#2a4008)'; btn.style.borderColor='#6aaa20';
+    };
+
+    window.wlcConfirm = function() {
+      const inp=document.getElementById('wlc-name'); if(!inp) return;
+      const name=inp.value.trim(); if(!name||name.length<2) return;
+      window.myPlayerName=name;
+      try{ localStorage.setItem('fishing_reborn_player_name',name); }catch(e){}
+
+      // Начальный подарок
+      if(!localStorage.getItem(COMP_KEY)){
+        if(typeof gs!=='undefined'){
+          gs.coins=(gs.coins||0)+500000; gs.xp=(gs.xp||0)+50000;
+          if(typeof RODS!=='undefined') RODS.forEach(r=>{ if(!r.limited&&!r.special) r.owned=true; });
+        }
+        localStorage.setItem(COMP_KEY,'1');
+        if(typeof updateCoins==='function') updateCoins();
+        if(typeof saveGame==='function') saveGame();
+      }
+      overlay.style.transition='opacity .45s'; overlay.style.opacity='0';
+      setTimeout(()=>overlay.remove(),500);
+      setTimeout(()=>{ if(typeof showToast==='function') showToast('🎉 Добро пожаловать, '+name+'! +500 000🪙!'); },600);
+    };
+
+    // Enter в поле имени
+    setTimeout(()=>{
+      const inp=document.getElementById('wlc-name');
+      if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ wlcValidate(); const b=document.getElementById('wlc-btn'); if(b&&!b.disabled) wlcConfirm(); }});
+    },100);
+  }
+
+  // Запуск
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else setTimeout(init,100);
+})();
+</script>
 </body>
 </html>
