@@ -689,17 +689,17 @@ body {
 }
 .navtab {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  font-family:'Neucha',cursive; font-size:9.5px; color:#c8a050; cursor:pointer; gap:2px;
+  font-family:'Neucha',cursive; font-size:8px; color:#c8a050; cursor:pointer; gap:1px;
   background:repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.05) 18px,rgba(0,0,0,.05) 19px),linear-gradient(to bottom,#6a3a14,#3e2008);
   border-right:1px solid rgba(0,0,0,.3);
   border-bottom:1px solid rgba(0,0,0,.2);
   transition:background .15s,color .15s;
   position:relative; text-shadow:0 1px 2px rgba(0,0,0,.8);
-  padding:3px 1px; overflow:hidden; white-space:nowrap; min-width:0;
+  padding:1px 1px; overflow:hidden; white-space:nowrap; min-width:0;
 }
 .navtab:nth-child(5n){border-right:none;}
 .navtab.active{background:repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(0,0,0,.05) 18px,rgba(0,0,0,.05) 19px),linear-gradient(to bottom,#9a5820,#5a2e0a);color:#f0d878;box-shadow:0 -2px 0 #d4a030 inset;}
-.navtab svg{width:20px;height:20px;flex-shrink:0;transition:transform .2s;}
+.navtab svg{width:17px;height:17px;flex-shrink:0;transition:transform .2s;}
 .navtab:hover{background:linear-gradient(to bottom,#804820,#482408);}
 .navtab:hover svg{transform:scale(1.15);}
 .navtab.active svg{animation:navIconBounce .4s ease-out;}
@@ -3556,6 +3556,13 @@ const RODS = [
   {id:'magnet',    name:'Магнитная Удочка',     desc:'Притягивает все предметы! Иногда вытаскивает сундуки с монетами, бустерами и скинами прямо со дна реки!', price:666666, biteChance:40.0, catchMult:30.0, stats:'Клёв: x40 • x30 • Шанс вытащить СУНДУК (монеты/бустер/скин)', detail:'🧲 МАГНИТ', owned:false, equipped:false, special:'magnet', newrod:true},
   {id:'laser',     name:'Лазерная Удочка',      desc:'Наводится лазерным прицелом! При поимке легендарной рыбы — ЛАЗЕРНЫЙ ЛУЧ испаряет воду и появляются 3 OG рыбы одновременно!', price:777777, biteChance:50.0, catchMult:38.0, stats:'Клёв: x50 • x38 • На Легенду → 3 OG рыбы • Лазер-эффект', detail:'🔴 ЛАЗЕР', owned:false, equipped:false, special:'laser', newrod:true},
 
+  // ═══ МЕГА-УДОЧКИ (новые) ═══
+  {id:'phoenix',   name:'Удочка Феникса',       desc:'Возрождается после каждого улова! +20000🪙 бонус и двойная рыба!', price:1200000, biteChance:70.0, catchMult:55.0, stats:'Клёв: x70 • x55 • +20000🪙/улов • Двойной улов', detail:'🔥 ФЕНИКС', owned:false, equipped:false, special:'phoenix', newrod:true},
+  {id:'zeus',      name:'Удочка Зевса',          desc:'Удар молнией при каждом забросе! 50% шанс поймать 2 рыбы сразу!', price:1500000, biteChance:80.0, catchMult:60.0, stats:'Клёв: x80 • x60 • 50% = 2 рыбы • Молния', detail:'⚡ ЗЕВС', owned:false, equipped:false, special:'zeus', newrod:true},
+  {id:'galaxy',    name:'Галактическая',         desc:'Из звёздной пыли! При улове — звёздный дождь монет (+50000🪙)!', price:2000000, biteChance:90.0, catchMult:70.0, stats:'Клёв: x90 • x70 • +50000🪙 звёздный дождь', detail:'🌌 ГАЛАКТИКА', owned:false, equipped:false, special:'galaxy', newrod:true},
+  {id:'satan',     name:'Удочка Сатаны',         desc:'Из глубин ада! Удваивает весь инвентарь при каждом улове!', price:3000000, biteChance:100.0, catchMult:80.0, stats:'Клёв: x100 • x80 • Удваивает инвентарь • Только OG/Легенды', detail:'😈 САТАНА', owned:false, equipped:false, special:'satan', newrod:true},
+  {id:'omega',     name:'ОМЕГА УДОЧКА',           desc:'АБСОЛЮТНАЯ МОЩЬ. Гарантирует OG при каждом улове. +100000🪙 каждый заброс!', price:9999999, biteChance:999.0, catchMult:999.0, stats:'Клёв: x999 • x999 • ВСЕГДА OG • +100000🪙/заброс', detail:'🏆 ОМЕГА', owned:false, equipped:false, special:'omega', newrod:true},
+
   // ═══ УДОЧКА БЕЗДНЫ — разблокируется через ивент (100% глубины) ═══
   {id:'abyssrod', name:'Удочка Бездны', desc:'Выкована в глубинах океана! Призывает существ прямо из бездны! Боссы появляются в 2 раза чаще но дают x3 награды! Левиафан — 5% шанс!', price:0, biteChance:90.0, catchMult:70.0, stats:'Клёв: x90 • x70 • Боссы x2 • Награды x3 • Левиафан 5%', detail:'🌊 БЕЗДНА', owned:false, equipped:false, special:'abyssrod', limited:true},
 
@@ -5912,6 +5919,118 @@ function rodIconSVG(rod) {
       <circle cx="46" cy="22" r="2" fill="rgba(255,255,255,.5)"/>
       <text x="48" y="26.5" text-anchor="middle" font-size="5" fill="rgba(60,80,120,.8)">⏳</text>`,
 
+  phoenix: `
+      <defs><linearGradient id="shop_phxG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff9020"/><stop offset="100%" stop-color="#ff2000"/></linearGradient></defs>
+      <!-- Стержень из феникс-кости — оранжево-красный -->
+      <line x1="40" y1="8" x2="14" y2="44" stroke="url(#shop_phxG)" stroke-width="6" stroke-linecap="round"/>
+      <line x1="40" y1="8" x2="14" y2="44" stroke="#ffe080" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+      <!-- Катушка -->
+      <circle cx="20" cy="38" r="6" fill="rgba(0,0,0,.5)" stroke="#ff6020" stroke-width="2"/>
+      <circle cx="20" cy="38" r="3" fill="#cc3010" stroke="#ff8040" stroke-width="1"/>
+      <!-- Кольца из горящего металла -->
+      <circle cx="27" cy="31" r="3" fill="none" stroke="#ff8040" stroke-width="1.5" opacity=".8"/>
+      <circle cx="33" cy="22" r="2.5" fill="none" stroke="#ffa060" stroke-width="1.3" opacity=".7"/>
+      <!-- Пламя на кончике -->
+      <ellipse cx="40" cy="9" rx="5" ry="7" fill="#ff6000" opacity=".7"/>
+      <ellipse cx="40" cy="8" rx="3" ry="5" fill="#ffb020" opacity=".8"/>
+      <ellipse cx="40" cy="7" rx="2" ry="3" fill="#ffe060" opacity=".9"/>
+      <!-- Леска горящая -->
+      <line x1="40" y1="8" x2="47" y2="28" stroke="#ff8020" stroke-width="1.5" stroke-dasharray="3,2" opacity=".8"/>
+      <!-- Поплавок — огненный шар -->
+      <circle cx="47" cy="30" r="5" fill="#ff4000" stroke="#ffa000" stroke-width="1.5"/>
+      <circle cx="45" cy="28" r="2" fill="#ffee80" opacity=".7"/>
+      <text x="47" y="33" text-anchor="middle" font-size="6">🔥</text>`,
+
+  zeus: `
+      <defs><linearGradient id="shop_zG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f0f000"/><stop offset="100%" stop-color="#4040ff"/></linearGradient></defs>
+      <!-- Стержень — молния синевато-жёлтый -->
+      <line x1="40" y1="8" x2="14" y2="44" stroke="url(#shop_zG)" stroke-width="6" stroke-linecap="round"/>
+      <line x1="40" y1="8" x2="14" y2="44" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".4" stroke-dasharray="5,3"/>
+      <!-- Катушка -->
+      <circle cx="20" cy="38" r="6" fill="rgba(0,0,0,.5)" stroke="#8080ff" stroke-width="2"/>
+      <circle cx="20" cy="38" r="3" fill="#4040cc" stroke="#a0a0ff" stroke-width="1"/>
+      <!-- Кольца из молнии -->
+      <circle cx="27" cy="31" r="3" fill="none" stroke="#f0f040" stroke-width="1.5" opacity=".8"/>
+      <circle cx="33" cy="22" r="2.5" fill="none" stroke="#8080ff" stroke-width="1.3" opacity=".8"/>
+      <!-- Молния зигзаг на кончике -->
+      <polyline points="40,8 43,14 38,16 43,22" stroke="#f0f000" stroke-width="2" fill="none" stroke-linejoin="round"/>
+      <!-- Леска электрическая -->
+      <line x1="40" y1="8" x2="47" y2="26" stroke="#f0f040" stroke-width="1.5" opacity=".9"/>
+      <!-- Поплавок — шаровая молния -->
+      <circle cx="47" cy="28" r="5.5" fill="rgba(100,100,255,.4)" stroke="#f0f060" stroke-width="2"/>
+      <circle cx="47" cy="28" r="2.5" fill="#ffffff" opacity=".8"/>
+      <text x="47" y="31" text-anchor="middle" font-size="6">⚡</text>`,
+
+  galaxy: `
+      <defs><linearGradient id="shop_galG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c090ff"/><stop offset="100%" stop-color="#002060"/></linearGradient></defs>
+      <!-- Стержень — из звёздной пыли -->
+      <line x1="40" y1="8" x2="14" y2="44" stroke="url(#shop_galG)" stroke-width="6" stroke-linecap="round"/>
+      <line x1="40" y1="8" x2="14" y2="44" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" opacity=".3" stroke-dasharray="2,4"/>
+      <!-- Катушка галактическая -->
+      <circle cx="20" cy="38" r="6" fill="rgba(0,0,0,.7)" stroke="#c090ff" stroke-width="2"/>
+      <circle cx="20" cy="38" r="3" fill="#4020a0" stroke="#8060e0" stroke-width="1"/>
+      <!-- Звёздочки-кольца -->
+      <circle cx="27" cy="31" r="3" fill="none" stroke="#c090ff" stroke-width="1.5" opacity=".8"/>
+      <circle cx="33" cy="22" r="2.5" fill="none" stroke="#a070e0" stroke-width="1.3" opacity=".7"/>
+      <!-- Созвездие на стержне -->
+      <circle cx="22" cy="20" r="1.2" fill="#ffffff" opacity=".9"/>
+      <circle cx="28" cy="16" r="1" fill="#c0a0ff" opacity=".8"/>
+      <circle cx="35" cy="12" r="1.5" fill="#ffffff" opacity=".9"/>
+      <line x1="22" y1="20" x2="28" y2="16" stroke="#ffffff" stroke-width=".5" opacity=".4"/>
+      <line x1="28" y1="16" x2="35" y2="12" stroke="#ffffff" stroke-width=".5" opacity=".4"/>
+      <!-- Леска -->
+      <line x1="40" y1="8" x2="47" y2="26" stroke="#c090ff" stroke-width="1.5" opacity=".8"/>
+      <!-- Поплавок — планета -->
+      <circle cx="47" cy="28" r="5.5" fill="rgba(60,30,120,.8)" stroke="#c090ff" stroke-width="1.5"/>
+      <ellipse cx="47" cy="28" rx="8" ry="2.5" fill="none" stroke="#a070e0" stroke-width="1" opacity=".6"/>
+      <text x="47" y="31" text-anchor="middle" font-size="6">🌌</text>`,
+
+  satan: `
+      <defs><linearGradient id="shop_satG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#cc0000"/><stop offset="100%" stop-color="#200000"/></linearGradient></defs>
+      <!-- Стержень тёмно-кровавый -->
+      <line x1="40" y1="8" x2="14" y2="44" stroke="url(#shop_satG)" stroke-width="6" stroke-linecap="round"/>
+      <line x1="40" y1="8" x2="14" y2="44" stroke="#ff2020" stroke-width="2" stroke-linecap="round" opacity=".4" stroke-dasharray="4,3"/>
+      <!-- Катушка из черепа -->
+      <circle cx="20" cy="38" r="6" fill="rgba(0,0,0,.8)" stroke="#cc0000" stroke-width="2"/>
+      <circle cx="20" cy="38" r="3" fill="#800000" stroke="#cc0000" stroke-width="1"/>
+      <circle cx="18.5" cy="37" r="1" fill="#300000"/>
+      <circle cx="21.5" cy="37" r="1" fill="#300000"/>
+      <!-- Кольца из рогов -->
+      <circle cx="27" cy="31" r="3" fill="none" stroke="#cc0000" stroke-width="1.5" opacity=".8"/>
+      <circle cx="33" cy="22" r="2.5" fill="none" stroke="#ff2020" stroke-width="1.3" opacity=".7"/>
+      <!-- Рога на кончике -->
+      <path d="M37,8 Q34,2 37,0" stroke="#cc0000" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M41,8 Q44,2 41,0" stroke="#cc0000" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- Леска кровавая -->
+      <line x1="40" y1="8" x2="47" y2="26" stroke="#cc0000" stroke-width="1.5" opacity=".8"/>
+      <!-- Поплавок — пентаграмма -->
+      <circle cx="47" cy="28" r="5.5" fill="#200000" stroke="#cc0000" stroke-width="1.5"/>
+      <text x="47" y="31" text-anchor="middle" font-size="8">😈</text>`,
+
+  omega: `
+      <defs>
+        <radialGradient id="shop_omgG" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#ffe000"/><stop offset="70%" stop-color="#ff8000"/><stop offset="100%" stop-color="#000000"/></radialGradient>
+        <filter id="shop_omgGl"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Стержень из чистой энергии -->
+      <line x1="40" y1="8" x2="14" y2="44" stroke="url(#shop_omgG)" stroke-width="7" stroke-linecap="round" filter="url(#shop_omgGl)"/>
+      <line x1="40" y1="8" x2="14" y2="44" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+      <!-- Катушка — орбитальная -->
+      <circle cx="20" cy="38" r="7" fill="rgba(0,0,0,.6)" stroke="#ffe000" stroke-width="2.5" filter="url(#shop_omgGl)"/>
+      <circle cx="20" cy="38" r="4" fill="url(#shop_omgG)" stroke="#ffffff" stroke-width="1"/>
+      <!-- Кольца — ауры мощи -->
+      <circle cx="27" cy="31" r="3.5" fill="none" stroke="#ffe000" stroke-width="2" opacity=".9" filter="url(#shop_omgGl)"/>
+      <circle cx="33" cy="22" r="3" fill="none" stroke="#ff8000" stroke-width="1.8" opacity=".8" filter="url(#shop_omgGl)"/>
+      <circle cx="38" cy="14" r="2" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".7"/>
+      <!-- Корона на кончике -->
+      <path d="M36,8 L38,4 L40,7 L42,4 L44,7 L46,4 L47,8" stroke="#ffe000" stroke-width="1.5" fill="#ffe000" opacity=".9"/>
+      <!-- Леска -->
+      <line x1="40" y1="8" x2="48" y2="26" stroke="url(#shop_omgG)" stroke-width="2" filter="url(#shop_omgGl)"/>
+      <!-- Поплавок — абсолют -->
+      <circle cx="48" cy="28" r="6" fill="url(#shop_omgG)" stroke="#ffffff" stroke-width="2" filter="url(#shop_omgGl)"/>
+      <text x="48" y="31.5" text-anchor="middle" font-size="7">🏆</text>
+      <text x="26" y="49" text-anchor="middle" font-size="4.5" fill="#ffe000" font-family="Neucha,cursive" letter-spacing="1">OMEGA</text>`,
+
   };
 
   // Общий шаблон удочки с кольцами и катушкой
@@ -7789,6 +7908,11 @@ const ROD_COLORS = {
   neon:       {color:'#00ffcc', glow:'0 0 55px rgba(0,255,200,1.0)'},
   kraken:     {color:'#6020c0', glow:'0 0 60px rgba(120,0,220,1.0)'},
   time:       {color:'#c0e0ff', glow:'0 0 70px rgba(180,220,255,1.0)'},
+  phoenix:    {color:'#ff6020', glow:'0 0 60px rgba(255,80,0,1.0)'},
+  zeus:       {color:'#f0f040', glow:'0 0 70px rgba(255,255,0,1.0)'},
+  galaxy:     {color:'#c090ff', glow:'0 0 80px rgba(180,100,255,1.0)'},
+  satan:      {color:'#cc0000', glow:'0 0 80px rgba(200,0,0,1.0)'},
+  omega:      {color:'#ffffff', glow:'0 0 100px rgba(255,255,255,1.0)'},
 };
 
 // Рисуем вертикальную удочку в игре — красиво, как в магазине, но вертикально
@@ -9190,6 +9314,172 @@ function makeIngameRodSVG(rod) {
         <line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(255,215,0,.5)" stroke-width="0.8"/>
       `).join('')}
       <text x="10" y="380" text-anchor="middle" font-size="4" font-family="serif" fill="#ffd700" opacity=".9">🇦🇿</text>`,
+
+    // ═══ ФЕНИКС ═══
+    phoenix: `
+      <defs>
+        <linearGradient id="rod_phxBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#cc2000"/><stop offset="50%" stop-color="#ff8020"/><stop offset="100%" stop-color="#cc2000"/></linearGradient>
+        <filter id="rod_phxFire"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — огненно-оранжевое -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#rod_phxBody)" stroke="#ff4000" stroke-width="1.5" filter="url(#rod_phxFire)"/>
+      <!-- Перья феникса по бокам -->
+      <path d="M7,60 Q0,50 -2,60 Q2,65 7,60Z" fill="#ff6000" stroke="#ff9040" stroke-width="0.8" opacity=".8"/>
+      <path d="M13,80 Q20,70 22,80 Q18,85 13,80Z" fill="#ff8020" stroke="#ffb060" stroke-width="0.8" opacity=".8"/>
+      <path d="M7,160 Q0,150 -2,160 Q2,165 7,160Z" fill="#ff4000" stroke="#ff7030" stroke-width="0.8" opacity=".7"/>
+      <path d="M13,200 Q20,190 22,200 Q18,205 13,200Z" fill="#ff6020" stroke="#ffa050" stroke-width="0.8" opacity=".7"/>
+      <path d="M7,260 Q0,250 -2,260 Q2,265 7,260Z" fill="#ff5010" stroke="#ff8040" stroke-width="0.8" opacity=".6"/>
+      <!-- Огненные кольца -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#ff6020" stroke-width="2" opacity="${.9-i*.05}" style="animation:pharaohGlow ${0.8+i*0.2}s ease-in-out infinite alternate;"/>
+        <ellipse cx="10" cy="${y}" rx="${w-3}" ry="1.2" fill="none" stroke="#ffb060" stroke-width="1" opacity=".5"/>
+      `;}).join('')}
+      <!-- Пламя на кончике -->
+      <ellipse cx="10" cy="-8" rx="5" ry="8" fill="#ff4000" opacity=".7" style="animation:pharaohGlow 0.8s ease-in-out infinite alternate;"/>
+      <ellipse cx="10" cy="-10" rx="3" ry="6" fill="#ff9020" opacity=".8" style="animation:pharaohGlow 0.6s ease-in-out infinite alternate;"/>
+      <ellipse cx="10" cy="-12" rx="2" ry="4" fill="#ffe060" opacity=".9"/>
+      <!-- Катушка -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(20,5,0,.95)" stroke="#ff6020" stroke-width="2.5"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="rgba(180,40,0,.5)" stroke="#ff8040" stroke-width="1.5"/>
+      <circle cx="10" cy="342" r="3" fill="#ff6020" style="animation:pharaohGlow 0.5s ease-in-out infinite alternate;"/>
+      <text x="10" y="344.5" text-anchor="middle" font-size="4">🔥</text>
+      <!-- Ручка -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(30,8,0,.95)" stroke="#cc3000" stroke-width="2"/>
+      ${[363,368,373,378,383,388].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(255,80,20,.4)" stroke-width="0.8"/>`).join('')}
+      <text x="10" y="382" text-anchor="middle" font-size="4" fill="#ff6020" opacity=".8">ФЕНИКС</text>`,
+
+    // ═══ ЗЕВС ═══
+    zeus: `
+      <defs>
+        <linearGradient id="rod_zeusBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3030cc"/><stop offset="50%" stop-color="#f0f000"/><stop offset="100%" stop-color="#3030cc"/></linearGradient>
+        <filter id="rod_zeusGlow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — сине-жёлтое, как молния -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#rod_zeusBody)" stroke="#f0f040" stroke-width="1.5" filter="url(#rod_zeusGlow)"/>
+      <!-- Зигзаги молний вдоль стержня -->
+      <polyline points="10,20 13,50 7,80 13,110 7,140 13,170 7,200 13,230 7,260 13,290 7,320" stroke="#f0f000" stroke-width="2" fill="none" stroke-linejoin="round" opacity=".9" style="animation:thunderZap 2s steps(1) infinite;"/>
+      <polyline points="10,20 13,50 7,80 13,110 7,140 13,170 7,200 13,230 7,260 13,290 7,320" stroke="#ffffff" stroke-width="0.8" fill="none" stroke-linejoin="round" opacity=".6" style="animation:thunderZap 2s steps(1) infinite reverse;"/>
+      <!-- Электрические кольца -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#f0f040" stroke-width="2.5" opacity="${.9-i*.05}" style="animation:thunderZap ${1+i*0.3}s steps(1) infinite;"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="#8080ff" stroke-width="1" opacity=".6"/>
+      `;}).join('')}
+      <!-- Молния на вершине -->
+      <polyline points="10,0 14,-8 8,-16 13,-24 7,-32" stroke="#f0f000" stroke-width="3" fill="none" stroke-linejoin="round" filter="url(#rod_zeusGlow)" style="animation:thunderZap 0.5s steps(1) infinite;"/>
+      <polyline points="10,0 14,-8 8,-16 13,-24 7,-32" stroke="#ffffff" stroke-width="1.2" fill="none" stroke-linejoin="round" opacity=".8" style="animation:thunderZap 0.5s steps(1) infinite reverse;"/>
+      <!-- Катушка -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(0,0,20,.98)" stroke="#f0f040" stroke-width="2.5" filter="url(#rod_zeusGlow)"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="rgba(50,50,150,.6)" stroke="#8080ff" stroke-width="1.5"/>
+      <circle cx="10" cy="342" r="3" fill="#f0f000" style="animation:thunderZap 0.4s steps(1) infinite;"/>
+      <circle cx="10" cy="342" r="1.5" fill="#ffffff" opacity=".9"/>
+      <!-- Ручка -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(0,0,25,.98)" stroke="#3030bb" stroke-width="2"/>
+      ${[363,368,373,378,383,388].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(240,240,0,.4)" stroke-width="0.8"/>`).join('')}
+      <text x="10" y="382" text-anchor="middle" font-size="4" fill="#f0f040" opacity=".9">ЗЕВС</text>`,
+
+    // ═══ ГАЛАКТИКА ═══
+    galaxy: `
+      <defs>
+        <linearGradient id="rod_galBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#200060"/><stop offset="50%" stop-color="#c090ff"/><stop offset="100%" stop-color="#200060"/></linearGradient>
+        <filter id="rod_galGlow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — глубокий фиолетовый -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#rod_galBody)" stroke="#c090ff" stroke-width="1.5" filter="url(#rod_galGlow)"/>
+      <!-- Звёздочки вдоль стержня -->
+      ${[20,55,90,130,165,200,240,275,310,345].map(y=>`
+        <circle cx="${7+Math.random()*6|0}" cy="${y}" r="${0.8+Math.random()*1.5}" fill="#ffffff" opacity="${0.5+Math.random()*0.5}"/>
+      `).join('')}
+      <circle cx="8" cy="20" r="1.5" fill="#ffffff" opacity=".9"/>
+      <circle cx="12" cy="55" r="1.2" fill="#c0a0ff" opacity=".8"/>
+      <circle cx="9" cy="90" r="1.8" fill="#ffffff" opacity=".9"/>
+      <circle cx="11" cy="130" r="1" fill="#e0c0ff" opacity=".7"/>
+      <circle cx="8" cy="165" r="1.5" fill="#ffffff" opacity=".8"/>
+      <circle cx="13" cy="200" r="1.2" fill="#c090ff" opacity=".9"/>
+      <circle cx="9" cy="240" r="1.8" fill="#ffffff" opacity=".8"/>
+      <circle cx="11" cy="275" r="1" fill="#e0c0ff" opacity=".7"/>
+      <circle cx="8" cy="310" r="1.5" fill="#ffffff" opacity=".9"/>
+      <!-- Галактические кольца -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#c090ff" stroke-width="2" opacity="${.9-i*.05}" filter="url(#rod_galGlow)"/>
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="1.5" fill="none" stroke="rgba(180,120,255,.3)" stroke-width="1"/>
+      `;}).join('')}
+      <!-- Туманность на кончике -->
+      <ellipse cx="10" cy="-10" rx="8" ry="8" fill="rgba(150,80,255,.3)" filter="url(#rod_galGlow)"/>
+      <ellipse cx="10" cy="-10" rx="5" ry="5" fill="rgba(200,150,255,.4)"/>
+      <circle cx="10" cy="-10" r="2.5" fill="#ffffff" opacity=".9"/>
+      <!-- Катушка -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(5,0,20,.98)" stroke="#c090ff" stroke-width="2.5" filter="url(#rod_galGlow)"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="rgba(60,20,120,.6)" stroke="#a070e0" stroke-width="1.5"/>
+      <circle cx="10" cy="342" r="3" fill="#c090ff" opacity=".9"/>
+      <!-- Ручка -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(5,0,20,.98)" stroke="#6030a0" stroke-width="2"/>
+      ${[363,368,373,378,383,388].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(180,120,255,.4)" stroke-width="0.8"/>`).join('')}
+      <text x="10" y="382" text-anchor="middle" font-size="4" fill="#c090ff" opacity=".9">КОСМОС</text>`,
+
+    // ═══ САТАНА ═══
+    satan: `
+      <defs>
+        <linearGradient id="rod_satBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#200000"/><stop offset="50%" stop-color="#cc0000"/><stop offset="100%" stop-color="#200000"/></linearGradient>
+        <filter id="rod_satGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — кровавый чёрно-красный -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#rod_satBody)" stroke="#cc0000" stroke-width="1.5" filter="url(#rod_satGlow)"/>
+      <!-- Кровавые потёки -->
+      <path d="M10,30 Q12,60 10,90 Q8,120 10,150" stroke="rgba(180,0,0,.6)" stroke-width="1.5" fill="none"/>
+      <path d="M10,160 Q13,190 10,220 Q7,250 10,280" stroke="rgba(150,0,0,.5)" stroke-width="1.2" fill="none"/>
+      <!-- Чёртовы кольца (шипастые) -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#cc0000" stroke-width="2.5" opacity="${.9-i*.05}" filter="url(#rod_satGlow)"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.2" fill="none" stroke="#ff2020" stroke-width="1" opacity=".4"/>
+        <!-- Шипы -->
+        <line x1="${10-w}" y1="${y}" x2="${10-w-3}" y2="${y-3}" stroke="#cc0000" stroke-width="1" opacity=".8"/>
+        <line x1="${10+w}" y1="${y}" x2="${10+w+3}" y2="${y-3}" stroke="#cc0000" stroke-width="1" opacity=".8"/>
+      `;}).join('')}
+      <!-- Рога на вершине -->
+      <path d="M7,0 Q4,-10 6,-20 Q8,-12 10,0" fill="#cc0000" stroke="#ff2020" stroke-width="1" opacity=".9"/>
+      <path d="M13,0 Q16,-10 14,-20 Q12,-12 10,0" fill="#cc0000" stroke="#ff2020" stroke-width="1" opacity=".9"/>
+      <circle cx="6" cy="-20" r="2" fill="#ff0000" filter="url(#rod_satGlow)"/>
+      <circle cx="14" cy="-20" r="2" fill="#ff0000" filter="url(#rod_satGlow)"/>
+      <!-- Катушка — пентаграмма -->
+      <ellipse cx="10" cy="342" rx="14" ry="9" fill="rgba(5,0,0,.99)" stroke="#cc0000" stroke-width="2.5" filter="url(#rod_satGlow)"/>
+      <ellipse cx="10" cy="342" rx="8" ry="5" fill="rgba(100,0,0,.5)" stroke="#ff2020" stroke-width="1.5"/>
+      <text x="10" y="345" text-anchor="middle" font-size="6">😈</text>
+      <!-- Ручка -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(5,0,0,.99)" stroke="#800000" stroke-width="2"/>
+      ${[363,368,373,378,383,388].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(200,0,0,.4)" stroke-width="0.8"/>`).join('')}
+      <text x="10" y="382" text-anchor="middle" font-size="3.5" fill="#cc0000" opacity=".9">САТАНА</text>`,
+
+    // ═══ ОМЕГА ═══
+    omega: `
+      <defs>
+        <linearGradient id="rod_omgBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#808080"/><stop offset="50%" stop-color="#ffffff"/><stop offset="100%" stop-color="#808080"/></linearGradient>
+        <radialGradient id="rod_omgCore" cx="50%" cy="50%"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#ffe060"/><stop offset="100%" stop-color="#ff8000"/></radialGradient>
+        <filter id="rod_omgGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Тело — ослепительно белое с золотым ядром -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#rod_omgBody)" stroke="#ffe060" stroke-width="2" filter="url(#rod_omgGlow)"/>
+      <!-- Золотые ауры вдоль стержня -->
+      <rect x="8.5" y="0" width="3" height="360" rx="1.5" fill="url(#rod_omgCore)" opacity=".7" filter="url(#rod_omgGlow)"/>
+      <!-- Мега кольца — тройные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="3.5" fill="none" stroke="rgba(255,220,50,.4)" stroke-width="1" filter="url(#rod_omgGlow)"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#ffe060" stroke-width="3" opacity="${.9-i*.04}" filter="url(#rod_omgGlow)"/>
+        <ellipse cx="10" cy="${y}" rx="${w-3}" ry="1.5" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="${.7-i*.03}"/>
+      `;}).join('')}
+      <!-- Корона на вершине -->
+      <path d="M4,-5 L6,-18 L10,-10 L14,-18 L16,-5 L4,-5Z" fill="url(#rod_omgCore)" stroke="#ffe060" stroke-width="1.5" filter="url(#rod_omgGlow)"/>
+      <circle cx="6" cy="-18" r="2.5" fill="#ffe060" filter="url(#rod_omgGlow)"/>
+      <circle cx="10" cy="-10" r="2" fill="#ffffff" filter="url(#rod_omgGlow)"/>
+      <circle cx="14" cy="-18" r="2.5" fill="#ffe060" filter="url(#rod_omgGlow)"/>
+      <!-- Катушка — АБСОЛЮТ -->
+      <ellipse cx="10" cy="342" rx="16" ry="10" fill="rgba(10,8,0,.99)" stroke="#ffe060" stroke-width="3" filter="url(#rod_omgGlow)"/>
+      <ellipse cx="10" cy="342" rx="9" ry="6" fill="url(#rod_omgCore)"/>
+      <circle cx="10" cy="342" r="4" fill="#ffffff" filter="url(#rod_omgGlow)"/>
+      <text x="10" y="344.5" text-anchor="middle" font-size="5">🏆</text>
+      <!-- Ручка -->
+      <rect x="5" y="358" width="10" height="37" rx="3" fill="rgba(10,8,0,.99)" stroke="#ffe060" stroke-width="2.5" filter="url(#rod_omgGlow)"/>
+      ${[363,368,373,378,383,388].map(y=>`<line x1="5" y1="${y}" x2="15" y2="${y}" stroke="rgba(255,220,60,.5)" stroke-width="1"/>`).join('')}
+      <text x="10" y="381" text-anchor="middle" font-size="4.5" fill="#ffe060" font-family="serif" filter="url(#rod_omgGlow)">OMEGA</text>`,
   };
 
   // Используем специальный вариант если есть, иначе дефолтный
@@ -9210,7 +9500,12 @@ function makeIngameRodSVG(rod) {
                rod.id === 'laser'     ? 'animation:laserPulse 0.5s ease-in-out infinite alternate;' :
                rod.id === 'hugiwugi'  ? 'animation:neonScan 2s ease-in-out infinite;' :
                rod.id === 'bakintsa'  ? 'animation:pharaohGlow 1.5s ease-in-out infinite alternate;' :
-               rod.id === 'abyssrod'  ? 'animation:abyssGlow 2s ease-in-out infinite alternate;' : '';
+               rod.id === 'abyssrod'  ? 'animation:abyssGlow 2s ease-in-out infinite alternate;' :
+               rod.id === 'phoenix'   ? 'animation:pharaohGlow 1.2s ease-in-out infinite alternate;' :
+               rod.id === 'zeus'      ? 'animation:thunderZap 1s steps(1) infinite;' :
+               rod.id === 'galaxy'    ? 'animation:timeFreeze 4s ease-in-out infinite;' :
+               rod.id === 'satan'     ? 'animation:apocalypseShake .4s steps(3) infinite;' :
+               rod.id === 'omega'     ? 'animation:bhPulse 0.8s ease-in-out infinite;' : '';
 
   return `<svg id="rod-svg-ingame" viewBox="-15 -15 50 420"
     xmlns="http://www.w3.org/2000/svg"
@@ -12734,6 +13029,23 @@ const PROMO_CODES = {
     ],
     label: '👑 Золото Хаги!'
   },
+  // ═══ ЭКСКЛЮЗИВНЫЕ ПРОМОКОДЫ (1 активация на устройство) ═══
+  '777bak': {
+    used: false,
+    singleUse: true,
+    rewards: [
+      {type:'coins', qty:600000000, label:'600 000 000🪙'},
+    ],
+    label: '👑 777BAK — 600 МИЛЛИОНОВ!'
+  },
+  '500ha': {
+    used: false,
+    singleUse: true,
+    rewards: [
+      {type:'coins', qty:500000000, label:'500 000 000🪙'},
+    ],
+    label: '💎 500HA — 500 МИЛЛИОНОВ!'
+  },
 };
 gs.usedPromos = gs.usedPromos || {};
 
@@ -12765,6 +13077,16 @@ function applyPromo() {
 
   const promo = PROMO_CODES[code];
   if(!promo) { if(resEl) resEl.style.color='#ff8060', resEl.textContent='❌ Неверный промокод!'; return; }
+
+  // Проверка одноразовых промокодов (singleUse) через localStorage
+  if(promo.singleUse) {
+    const globalKey = 'promo_global_' + code;
+    if(localStorage.getItem(globalKey)) {
+      if(resEl) resEl.style.color='#ff8060', resEl.textContent='⛔ Промокод ' + promo.label + ' уже был активирован кем-то!';
+      return;
+    }
+    localStorage.setItem(globalKey, '1');
+  }
 
   // Apply
   gs.usedPromos[code] = true;
