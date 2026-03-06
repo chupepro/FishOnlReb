@@ -855,6 +855,62 @@ body.season-winter #water-bg{background:linear-gradient(180deg,#06100e 0%,#02080
 .boss-ring{animation:bossRingPulse .5s ease-in-out infinite alternate !important;}
 @keyframes bossRingPulse{0%{box-shadow:0 0 20px rgba(255,0,0,.5),0 0 40px rgba(255,0,0,.2)}100%{box-shadow:0 0 40px rgba(255,80,0,.8),0 0 80px rgba(200,0,0,.4)}}
 
+
+/* ════════════════════════════════
+   PROMO CODE OVERLAY
+════════════════════════════════ */
+#promo-overlay{
+  position:absolute;inset:0;z-index:8000;
+  background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;
+}
+#promo-overlay.show{display:flex;}
+#promo-box{
+  background:linear-gradient(160deg,#1a1006,#0a0804);
+  border:2px solid var(--gold);border-radius:18px;
+  padding:22px 20px 18px;width:280px;text-align:center;
+  box-shadow:0 0 40px rgba(0,0,0,.9),var(--bevel-out);
+  animation:promoIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes promoIn{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+#promo-title{font-family:'Cinzel',serif;font-size:18px;color:var(--gold2);letter-spacing:2px;margin-bottom:4px;}
+#promo-sub{font-family:'Neucha',cursive;font-size:11px;color:#806040;margin-bottom:14px;}
+#promo-input{
+  width:100%;padding:10px 12px;border-radius:10px;
+  background:rgba(0,0,0,.5);border:2px solid var(--plank2);
+  font-family:'Cinzel',serif;font-size:14px;color:#e0c080;
+  text-align:center;letter-spacing:2px;outline:none;
+  box-sizing:border-box;margin-bottom:10px;
+}
+#promo-input::placeholder{color:#604030;font-size:11px;letter-spacing:1px;}
+#promo-input:focus{border-color:var(--gold);}
+#promo-redeem{
+  width:100%;padding:11px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(180deg,#5a3010,#2a1808);
+  border:2px solid var(--gold);
+  font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);
+  letter-spacing:1px;box-shadow:var(--bevel-out);
+  transition:transform .1s;margin-bottom:8px;
+}
+#promo-redeem:active{transform:scale(.95);}
+#promo-msg{font-family:'Neucha',cursive;font-size:12px;min-height:18px;margin-bottom:8px;}
+#promo-close-btn{font-family:'Neucha',cursive;font-size:11px;color:#604030;cursor:pointer;}
+#promo-codes-hint{
+  margin-top:12px;padding:8px;border-radius:8px;
+  background:rgba(0,0,0,.3);border:1px solid var(--plank2);
+  font-family:'Neucha',cursive;font-size:9px;color:#806040;
+  text-align:left;line-height:1.6;
+}
+/* Promo button in settings */
+.promo-open-btn{
+  margin:8px;padding:12px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(160deg,rgba(30,18,6,.95),rgba(12,8,3,.98));
+  border:2px solid var(--gold);
+  display:flex;align-items:center;gap:10px;
+  box-shadow:var(--bevel-out);transition:transform .1s;
+}
+.promo-open-btn:active{transform:scale(.96);}
+
 </style>
 </head>
 <body>
@@ -893,57 +949,11 @@ body.season-winter #water-bg{background:linear-gradient(180deg,#06100e 0%,#02080
     <div id="dock">
       <div id="dock-post-l"></div><div id="dock-post-r"></div><div id="dock-plank"></div>
     </div>
-    <!-- BIG ROD SVG -->
+    <!-- BIG ROD SVG — dynamic by rod type -->
     <div id="rod-wrap">
       <svg id="rod-svg" viewBox="0 0 72 190" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="rodG" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#2a1406"/>
-            <stop offset="30%" stop-color="#8a5020"/>
-            <stop offset="60%" stop-color="#c07830"/>
-            <stop offset="100%" stop-color="#3a1e08"/>
-          </linearGradient>
-          <linearGradient id="handleG" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#1a0a04"/>
-            <stop offset="50%" stop-color="#4a2810"/>
-            <stop offset="100%" stop-color="#1a0a04"/>
-          </linearGradient>
-          <linearGradient id="reelG" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#888888"/>
-            <stop offset="50%" stop-color="#444444"/>
-            <stop offset="100%" stop-color="#222222"/>
-          </linearGradient>
-        </defs>
-        <!-- Rod body -->
-        <rect x="31" y="8" width="10" height="130" rx="4" fill="url(#rodG)"/>
-        <!-- Tip taper -->
-        <polygon points="35,8 37,8 36,0" fill="#c07830" opacity=".8"/>
-        <!-- Guides -->
-        <ellipse cx="36" cy="20" rx="3.5" ry="2" fill="none" stroke="#d0a040" stroke-width="1.5" opacity=".9"/>
-        <ellipse cx="36" cy="36" rx="3" ry="1.8" fill="none" stroke="#d0a040" stroke-width="1.3" opacity=".8"/>
-        <ellipse cx="36" cy="54" rx="2.5" ry="1.5" fill="none" stroke="#d0a040" stroke-width="1.2" opacity=".7"/>
-        <ellipse cx="36" cy="74" rx="2" ry="1.2" fill="none" stroke="#c09030" stroke-width="1" opacity=".6"/>
-        <!-- Handle -->
-        <rect x="28" y="130" width="16" height="40" rx="6" fill="url(#handleG)"/>
-        <rect x="30" y="132" width="12" height="36" rx="5" fill="none" stroke="rgba(255,160,60,.15)" stroke-width="1"/>
-        <!-- Cork grip texture -->
-        <line x1="30" y1="138" x2="42" y2="138" stroke="rgba(255,180,80,.1)" stroke-width="2"/>
-        <line x1="30" y1="144" x2="42" y2="144" stroke="rgba(255,180,80,.1)" stroke-width="2"/>
-        <line x1="30" y1="150" x2="42" y2="150" stroke="rgba(255,180,80,.1)" stroke-width="2"/>
-        <line x1="30" y1="156" x2="42" y2="156" stroke="rgba(255,180,80,.1)" stroke-width="2"/>
-        <line x1="30" y1="162" x2="42" y2="162" stroke="rgba(255,180,80,.1)" stroke-width="2"/>
-        <!-- Reel seat -->
-        <rect x="27" y="118" width="18" height="14" rx="4" fill="#2a2a2a"/>
-        <rect x="29" y="120" width="14" height="10" rx="3" fill="url(#reelG)"/>
-        <!-- Reel -->
-        <ellipse cx="36" cy="125" rx="12" ry="8" fill="#333" stroke="#555" stroke-width="1"/>
-        <ellipse cx="36" cy="125" rx="7" ry="5" fill="#444"/>
-        <ellipse cx="36" cy="125" rx="3" ry="2" fill="#666"/>
-        <!-- Reel handle -->
-        <line x1="48" y1="121" x2="54" y2="118" stroke="#888" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="54" cy="118" r="3" fill="#999"/>
-        <!-- Line from tip -->
-        <line x1="36" y1="4" x2="58" y2="50" stroke="#c8a870" stroke-width=".8" opacity=".6"/>
+        <defs id="rod-defs"></defs>
+        <g id="rod-body-g"></g>
       </svg>
     </div>
     <canvas id="line-canvas"></canvas>
@@ -1278,6 +1288,62 @@ body.season-winter #water-bg{background:linear-gradient(180deg,#06100e 0%,#02080
 .boss-ring{animation:bossRingPulse .5s ease-in-out infinite alternate !important;}
 @keyframes bossRingPulse{0%{box-shadow:0 0 20px rgba(255,0,0,.5),0 0 40px rgba(255,0,0,.2)}100%{box-shadow:0 0 40px rgba(255,80,0,.8),0 0 80px rgba(200,0,0,.4)}}
 
+
+/* ════════════════════════════════
+   PROMO CODE OVERLAY
+════════════════════════════════ */
+#promo-overlay{
+  position:absolute;inset:0;z-index:8000;
+  background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;
+}
+#promo-overlay.show{display:flex;}
+#promo-box{
+  background:linear-gradient(160deg,#1a1006,#0a0804);
+  border:2px solid var(--gold);border-radius:18px;
+  padding:22px 20px 18px;width:280px;text-align:center;
+  box-shadow:0 0 40px rgba(0,0,0,.9),var(--bevel-out);
+  animation:promoIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes promoIn{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+#promo-title{font-family:'Cinzel',serif;font-size:18px;color:var(--gold2);letter-spacing:2px;margin-bottom:4px;}
+#promo-sub{font-family:'Neucha',cursive;font-size:11px;color:#806040;margin-bottom:14px;}
+#promo-input{
+  width:100%;padding:10px 12px;border-radius:10px;
+  background:rgba(0,0,0,.5);border:2px solid var(--plank2);
+  font-family:'Cinzel',serif;font-size:14px;color:#e0c080;
+  text-align:center;letter-spacing:2px;outline:none;
+  box-sizing:border-box;margin-bottom:10px;
+}
+#promo-input::placeholder{color:#604030;font-size:11px;letter-spacing:1px;}
+#promo-input:focus{border-color:var(--gold);}
+#promo-redeem{
+  width:100%;padding:11px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(180deg,#5a3010,#2a1808);
+  border:2px solid var(--gold);
+  font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);
+  letter-spacing:1px;box-shadow:var(--bevel-out);
+  transition:transform .1s;margin-bottom:8px;
+}
+#promo-redeem:active{transform:scale(.95);}
+#promo-msg{font-family:'Neucha',cursive;font-size:12px;min-height:18px;margin-bottom:8px;}
+#promo-close-btn{font-family:'Neucha',cursive;font-size:11px;color:#604030;cursor:pointer;}
+#promo-codes-hint{
+  margin-top:12px;padding:8px;border-radius:8px;
+  background:rgba(0,0,0,.3);border:1px solid var(--plank2);
+  font-family:'Neucha',cursive;font-size:9px;color:#806040;
+  text-align:left;line-height:1.6;
+}
+/* Promo button in settings */
+.promo-open-btn{
+  margin:8px;padding:12px;border-radius:12px;cursor:pointer;
+  background:linear-gradient(160deg,rgba(30,18,6,.95),rgba(12,8,3,.98));
+  border:2px solid var(--gold);
+  display:flex;align-items:center;gap:10px;
+  box-shadow:var(--bevel-out);transition:transform .1s;
+}
+.promo-open-btn:active{transform:scale(.96);}
+
 </style>
       </svg>
     </div>
@@ -1385,10 +1451,16 @@ body.season-winter #water-bg{background:linear-gradient(180deg,#06100e 0%,#02080
   <!-- CRAFT SCREEN -->
   <div id="craft-screen" class="screen">
     <div class="craft-hdr">⚒️ МАСТЕРСКАЯ</div>
+    <div style="display:flex;gap:0;flex-shrink:0;background:rgba(0,0,0,.3);border-bottom:2px solid var(--plank2);">
+      <div id="craft-tab-recipes" onclick="craftTab('recipes',this)"
+        style="flex:1;padding:8px 0;text-align:center;font-family:Neucha,cursive;font-size:13px;color:#c0a060;cursor:pointer;border-bottom:2px solid var(--gold);">⚒️ Крафт</div>
+      <div id="craft-tab-pets" onclick="craftTab('pets',this)"
+        style="flex:1;padding:8px 0;text-align:center;font-family:Neucha,cursive;font-size:13px;color:#806040;cursor:pointer;">🐾 Питомцы</div>
+    </div>
     <div class="scroller" id="craft-body"></div>
   </div>
 
-  <!-- PET SCREEN -->
+  <!-- PET SCREEN (hidden, used by pet-hud tap) -->
   <div id="pet-screen" class="screen">
     <div class="sec-hdr" style="margin-top:4px;">🐾 ПИТОМЕЦ</div>
     <div class="scroller" id="pet-body"></div>
@@ -1441,6 +1513,22 @@ body.season-winter #water-bg{background:linear-gradient(180deg,#06100e 0%,#02080
   </div>
 
   <div id="toast"></div>
+
+  <!-- PROMO CODE OVERLAY -->
+  <div id="promo-overlay">
+    <div id="promo-box">
+      <div id="promo-title">🎁 ПРОМОКОД</div>
+      <div id="promo-sub">Введи код и получи награду</div>
+      <input id="promo-input" type="text" placeholder="ВВЕДИ КОД СЮДА..." maxlength="20" autocomplete="off">
+      <div id="promo-redeem" onclick="redeemPromo()">✅ АКТИВИРОВАТЬ</div>
+      <div id="promo-msg"></div>
+      <div id="promo-close-btn" onclick="closePromo()">✕ Закрыть</div>
+      <div id="promo-codes-hint">
+        💡 Коды можно найти в соцсетях и у друзей<br>
+        🎣 Активные коды дают удочки, монеты и наживки
+      </div>
+    </div>
+  </div>
 
   <!-- NABI SECRET CUTSCENE -->
   <div id="nabi-cutscene">
@@ -1531,12 +1619,19 @@ const FISH=[
 
 // ── RODS ──
 const RODS=[
-  {id:'stick',  name:'Ивовый Прут',     icon:'🌿', desc:'Чем богаты',               stats:'Клёв ×1.0',  biteBonus:0,   weightBonus:0},
-  {id:'pine',   name:'Сосновая',        icon:'🌲', desc:'Лёгкая и быстрая',          stats:'Клёв ×1.3',  biteBonus:0.3, weightBonus:0.1},
-  {id:'oak',    name:'Дубовая',         icon:'🪵', desc:'Тяжёлая и надёжная',        stats:'Вес ×1.5',   biteBonus:0.1, weightBonus:0.5},
-  {id:'bamboo', name:'Бамбуковая',      icon:'🎋', desc:'Гибкая — для крупной рыбы', stats:'Вес ×2.0',   biteBonus:0.2, weightBonus:1.0},
-  {id:'carbon', name:'Карбоновая',      icon:'⚡', desc:'Профессиональная',          stats:'Всё ×2.5',   biteBonus:1.0, weightBonus:1.5},
-  {id:'taiga',  name:'Таёжная Легенда', icon:'🌟', desc:'Создана шаманом',           stats:'Всё ×4.0',   biteBonus:2.5, weightBonus:3.0},
+  {id:'stick',   name:'Ивовый Прут',     icon:'🌿', desc:'Чем богаты',                stats:'Клёв ×1.0',  biteBonus:0,   weightBonus:0,   color:'#8a5020'},
+  {id:'pine',    name:'Сосновая',        icon:'🌲', desc:'Лёгкая и быстрая',           stats:'Клёв ×1.3',  biteBonus:0.3, weightBonus:0.1, color:'#5a8030'},
+  {id:'oak',     name:'Дубовая',         icon:'🪵', desc:'Тяжёлая и надёжная',         stats:'Вес ×1.5',   biteBonus:0.1, weightBonus:0.5, color:'#704020'},
+  {id:'bamboo',  name:'Бамбуковая',      icon:'🎋', desc:'Гибкая — для крупной рыбы',  stats:'Вес ×2.0',   biteBonus:0.2, weightBonus:1.0, color:'#80a020'},
+  {id:'carbon',  name:'Карбоновая',      icon:'⚡', desc:'Профессиональная',           stats:'Всё ×2.5',   biteBonus:1.0, weightBonus:1.5, color:'#303040'},
+  {id:'taiga',   name:'Таёжная Легенда', icon:'🌟', desc:'Создана шаманом',            stats:'Всё ×4.0',   biteBonus:2.5, weightBonus:3.0, color:'#c08020'},
+  // NEW v2.0
+  {id:'ice',     name:'Ледяная',         icon:'❄️', desc:'Для зимней рыбалки',         stats:'Горы ×3.0',  biteBonus:1.5, weightBonus:1.0, color:'#40b0e0'},
+  {id:'fire',    name:'Огненная',        icon:'🔥', desc:'Жаркий улов!',               stats:'Эпик ×2×',   biteBonus:2.0, weightBonus:2.0, color:'#e04010'},
+  {id:'ghost',   name:'Призрачная',      icon:'👻', desc:'Из Бездны',                  stats:'Бездна ×5',  biteBonus:3.0, weightBonus:4.0, color:'#8040c0'},
+  {id:'golden',  name:'Золотая',         icon:'🏆', desc:'Только победителям',         stats:'Всё ×6.0',   biteBonus:4.0, weightBonus:5.0, color:'#e0c020'},
+  // PROMO
+  {id:'nabi_rod',name:'Удочка Наби',     icon:'🌹', desc:'Промокод — навсегда',        stats:'Наби ×∞',    biteBonus:5.0, weightBonus:6.0, color:'#ff4080', promo:true},
 ];
 
 // ── BAITS ──
@@ -1720,6 +1815,17 @@ const WEATHERS={
   snow:  {name:'Снег',  icon:'❄️',fishMult:0.9, biteMult:0.8, desc:'Холодно…'},
 };
 
+// ── PROMO CODES ──
+const PROMO_CODES={
+  'NABI2025':   {reward:{rod:'nabi_rod', coins:500},    desc:'Удочка Наби + 500 монет 🌹',  once:true},
+  'TАЙГА':      {reward:{rod:'taiga', coins:300},        desc:'Таёжная Удочка + 300 монет',  once:true},
+  'ЗОЛОТО':     {reward:{coins:1000},                    desc:'+1000 монет 💰',              once:true},
+  'БОСС':       {reward:{coins:500, bait:'beast', qty:5},desc:'500 монет + 5 Зверских наживок', once:true},
+  'ЗИМА2025':   {reward:{rod:'ice', coins:200},          desc:'Ледяная удочка + 200 монет ❄️', once:true},
+  'ОГОНЬ':      {reward:{rod:'fire'},                    desc:'Огненная удочка 🔥',          once:true},
+  'ПРИЗРАК':    {reward:{rod:'ghost', coins:800},        desc:'Призрачная удочка + 800 монет', once:true},
+};
+
 const QUEST_POOL=[
   {id:'q_catch5', name:'Поймай 5 рыб',        icon:'🎣',req:{type:'catch',qty:5},  reward:{coins:150,xp:40}},
   {id:'q_sell',   name:'Продай на 300 монет',  icon:'💰',req:{type:'sell',qty:300}, reward:{coins:200,xp:60}},
@@ -1742,7 +1848,8 @@ window.addEventListener('load',()=>{
   startEnergyRegen();
   updateCastBtn();
   startSeasonWeather();
-  if(gs.name){document.getElementById('welcome').style.display='none';sw('fishing');renderSettings();applySeasonWeather();}
+  buildRodSVG(gs.currentRod||'stick');
+  if(gs.name){document.getElementById('welcome').style.display='none';sw('fishing');renderSettings();applySeasonWeather();buildRodSVG(gs.currentRod||'stick');}
 });
 
 function scaleGame(){
@@ -1762,6 +1869,7 @@ function saveGame(){
     season:gs.season||'summer',weather:gs.weather||'clear',
     pet:gs.pet||null,petHunger:gs.petHunger||100,petXp:gs.petXp||0,
     materials:gs.materials||{},bossKills:gs.bossKills||{},
+    usedPromos:gs.usedPromos||[],
   }));}catch(e){}
 }
 
@@ -1775,6 +1883,7 @@ function loadGame(){
     if(!gs.season) gs.season='summer';
     if(!gs.weather) gs.weather='clear';
     if(!gs.materials) gs.materials={};
+    if(!gs.usedPromos) gs.usedPromos=[];
     if(!gs.bossKills) gs.bossKills={};
     if(gs.nabiBobber) applyNabiBobber(false);
     if(!gs.records) gs.records={};
@@ -1800,8 +1909,8 @@ function startGame(){
 // ════════════════════
 // SCREENS
 // ════════════════════
-const SCREEN_MAP={fishing:'fishing-screen',shop:'shop-screen',inventory:'inv-screen',zoo:'zoo-screen',settings:'sett-screen'};
-const NAV_MAP={fishing:'nt-fish',shop:'nt-shop',inventory:'nt-inv',zoo:'nt-zoo',settings:'nt-sett'};
+const SCREEN_MAP={fishing:'fishing-screen',shop:'shop-screen',inventory:'inv-screen',zoo:'zoo-screen',settings:'sett-screen',craft:'craft-screen',pet:'pet-screen'};
+const NAV_MAP={fishing:'nt-fish',shop:'nt-shop',inventory:'nt-inv',zoo:'nt-zoo',settings:'nt-sett',craft:'nt-craft'};
 
 function sw(name){
   gs.currentScreen=name;
@@ -1815,6 +1924,17 @@ function sw(name){
   if(name==='inventory') renderInventory();
   if(name==='zoo')       renderZoo('animals');
   if(name==='settings')  renderSettings();
+  if(name==='craft')     renderCraft();
+  if(name==='pet')       renderPet();
+}
+
+let currentCraftTab = 'recipes';
+function craftTab(tab, el){
+  currentCraftTab = tab;
+  document.getElementById('craft-tab-recipes').style.cssText='flex:1;padding:8px 0;text-align:center;font-family:Neucha,cursive;font-size:13px;cursor:pointer;'+(tab==='recipes'?'color:#c0a060;border-bottom:2px solid var(--gold);':'color:#806040;border-bottom:none;');
+  document.getElementById('craft-tab-pets').style.cssText='flex:1;padding:8px 0;text-align:center;font-family:Neucha,cursive;font-size:13px;cursor:pointer;'+(tab==='pets'?'color:#c0a060;border-bottom:2px solid var(--gold);':'color:#806040;border-bottom:none;');
+  renderCraft();
+
 }
 
 // ════════════════════════════════
@@ -1991,7 +2111,8 @@ function renderPet(){
   });
 }
 
-function buyPet(id){
+function buyPet(id,e){
+  if(e) e.stopPropagation();
   const pd=PETS.find(p=>p.id===id);
   if(!pd||gs.coins<pd.price||gs.pet===id) return;
   gs.coins-=pd.price;
@@ -2022,6 +2143,51 @@ function renderCraft(){
   const body=document.getElementById('craft-body');
   if(!body) return;
   body.innerHTML='';
+
+  if(currentCraftTab==='pets'){
+    // Active pet
+    if(gs.pet){
+      const pd=PETS.find(p=>p.id===gs.pet);
+      if(pd){
+        const card=document.createElement('div');card.className='pet-card';
+        const hunger=gs.petHunger||100;
+        const col=hunger>60?'#40c020':hunger>30?'#e0c020':'#e04020';
+        card.innerHTML=`
+          <div class="pet-big-icon">${pd.icon}</div>
+          <div class="pet-name">${pd.name} — Активен</div>
+          <div style="font-family:'Neucha',cursive;font-size:10px;color:#806040;margin-bottom:4px;">XP питомца: ${gs.petXp||0}</div>
+          <div class="pet-hunger-bar"><div class="pet-hunger-fill" style="width:${hunger}%;background:${col};"></div></div>
+          <div style="font-family:'Neucha',cursive;font-size:10px;color:#606040;margin-bottom:6px;">Сытость: ${hunger}%</div>
+          <div class="pet-bonus">Бонус: ${Object.entries(pd.bonus).map(([k,v])=>k+' +'+Math.round(v*100)+'%').join(', ')}</div>
+          <div class="pet-feed-btn" onclick="feedPet()">🐟 Накормить (5 🪙)</div>
+          <div style="margin-top:8px;font-family:'Neucha',cursive;font-size:11px;color:#604030;cursor:pointer;text-align:center;" onclick="dismissPet()">Отпустить питомца</div>
+        `;
+        body.appendChild(card);
+      }
+    }
+    // Buy pets
+    const sh=document.createElement('div');
+    sh.style.cssText='font-family:Cinzel,serif;font-size:13px;color:#c09050;text-align:center;padding:10px 0 6px;';
+    sh.textContent= gs.pet ? '🐾 Сменить питомца' : '🐾 Купить питомца';
+    body.appendChild(sh);
+    PETS.forEach(pd=>{
+      const have=gs.pet===pd.id;
+      const canBuy=gs.coins>=pd.price&&!have;
+      const card=document.createElement('div');card.className='craft-item';
+      const rarColor={common:'#90a870',rare:'#50a0ff',epic:'#c040ff',legend:'#ff9020'}[pd.rarity]||'#90a870';
+      card.innerHTML=`
+        <div class="craft-icon">${pd.icon}</div>
+        <div class="craft-info" style="flex:1;">
+          <div class="craft-name" style="color:${rarColor};">${pd.name}</div>
+          <div class="craft-desc">${pd.desc}</div>
+          <div class="craft-desc" style="color:#80a060;">Бонус: ${Object.entries(pd.bonus).map(([k,v])=>k+' +'+Math.round(v*100)+'%').join(', ')}</div>
+        </div>
+        <div class="craft-btn${canBuy?'':' disabled'}" onclick="buyPet('${pd.id}',event)">${have?'✓ Активен':'🪙 '+pd.price}</div>
+      `;
+      body.appendChild(card);
+    });
+    return;
+  }
 
   // Show materials
   const matDiv=document.createElement('div');
@@ -2839,6 +3005,7 @@ function mkHdr(body,txt){
 
 function equipRod(id){
   gs.currentRod=id;saveGame();renderShop();
+  buildRodSVG(id);
   const rod=RODS.find(r=>r.id===id);
   showToast('🎣 '+(rod?rod.name:'Удочка')+' надета!');
 }
@@ -3088,6 +3255,13 @@ function renderSettings(){
     zRow.appendChild(btn);
   });
   body.appendChild(zRow);
+
+  // Promo button
+  const promoBtn = document.createElement('div');
+  promoBtn.className = 'promo-open-btn';
+  promoBtn.innerHTML = '<span style="font-size:24px;">🎁</span><div><div style="font-family:Cinzel,serif;font-size:13px;color:var(--gold2);">Промокод</div><div style="font-family:Neucha,cursive;font-size:10px;color:#806040;">Получи удочки, монеты, наживки</div></div>';
+  promoBtn.onclick = openPromo;
+  body.appendChild(promoBtn);
 }
 function toggleSetting(key){
   gs.settings[key]=!gs.settings[key];
@@ -3095,6 +3269,258 @@ function toggleSetting(key){
   if(key==='lowend')document.body.classList.toggle('lowend',gs.settings[key]);
   saveGame();
 }
+
+// ════════════════════════════════
+//  ROD SVG RENDERER
+// ════════════════════════════════
+function buildRodSVG(rodId) {
+  const defs = document.getElementById('rod-defs');
+  const body = document.getElementById('rod-body-g');
+  if(!defs || !body) return;
+
+  const rod = RODS.find(r=>r.id===rodId) || RODS[0];
+  const col = rod.color || '#8a5020';
+
+  // Parse color to lighter/darker variants
+  const hex2rgb = h => { h=h.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; };
+  const rgb2hex = (r,g,b) => '#'+[r,g,b].map(x=>Math.max(0,Math.min(255,x)).toString(16).padStart(2,'0')).join('');
+  const [cr,cg,cb] = hex2rgb(col);
+  const light = rgb2hex(cr+60,cg+60,cb+60);
+  const dark  = rgb2hex(Math.floor(cr*.3),Math.floor(cg*.3),Math.floor(cb*.3));
+  const mid   = rgb2hex(Math.floor(cr*.7),Math.floor(cg*.7),Math.floor(cb*.7));
+
+  // Unique visual styles per rod
+  const styles = {
+    stick: {
+      blank: `<polygon points="33,8 39,8 37,130 35,130" fill="${col}"/>
+              <polygon points="35,8 37,8 36,0" fill="${light}" opacity=".9"/>
+              <!-- wood grain -->
+              <line x1="34" y1="20" x2="38" y2="25" stroke="${dark}" stroke-width=".5" opacity=".4"/>
+              <line x1="35" y1="40" x2="38" y2="45" stroke="${dark}" stroke-width=".4" opacity=".3"/>
+              <line x1="34" y1="65" x2="37" y2="70" stroke="${dark}" stroke-width=".4" opacity=".3"/>`,
+      guideCol: '#c09030', grip: col, reelCol:'#555',
+    },
+    pine: {
+      blank: `<rect x="32" y="6" width="8" height="128" rx="3" fill="url(#rodGrad_pine)"/>
+              <polygon points="35,6 37,6 36,0" fill="${light}"/>
+              <line x1="33" y1="30" x2="33" y2="90" stroke="${dark}" stroke-width=".6" opacity=".3"/>`,
+      guideCol: '#20c060', grip:'#2a5015', reelCol:'#446622',
+      extraDef:`<linearGradient id="rodGrad_pine" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="${dark}"/><stop offset="40%" stop-color="${col}"/><stop offset="100%" stop-color="${mid}"/>
+      </linearGradient>`,
+    },
+    oak: {
+      blank: `<rect x="30" y="8" width="12" height="126" rx="5" fill="url(#rodGrad_oak)"/>
+              <polygon points="34,8 38,8 36,0" fill="${light}"/>
+              <line x1="31" y1="25" x2="42" y2="28" stroke="${dark}" stroke-width=".8" opacity=".35"/>
+              <line x1="31" y1="50" x2="42" y2="55" stroke="${dark}" stroke-width=".7" opacity=".3"/>
+              <line x1="31" y1="80" x2="42" y2="83" stroke="${dark}" stroke-width=".6" opacity=".25"/>`,
+      guideCol:'#d09030', grip:'#4a2010', reelCol:'#664422',
+      extraDef:`<linearGradient id="rodGrad_oak" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="${dark}"/><stop offset="35%" stop-color="${light}"/><stop offset="100%" stop-color="${col}"/>
+      </linearGradient>`,
+    },
+    bamboo: {
+      blank: `<rect x="32" y="6" width="8" height="128" rx="2" fill="${col}"/>
+              <polygon points="35,6 37,6 36,0" fill="${light}"/>
+              <!-- bamboo nodes -->
+              <rect x="31" y="28" width="10" height="3" rx="1" fill="${light}" opacity=".6"/>
+              <rect x="31" y="56" width="10" height="3" rx="1" fill="${light}" opacity=".6"/>
+              <rect x="31" y="84" width="10" height="3" rx="1" fill="${light}" opacity=".6"/>
+              <rect x="31" y="110" width="10" height="3" rx="1" fill="${light}" opacity=".6"/>`,
+      guideCol:'#60d040', grip:'#3a5010', reelCol:'#406010',
+    },
+    carbon: {
+      blank: `<rect x="33" y="5" width="6" height="130" rx="2" fill="url(#rodGrad_carbon)"/>
+              <polygon points="35,5 37,5 36,0" fill="#8080ff"/>
+              <!-- carbon weave pattern -->
+              <line x1="33" y1="15" x2="39" y2="25" stroke="#4060a0" stroke-width=".5" opacity=".5"/>
+              <line x1="33" y1="25" x2="39" y2="15" stroke="#4060a0" stroke-width=".5" opacity=".5"/>
+              <line x1="33" y1="35" x2="39" y2="45" stroke="#4060a0" stroke-width=".5" opacity=".5"/>
+              <line x1="33" y1="45" x2="39" y2="35" stroke="#4060a0" stroke-width=".5" opacity=".5"/>
+              <line x1="33" y1="55" x2="39" y2="65" stroke="#4060a0" stroke-width=".5" opacity=".5"/>
+              <line x1="33" y1="65" x2="39" y2="55" stroke="#4060a0" stroke-width=".5" opacity=".5"/>`,
+      guideCol:'#60a0ff', grip:'#1a1a2a', reelCol:'#2040a0',
+      extraDef:`<linearGradient id="rodGrad_carbon" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#101020"/><stop offset="50%" stop-color="#303050"/><stop offset="100%" stop-color="#101020"/>
+      </linearGradient>`,
+    },
+    taiga: {
+      blank: `<rect x="32" y="5" width="8" height="130" rx="3" fill="url(#rodGrad_taiga)"/>
+              <polygon points="34,5 38,5 36,0" fill="#ffe060"/>
+              <!-- rune marks -->
+              <text x="36" y="30" fill="#ffe040" font-size="7" text-anchor="middle" opacity=".8">᚛</text>
+              <text x="36" y="55" fill="#ffc020" font-size="6" text-anchor="middle" opacity=".7">ᚔ</text>
+              <text x="36" y="80" fill="#ffe040" font-size="7" text-anchor="middle" opacity=".8">᚛</text>
+              <!-- golden glow -->
+              <rect x="32" y="5" width="8" height="130" rx="3" fill="none" stroke="#ffe060" stroke-width=".5" opacity=".5"/>`,
+      guideCol:'#ffd020', grip:'#3a2010', reelCol:'#806010',
+      extraDef:`<linearGradient id="rodGrad_taiga" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#4a3010"/><stop offset="40%" stop-color="#c09020"/><stop offset="100%" stop-color="#3a2010"/>
+      </linearGradient>`,
+      glow:`<filter id="tglow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`,
+    },
+    ice: {
+      blank: `<rect x="33" y="5" width="6" height="130" rx="3" fill="url(#rodGrad_ice)"/>
+              <polygon points="35,5 37,5 36,0" fill="#e0f8ff"/>
+              <!-- ice crystals -->
+              <line x1="33" y1="20" x2="39" y2="26" stroke="#a0e0ff" stroke-width=".7" opacity=".6"/>
+              <line x1="36" y1="17" x2="36" y2="29" stroke="#80d0ff" stroke-width=".6" opacity=".5"/>
+              <line x1="33" y1="50" x2="39" y2="56" stroke="#a0e0ff" stroke-width=".7" opacity=".6"/>
+              <line x1="36" y1="47" x2="36" y2="59" stroke="#80d0ff" stroke-width=".6" opacity=".5"/>
+              <line x1="33" y1="80" x2="39" y2="86" stroke="#a0e0ff" stroke-width=".7" opacity=".6"/>`,
+      guideCol:'#40d0ff', grip:'#103848', reelCol:'#2080a0',
+      extraDef:`<linearGradient id="rodGrad_ice" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0a2030"/><stop offset="50%" stop-color="#1a6080"/><stop offset="100%" stop-color="#0a2030"/>
+      </linearGradient>`,
+    },
+    fire: {
+      blank: `<rect x="33" y="5" width="6" height="130" rx="2" fill="url(#rodGrad_fire)"/>
+              <polygon points="34,5 38,5 36,0" fill="#ffff00"/>
+              <!-- flame marks -->
+              <line x1="33" y1="20" x2="37" y2="15" stroke="#ff8020" stroke-width="1" opacity=".7"/>
+              <line x1="39" y1="30" x2="35" y2="25" stroke="#ff4010" stroke-width="1" opacity=".7"/>
+              <line x1="33" y1="45" x2="37" y2="40" stroke="#ff8020" stroke-width="1" opacity=".6"/>
+              <line x1="39" y1="60" x2="35" y2="55" stroke="#ff4010" stroke-width="1" opacity=".6"/>
+              <line x1="33" y1="75" x2="37" y2="70" stroke="#ff8020" stroke-width="1" opacity=".5"/>`,
+      guideCol:'#ff6010', grip:'#3a0808', reelCol:'#802010',
+      extraDef:`<linearGradient id="rodGrad_fire" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#300808"/><stop offset="40%" stop-color="#c04010"/><stop offset="100%" stop-color="#200404"/>
+      </linearGradient>`,
+    },
+    ghost: {
+      blank: `<rect x="33" y="5" width="6" height="130" rx="3" fill="url(#rodGrad_ghost)"/>
+              <polygon points="35,5 37,5 36,0" fill="#d0a0ff"/>
+              <!-- ghost swirls -->
+              <path d="M33,20 Q39,25 33,35 Q39,40 33,50" stroke="#c080ff" stroke-width=".8" fill="none" opacity=".6"/>
+              <path d="M39,60 Q33,65 39,75 Q33,80 39,90" stroke="#a060e0" stroke-width=".8" fill="none" opacity=".5"/>
+              <!-- glow -->
+              <rect x="33" y="5" width="6" height="130" rx="3" fill="none" stroke="#8040c0" stroke-width=".5" opacity=".4"/>`,
+      guideCol:'#c060ff', grip:'#1a0a30', reelCol:'#5020a0',
+      extraDef:`<linearGradient id="rodGrad_ghost" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0a0418"/><stop offset="50%" stop-color="#3a1060"/><stop offset="100%" stop-color="#0a0418"/>
+      </linearGradient>`,
+    },
+    golden: {
+      blank: `<rect x="31" y="5" width="10" height="130" rx="4" fill="url(#rodGrad_golden)"/>
+              <polygon points="34,5 38,5 36,0" fill="#fff8a0"/>
+              <!-- gold engravings -->
+              <text x="36" y="25" fill="#fff0a0" font-size="5" text-anchor="middle" opacity=".9">★</text>
+              <text x="36" y="50" fill="#ffe060" font-size="5" text-anchor="middle" opacity=".9">♦</text>
+              <text x="36" y="75" fill="#fff0a0" font-size="5" text-anchor="middle" opacity=".9">★</text>
+              <text x="36" y="100" fill="#ffe060" font-size="5" text-anchor="middle" opacity=".9">♦</text>
+              <rect x="31" y="5" width="10" height="130" rx="4" fill="none" stroke="#fff0a0" stroke-width="1" opacity=".4"/>`,
+      guideCol:'#ffe030', grip:'#3a2808', reelCol:'#8a6010',
+      extraDef:`<linearGradient id="rodGrad_golden" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#3a2808"/><stop offset="30%" stop-color="#e0b020"/><stop offset="60%" stop-color="#ffd840"/><stop offset="100%" stop-color="#3a2808"/>
+      </linearGradient>`,
+    },
+    nabi_rod: {
+      blank: `<rect x="32" y="5" width="8" height="130" rx="3" fill="url(#rodGrad_nabi)"/>
+              <polygon points="34,5 38,5 36,0" fill="#ffb0d0"/>
+              <!-- roses -->
+              <text x="36" y="22" font-size="8" text-anchor="middle">🌹</text>
+              <text x="36" y="50" font-size="7" text-anchor="middle">🌸</text>
+              <text x="36" y="78" font-size="8" text-anchor="middle">🌹</text>
+              <text x="36" y="106" font-size="7" text-anchor="middle">🌸</text>
+              <rect x="32" y="5" width="8" height="130" rx="3" fill="none" stroke="#ff80b0" stroke-width=".8" opacity=".6"/>`,
+      guideCol:'#ff60a0', grip:'#2a0818', reelCol:'#a02060',
+      extraDef:`<linearGradient id="rodGrad_nabi" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#1a0410"/><stop offset="50%" stop-color="#c03070"/><stop offset="100%" stop-color="#1a0410"/>
+      </linearGradient>`,
+    },
+  };
+
+  const style = styles[rodId] || styles.stick;
+
+  // Build defs
+  let defHTML = style.extraDef || '';
+  if(style.glow) defHTML += style.glow;
+  defHTML += `<linearGradient id="handleG_r" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%" stop-color="${dark}"/>
+    <stop offset="50%" stop-color="${style.grip}"/>
+    <stop offset="100%" stop-color="${dark}"/>
+  </linearGradient>
+  <linearGradient id="reelG_r" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="${style.reelCol}"/>
+    <stop offset="60%" stop-color="${dark}"/>
+  </linearGradient>`;
+  defs.innerHTML = defHTML;
+
+  const gc = style.guideCol;
+  // Build rod body
+  body.innerHTML = `
+    ${style.blank}
+    <!-- Guides — unique color per rod -->
+    <ellipse cx="36" cy="20" rx="4" ry="2.2" fill="none" stroke="${gc}" stroke-width="1.6" opacity=".9"/>
+    <ellipse cx="36" cy="38" rx="3.2" ry="1.8" fill="none" stroke="${gc}" stroke-width="1.3" opacity=".8"/>
+    <ellipse cx="36" cy="58" rx="2.6" ry="1.5" fill="none" stroke="${gc}" stroke-width="1.2" opacity=".7"/>
+    <ellipse cx="36" cy="80" rx="2" ry="1.2" fill="none" stroke="${gc}" stroke-width="1" opacity=".6"/>
+    <!-- Handle -->
+    <rect x="28" y="132" width="16" height="40" rx="6" fill="url(#handleG_r)"/>
+    <!-- Reel seat -->
+    <rect x="26" y="118" width="20" height="16" rx="5" fill="${dark}"/>
+    <rect x="28" y="120" width="16" height="12" rx="4" fill="url(#reelG_r)"/>
+    <!-- Reel -->
+    <ellipse cx="36" cy="126" rx="13" ry="9" fill="${mid}" stroke="${style.reelCol}" stroke-width="1.2"/>
+    <ellipse cx="36" cy="126" rx="8" ry="5.5" fill="${dark}"/>
+    <ellipse cx="36" cy="126" rx="3" ry="2" fill="${style.reelCol}"/>
+    <!-- Reel handle -->
+    <line x1="49" y1="122" x2="55" y2="118" stroke="${style.reelCol}" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="55" cy="118" r="3.5" fill="${gc}"/>
+    <!-- Fishing line -->
+    <line x1="36" y1="4" x2="58" y2="50" stroke="${gc}" stroke-width=".9" opacity=".7"/>
+    ${rodId==='taiga'||rodId==='golden'||rodId==='nabi_rod' ? `<animateTransform attributeName="transform" type="translate" values="0,0;0,-1;0,0" dur="2s" repeatCount="indefinite"/>` : ''}
+  `;
+
+  // Special glow filter for special rods
+  const svg = document.getElementById('rod-svg');
+  if(['taiga','golden','nabi_rod','ghost','fire'].includes(rodId)){
+    svg.style.filter = `drop-shadow(0 0 8px ${col}88) drop-shadow(2px 4px 8px rgba(0,0,0,.8))`;
+  } else {
+    svg.style.filter = 'drop-shadow(2px 4px 8px rgba(0,0,0,.8))';
+  }
+}
+
+// ════════════════════════════════
+//  PROMO CODE SYSTEM
+// ════════════════════════════════
+function openPromo(){
+  const overlay = document.getElementById('promo-overlay');
+  if(overlay){ overlay.classList.add('show'); document.getElementById('promo-input').value=''; document.getElementById('promo-msg').textContent=''; }
+}
+function closePromo(){ document.getElementById('promo-overlay').classList.remove('show'); }
+
+function redeemPromo(){
+  const input = document.getElementById('promo-input');
+  const msg = document.getElementById('promo-msg');
+  const code = input.value.trim().toUpperCase();
+  if(!code){ msg.style.color='#e04040'; msg.textContent='Введи промокод!'; return; }
+
+  const def = PROMO_CODES[code];
+  if(!def){ msg.style.color='#e04040'; msg.textContent='❌ Неверный промокод'; return; }
+
+  if(!gs.usedPromos) gs.usedPromos = [];
+  if(def.once && gs.usedPromos.includes(code)){
+    msg.style.color='#e08040'; msg.textContent='⚠️ Промокод уже использован'; return;
+  }
+
+  // Apply reward
+  const r = def.reward;
+  if(r.coins)  gs.coins += r.coins;
+  if(r.rod)  { gs.rods[r.rod]=true; gs.currentRod=r.rod; buildRodSVG(r.rod); }
+  if(r.bait)  gs.baits[r.bait]=(gs.baits[r.bait]||0)+(r.qty||1);
+  if(r.xp)    addXP(r.xp);
+
+  if(def.once) gs.usedPromos.push(code);
+  saveGame(); updateUI();
+
+  msg.style.color='#40e060';
+  msg.textContent='✅ '+def.desc;
+  spawnParticles('🎁',5);
+  if(gs.settings.vibro&&navigator.vibrate) navigator.vibrate([80,30,80,30,120]);
+}
+
 
 // ════════════════════
 // RADAR — REAL LIVE SYSTEM
