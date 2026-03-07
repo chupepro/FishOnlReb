@@ -181,24 +181,24 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
       <p>Ку-ку! Птичья видеосеть 🐤</p>
     </div>
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" data-action="authTab" data-tab="login">Войти</button>
-      <button class="auth-tab" id="tabReg" data-action="authTab" data-tab="register">Регистрация</button>
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Войти</button>
+      <button class="auth-tab" id="tabReg" onclick="switchAuthTab('register')">Регистрация</button>
     </div>
     <div class="auth-box">
       <p class="auth-err" id="authErr"></p>
       <div id="loginForm">
         <input class="auth-input" type="email" id="loginEmail" placeholder="📧 Email" autocomplete="email">
         <input class="auth-input" type="password" id="loginPass" placeholder="🔒 Пароль" autocomplete="current-password">
-        <button class="btn-primary" id="loginBtn" data-action="login">🐦 Войти в гнездо</button>
+        <button class="btn-primary" id="loginBtn" onclick="doLogin()">🐦 Войти в гнездо</button>
       </div>
       <div id="registerForm" style="display:none">
         <input class="auth-input" type="text" id="regName" placeholder="🐦 Имя птицы" autocomplete="name">
         <input class="auth-input" type="email" id="regEmail" placeholder="📧 Email" autocomplete="email">
         <input class="auth-input" type="password" id="regPass" placeholder="🔒 Пароль (мин. 6 символов)" autocomplete="new-password">
-        <button class="btn-primary" id="regBtn" data-action="register">🥚 Вылупиться!</button>
+        <button class="btn-primary" id="regBtn" onclick="doRegister()">🥚 Вылупиться!</button>
       </div>
       <div class="auth-or">— или —</div>
-      <button class="btn-google" data-action="googleLogin">
+      <button class="btn-google" onclick="doGoogleLogin()">
         <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Войти через Google
       </button>
@@ -210,19 +210,19 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
 <div class="view" id="homeView">
   <div class="topbar">
     <div class="topbar-logo"><span>🐦</span>КуТуб</div>
-    <input class="search-bar" type="search" placeholder="🔍 Поиск..." id="searchInput">
-    <div class="topbar-avatar" id="topbarAvatar" data-action="goProfile">🐦</div>
+    <input class="search-bar" type="search" placeholder="🔍 Поиск..." id="searchInput" oninput="handleSearch(this.value)">
+    <div class="topbar-avatar" id="topbarAvatar" onclick="goProfile()">🐦</div>
   </div>
   <div class="view-content">
     <div class="home-categories">
-      <div class="cat-chip active" data-action="filterCat" data-cat="all">🌿 Все</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="music">🎵 Музыка</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="games">🎮 Игры</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="nature">🌳 Природа</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="funny">😂 Юмор</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="sport">⚽ Спорт</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="tech">💻 Технологии</div>
-      <div class="cat-chip" data-action="filterCat" data-cat="food">🍎 Еда</div>
+      <div class="cat-chip active" onclick="filterCat(this,'all')">🌿 Все</div>
+      <div class="cat-chip" onclick="filterCat(this,'music')">🎵 Музыка</div>
+      <div class="cat-chip" onclick="filterCat(this,'games')">🎮 Игры</div>
+      <div class="cat-chip" onclick="filterCat(this,'nature')">🌳 Природа</div>
+      <div class="cat-chip" onclick="filterCat(this,'funny')">😂 Юмор</div>
+      <div class="cat-chip" onclick="filterCat(this,'sport')">⚽ Спорт</div>
+      <div class="cat-chip" onclick="filterCat(this,'tech')">💻 Технологии</div>
+      <div class="cat-chip" onclick="filterCat(this,'food')">🍎 Еда</div>
     </div>
     <div class="videos-grid" id="videosGrid">
       <div class="empty-state"><span class="icon">🐣</span><h3>Загружаем...</h3></div>
@@ -233,7 +233,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
 <!-- PLAYER -->
 <div class="view" id="playerView">
   <div class="view-content">
-    <div class="player-back" data-action="goBack">
+    <div class="player-back" onclick="goBack()">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       <span>Назад</span>
     </div>
@@ -247,11 +247,11 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
         <span style="flex:1"></span><span class="kuku-badge">🐦 КуТуб</span>
       </div>
       <div class="player-actions">
-        <button class="action-btn" id="likeBtn" data-action="toggleLike">
+        <button class="action-btn" id="likeBtn" onclick="toggleLike()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span id="likeCount">0</span>
         </button>
-        <button class="action-btn" data-action="shareVideo">
+        <button class="action-btn" onclick="shareVideo()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Поделиться
         </button>
@@ -262,7 +262,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
           <div class="player-author-name" id="playerAuthorName"></div>
           <div class="player-author-subs" id="playerAuthorSubs"></div>
         </div>
-        <button class="btn-subscribe" id="subscribeBtn" data-action="toggleSubscribe">Подписаться</button>
+        <button class="btn-subscribe" id="subscribeBtn" onclick="toggleSubscribe()">Подписаться</button>
       </div>
       <div class="player-desc" id="playerDesc"></div>
     </div>
@@ -270,7 +270,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
       <div class="comments-title">💬 Комментарии <span id="commentCount" style="color:var(--text2);font-size:14px;font-weight:600">0</span></div>
       <div class="comment-form">
         <input class="comment-input" id="commentInput" placeholder="🐤 Напишите что-нибудь..." maxlength="500">
-        <button class="comment-send" data-action="sendComment">➤</button>
+        <button class="comment-send" onclick="sendComment()">➤</button>
       </div>
       <div id="commentsList"></div>
     </div>
@@ -288,7 +288,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
           <div class="icon">🦅</div>
           <h3>Нажми чтобы выбрать</h3>
           <p>MP4, WebM, MOV (до 500МБ)</p>
-          <input type="file" id="videoFile" accept="video/*">
+          <input type="file" id="videoFile" accept="video/*" onchange="handleVideoSelect(this)">
         </div>
         <video class="upload-preview" id="uploadPreview" controls></video>
       </div>
@@ -297,7 +297,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
         <div class="thumb-zone">
           <div class="thumb-placeholder" id="thumbPlaceholder"><div class="icon">🌅</div><p>Добавь превью картинку</p></div>
           <img class="thumb-preview" id="thumbPreview" alt="">
-          <input type="file" id="thumbFile" accept="image/*">
+          <input type="file" id="thumbFile" accept="image/*" onchange="handleThumbSelect(this)">
         </div>
       </div>
       <div>
@@ -325,7 +325,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
         <div class="progress-label" id="progressLabel">🐦 Загружаем... 0%</div>
         <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
       </div>
-      <button class="btn-primary" id="uploadBtn" data-action="doUpload">🚀 Опубликовать в гнездо</button>
+      <button class="btn-primary" id="uploadBtn" onclick="doUpload()">🚀 Опубликовать в гнездо</button>
     </div>
   </div>
 </div>
@@ -336,8 +336,8 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
     <div class="profile-header">
       <div class="profile-pic-wrap">
         <div class="profile-pic" id="profilePic">🐦</div>
-        <div class="profile-pic-edit" data-action="avatarClick">✏️</div>
-        <input type="file" id="avatarFile" accept="image/*" style="display:none">
+        <div class="profile-pic-edit" onclick="document.getElementById('avatarFile').click()">✏️</div>
+        <input type="file" id="avatarFile" accept="image/*" style="display:none" onchange="handleAvatarChange(this)">
       </div>
       <div class="profile-info">
         <div class="profile-name" id="profileName">Птица</div>
@@ -350,41 +350,41 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);max-
       <div class="stat-item"><div class="stat-val" id="pViews">0</div><div class="stat-lbl">Просмотры</div></div>
     </div>
     <div class="profile-bio" id="profileBio">Ку-ку! 🐦</div>
-    <button class="btn-edit-profile" data-action="openEditModal">✏️ Редактировать профиль</button>
+    <button class="btn-edit-profile" onclick="openEditModal()">✏️ Редактировать профиль</button>
     <div class="profile-videos-title">🎬 Мои видео</div>
     <div class="videos-grid" id="profileVideosGrid"><div class="empty-state"><span class="icon">🥚</span><h3>Нет видео</h3></div></div>
-    <button class="btn-logout" data-action="doLogout">🚪 Вылететь из гнезда</button>
+    <button class="btn-logout" onclick="doLogout()">🚪 Вылететь из гнезда</button>
   </div>
 </div>
 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav" style="display:none">
-  <button class="nav-btn active" id="navHome" data-action="navHome">
+  <button class="nav-btn active" id="navHome" onclick="showView('homeView')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     <span>Главная</span>
   </button>
-  <button class="nav-upload-btn" data-action="navUpload">
+  <button class="nav-upload-btn" onclick="showView('uploadView')">
     <div class="nav-upload-inner">🐦</div>
     <span>Загрузить</span>
   </button>
-  <button class="nav-btn" id="navProfile" data-action="goProfile">
+  <button class="nav-btn" id="navProfile" onclick="goProfile()">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
     <span>Профиль</span>
   </button>
 </nav>
 
 <!-- EDIT MODAL -->
-<div class="modal-overlay" id="editModal" data-action="modalOverlay">
+<div class="modal-overlay" id="editModal" onclick="if(event.target===this)closeEditModal()">
   <div class="modal-sheet">
     <div class="modal-header">
       <span class="modal-title">✏️ Редактировать профиль</span>
-      <button class="modal-close" data-action="closeEditModal">×</button>
+      <button class="modal-close" onclick="closeEditModal()">×</button>
     </div>
     <label class="form-label">Имя</label>
     <input class="form-input" id="editName" placeholder="Твоё имя" style="margin-bottom:12px">
     <label class="form-label">О себе</label>
     <textarea class="form-textarea" id="editBio" placeholder="Расскажи о себе..." maxlength="200" style="margin-bottom:16px"></textarea>
-    <button class="btn-primary" data-action="saveProfile">💾 Сохранить</button>
+    <button class="btn-primary" onclick="saveProfile()">💾 Сохранить</button>
   </div>
 </div>
 
@@ -441,7 +441,7 @@ function showView(id,push=true){
   if(push&&vStack[vStack.length-1]!==id)vStack.push(id);
   if(id!=='playerView'){
     const v=document.getElementById('playerVideo');
-    if(v){v.pause();v.src='';}
+    if(v){v.pause();v.removeAttribute('src');v.load();}
     if(commUnsub){commUnsub();commUnsub=null;}
   }
 }
@@ -518,7 +518,7 @@ function renderVideos(){
 function vc(v){
   const th=v.thumbnail_url?`<img class="video-thumb-img" src="${v.thumbnail_url}" loading="lazy" alt="">`:`<div class="video-thumb-placeholder">${ce(v.category)}</div>`;
   const pic=v.author_photo?`<div class="video-author-pic"><img src="${v.author_photo}" alt=""></div>`:`<div class="video-author-pic">🐦</div>`;
-  return`<div class="video-card" data-action="openVideo" data-vid="${v.id}"><div class="video-thumb-wrap">${th}${v.duration?`<div class="video-duration">${v.duration}</div>`:''}</div><div class="video-info">${pic}<div class="video-meta"><div class="video-title">${esc(v.title)}</div><div class="video-sub"><b>${esc(v.author_name||'Птица')}</b><span>• ${fn(v.views||0)} просм.</span><span>• ${fn(v.like_count||0)} ❤️</span><span>• ${ta(v.created_at)}</span></div></div></div></div>`;
+  return`<div class="video-card" onclick="openVideo(${v.id})"><div class="video-thumb-wrap">${th}${v.duration?`<div class="video-duration">${v.duration}</div>`:''}</div><div class="video-info">${pic}<div class="video-meta"><div class="video-title">${esc(v.title)}</div><div class="video-sub"><b>${esc(v.author_name||'Птица')}</b><span>• ${fn(v.views||0)} просм.</span><span>• ${fn(v.like_count||0)} ❤️</span><span>• ${ta(v.created_at)}</span></div></div></div></div>`;
 }
 
 function ce(c){return{music:'🎵',games:'🎮',nature:'🌳',funny:'😂',sport:'⚽',tech:'💻',food:'🍎'}[c]||'🐦';}
@@ -533,8 +533,6 @@ async function openVideo(vid){
   const newViews=(CV.views||0)+1;
   update(ref(db,'videos/'+vid),{views:newViews});
   CV.views=newViews;
-  const pv=document.getElementById('playerVideo');
-  pv.src=CV.video_url;
   document.getElementById('playerTitle').textContent=CV.title;
   document.getElementById('playerViews').textContent=fn(CV.views)+' просмотров';
   document.getElementById('playerDate').textContent=new Date(CV.created_at).toLocaleDateString('ru');
@@ -547,6 +545,12 @@ async function openVideo(vid){
   document.getElementById('playerAuthorSubs').textContent=fn(ad?.subscriber_count||0)+' подписчиков';
   await refLike();await refSub();
   loadComments(vid);
+  // Ставим src в самом конце — сохраняем user gesture для мобильных
+  const pv=document.getElementById('playerVideo');
+  pv.pause();
+  pv.removeAttribute('src');
+  pv.load();
+  pv.src=CV.video_url;
   showView('playerView');
 }
 
@@ -780,39 +784,8 @@ function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;
 function fn(n){n=Number(n)||0;if(n>=1e6)return(n/1e6).toFixed(1)+'М';if(n>=1000)return(n/1000).toFixed(1)+'К';return String(n);}
 function ta(ts){if(!ts)return'';const d=(Date.now()-new Date(ts))/1000;if(d<60)return'только что';if(d<3600)return Math.floor(d/60)+' мин.';if(d<86400)return Math.floor(d/3600)+' ч.';if(d<604800)return Math.floor(d/86400)+' дн.';return Math.floor(d/604800)+' нед. назад';}
 
-// EVENT DELEGATION
-document.addEventListener('click',e=>{
-  const el=e.target.closest('[data-action]');
-  if(!el)return;
-  const a=el.dataset.action;
-  if(a==='authTab')switchAuthTab(el.dataset.tab);
-  else if(a==='login')doLogin();
-  else if(a==='register')doRegister();
-  else if(a==='googleLogin')doGoogleLogin();
-  else if(a==='doLogout')doLogout();
-  else if(a==='goProfile')goProfile();
-  else if(a==='goBack')goBack();
-  else if(a==='navHome')showView('homeView');
-  else if(a==='navUpload')showView('uploadView');
-  else if(a==='filterCat'){document.querySelectorAll('.cat-chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');cat=el.dataset.cat;renderVideos();}
-  else if(a==='toggleLike')toggleLike();
-  else if(a==='shareVideo')shareVideo();
-  else if(a==='toggleSubscribe')toggleSubscribe();
-  else if(a==='sendComment')sendComment();
-  else if(a==='doUpload')doUpload();
-  else if(a==='avatarClick')document.getElementById('avatarFile').click();
-  else if(a==='openEditModal')openEditModal();
-  else if(a==='closeEditModal')closeEditModal();
-  else if(a==='saveProfile')saveProfile();
-  else if(a==='modalOverlay'&&e.target===el)closeEditModal();
-  else if(a==='openVideo')openVideo(el.dataset.vid);
-});
-
-document.getElementById('searchInput').addEventListener('input',e=>handleSearch(e.target.value));
 document.getElementById('commentInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendComment();}});
-document.getElementById('videoFile').addEventListener('change',e=>handleVideoSelect(e.target));
-document.getElementById('thumbFile').addEventListener('change',e=>handleThumbSelect(e.target));
-document.getElementById('avatarFile').addEventListener('change',e=>handleAvatarChange(e.target));
+Object.assign(window,{switchAuthTab,doLogin,doRegister,doGoogleLogin,doLogout,showView,goBack,goProfile,filterCat,handleSearch,handleVideoSelect,handleThumbSelect,handleAvatarChange,doUpload,openVideo,toggleLike,toggleSubscribe,shareVideo,sendComment,openEditModal,closeEditModal,saveProfile,loadPV});
 </script>
 
 
