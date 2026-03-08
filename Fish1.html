@@ -1716,6 +1716,33 @@ body.zone-mountain .swim-fish{color:#80d0ff;opacity:.3;}
 .skill-line{height:3px;background:linear-gradient(90deg,var(--plank2),rgba(255,255,255,.1),var(--plank2));
   flex:1;margin:0 -2px;}
 
+/* ══ МАТРИЦА БОСС ══ */
+#matrix-rain-overlay{position:absolute;inset:0;z-index:75;pointer-events:none;opacity:0;transition:opacity .5s;font-family:'Courier New',monospace;font-size:10px;color:#00ff41;overflow:hidden;}
+#matrix-rain-overlay.active{opacity:1;}
+.matrix-col{position:absolute;top:0;display:flex;flex-direction:column;animation:matrixFall linear infinite;color:#00ff41;text-shadow:0 0 8px #00ff41;line-height:12px;}
+@keyframes matrixFall{0%{transform:translateY(-120%)}100%{transform:translateY(800px)}}
+#matrix-boss-bg{position:absolute;inset:0;z-index:74;pointer-events:none;background:rgba(0,20,0,.5);opacity:0;transition:opacity .5s;}
+#matrix-boss-bg.active{opacity:1;}
+@keyframes matrixGlitch{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,1px)}40%{transform:translate(3px,-1px)}60%{transform:translate(-2px,2px)}80%{transform:translate(2px,-2px)}}
+#fish-minigame.matrix-fight #fmg-wheel-wrap{animation:matrixGlitch 1.8s steps(1) infinite;}
+#fish-minigame.matrix-fight #fmg-wheel-canvas{border:2px solid #00ff41!important;box-shadow:0 0 25px rgba(0,255,65,.7)!important;}
+#fish-minigame.matrix-fight{background:linear-gradient(180deg,rgba(0,15,0,.85),rgba(0,8,4,.92))!important;}
+@keyframes matrixTextFlicker{0%{opacity:.6;text-shadow:0 0 5px #00ff41}100%{opacity:1;text-shadow:0 0 18px #00ff41,0 0 36px #00ff41}}
+#fish-minigame.matrix-fight #fmg-fish-diff{animation:matrixTextFlicker .35s ease infinite alternate;}
+#matrix-teleport-flash{position:absolute;inset:0;pointer-events:none;z-index:86;background:radial-gradient(ellipse at 50% 50%,rgba(0,255,65,.7),transparent 70%);opacity:0;}
+@keyframes matrixTeleportPop{0%{opacity:0}10%{opacity:1}60%{opacity:.5}100%{opacity:0}}
+#matrix-teleport-flash.pop{animation:matrixTeleportPop .5s ease-out forwards;}
+/* Matrix boss welcome */
+#matrix-boss-welcome{position:absolute;inset:0;z-index:8500;background:rgba(0,6,0,.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;}
+#matrix-boss-welcome.active{display:flex;}
+#mbw-code{font-family:'Courier New',monospace;font-size:10px;color:#00aa30;letter-spacing:2px;margin-bottom:14px;min-height:36px;line-height:1.4;}
+#mbw-icon{font-size:68px;margin-bottom:10px;animation:mbwPulse 1.1s ease-in-out infinite alternate;}
+@keyframes mbwPulse{0%{filter:drop-shadow(0 0 6px #00ff41)}100%{filter:drop-shadow(0 0 28px #00ff41) drop-shadow(0 0 55px rgba(0,255,65,.4))}}
+#mbw-title{font-family:'Cinzel',serif;font-size:21px;color:#00ff41;letter-spacing:4px;text-shadow:0 0 18px rgba(0,255,65,.8);margin-bottom:6px;}
+#mbw-sub{font-family:'Neucha',cursive;font-size:12px;color:#40a050;margin-bottom:10px;}
+#mbw-ability{font-family:'Neucha',cursive;font-size:12px;color:#00cc35;padding:8px 14px;border:1px solid #00ff4140;border-radius:10px;background:rgba(0,35,0,.7);margin-bottom:18px;line-height:1.6;max-width:260px;}
+#mbw-ok{padding:11px 30px;border-radius:14px;cursor:pointer;background:linear-gradient(180deg,#003010,#001808);border:2px solid #00ff41;color:#00ff41;font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;box-shadow:0 0 18px rgba(0,255,65,.4);}
+#mbw-ok:active{transform:scale(.93);}
 </style>
 </head>
 <body>
@@ -3191,6 +3218,27 @@ body.zone-mountain .swim-fish{color:#80d0ff;opacity:.3;}
     </div>
   </div>
 
+  <!-- MATRIX BOSS OVERLAYS -->
+  <div id="matrix-boss-bg"></div>
+  <div id="matrix-rain-overlay"></div>
+  <div id="matrix-teleport-flash"></div>
+
+  <!-- MATRIX BOSS WELCOME SCREEN -->
+  <div id="matrix-boss-welcome">
+    <div id="mbw-code">ЗАГРУЗКА ДАННЫХ...<br>ОБНАРУЖЕНА АНОМАЛИЯ В МАТРИЦЕ</div>
+    <div id="mbw-icon">🟩</div>
+    <div id="mbw-title">МАТРИЦА БОСС</div>
+    <div id="mbw-sub">Следующая Рыба — Босс Матрица</div>
+    <div id="mbw-ability">
+      ⚠️ ОСОБАЯ СПОСОБНОСТЬ:<br>
+      🔀 Телепортирует зону захвата<br>
+      во время боя — каждые 2 сек<br>
+      🟩 Следи за зелёной зоной!<br>
+      🎯 Требует 9 точных ударов
+    </div>
+    <div id="mbw-ok" onclick="closeMatrixWelcome()">✅ Я ГОТОВ</div>
+  </div>
+
   <!-- NIGHT OVERLAY -->
   <div id="night-overlay" style="position:absolute;inset:0;pointer-events:none;z-index:4;background:radial-gradient(ellipse at 50% 30%,transparent 30%,rgba(0,0,10,.6) 100%);opacity:0;transition:opacity 4s;"></div>
 
@@ -3381,6 +3429,7 @@ const FISH=[
   {id:'boss_pike',   name:'КОРОЛЬ ЩУК',     icon:'👑', weight:[30.0,50.0], price:5000, rar:'boss',   zone:'river', xp:500,food:0},
   {id:'boss_catfish',name:'ЛЕВИАФАН',       icon:'🌊', weight:[80.0,120.0],price:8000, rar:'boss',   zone:'swamp', xp:800,food:0},
   {id:'boss_kraken', name:'ДРЕВНИЙ КРАКЕН', icon:'🔱', weight:[300.0,500.0],price:15000,rar:'boss',  zone:'sea',   xp:1500,food:0},
+  {id:'boss_matrix', name:'МАТРИЦА', icon:'🟩', weight:[999.0,999.0], price:25000,rar:'boss',  zone:'river', xp:3000,food:0},
 ];
 
 // ── RODS ──
@@ -3714,7 +3763,8 @@ window.addEventListener('load',()=>{
   updateCastBtn();
   startSeasonWeather();
   buildRodSVG(gs.currentRod||'stick');
-  if(gs.name){document.getElementById('welcome').style.display='none';sw('fishing');renderSettings();applySeasonWeather();buildRodSVG(gs.currentRod||'stick');initNewSystems();}
+  if(gs.name){document.getElementById('welcome').style.display='none';sw('fishing');renderSettings();applySeasonWeather();buildRodSVG(gs.currentRod||'stick');initNewSystems();
+  }
 });
 
 function scaleGame(){
@@ -5011,6 +5061,7 @@ const FMG_PROFILES_BOSS = {
   boss_pike:    { speed:4.5, zones:[{start:-18,end:18,type:'perfect'},{start:145,end:190,type:'good'}], hits:6, label:'👑 КОРОЛЬ ЩУК', col:'#ff4020' },
   boss_catfish: { speed:5.5, zones:[{start:-14,end:14,type:'perfect'},{start:148,end:185,type:'good'}], hits:7, label:'🌊 ЛЕВИАФАН',   col:'#8020ff' },
   boss_kraken:  { speed:7.0, zones:[{start:-10,end:10,type:'perfect'},{start:150,end:178,type:'good'}], hits:8, label:'🔱 КРАКЕН!!!',  col:'#0060ff' },
+  boss_matrix:  { speed:6.0, zones:[{start:-12,end:12,type:'perfect'},{start:148,end:182,type:'good'}], hits:9, label:'🟩 Я ВЕЗДЕ...', col:'#00ff41', teleports:true },
 };
 
 const FMG_PROFILES = {
@@ -5039,6 +5090,8 @@ function startMinigame(fish, weight, price) {
   fmg.totalHits=prof.hits;
   fmg.active=true;
   fmg._hitFlash=0; fmg._missFlash=0;
+  // Store current profile for dynamic zone support
+  fmg.currentProf = JSON.parse(JSON.stringify(prof));
 
   // Setup UI
   document.getElementById('fmg-fish-preview').textContent=fish.icon;
@@ -5059,12 +5112,20 @@ function startMinigame(fish, weight, price) {
   if(fish.rar==='boss'){ mg2.classList.add('boss-fight'); document.getElementById('fmg-wheel-canvas').classList.add('boss-ring'); }
   else { mg2.classList.remove('boss-fight'); document.getElementById('fmg-wheel-canvas').classList.remove('boss-ring'); }
   if(fmg.animId) cancelAnimationFrame(fmg.animId);
+
+  // Start Matrix boss special effects
+  if(fish.id==='boss_matrix'){
+    startMatrixBossFight();
+  } else {
+    stopMatrixBossFight();
+  }
+
   fmgDraw();
 }
 
 function fmgDraw() {
   if(!fmg.active) return;
-  const prof = FMG_PROFILES[fmg.fish.rar]||FMG_PROFILES.common;
+  const prof = fmg.currentProf || FMG_PROFILES[fmg.fish.rar]||FMG_PROFILES.common;
   // Spin
   fmg.angle = (fmg.angle + fmg.speed + (fmg.misses*0.15)) % 360;
 
@@ -5167,7 +5228,7 @@ function fmgTap() {
   fmg.lastTap=now;
   if(gs.settings.vibro&&navigator.vibrate) navigator.vibrate(25);
 
-  const prof=FMG_PROFILES[fmg.fish.rar]||FMG_PROFILES.common;
+  const prof=fmg.currentProf || FMG_PROFILES[fmg.fish.rar]||FMG_PROFILES.common;
   // Check if angle (at top = 0° relative) falls in any zone
   // Wheel zones are in world coords. Arrow is at 0° (top). 
   // The zone angles rotate WITH fmg.angle. 
@@ -5179,8 +5240,9 @@ function fmgTap() {
   const relAngle = normAngle > 180 ? normAngle - 360 : normAngle;
 
   let result = 'miss';
+  const TOLERANCE = 3; // degrees of forgiveness on zone edges
   for(const z of prof.zones){
-    if(relAngle >= z.start && relAngle <= z.end) { result=z.type; break; }
+    if(relAngle >= z.start - TOLERANCE && relAngle <= z.end + TOLERANCE) { result=z.type; break; }
   }
 
   if(result === 'perfect' || result === 'good'){
@@ -5260,6 +5322,13 @@ function endMinigame(success) {
   }
 }
 function pickFish(){
+  // MATRIX BOSS — на каждый заход (первый бросок) + каждые 5 бросков
+  _castCount++;
+  if(_matrixForceNext || _castCount % 5 === 0){
+    _matrixForceNext = false;
+    const mb=FISH.find(f=>f.id==='boss_matrix');
+    if(mb)return mb;
+  }
   // If radar fish reached bite zone — catch THAT exact fish
   if (nextBiteFromRadar) {
     const f = nextBiteFromRadar;
@@ -5268,14 +5337,15 @@ function pickFish(){
   }
   // Secret: Nabi — 0.3% chance, any zone
   if(Math.random() < 0.003) return FISH.find(f=>f.id==='nabi');
-  // Boss fish — 0.5% chance (zone dependent)
+  // Boss fish — 0.5% chance (zone dependent), never matrix boss via random
   if(Math.random() < 0.005){
     const zone2=gs.mapZone||'river';
-    const bosses=FISH.filter(f=>f.rar==='boss'&&f.zone===zone2);
+    const bosses=FISH.filter(f=>f.rar==='boss'&&f.zone===zone2&&f.id!=='boss_matrix');
     if(bosses.length) return bosses[Math.floor(Math.random()*bosses.length)];
   }
   const zone=gs.mapZone||'river';
-  const pool=FISH.filter(f=>f.zone===zone||f.zone==='river'||f.zone===zone);
+  // Exclude boss_matrix from regular pool - it only appears via cast counter
+  const pool=FISH.filter(f=>(f.zone===zone||f.zone==='river')&&f.id!=='boss_matrix');
   const wMult=(WEATHERS[gs.weather]||WEATHERS.clear).fishMult||1;
   const sMult=(SEASONS[gs.season]&&SEASONS[gs.season].fishBonus&&SEASONS[gs.season].fishBonus[zone])||1;
   const rarWeights={common:Math.round(60/wMult/sMult),rare:Math.round(28*wMult),epic:Math.round(10*wMult*sMult),legend:Math.round(2*wMult*sMult)};
@@ -5386,17 +5456,18 @@ function sellFish(){
   tryDropMaterial();
   if(!currentCatch)return;
   const price=Math.round(currentCatch.price*getComboBonus());
+  const savedFood=currentCatch.food||0;
   gs.coins+=price;gs.score+=price;
   if(!gs.stats)gs.stats={totalCasts:0,totalCaught:0,totalSold:0,totalEarned:0};
   gs.stats.totalSold=(gs.stats.totalSold||0)+1;
   gs.stats.totalEarned=(gs.stats.totalEarned||0)+price;
-  gs.zooFood+=currentCatch.food||0;
+  gs.zooFood+=savedFood;
   updateUI();
   trackQuest('sell',{amount:price});
   spawnParticles('🪙',4);
   const bonus=price>currentCatch.price?' (комбо!)':'';
   hideCatch();
-  showToast('🪙 +'+numFmt(price)+bonus+' | 🥩 +'+currentCatch.food+' корм!');
+  showToast('🪙 +'+numFmt(price)+bonus+' | 🥩 +'+savedFood+' корм!');
   checkAllAchievements();
   saveGame();
   updateFirebaseScore();
@@ -9773,9 +9844,92 @@ document.addEventListener('DOMContentLoaded',()=>{
 // (все initNewSystems уже цепочкой объединены)
 // Финальная строка — игра готова!
 
+// ════════════════════════════════════════════════════════════════════════════
+//  🟩 МАТРИЦА БОСС — Matrix Boss System
+// ════════════════════════════════════════════════════════════════════════════
+let matrixBossActive=false,matrixTeleportInterval=null,matrixRainBuilt=false;
+// These live OUTSIDE gs so loadGame() never overwrites them
+let _matrixForceNext = true;   // always true on every page load
+let _castCount = 0;
+
+function buildMatrixRain(){
+  if(matrixRainBuilt)return; matrixRainBuilt=true;
+  const overlay=document.getElementById('matrix-rain-overlay');if(!overlay)return;
+  const chars='日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ10アイウエオカキ';
+  const cols=20;
+  for(let i=0;i<cols;i++){
+    const col=document.createElement('div');col.className='matrix-col';
+    col.style.left=(i*(360/cols))+'px';
+    col.style.animationDuration=(1.4+Math.random()*2.6)+'s';
+    col.style.animationDelay=(-Math.random()*3)+'s';
+    col.style.opacity=(0.25+Math.random()*0.55).toFixed(2);
+    col.style.fontSize=(8+Math.floor(Math.random()*5))+'px';
+    let str='';for(let j=0;j<45;j++)str+=chars[Math.floor(Math.random()*chars.length)]+'\n';
+    col.textContent=str; overlay.appendChild(col);
+  }
+}
+
+function startMatrixBossFight(){
+  matrixBossActive=true;
+  buildMatrixRain();
+  document.getElementById('matrix-boss-bg').classList.add('active');
+  document.getElementById('matrix-rain-overlay').classList.add('active');
+  const mg=document.getElementById('fish-minigame');if(mg)mg.classList.add('matrix-fight');
+  clearInterval(matrixTeleportInterval);
+  matrixTeleportInterval=setInterval(teleportMatrixZones,1900);
+}
+
+function stopMatrixBossFight(){
+  matrixBossActive=false;
+  clearInterval(matrixTeleportInterval);
+  document.getElementById('matrix-boss-bg').classList.remove('active');
+  document.getElementById('matrix-rain-overlay').classList.remove('active');
+  const mg=document.getElementById('fish-minigame');if(mg)mg.classList.remove('matrix-fight');
+}
+
+function teleportMatrixZones(){
+  if(!fmg.active||!fmg.currentProf)return;
+  const center=Math.floor(Math.random()*300)-150;
+  const half=9+Math.floor(Math.random()*7);
+  fmg.currentProf.zones=[
+    {start:center-half,end:center+half,type:'perfect'},
+    {start:center+138,end:center+175,type:'good'},
+  ];
+  const flash=document.getElementById('matrix-teleport-flash');
+  if(flash){flash.classList.remove('pop');void flash.offsetWidth;flash.classList.add('pop');setTimeout(()=>flash.classList.remove('pop'),500);}
+  if(typeof spawnFmgText==='function') spawnFmgText('⚠️ ТЕЛЕПОРТ!','#00ff41');
+  if(gs.settings&&gs.settings.vibro&&navigator.vibrate)navigator.vibrate([25,15,25]);
+}
+
+function showMatrixBossWelcome(){
+  const el=document.getElementById('matrix-boss-welcome');if(!el)return;
+  // Always show on load — it's the game's intro for the Matrix Boss
+  const codeEl=document.getElementById('mbw-code');
+  const lines=['СИСТЕМА: АНОМАЛИЯ ОБНАРУЖЕНА...','ЗАГРУЗКА: boss_matrix.exe ████████','СЛЕДУЮЩАЯ РЫБА — МАТРИЦА БОСС'];
+  let li=0,ci=0; codeEl.textContent='';
+  function typeChar(){
+    if(li>=lines.length){el.classList.add('active');return;}
+    if(ci<lines[li].length){codeEl.textContent+=lines[li][ci];ci++;setTimeout(typeChar,28);}
+    else{codeEl.textContent+='\n';li++;ci=0;setTimeout(typeChar,180);}
+  }
+  el.style.display='flex';setTimeout(typeChar,500);
+}
+
+function closeMatrixWelcome(){
+  const el=document.getElementById('matrix-boss-welcome');
+  if(el){el.classList.remove('active');setTimeout(()=>el.style.display='none',300);}
+}
+
+// Hook into end of minigame to stop matrix
+const _fmgFinishOrig=window.fmgFinish;
+window.fmgFinish=function(){if(typeof _fmgFinishOrig==='function')_fmgFinishOrig();if(fmg.fish&&fmg.fish.id==='boss_matrix')stopMatrixBossFight();};
+
+// Show matrix welcome after game loads
+setTimeout(()=>{if(gs.name)showMatrixBossWelcome();},1500);
+
 updateUI();
 // final log below
-console.log('🎣 Fish2 v3: Тайга!');
+console.log('🎣 Fish2 v3: Тайга! 🟩 Matrix Boss Active!');
 </script>
 </body>
 </html>
