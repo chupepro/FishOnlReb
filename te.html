@@ -120,6 +120,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <div class="chip"><span>🪨</span><span id="ho">0</span></div>
   <div class="chip"><span>🔩</span><span id="hb">0</span></div>
   <div class="chip"><span>🎣</span><span id="hr">0</span></div>
+  <div class="chip"><span>🌱</span><span id="hn">0</span>/<span>10</span></div>
   <button id="savebtn" onclick="saveGame()">💾</button>
   <button id="bjrn" onclick="openJournal()">📖</button>
 </div></div>
@@ -147,6 +148,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <div class="nb" id="nb-furn" onclick="pick('furn')"><div class="ni">🔥</div><div>Плавильщик</div><div class="nc">80🪙</div></div>
   <div class="nb" id="nb-wshp" onclick="pick('wshp')"><div class="ni">🔨</div><div>Мастерская</div><div class="nc">120🪙</div></div>
   <div class="nb" id="nb-mkt"  onclick="pick('mkt')"><div class="ni">🏪</div><div>Рынок</div><div class="nc">150🪙</div></div>
+  <div class="nb" id="nb-seed" onclick="pick('seed')"><div class="ni">🌱</div><div>Səməni</div><div class="nc">60🪙</div></div>
+  <div class="nb" id="nb-cowpen"  onclick="pick('cowpen')"><div class="ni">🐄</div><div>Коровник</div><div class="nc">180🪙</div></div>
+  <div class="nb" id="nb-chickenpen" onclick="pick('chickenpen')"><div class="ni">🐔</div><div>Курятник</div><div class="nc">120🪙</div></div>
+  <div class="nb" id="nb-milkdel" onclick="pick('milkdel')"><div class="ni">🥛</div><div>БанкоДел</div><div class="nc">100🪙</div></div>
+  <div class="nb" id="nb-eggpack" onclick="pick('eggpack')"><div class="ni">🥚</div><div>УпаковкоДел</div><div class="nc">100🪙</div></div>
   <div class="nb" id="nb-del"  onclick="pick('del')"><div class="ni">🗑️</div><div>Снос</div><div class="nc">—</div></div>
 </div></div>
 
@@ -177,6 +183,23 @@ function resize() {
 }
 resize(); addEventListener('resize', resize);
 
+// ── Guard createRadialGradient against NaN/Infinity ──
+const _origCRG = X.createRadialGradient.bind(X);
+X.createRadialGradient = function(x0,y0,r0,x1,y1,r1){
+  if(!isFinite(x0)||!isFinite(y0)||!isFinite(r0)||!isFinite(x1)||!isFinite(y1)||!isFinite(r1)){
+    // return a dummy gradient that won't crash
+    return _origCRG(0,0,0,1,1,1);
+  }
+  return _origCRG(x0,y0,Math.max(0,r0),x1,y1,Math.max(0,r1));
+};
+const _origCLG = X.createLinearGradient.bind(X);
+X.createLinearGradient = function(x0,y0,x1,y1){
+  if(!isFinite(x0)||!isFinite(y0)||!isFinite(x1)||!isFinite(y1)){
+    return _origCLG(0,0,1,1);
+  }
+  return _origCLG(x0,y0,x1,y1);
+};
+
 // ── Resources ──────────────────────────────
 const R = {gold:200, ore:0, bars:0, rods:0, fish:0};
 function earn(k,v){ R[k]+=v; hud(); }
@@ -186,6 +209,7 @@ function hud(){
   document.getElementById('ho').textContent = R.ore;
   document.getElementById('hb').textContent = R.bars;
   document.getElementById('hr').textContent = R.rods;
+  const hn=document.getElementById('hn'); if(hn) hn.textContent=SEMENI_NPCS.length;
 }
 
 // ── Map ─────────────────────────────────────
@@ -213,7 +237,15 @@ const DARR  = ['→','↓','←','↑'];
 
 // ── Chest storage ────────────────────────────
 const CSTORE = {};
-function cs(id){ if(!CSTORE[id]) CSTORE[id]={ore:0,bars:0,rods:0,fish:0}; return CSTORE[id]; }
+function cs(id){ if(!CSTORE[id]) CSTORE[id]={ore:0,bars:0,rods:0,fish:0,seed_ore:0,milk:0,milk_bottle:0,eggs:0,egg_pack:0}; return CSTORE[id]; }
+
+// ── Semeni NPC state ─────────────────────────
+const SEMENI_NPCS = []; // max 10
+const MAX_SEMENI = 10;
+const SEMENI_SUPER_CHESTS = {}; // chestId→true (marks super chests)
+
+// ── Animal Pen state ─────────────────────────
+// pen buildings produce milk/eggs over time
 
 // ── Market bindings  mktId→chestId ──────────
 const MBIND = {};
@@ -222,8 +254,8 @@ const MBIND = {};
 const SMST = {};  // id→{phase:'idle'|'open'|'smelt'|'pour', t:0}
 
 // ── Costs / Names ────────────────────────────
-const COST={bur:50,conv:15,chest:40,furn:80,wshp:120,mkt:150};
-const NAME={bur:'Бур',conv:'Конвейер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос'};
+const COST={bur:50,conv:15,chest:40,furn:80,wshp:120,mkt:150,seed:60,cowpen:180,chickenpen:120,milkdel:100,eggpack:100};
+const NAME={bur:'Бур',conv:'Конвейер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел'};
 
 // ── Place / Demolish ─────────────────────────
 function place(type, col, row){
@@ -231,6 +263,7 @@ function place(type, col, row){
   if(G[row][col])                         return toast('Место занято!');
   if(MAP[row][col]===1)                   return toast('На воде нельзя!');
   if(type==='bur'&&MAP[row][col]!==2)     return toast('Бур — только на камне ⛏️');
+  if((type==='cowpen'||type==='chickenpen')&&MAP[row][col]!==0) return toast('Загон — только на траве 🌿');
   const cost = COST[type]||0;
   if(R.gold < cost)                       return toast('Мало монет 🪙');
   spend('gold', cost);
@@ -238,7 +271,11 @@ function place(type, col, row){
   G[row][col] = obj;
   if(type==='chest') cs(obj.id);
   if(type==='furn')  SMST[obj.id]={phase:'idle',t:0};
+  // cowpen and chickenpen don't need special init
   toast(NAME[type]+' построена ✅');
+
+  // ── When seed_ore arrives in a normal chest, spawn super chest nearby ──
+  // (handled in deliver function)
 }
 
 function demolish(col, row){
@@ -254,7 +291,7 @@ function demolish(col, row){
 // ── Particles (items on conveyors) ───────────
 const PTCL=[];
 function spawnP(sc,sr, icon, dc,dr){
-  // world coords of cell centres
+  if(!isFinite(sc)||!isFinite(sr)||!isFinite(dc)||!isFinite(dr)) return;
   PTCL.push({
     sx: sc*GS+GS/2, sy: sr*GS+GS/2,
     tx: dc*GS+GS/2, ty: dr*GS+GS/2,
@@ -287,8 +324,8 @@ function outputOf(col, row){
     const nb=G[nr][nc]; return nb?{col:nc,row:nr,obj:nb}:null;
   }
 
-  // furnace / workshop: same as conv (use dir for output lane)
-  if(obj.type==='furn'||obj.type==='wshp'){
+  // furnace / workshop / milkdel / eggpack / cowpen / chickenpen: use dir for output lane
+  if(obj.type==='furn'||obj.type==='wshp'||obj.type==='milkdel'||obj.type==='eggpack'||obj.type==='cowpen'||obj.type==='chickenpen'){
     const [dc,dr]=DIR4[obj.dir];
     const nc=col+dc, nr=row+dr;
     if(nc<0||nc>=COLS||nr<0||nr>=ROWS) return null;
@@ -309,13 +346,143 @@ function adjOf(col, row, type){
 // deliver icon to chest
 function deliver(chestId, icon){
   const d=cs(chestId);
-  if(icon==='ore')  d.ore++;
-  else if(icon==='bar')  d.bars++;
-  else if(icon==='rod')  d.rods++;
-  else if(icon==='fish') d.fish++;
+  if(icon==='ore')           d.ore++;
+  else if(icon==='seed_ore'){
+    d.seed_ore=(d.seed_ore||0)+1;
+    if(!SEMENI_SUPER_CHESTS[chestId]) spawnSuperChest(chestId);
+  }
+  else if(icon==='bar')      d.bars++;
+  else if(icon==='rod')      d.rods++;
+  else if(icon==='fish')     d.fish++;
+  else if(icon==='milk')     d.milk=(d.milk||0)+1;
+  else if(icon==='egg')      d.eggs=(d.eggs||0)+1;
+  else if(icon==='milk_bottle') d.milk_bottle=(d.milk_bottle||0)+1;
+  else if(icon==='egg_pack') d.egg_pack=(d.egg_pack||0)+1;
 }
 
-// ── Fishermen ────────────────────────────────
+// ── Super Chest spawn (Səməni chest) ─────────
+function spawnSuperChest(normalChestId){
+  // Find the normal chest object
+  let nco=null, ncc=-1, ncr=-1;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    if(G[r][c]&&G[r][c].id===normalChestId){nco=G[r][c];ncc=c;ncr=r;break;}
+  }
+  if(!nco) return;
+  // Find a free adjacent grass tile to place super chest
+  for(const [dc,dr] of DIR4){
+    const nc=ncc+dc, nr=ncr+dr;
+    if(nc<0||nc>=COLS||nr<0||nr>=ROWS) continue;
+    if(!G[nr][nc] && MAP[nr][nc]===0){
+      const sc={type:'chest',col:nc,row:nr,id:nid(),dir:0,timer:0,progress:0,superSemeni:true};
+      G[nr][nc]=sc;
+      cs(sc.id);
+      SEMENI_SUPER_CHESTS[sc.id]=true;
+      // Spawn a Semeni NPC if under limit
+      if(SEMENI_NPCS.length<MAX_SEMENI){
+        SEMENI_NPCS.push({
+          superChestId: sc.id,
+          chestCol: nc, chestRow: nr,
+          wx: nc*GS+GS/2, wy: nr*GS+GS/2,
+          oreCol: null, oreRow: null,
+          state: 'walk_to_ore',
+          bob: Math.random()*Math.PI*2,
+          t: 0,
+          walkCycle: 0,
+          drillT: 0, drillDur: 3,
+          carrying: null, carryA: 0,
+          depositT: 0
+        });
+        hud(); // update counter
+      }
+      toast('🌱 Семени-сундук появился! НПС будет добывать руду!');
+      return;
+    }
+  }
+  toast('🌱 Нет места для Семени-сундука рядом!');
+}
+
+// ── Semeni NPCs update ───────────────────────
+// States: 'walk_to_ore' → 'drilling' → 'walk_to_chest' → 'deposit' → repeat
+function updateSemeniNpcs(dt){
+  for(const npc of SEMENI_NPCS){
+    npc.t += dt;
+    npc.bob += dt * 1.4;
+
+    // Find nearest rock tile to drill
+    if(!npc.oreCol) {
+      let bestD=999, bc=-1, br=-1;
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+        if(MAP[r][c]===2 && !G[r][c]){ // rock, no building
+          const d=Math.abs(c-npc.chestCol)+Math.abs(r-npc.chestRow);
+          if(d<bestD){bestD=d;bc=c;br=r;}
+        }
+      }
+      npc.oreCol=bc; npc.oreRow=br;
+    }
+
+    if(!npc.state) npc.state='walk_to_ore';
+
+    if(npc.state==='walk_to_ore'){
+      // Animate walking toward ore
+      const tx=npc.oreCol*GS+GS/2, ty=npc.oreRow*GS+GS/2;
+      const dx=tx-npc.wx, dy=ty-npc.wy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<4){
+        npc.wx=tx; npc.wy=ty;
+        npc.state='drilling';
+        npc.drillT=0;
+        npc.drillDur=3+Math.random()*2;
+      } else {
+        const spd=GS*1.2*dt;
+        npc.wx+=dx/dist*spd;
+        npc.wy+=dy/dist*spd;
+        npc.walkCycle=(npc.walkCycle||0)+dt*4;
+      }
+    }
+
+    if(npc.state==='drilling'){
+      npc.drillT+=dt;
+      npc.walkCycle=(npc.walkCycle||0)+dt*8; // fast arm swing while drilling
+      if(npc.drillT>=npc.drillDur){
+        npc.state='walk_to_chest';
+        npc.carrying='seed_ore';
+        npc.carryA=1;
+      }
+    }
+
+    if(npc.state==='walk_to_chest'){
+      const tx=npc.chestCol*GS+GS/2, ty=npc.chestRow*GS+GS/2;
+      const dx=tx-npc.wx, dy=ty-npc.wy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<4){
+        npc.wx=tx; npc.wy=ty;
+        npc.state='deposit';
+        npc.depositT=0;
+      } else {
+        const spd=GS*1.4*dt;
+        npc.wx+=dx/dist*spd;
+        npc.wy+=dy/dist*spd;
+        npc.walkCycle=(npc.walkCycle||0)+dt*4;
+      }
+    }
+
+    if(npc.state==='deposit'){
+      npc.depositT+=dt;
+      if(npc.depositT>=0.8){
+        // deliver to super chest
+        const d=cs(npc.superChestId);
+        d.seed_ore=(d.seed_ore||0)+1;
+        npc.carrying=null;
+        npc.carryA=0;
+        npc.state='walk_to_ore';
+        // Pick new ore spot each cycle
+        npc.oreCol=null; npc.oreRow=null;
+      }
+    }
+  }
+}
+
+
 const FISH=[];
 const FISHDB=[
   {n:'Окунь',i:'🐟',r:'обычная'},{n:'Карась',i:'🐠',r:'обычная'},
@@ -341,20 +508,27 @@ let lastT=0, GT=0;
 
 function update(dt){
   GT+=dt;
+  updateSemeniNpcs(dt);
 
   // ---- Buildings ----
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
     const obj=G[r][c]; if(!obj) continue;
     obj.timer+=dt;
 
-    // BUR — produce ore every 4s
+    // BUR — produce ore every 4s, alternates with seed_ore if seed adjacent
     if(obj.type==='bur'){
       obj.progress = (obj.timer%4)/4;
       if(obj.timer>=4){
         obj.timer=0;
+        // Check for adjacent seed — alternate ore type
+        const hasSeed = adjOf(c,r,'seed')!==null;
+        if(hasSeed){
+          obj._seedToggle = !obj._seedToggle;
+        }
+        const icon = (hasSeed && obj._seedToggle) ? 'seed_ore' : 'ore';
         const nx=outputOf(c,r);
-        if(nx){ spawnP(c,r,'ore',nx.col,nx.row); }
-        else   { earn('ore',1); }
+        if(nx){ spawnP(c,r,icon,nx.col,nx.row); }
+        else   { if(icon==='ore') earn('ore',1); }
       }
     }
 
@@ -390,6 +564,89 @@ function update(dt){
       }
     }
 
+    // COWPEN — produces 1 milk every 8s, outputs to conveyor, chest, or milkdel
+    if(obj.type==='cowpen'){
+      if(obj.timer>=8){
+        obj.timer=0;
+        const nx=outputOf(obj.col,obj.row);
+        if(nx){
+          spawnP(obj.col,obj.row,'milk',nx.col,nx.row);
+        } else {
+          // Try adjacent milkdel first, then chest
+          let placed=false;
+          for(const [dc,dr] of DIR4){
+            const nb=G[obj.row+dr]?.[obj.col+dc];
+            if(nb&&nb.type==='milkdel'){ nb._milkBuf=(nb._milkBuf||0)+1; placed=true; break; }
+          }
+          if(!placed){
+            const adjC=adjOf(obj.col,obj.row,'chest');
+            if(adjC) cs(adjC.id).milk=(cs(adjC.id).milk||0)+1;
+          }
+        }
+      }
+    }
+
+    // CHICKENPEN — produces 1 egg every 5s, outputs to conveyor, chest, or eggpack
+    if(obj.type==='chickenpen'){
+      if(obj.timer>=5){
+        obj.timer=0;
+        const nx=outputOf(obj.col,obj.row);
+        if(nx){
+          spawnP(obj.col,obj.row,'egg',nx.col,nx.row);
+        } else {
+          // Try adjacent eggpack first, then chest
+          let placed=false;
+          for(const [dc,dr] of DIR4){
+            const nb=G[obj.row+dr]?.[obj.col+dc];
+            if(nb&&nb.type==='eggpack'){ nb._eggBuf=(nb._eggBuf||0)+1; placed=true; break; }
+          }
+          if(!placed){
+            const adjC=adjOf(obj.col,obj.row,'chest');
+            if(adjC) cs(adjC.id).eggs=(cs(adjC.id).eggs||0)+1;
+          }
+        }
+      }
+    }
+
+    // MILKDEL — converts 1 milk from internal buffer → 1 milk_bottle → conveyor
+    if(obj.type==='milkdel'){
+      if(!obj._milkBuf) obj._milkBuf=0;
+      // Also accept milk from adjacent chest if present (fallback)
+      const adjC=adjOf(c,r,'chest');
+      if(adjC && (cs(adjC.id).milk||0)>0){
+        obj._milkBuf+=cs(adjC.id).milk;
+        cs(adjC.id).milk=0;
+      }
+      if(obj._milkBuf>0 && obj.timer>=3){
+        obj.timer=0;
+        obj._milkBuf--;
+        obj.progress=1;
+        const nx=outputOf(c,r);
+        if(nx){ spawnP(c,r,'milk_bottle',nx.col,nx.row); }
+        else if(adjC){ cs(adjC.id).milk_bottle=(cs(adjC.id).milk_bottle||0)+1; }
+      }
+      obj.progress=obj._milkBuf>0?(obj.timer/3):0;
+    }
+
+    // EGGPACK — converts 5 eggs from internal buffer → 1 egg_pack → conveyor
+    if(obj.type==='eggpack'){
+      if(!obj._eggBuf) obj._eggBuf=0;
+      // Also accept eggs from adjacent chest if present (fallback)
+      const adjC2=adjOf(c,r,'chest');
+      if(adjC2 && (cs(adjC2.id).eggs||0)>0){
+        obj._eggBuf+=cs(adjC2.id).eggs;
+        cs(adjC2.id).eggs=0;
+      }
+      if(obj._eggBuf>=5 && obj.timer>=4){
+        obj.timer=0;
+        obj._eggBuf-=5;
+        const nx=outputOf(c,r);
+        if(nx){ spawnP(c,r,'egg_pack',nx.col,nx.row); }
+        else if(adjC2){ cs(adjC2.id).egg_pack=(cs(adjC2.id).egg_pack||0)+1; }
+      }
+      obj.progress=obj._eggBuf>0?Math.min(1,obj._eggBuf/5):0;
+    }
+
     // MARKET — sell from bound chest
     if(obj.type==='mkt'){
       const bId=MBIND[obj.id];
@@ -401,9 +658,11 @@ function update(dt){
         }
         if(ch){
           const d=cs(bId);
-          if(d.fish>0){ d.fish--; earn('gold',15); obj.timer=0; toast('+15🪙 рыба продана!'); }
-          else if(d.rods>0){ d.rods--; earn('gold',28); obj.timer=0; toast('+28🪙 удочка!'); }
-          else if(d.bars>0){ d.bars--; earn('gold',8);  obj.timer=0; }
+          if(d.fish>0){ d.fish--; earn('gold',15); obj.timer=0; toast('+15🪙 рыба! 🐟'); }
+          else if(d.rods>0){ d.rods--; earn('gold',28); obj.timer=0; toast('+28🪙 удочка! 🎣'); }
+          else if(d.bars>0){ d.bars--; earn('gold',8); obj.timer=0; }
+          else if(d.milk_bottle>0){ d.milk_bottle--; earn('gold',12); obj.timer=0; toast('+12🪙 молоко! 🥛'); }
+          else if(d.egg_pack>0){ d.egg_pack--; earn('gold',20); obj.timer=0; toast('+20🪙 яйца! 🥚'); }
         }
       }
     }
@@ -423,12 +682,19 @@ function update(dt){
         if(dst.type==='chest'){
           deliver(dst.id, p.icon);
         } else if(dst.type==='conv'){
-          // pass along the chain
           const nx=outputOf(p.dc, p.dr);
           if(nx){ spawnP(p.dc,p.dr, p.icon, nx.col,nx.row); }
-          // else particle disappears (end of line)
+        } else if(dst.type==='milkdel' && p.icon==='milk'){
+          // milk arrives directly into milkdel buffer
+          dst._milkBuf=(dst._milkBuf||0)+1;
+        } else if(dst.type==='eggpack' && p.icon==='egg'){
+          // egg arrives directly into eggpack buffer
+          dst._eggBuf=(dst._eggBuf||0)+1;
+        } else if(dst.type==='furn' && p.icon==='ore'){
+          // ore can arrive at furnace directly — store in furnace buffer
+          dst._oreBuf=(dst._oreBuf||0)+1;
         }
-        // arriving at furn/wshp/mkt — just disappear (they pull from chest)
+        // mkt, wshp etc — disappear (they pull from chest)
       }
     }
   }
@@ -469,6 +735,7 @@ function frame(ts){
   drawBuildings();
   drawParticles();
   drawFishermen();
+  drawSemeniNpcs();
   if(gCol!==null&&curTool) drawGhost();
   X.restore();
   requestAnimationFrame(frame);
@@ -548,7 +815,7 @@ function drawBuildings(){
     const obj=G[r][c]; if(!obj) continue;
     X.save();
     const x=c*GS, y=r*GS;
-    ({bur:dBur, conv:dConv, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt})[obj.type]?.(x,y,obj);
+    ({bur:dBur, conv:dConv, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack})[obj.type]?.(x,y,obj);
     X.restore();
   }
 }
@@ -590,7 +857,150 @@ function dBur(x,y,obj){
   lbl(x,y,'⛏️',GS*.22);
 }
 
-// CONVEYOR ────────────────────────────────────
+// COWPEN — Коровник ───────────────────────────
+function dCowPen(x,y,obj){
+  const t=GT;
+  // Fence border
+  X.fillStyle='#6B4F14'; X.fillRect(x+1,y+1,GS-2,GS-2);
+  X.fillStyle='#3a7a22'; X.fillRect(x+6,y+6,GS-12,GS-12);
+  // Fence rails
+  X.fillStyle='#8B6914';
+  X.fillRect(x+1,y+1,GS-2,6); X.fillRect(x+1,y+GS-7,GS-2,6);
+  X.fillRect(x+1,y+1,6,GS-2); X.fillRect(x+GS-7,y+1,6,GS-2);
+  X.fillStyle='#a07828';
+  X.fillRect(x+1,y+GS*.36,GS-2,3);
+  // Gate
+  X.fillStyle='#c49030'; X.fillRect(x+GS*.38,y+GS-7,GS*.24,6);
+  // Cow 🐄 (big, center)
+  const cowBob=Math.sin(t*0.9)*2.5;
+  X.save(); X.translate(x+GS*.42, y+GS*.52+cowBob);
+  X.font=`${GS*.5}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText('🐄',0,0);
+  X.restore();
+  // Milk drop animation
+  if(obj.timer>6){
+    const prog=(obj.timer-6)/2;
+    X.globalAlpha=Math.min(1,prog*2)*(.7+Math.sin(t*5)*.3);
+    X.font=`${GS*.2}px serif`; X.textAlign='center';
+    X.fillText('🥛',x+GS*.7,y+GS*.3-prog*GS*.15);
+    X.globalAlpha=1;
+  }
+  X.fillStyle='rgba(180,255,180,.7)'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center';
+  X.fillText('КОРОВНИК',x+GS*.5,y+GS*.1);
+}
+
+// CHICKENPEN — Курятник ───────────────────────
+function dChickenPen(x,y,obj){
+  const t=GT;
+  // Fence border
+  X.fillStyle='#7a5a1a'; X.fillRect(x+1,y+1,GS-2,GS-2);
+  X.fillStyle='#5a8a30'; X.fillRect(x+6,y+6,GS-12,GS-12);
+  // Fence rails
+  X.fillStyle='#9B7824';
+  X.fillRect(x+1,y+1,GS-2,5); X.fillRect(x+1,y+GS-6,GS-2,5);
+  X.fillRect(x+1,y+1,5,GS-2); X.fillRect(x+GS-6,y+1,5,GS-2);
+  // Chicken wire pattern
+  X.strokeStyle='rgba(180,180,180,.35)'; X.lineWidth=0.6;
+  for(let i=0;i<5;i++){
+    X.beginPath(); X.moveTo(x+6,y+6+i*(GS-12)/4); X.lineTo(x+GS-6,y+6+i*(GS-12)/4); X.stroke();
+    X.beginPath(); X.moveTo(x+6+i*(GS-12)/4,y+6); X.lineTo(x+6+i*(GS-12)/4,y+GS-6); X.stroke();
+  }
+  // 3 Chickens
+  const positions=[[.28,.38],[.62,.38],[.45,.62]];
+  positions.forEach(([px2,py2],i)=>{
+    const bob=Math.sin(t*2+i*1.2)*2;
+    X.save(); X.translate(x+GS*px2,y+GS*py2+bob);
+    X.font=`${GS*.28}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('🐔',0,0);
+    X.restore();
+  });
+  // Egg animation
+  if(obj.timer>3.5){
+    const prog=(obj.timer-3.5)/1.5;
+    X.globalAlpha=Math.min(1,prog*2)*(.7+Math.sin(t*5)*.3);
+    X.font=`${GS*.18}px serif`; X.textAlign='center';
+    X.fillText('🥚',x+GS*.72,y+GS*.25-prog*GS*.12);
+    X.globalAlpha=1;
+  }
+  X.fillStyle='rgba(255,230,150,.7)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center';
+  X.fillText('КУРЯТНИК',x+GS*.5,y+GS*.1);
+}
+
+
+
+// MILKDEL — БанкоДел ──────────────────────────
+function dMilkDel(x,y,obj){
+  const t=GT;
+  const buf=obj._milkBuf||0;
+  const working=buf>0;
+  const prog=working?(obj.timer/3):0;
+  // machine body
+  const bg=X.createLinearGradient(x+GS*.1,y+GS*.18,x+GS*.9,y+GS*.92);
+  bg.addColorStop(0,'#e8f4ff'); bg.addColorStop(1,'#b0d0f0');
+  X.fillStyle=bg; rrx(x+GS*.1,y+GS*.18,GS*.8,GS*.74,6); X.fill();
+  X.strokeStyle=working?'#40aaff':'#7098c8'; X.lineWidth=2; rrx(x+GS*.1,y+GS*.18,GS*.8,GS*.74,6); X.stroke();
+  // screen
+  X.fillStyle=working?'#90ff90':'#204060'; rrx(x+GS*.2,y+GS*.26,GS*.6,GS*.26,4); X.fill();
+  X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillStyle=working?'#007700':'#5080a0';
+  X.fillText(working?'РОЗЛИВ 🥛':'ПУСТО',x+GS*.5,y+GS*.39);
+  // milk buffer count
+  if(buf>0){
+    X.fillStyle='rgba(200,230,255,.9)'; X.font=`bold ${GS*.11}px Cinzel,serif`;
+    X.fillText('🐄×'+buf, x+GS*.5, y+GS*.57);
+  }
+  // progress bar
+  X.fillStyle='rgba(0,0,0,.3)'; X.fillRect(x+GS*.1,y+GS*.72,GS*.8,GS*.07);
+  if(working){ X.fillStyle='#40c8ff'; X.fillRect(x+GS*.1,y+GS*.72,GS*.8*Math.min(1,prog),GS*.07); }
+  // pipe nozzle
+  X.fillStyle='#7098c8'; X.fillRect(x+GS*.42,y+GS*.85,GS*.16,GS*.08);
+  // drip animation when working
+  if(working){
+    const drip=(t*1.8)%1;
+    X.fillStyle=`rgba(180,220,255,${0.9-drip*.7})`;
+    X.beginPath(); X.ellipse(x+GS*.5,y+GS*.93+drip*GS*.06,2.5,3.5,0,0,Math.PI*2); X.fill();
+  }
+  // label
+  X.fillStyle='#204060'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='alphabetic';
+  X.fillText('БанкоДел',x+GS*.5,y+GS*.17);
+}
+
+// EGGPACK — УпаковкоДел ───────────────────────
+function dEggPack(x,y,obj){
+  const t=GT;
+  const buf=obj._eggBuf||0;
+  const working=buf>=5;
+  const prog=Math.min(1,buf/5);
+  // machine body — warm orange
+  const bg=X.createLinearGradient(x+GS*.1,y+GS*.18,x+GS*.9,y+GS*.92);
+  bg.addColorStop(0,'#fff4e0'); bg.addColorStop(1,'#f0d090');
+  X.fillStyle=bg; rrx(x+GS*.1,y+GS*.18,GS*.8,GS*.74,6); X.fill();
+  X.strokeStyle=working?'#e0a000':'#c8a040'; X.lineWidth=2; rrx(x+GS*.1,y+GS*.18,GS*.8,GS*.74,6); X.stroke();
+  // screen
+  X.fillStyle=working?'#ffe060':'#503010'; rrx(x+GS*.2,y+GS*.26,GS*.6,GS*.26,4); X.fill();
+  X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillStyle=working?'#804000':'#906040';
+  X.fillText(working?'УПАКОВКА':'СБОР яиц',x+GS*.5,y+GS*.39);
+  // egg buffer count  (show how many collected out of 5)
+  X.fillStyle='rgba(80,40,0,.9)'; X.font=`bold ${GS*.11}px Cinzel,serif`;
+  X.fillText(`🥚${buf}/5`, x+GS*.5, y+GS*.57);
+  // progress bar (fills when 5 eggs collected)
+  X.fillStyle='rgba(0,0,0,.3)'; X.fillRect(x+GS*.1,y+GS*.72,GS*.8,GS*.07);
+  X.fillStyle=working?'#e0c000':'#b08000'; X.fillRect(x+GS*.1,y+GS*.72,GS*.8*prog,GS*.07);
+  // conveyor belt at bottom
+  X.fillStyle='#c8a040'; X.fillRect(x+GS*.1,y+GS*.84,GS*.8,GS*.06);
+  if(working){
+    const off=(t*32)%(GS*.2);
+    for(let i=-1;i<5;i++){
+      X.strokeStyle='rgba(200,160,50,.5)'; X.lineWidth=1;
+      X.beginPath(); X.moveTo(x+GS*.1+i*GS*.2+off,y+GS*.84); X.lineTo(x+GS*.1+i*GS*.2+off,y+GS*.9); X.stroke();
+    }
+  }
+  // label
+  X.fillStyle='#503010'; X.font=`bold ${GS*.08}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='alphabetic';
+  X.fillText('УпаковкоДел',x+GS*.5,y+GS*.17);
+}
+
+
 function dConv(x,y,obj){
   const t=GT, d=obj.dir;
   X.fillStyle='#362008'; rrx(x+3,y+3,GS-6,GS-6,7); X.fill();
@@ -608,7 +1018,9 @@ function dConv(x,y,obj){
 // CHEST ───────────────────────────────────────
 function dChest(x,y,obj){
   const t=GT, cd=cs(obj.id);
-  const total=cd.ore+cd.bars+cd.rods+cd.fish;
+  const total=cd.ore+cd.bars+cd.rods+cd.fish+(cd.seed_ore||0)+(cd.milk||0)+(cd.milk_bottle||0)+(cd.eggs||0)+(cd.egg_pack||0);
+  const isSuper=SEMENI_SUPER_CHESTS[obj.id];
+
   // lid angle — open if adjacent furnace is pulling
   let lidAng=0;
   for(const [dc,dr] of DIR4){
@@ -619,31 +1031,57 @@ function dChest(x,y,obj){
     }
   }
   const cx2=x+GS*.5;
+
+  // SUPER SEMENI CHEST — glowing green aura + ornate look
+  if(isSuper){
+    const pulse=0.5+Math.sin(t*2.5)*0.3;
+    const aura=X.createRadialGradient(cx2,y+GS*.6,0,cx2,y+GS*.6,GS*.7);
+    aura.addColorStop(0,`rgba(80,255,60,${pulse*.35})`);
+    aura.addColorStop(.5,`rgba(40,200,30,${pulse*.15})`);
+    aura.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=aura; X.fillRect(x-GS*.2,y-GS*.2,GS*1.4,GS*1.4);
+    // rotating sparkles
+    for(let i=0;i<6;i++){
+      const sa=t*1.8+i*1.047, sr=GS*.46;
+      const sx2=cx2+Math.cos(sa)*sr*.7, sy2=y+GS*.55+Math.sin(sa)*sr*.35;
+      X.fillStyle=`rgba(150,255,80,${.3+Math.sin(t*3+i)*.25})`;
+      X.beginPath(); X.arc(sx2,sy2,2.2,0,Math.PI*2); X.fill();
+    }
+  }
+
   // shadow
   X.fillStyle='rgba(0,0,0,.3)'; X.beginPath(); X.ellipse(cx2,y+GS*.9,GS*.38,GS*.08,0,0,Math.PI*2); X.fill();
   // BODY
+  const bodyCol1=isSuper?'#2a8a3a':'#9c6430';
+  const bodyCol2=isSuper?'#1a6228':'#7c5020';
+  const bodyCol3=isSuper?'#0e3d18':'#4e3010';
   const bg=X.createLinearGradient(x+GS*.08,y+GS*.46,x+GS*.92,y+GS*.92);
-  bg.addColorStop(0,'#9c6430'); bg.addColorStop(.5,'#7c5020'); bg.addColorStop(1,'#4e3010');
+  bg.addColorStop(0,bodyCol1); bg.addColorStop(.5,bodyCol2); bg.addColorStop(1,bodyCol3);
   X.fillStyle=bg; rrx(x+GS*.08,y+GS*.47,GS*.84,GS*.44,GS*.05); X.fill();
   // planks
   X.strokeStyle='rgba(0,0,0,.22)'; X.lineWidth=1;
   for(let i=1;i<3;i++){ X.beginPath(); X.moveTo(x+GS*.09,y+GS*(.48+i*.12)); X.lineTo(x+GS*.91,y+GS*(.48+i*.12)); X.stroke(); }
   // metal band
+  const bandCol=isSuper?'#60ff80':'#e0c040';
+  const bandCol2=isSuper?'#30c050':'#a88020';
   const mb=X.createLinearGradient(x+GS*.08,y+GS*.63,x+GS*.08,y+GS*.7);
-  mb.addColorStop(0,'#e0c040'); mb.addColorStop(1,'#a88020');
+  mb.addColorStop(0,bandCol); mb.addColorStop(1,bandCol2);
   X.fillStyle=mb; X.fillRect(x+GS*.08,y+GS*.63,GS*.84,GS*.07);
   // rivets
-  X.fillStyle='#f0d050';
+  X.fillStyle=isSuper?'#a0ffb0':'#f0d050';
   [.15,.3,.5,.7,.85].forEach(bx=>{ X.beginPath(); X.arc(x+GS*bx,y+GS*.665,2.5,0,Math.PI*2); X.fill(); });
   // corner fittings
-  X.fillStyle='#c8a835';
+  X.fillStyle=isSuper?'#50d860':'#c8a835';
   [[.1,.5],[.86,.5],[.1,.84],[.86,.84]].forEach(([bx,by])=>{ rrx(x+GS*bx-3,y+GS*by-3,6,6,2); X.fill(); });
-  X.fillStyle='#c8a835'; X.fillRect(x+GS*.08,y+GS*.81,GS*.84,GS*.05);
+  X.fillStyle=isSuper?'#50d860':'#c8a835'; X.fillRect(x+GS*.08,y+GS*.81,GS*.84,GS*.05);
 
   // LID
   X.save(); X.translate(cx2,y+GS*.47); X.rotate(lidAng); X.translate(-cx2,-(y+GS*.47));
+  const lidCol1=isSuper?'#3aaa4a':'#b07838';
+  const lidCol2=isSuper?'#257835':'#8a5820';
+  const lidCol3=isSuper?'#133d1d':'#5a3810';
   const lg=X.createLinearGradient(x+GS*.08,y+GS*.22,x+GS*.92,y+GS*.47);
-  lg.addColorStop(0,'#b07838'); lg.addColorStop(.6,'#8a5820'); lg.addColorStop(1,'#5a3810');
+  lg.addColorStop(0,lidCol1); lg.addColorStop(.6,lidCol2); lg.addColorStop(1,lidCol3);
   X.fillStyle=lg;
   X.beginPath();
   X.moveTo(x+GS*.07,y+GS*.47); X.lineTo(x+GS*.93,y+GS*.47);
@@ -656,33 +1094,54 @@ function dChest(x,y,obj){
   X.beginPath(); X.moveTo(x+GS*.14,y+GS*.3);  X.lineTo(x+GS*.86,y+GS*.3);  X.stroke();
   // lid band
   const lb=X.createLinearGradient(x+GS*.08,y+GS*.44,x+GS*.08,y+GS*.48);
-  lb.addColorStop(0,'#e0c040'); lb.addColorStop(1,'#b09020');
+  lb.addColorStop(0,bandCol); lb.addColorStop(1,bandCol2);
   X.fillStyle=lb; X.fillRect(x+GS*.08,y+GS*.44,GS*.84,GS*.04);
   // lock
-  X.fillStyle='#d8b838'; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.fill();
+  X.fillStyle=isSuper?'#60ff80':'#d8b838'; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.fill();
   X.strokeStyle='rgba(255,255,255,.28)'; X.lineWidth=1; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.stroke();
-  X.strokeStyle='#b09020'; X.lineWidth=2.2; X.lineCap='round';
+  X.strokeStyle=isSuper?'#20a030':'#b09020'; X.lineWidth=2.2; X.lineCap='round';
   X.beginPath(); X.arc(cx2,y+GS*.345,GS*.04,Math.PI,0); X.stroke();
   X.fillStyle='rgba(0,0,0,.4)'; X.beginPath(); X.arc(cx2,y+GS*.375,2.5,0,Math.PI*2); X.fill();
   X.fillRect(cx2-1.5,y+GS*.375,3,4);
   X.restore();
 
+  // Super label
+  if(isSuper){
+    X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.fillStyle='#80ffb0';
+    X.fillText('Səməni',cx2,y+GS*.13);
+    // Semeni gem on lid
+    X.save(); X.translate(cx2,y+GS*.22+Math.sin(t*3)*.03*GS);
+    const sg2=X.createRadialGradient(0,0,0,0,0,GS*.1);
+    sg2.addColorStop(0,'#d0ffb0'); sg2.addColorStop(.5,'#50e030'); sg2.addColorStop(1,'#1a6010');
+    X.fillStyle=sg2; X.beginPath(); X.arc(0,0,GS*.1,0,Math.PI*2); X.fill();
+    X.fillStyle='rgba(255,255,255,.5)'; X.beginPath(); X.arc(-GS*.03,-GS*.03,GS*.03,0,Math.PI*2); X.fill();
+    X.strokeStyle=`rgba(150,255,100,${.5+Math.sin(t*3)*.3})`; X.lineWidth=1.5;
+    X.beginPath(); X.arc(0,0,GS*.1,0,Math.PI*2); X.stroke();
+    X.restore();
+  }
+
   // open glow
   if(lidAng<-.1){
-    X.save(); X.globalAlpha=.22; X.fillStyle='#ffd060'; X.fillRect(x+GS*.08,y+GS*.47,GS*.84,GS*.18); X.restore();
+    X.save(); X.globalAlpha=.22; X.fillStyle=isSuper?'#60ff60':'#ffd060'; X.fillRect(x+GS*.08,y+GS*.47,GS*.84,GS*.18); X.restore();
   }
   // badge
   if(total>0){
-    X.fillStyle='rgba(255,205,50,.95)'; X.beginPath(); X.arc(x+GS*.85,y+GS*.2,GS*.15,0,Math.PI*2); X.fill();
-    X.fillStyle='#2a1600'; X.font=`bold ${GS*.13}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillStyle=isSuper?'rgba(80,255,100,.95)':'rgba(255,205,50,.95)';
+    X.beginPath(); X.arc(x+GS*.85,y+GS*.2,GS*.15,0,Math.PI*2); X.fill();
+    X.fillStyle='#0a2000'; X.font=`bold ${GS*.13}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
     X.fillText(total>99?'99+':total,x+GS*.85,y+GS*.2);
   }
   // contents row
   const items=[];
-  if(cd.ore>0)  items.push('⛏️'+cd.ore);
-  if(cd.bars>0) items.push('🔩'+cd.bars);
-  if(cd.rods>0) items.push('🎣'+cd.rods);
-  if(cd.fish>0) items.push('🐟'+cd.fish);
+  if(cd.ore>0)           items.push('⛏️'+cd.ore);
+  if(cd.seed_ore>0)      items.push('🌱'+cd.seed_ore);
+  if(cd.bars>0)          items.push('🔩'+cd.bars);
+  if(cd.rods>0)          items.push('🎣'+cd.rods);
+  if(cd.fish>0)          items.push('🐟'+cd.fish);
+  if((cd.milk||0)>0)     items.push('🐄'+cd.milk);
+  if((cd.milk_bottle||0)>0) items.push('🥛'+cd.milk_bottle);
+  if((cd.eggs||0)>0)     items.push('🥚×'+cd.eggs);
+  if((cd.egg_pack||0)>0) items.push('📦'+cd.egg_pack);
   if(items.length){
     X.font=`${GS*.12}px serif`; X.textAlign='left'; X.textBaseline='top'; X.fillStyle='rgba(255,255,200,.9)';
     items.slice(0,2).forEach((it,i)=>X.fillText(it,x+GS*(.06+i*.47),y+GS*.93));
@@ -784,12 +1243,237 @@ function dMkt(x,y,obj){
   lbl(x,y,'🏪',GS*.2);
 }
 
+// SEED — Səməni (Novruz wheat sprouts) ─────────
+function dSeed(x,y,obj){
+  const t=GT;
+  const cx2=x+GS*.5;
+  const hasBur=adjOf(obj.col,obj.row,'bur')!==null;
+  const baseY=y+GS*.72;
+
+  // ── ground shadow ──
+  X.fillStyle='rgba(0,0,0,.2)';
+  X.beginPath(); X.ellipse(cx2,y+GS*.9,GS*.4,GS*.07,0,0,Math.PI*2); X.fill();
+
+  // ── ceramic tray (layered ellipses) ──
+  // outer tray
+  const tg=X.createLinearGradient(x+GS*.08,y+GS*.7,x+GS*.92,y+GS*.95);
+  tg.addColorStop(0,'#e8a870'); tg.addColorStop(.5,'#c07848'); tg.addColorStop(1,'#8a4e28');
+  X.fillStyle=tg;
+  X.beginPath(); X.ellipse(cx2,y+GS*.82,GS*.44,GS*.15,0,0,Math.PI*2); X.fill();
+  // inner rim lighter
+  X.fillStyle='rgba(255,200,140,.22)';
+  X.beginPath(); X.ellipse(cx2,y+GS*.8,GS*.38,GS*.1,0,0,Math.PI*2); X.fill();
+  // tray wall (trapezoid feel)
+  const wg=X.createLinearGradient(cx2,y+GS*.75,cx2,y+GS*.9);
+  wg.addColorStop(0,'#c07848'); wg.addColorStop(1,'#8a4e28');
+  X.fillStyle=wg;
+  X.beginPath();
+  X.moveTo(x+GS*.08,y+GS*.82); X.lineTo(x+GS*.15,y+GS*.9);
+  X.lineTo(x+GS*.85,y+GS*.9); X.lineTo(x+GS*.92,y+GS*.82); X.closePath(); X.fill();
+  // tray highlight arc
+  X.strokeStyle='rgba(255,210,160,.45)'; X.lineWidth=1.8;
+  X.beginPath(); X.ellipse(cx2,y+GS*.79,GS*.38,GS*.1,0,Math.PI,Math.PI*2); X.stroke();
+
+  // ── soil ──
+  const soil=X.createRadialGradient(cx2,y+GS*.76,0,cx2,y+GS*.76,GS*.36);
+  soil.addColorStop(0,'#7a4a22'); soil.addColorStop(1,'#4a2808');
+  X.fillStyle=soil;
+  X.beginPath(); X.ellipse(cx2,y+GS*.76,GS*.37,GS*.1,0,0,Math.PI*2); X.fill();
+
+  // ── sprouts ── (dense beautiful wheat grass)
+  const N=18;
+  for(let i=0;i<N;i++){
+    const phase=i/N;
+    const angle=(phase*Math.PI*2)+(Math.PI*.1);
+    const ring=0.5+((i*7)%3)*.15;  // 3 rings
+    const bx=cx2+Math.cos(angle)*GS*ring*.32;
+    const sway=Math.sin(t*1.6+i*1.1)*0.07 + Math.sin(t*.9+i*.6)*0.04;
+    const h=GS*(0.32+((i*11)%5)*.055 + Math.sin(t*.4+i*.8)*.018);
+    const tipX=bx+sway*h;
+    const tipY=baseY-h;
+
+    // stem — rich green gradient
+    const hue=108+((i*13)%12);
+    const sg=X.createLinearGradient(bx,baseY,tipX,tipY);
+    sg.addColorStop(0,`hsl(${hue},75%,22%)`);
+    sg.addColorStop(.45,`hsl(${hue},80%,38%)`);
+    sg.addColorStop(1,`hsl(${hue+8},85%,62%)`);
+    X.strokeStyle=sg; X.lineWidth=1.6+(i%3)*.35; X.lineCap='round';
+    X.beginPath();
+    X.moveTo(bx,baseY);
+    X.quadraticCurveTo(bx+sway*h*.55, baseY-h*.5, tipX, tipY);
+    X.stroke();
+
+    // leaf blade at tip
+    const leafA=angle + sway*.6 + (i%2?-.4:.4);
+    X.fillStyle=`hsl(${hue+5},82%,${44+(i%4)*4}%)`;
+    X.beginPath();
+    X.moveTo(tipX,tipY);
+    X.quadraticCurveTo(
+      tipX+Math.cos(leafA)*GS*.11, tipY-GS*.07,
+      tipX+Math.cos(leafA)*GS*.05, tipY-GS*.19
+    );
+    X.quadraticCurveTo(
+      tipX+Math.sin(leafA)*GS*.07, tipY-GS*.05,
+      tipX, tipY
+    );
+    X.fill();
+  }
+
+  // ── red ribbon bow ── (classic Novruz)
+  X.save(); X.translate(cx2+GS*.26, y+GS*.65);
+  // left loop
+  X.fillStyle='#d81a1a';
+  X.beginPath(); X.ellipse(-GS*.09,0,GS*.1,GS*.055,-0.45,0,Math.PI*2); X.fill();
+  // right loop
+  X.beginPath(); X.ellipse(GS*.09,0,GS*.1,GS*.055,0.45,0,Math.PI*2); X.fill();
+  // shine on loops
+  X.fillStyle='rgba(255,120,120,.4)';
+  X.beginPath(); X.ellipse(-GS*.09,-GS*.015,GS*.05,GS*.025,-0.45,0,Math.PI*2); X.fill();
+  X.beginPath(); X.ellipse(GS*.09,-GS*.015,GS*.05,GS*.025,0.45,0,Math.PI*2); X.fill();
+  // center knot
+  X.fillStyle='#ff3333';
+  X.beginPath(); X.ellipse(0,0,GS*.038,GS*.038,0,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(255,200,200,.6)';
+  X.beginPath(); X.ellipse(-GS*.01,-GS*.01,GS*.015,GS*.015,0,0,Math.PI*2); X.fill();
+  // tails
+  X.strokeStyle='#b01010'; X.lineWidth=1.8; X.lineCap='round';
+  X.beginPath(); X.moveTo(0,0); X.quadraticCurveTo(-GS*.05,GS*.05,-GS*.09,GS*.1); X.stroke();
+  X.beginPath(); X.moveTo(0,0); X.quadraticCurveTo(GS*.05,GS*.06, GS*.09,GS*.1); X.stroke();
+  X.restore();
+
+  // ── active glow when adjacent to bur ──
+  if(hasBur){
+    const pulse=0.12+Math.sin(t*2.8)*.07;
+    const gl=X.createRadialGradient(cx2,y+GS*.5,0,cx2,y+GS*.5,GS*.52);
+    gl.addColorStop(0,`rgba(60,210,40,${pulse})`); gl.addColorStop(1,'rgba(0,120,0,0)');
+    X.fillStyle=gl; X.fillRect(x,y,GS,GS);
+    // floating sparkles
+    for(let k=0;k<4;k++){
+      const ky=((t*22+k*18)%52);
+      const kx=Math.sin(t*1.8+k*1.6)*GS*.22;
+      const ka=Math.max(0,.7-ky/52);
+      X.fillStyle=`rgba(120,255,60,${ka})`;
+      X.beginPath(); X.arc(cx2+kx,baseY-ky,2.2,0,Math.PI*2); X.fill();
+    }
+    // alternating badge: show which ore comes next
+    const isNext=(Math.floor(GT/4)+1)%2===0;
+    const badge=isNext?'🌱 →Семяни':'⛏️ →Обычная';
+    X.fillStyle='rgba(10,50,5,.9)'; rrx(x+GS*.01,y+GS*.01,GS*.98,GS*.2,5); X.fill();
+    X.fillStyle='#90ff50'; X.font=`bold ${GS*.12}px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(badge,cx2,y+GS*.11);
+  }
+
+  // label
+  X.fillStyle='rgba(255,240,200,.85)'; X.font=`bold ${GS*.13}px Cinzel,serif`;
+  X.textAlign='center'; X.textBaseline='top';
+  X.fillText('Səməni',cx2,y+GS*.02);
+}
+
+// ── SEED ORE particle — green crystal ────────
+function drawSeedOreGem(wx,wy,s){
+  X.save(); X.translate(wx,wy); X.rotate(-GT*.3);
+  // outer gem — greener hex
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/2, r=s*(i%2===0?1:.65);
+    i?X.lineTo(r*Math.cos(a),r*Math.sin(a)):X.moveTo(r*Math.cos(a),r*Math.sin(a));
+  }
+  X.closePath();
+  const gg=X.createRadialGradient(0,0,0,0,0,s);
+  gg.addColorStop(0,'#d0ffb0'); gg.addColorStop(.3,'#60d030'); gg.addColorStop(.7,'#2a8010'); gg.addColorStop(1,'#104808');
+  X.fillStyle=gg; X.fill();
+  // bright facet
+  X.fillStyle='rgba(255,255,255,.45)';
+  X.beginPath(); X.moveTo(0,-s*.82); X.lineTo(s*.42,-s*.2); X.lineTo(0,0); X.closePath(); X.fill();
+  // secondary facet
+  X.fillStyle='rgba(200,255,150,.22)';
+  X.beginPath(); X.moveTo(-s*.34,-s*.54); X.lineTo(0,0); X.lineTo(-s*.6,0); X.closePath(); X.fill();
+  // wheat sprout dot inside
+  X.fillStyle='#78e040';
+  X.beginPath(); X.arc(s*.18,s*.1,s*.2,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(220,255,180,.55)';
+  X.beginPath(); X.arc(s*.18,s*.1,s*.09,0,Math.PI*2); X.fill();
+  // rim glow
+  X.strokeStyle='rgba(160,255,80,.6)'; X.lineWidth=1.8;
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/2, r=s*(i%2===0?1:.65);
+    i?X.lineTo(r*Math.cos(a),r*Math.sin(a)):X.moveTo(r*Math.cos(a),r*Math.sin(a));
+  }
+  X.closePath(); X.stroke();
+  // sparkle
+  if(Math.sin(GT*4.5+wx+wy)>.72){ X.fillStyle='rgba(255,255,255,.92)'; drawStar(X,-s*.5,-s*.48,s*.14,4); }
+  X.restore();
+}
+
+// ── NOVRUZ MAP DECORATIONS ────────────────────
+function drawNovruzdecor(){
+  const t=GT;
+  // floating petals drifting across screen
+  if(!window._petals){
+    window._petals=[];
+    for(let i=0;i<14;i++) window._petals.push({
+      x:Math.random()*COLS*GS, y:Math.random()*ROWS*GS,
+      vx:0.3+Math.random()*.4, vy:0.2+Math.random()*.3,
+      rot:Math.random()*Math.PI*2, rspd:(Math.random()-.5)*.04,
+      hue:Math.floor(Math.random()*3)*40+0, // red/pink/yellow
+      s:GS*(0.06+Math.random()*.05)
+    });
+  }
+  for(const p of window._petals){
+    p.x+=p.vx; p.y+=p.vy; p.rot+=p.rspd;
+    if(p.x>COLS*GS+20) p.x=-20;
+    if(p.y>ROWS*GS+20) p.y=-20;
+    X.save(); X.translate(p.x,p.y); X.rotate(p.rot);
+    X.fillStyle=`hsla(${p.hue},85%,68%,.55)`;
+    X.beginPath();
+    X.moveTo(0,-p.s); X.quadraticCurveTo(p.s*.7,-p.s*.3,0,p.s*.8);
+    X.quadraticCurveTo(-p.s*.7,-p.s*.3,0,-p.s); X.fill();
+    X.restore();
+  }
+}
+
+// ── NOVRUZ BANNER (shown once on load) ───────
+function showNovruzbanner(){
+  if(localStorage.getItem('novruz_banner_25')) return;
+  const d=document.createElement('div');
+  d.id='novruz-banner';
+  d.style.cssText=`position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);`;
+  d.innerHTML=`
+  <div style="background:linear-gradient(135deg,#1a4008,#2a6810,#1a4008);border:3px solid #70c040;border-radius:22px;
+    padding:28px 32px;max-width:320px;width:88vw;text-align:center;
+    box-shadow:0 0 60px rgba(80,200,40,.4),0 0 120px rgba(60,160,20,.2);">
+    <div style="font-size:48px;margin-bottom:8px;">🌱</div>
+    <div style="font-family:'Cinzel',serif;font-size:22px;color:#c8ff80;letter-spacing:1px;margin-bottom:6px;">
+      Novruz Bayram!
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:15px;color:#a0e060;margin-bottom:4px;">
+      Нovruz Bayramınız Mübarək! 🌸
+    </div>
+    <div style="color:#c8ffb0;font-size:13px;margin:12px 0 18px;line-height:1.6;">
+      Новая постройка: <b style="color:#90ff50">Səməni</b> 🌱<br>
+      Поставь рядом с Буром — руда<br>
+      будет чередоваться с Семяни-рудой!<br>
+      <span style="font-size:11px;opacity:.75;">Символ весны, плодородия и новых начал</span>
+    </div>
+    <button onclick="document.getElementById('novruz-banner').remove();localStorage.setItem('novruz_banner_25','1')"
+      style="background:#5ab030;border:2px solid #90e060;border-radius:12px;color:#fff;
+      font-family:'Cinzel',serif;font-size:14px;padding:10px 28px;cursor:pointer;">
+      🎉 Başla! (Начать!)
+    </button>
+  </div>`;
+  document.body.appendChild(d);
+}
+
 // ── NPC ──────────────────────────────────────
 const NPCPAL={
   smelter: {body:'#8b1a00',hat:'#5a0f00',acc:'#ff6600'},
   crafter: {body:'#2d5a27',hat:'#1a3a15',acc:'#8bc34a'},
   merchant:{body:'#5a3a8a',hat:'#2d1d45',acc:'#ffd700'},
   fisherman:{body:'#1a4f7a',hat:'#0d2e47',acc:'#5ba3e0'},
+  semeni:  {body:'#1a6a2a',hat:'#0d3d18',acc:'#80ff40'},
 };
 function drawNPC(wx,wy,type,armSwing,working){
   const c=NPCPAL[type]||NPCPAL.crafter;
@@ -879,26 +1563,75 @@ function drawOreGem(wx,wy,s){
   X.restore();
 }
 
+// SEED ORE GEM — green glowing crystal with sprout vein
+function drawSeedOreGem(wx,wy,s){
+  X.save(); X.translate(wx,wy); X.rotate(GT*.25);
+  // outer hex — green tinted
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/2, r=s*(i%2===0?1:.68);
+    i?X.lineTo(r*Math.cos(a),r*Math.sin(a)):X.moveTo(r*Math.cos(a),r*Math.sin(a));
+  }
+  X.closePath();
+  const gg=X.createRadialGradient(0,0,0,0,0,s);
+  gg.addColorStop(0,'#e8ffe0'); gg.addColorStop(.3,'#60e040'); gg.addColorStop(.65,'#208030'); gg.addColorStop(1,'#0a3818');
+  X.fillStyle=gg; X.fill();
+  // facets
+  X.fillStyle='rgba(255,255,255,.45)';
+  X.beginPath(); X.moveTo(0,-s*.82); X.lineTo(s*.44,-s*.22); X.lineTo(0,0); X.closePath(); X.fill();
+  X.fillStyle='rgba(200,255,160,.22)';
+  X.beginPath(); X.moveTo(-s*.34,-s*.54); X.lineTo(0,0); X.lineTo(-s*.62,0); X.closePath(); X.fill();
+  // green vein/seed dot
+  X.fillStyle='#a0ff40'; X.beginPath(); X.arc(s*.18,s*.1,s*.22,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(220,255,120,.7)'; X.beginPath(); X.arc(s*.18,s*.1,s*.1,0,Math.PI*2); X.fill();
+  // tiny sprout inside vein
+  X.strokeStyle='rgba(20,80,20,.8)'; X.lineWidth=1.2; X.lineCap='round';
+  X.beginPath(); X.moveTo(s*.18,s*.22); X.lineTo(s*.18,-s*.02); X.stroke();
+  X.beginPath(); X.moveTo(s*.18,s*.08); X.quadraticCurveTo(s*.06,s*.02,s*.04,-s*.04); X.stroke();
+  X.beginPath(); X.moveTo(s*.18,s*.08); X.quadraticCurveTo(s*.30,s*.02,s*.32,-s*.04); X.stroke();
+  // edge glow
+  X.strokeStyle='rgba(100,255,80,.6)'; X.lineWidth=1.8;
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/2, r=s*(i%2===0?1:.68);
+    i?X.lineTo(r*Math.cos(a),r*Math.sin(a)):X.moveTo(r*Math.cos(a),r*Math.sin(a));
+  }
+  X.closePath(); X.stroke();
+  // sparkle
+  if(Math.sin(GT*5+wx+wy)>.72){ X.fillStyle='rgba(200,255,140,.95)'; drawStar(X,-s*.5,-s*.48,s*.14,4); }
+  X.restore();
+}
+
 // ── Particles draw ───────────────────────────
 function drawParticles(){
   for(const p of PTCL){
     const px=p.cx??p.sx, py=p.cy??p.sy;
+    if(!isFinite(px)||!isFinite(py)) continue;
     if(p.icon==='ore'){
-      // halo
       const gl=X.createRadialGradient(px,py,0,px,py,GS*.28);
       gl.addColorStop(0,'rgba(220,150,40,.55)'); gl.addColorStop(1,'rgba(180,100,20,0)');
       X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.28,0,Math.PI*2); X.fill();
-      // shadow
       X.fillStyle='rgba(0,0,0,.22)'; X.beginPath(); X.ellipse(px,py+GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
       drawOreGem(px,py,GS*.17);
+    } else if(p.icon==='seed_ore'){
+      // green halo + orbiting sparkles
+      const gl=X.createRadialGradient(px,py,0,px,py,GS*.3);
+      gl.addColorStop(0,'rgba(80,230,60,.6)'); gl.addColorStop(.5,'rgba(40,180,30,.25)'); gl.addColorStop(1,'rgba(20,120,10,0)');
+      X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.3,0,Math.PI*2); X.fill();
+      for(let k=0;k<4;k++){
+        const ka=GT*4+k*1.57, kr=GS*.2+Math.sin(GT*3+k)*GS*.06;
+        X.fillStyle=`rgba(150,255,80,${.4+Math.sin(GT*2+k)*.25})`;
+        X.beginPath(); X.arc(px+Math.cos(ka)*kr,py+Math.sin(ka)*kr*.5,1.8,0,Math.PI*2); X.fill();
+      }
+      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(px,py+GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
+      drawSeedOreGem(px,py,GS*.17);
     } else {
-      // icon particles (bars, rods, fish)
-      const PCOL={bar:'rgba(220,170,30,.5)',rod:'rgba(60,140,220,.45)',fish:'rgba(40,160,80,.45)'};
+      const PCOL={bar:'rgba(220,170,30,.5)',rod:'rgba(60,140,220,.45)',fish:'rgba(40,160,80,.45)',milk:'rgba(220,240,255,.6)',milk_bottle:'rgba(180,220,255,.5)',egg:'rgba(255,245,200,.6)',egg_pack:'rgba(255,230,120,.5)'};
       const gl=X.createRadialGradient(px,py,0,px,py,GS*.22);
       gl.addColorStop(0,PCOL[p.icon]||'rgba(200,200,200,.4)'); gl.addColorStop(1,'rgba(0,0,0,0)');
       X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.22,0,Math.PI*2); X.fill();
       X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(px,py+GS*.12,GS*.1,GS*.04,0,0,Math.PI*2); X.fill();
-      const ICON={bar:'🔩',rod:'🎣',fish:'🐟'};
+      const ICON={bar:'🔩',rod:'🎣',fish:'🐟',milk:'🐄',milk_bottle:'🥛',egg:'🥚',egg_pack:'📦'};
       X.font=`${GS*.34}px serif`; X.textAlign='center'; X.textBaseline='middle';
       X.fillText(ICON[p.icon]||'●',px,py);
     }
@@ -919,6 +1652,82 @@ function drawFishermen(){
   }
 }
 
+// ── Semeni NPCs draw ─────────────────────────
+function drawSemeniNpcs(){
+  for(const npc of SEMENI_NPCS){
+    if(npc.wx===undefined||npc.wy===undefined) continue;
+    if(!isFinite(npc.wx)||!isFinite(npc.wy)) continue;
+    const wx=npc.wx-camX, wy=npc.wy-camY;
+    const bob=Math.sin(npc.bob)*2;
+    const isDrilling=npc.state==='drilling';
+    const isWalking=npc.state==='walk_to_ore'||npc.state==='walk_to_chest';
+    const armSwing=isDrilling ? Math.sin(npc.t*10)*35 : (isWalking ? Math.sin(npc.walkCycle||0)*22 : 5);
+
+    // Draw NPC body (semeni type = green), with bob offset
+    drawNPC(wx, wy+bob, 'semeni', armSwing, isDrilling||isWalking);
+
+    // ── MINI DRILL in hand ──
+    X.save(); X.translate(wx+GS*.22, wy-GS*.05+bob);
+    if(isDrilling){
+      const drill_t=npc.t*9;
+      X.rotate(Math.sin(drill_t)*0.3);
+      // drill body
+      const dg=X.createLinearGradient(-3,-GS*.18,3,GS*.05);
+      dg.addColorStop(0,'#cccccc'); dg.addColorStop(1,'#666666');
+      X.fillStyle=dg; rrx(-3,-GS*.18,6,GS*.23,2); X.fill();
+      X.strokeStyle='rgba(255,255,255,.3)'; X.lineWidth=0.8; rrx(-3,-GS*.18,6,GS*.23,2); X.stroke();
+      // rotating drill head
+      X.save(); X.translate(0,GS*.06); X.rotate(drill_t*3);
+      for(let i=0;i<3;i++){
+        X.save(); X.rotate(i*Math.PI*2/3);
+        const dg2=X.createLinearGradient(0,0,0,-GS*.1); dg2.addColorStop(0,'#e09040'); dg2.addColorStop(1,'#906020');
+        X.fillStyle=dg2; X.fillRect(-1.5,-GS*.1,3,GS*.1); X.restore();
+      }
+      X.fillStyle='#f0c060'; X.beginPath(); X.arc(0,0,3,0,Math.PI*2); X.fill();
+      X.restore();
+      // sparks
+      if(Math.sin(npc.t*12)>.5){
+        for(let k=0;k<4;k++){
+          const sa=npc.t*8+k*1.57;
+          X.fillStyle=`rgba(255,${120+k*30},0,.95)`;
+          X.beginPath(); X.arc(Math.cos(sa)*GS*.07, GS*.09+Math.sin(sa)*GS*.04, 1.8,0,Math.PI*2); X.fill();
+        }
+      }
+      // rock chips
+      if(Math.sin(npc.t*7+1)>.7){
+        X.fillStyle='rgba(150,140,120,.8)';
+        X.beginPath(); X.arc(GS*.1, GS*.11, 2.5,0,Math.PI*2); X.fill();
+        X.beginPath(); X.arc(-GS*.07, GS*.14, 1.8,0,Math.PI*2); X.fill();
+      }
+    } else {
+      // Walking — mini drill strapped to back (dimmed)
+      X.globalAlpha=0.6;
+      X.fillStyle='#777'; rrx(-2,-GS*.16,5,GS*.2,1); X.fill();
+      X.fillStyle='#d08040'; X.fillRect(-1.5,GS*.04,4,GS*.05);
+      X.globalAlpha=1;
+    }
+    X.restore();
+
+    // ── Carrying seed_ore gem over head ──
+    if(npc.carrying==='seed_ore'){
+      X.save(); X.globalAlpha=0.92;
+      // carrying glow
+      const cg=X.createRadialGradient(wx,wy-GS*.5+bob,0,wx,wy-GS*.5+bob,GS*.25);
+      cg.addColorStop(0,'rgba(100,255,80,.3)'); cg.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=cg; X.beginPath(); X.arc(wx,wy-GS*.5+bob,GS*.25,0,Math.PI*2); X.fill();
+      drawSeedOreGem(wx, wy-GS*.48+bob, GS*.14);
+      X.globalAlpha=1; X.restore();
+    }
+
+    // ── State icon above NPC ──
+    const stateIcon = isDrilling ? '⛏️' : (npc.carrying ? '🌱' : (isWalking ? '' : '💤'));
+    if(stateIcon){
+      X.font=`${GS*.18}px serif`; X.textAlign='center';
+      X.fillText(stateIcon, wx, wy-GS*.72+bob);
+    }
+  }
+}
+
 // ── Ghost ─────────────────────────────────────
 let gCol=null, gRow=null;
 function drawGhost(){
@@ -926,11 +1735,16 @@ function drawGhost(){
   const c=gCol, r=gRow;
   if(c<0||c>=COLS||r<0||r>=ROWS) return;
   const x=c*GS, y=r*GS;
-  const ok=!G[r][c]&&MAP[r][c]!==1&&(curTool!=='bur'||MAP[r][c]===2);
+  const ok=!G[r][c]&&MAP[r][c]!==1
+    &&(curTool!=='bur'||MAP[r][c]===2)
+    &&(curTool!=='cowpen'||MAP[r][c]===0)
+    &&(curTool!=='chickenpen'||MAP[r][c]===0)
+    &&(curTool!=='milkdel'||MAP[r][c]===0)
+    &&(curTool!=='eggpack'||MAP[r][c]===0);
   X.globalAlpha=.55;
   X.fillStyle=ok?'rgba(255,255,80,.1)':'rgba(255,40,40,.18)'; X.fillRect(x,y,GS,GS);
   X.strokeStyle=ok?'#ffd700':'#ff4444'; X.lineWidth=2.2; rrx(x+2,y+2,GS-4,GS-4,5); X.stroke();
-  const IC={bur:'⛏️',conv:'➡️',chest:'📦',furn:'🔥',wshp:'🔨',mkt:'🏪'};
+  const IC={bur:'⛏️',conv:'➡️',chest:'📦',furn:'🔥',wshp:'🔨',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚'};
   X.font=`${GS*.38}px serif`; X.textAlign='center'; X.textBaseline='middle';
   X.fillText(IC[curTool]||'',x+GS*.5,y+GS*.5);
   X.globalAlpha=1;
@@ -954,7 +1768,7 @@ let curTool=null;
 function pick(t){
   curTool=t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('sel'));
-  const map={null:'nb-null',bur:'nb-bur',conv:'nb-conv',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del'};
+  const map={null:'nb-null',bur:'nb-bur',conv:'nb-conv',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack'};
   document.getElementById(map[t]||'nb-null')?.classList.add('sel');
   if(t) toast('Выбрано: '+NAME[t]+' — тапни на карту');
 }
@@ -966,15 +1780,39 @@ function openCtx(col,row,cx2,cy2){
   const obj=G[row]?.[col]; if(!obj) return;
   ctxT={col,row};
   const ctx2=document.getElementById('ctx');
-  document.getElementById('cm-rot').style.display  = obj.type==='conv'?'flex':'none';
+  document.getElementById('cm-rot').style.display  = ['conv','cowpen','chickenpen','milkdel','eggpack','furn','wshp'].includes(obj.type)?'flex':'none';
   document.getElementById('cm-bind').style.display = obj.type==='mkt'?'flex':'none';
   document.getElementById('cm-info').style.display = obj.type==='chest'?'flex':'none';
   ctx2.style.left=Math.min(cx2,W-165)+'px'; ctx2.style.top=Math.min(cy2,H-170)+'px';
   ctx2.classList.add('on');
 }
-function ctxRotate(){ const o=G[ctxT.row]?.[ctxT.col]; if(o&&o.type==='conv'){o.dir=(o.dir+1)%4; toast('Конвейер: '+DARR[o.dir]);} closeCtx(); }
+function ctxRotate(){
+  const o=G[ctxT.row]?.[ctxT.col];
+  if(o&&(o.type==='conv'||o.type==='cowpen'||o.type==='chickenpen'||o.type==='milkdel'||o.type==='eggpack'||o.type==='furn'||o.type==='wshp')){
+    o.dir=(o.dir+1)%4;
+    toast((NAME[o.type]||'Здание')+': вывод '+DARR[o.dir]);
+  }
+  closeCtx();
+}
 function ctxBind(){ bindSrc=G[ctxT.row]?.[ctxT.col]; closeCtx(); toast('🔗 Теперь тапни на сундук'); }
-function ctxInfo(){ const o=G[ctxT.row]?.[ctxT.col]; if(o?.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); } closeCtx(); }
+function ctxInfo(){
+  const o=G[ctxT.row]?.[ctxT.col];
+  if(o?.type==='chest'){
+    const d=cs(o.id);
+    const parts=[];
+    if(d.ore>0) parts.push(`⛏️${d.ore}`);
+    if((d.seed_ore||0)>0) parts.push(`🌱${d.seed_ore}`);
+    if(d.bars>0) parts.push(`🔩${d.bars}`);
+    if(d.rods>0) parts.push(`🎣${d.rods}`);
+    if(d.fish>0) parts.push(`🐟${d.fish}`);
+    if((d.milk||0)>0) parts.push(`🐄${d.milk}`);
+    if((d.milk_bottle||0)>0) parts.push(`🥛${d.milk_bottle}`);
+    if((d.eggs||0)>0) parts.push(`🥚×${d.eggs}`);
+    if((d.egg_pack||0)>0) parts.push(`📦${d.egg_pack}`);
+    toast('📦 '+(parts.join(' ')||'пусто'));
+  }
+  closeCtx();
+}
 function ctxDel(){ demolish(ctxT.col,ctxT.row); closeCtx(); }
 
 function p2g(cx2,cy2){ return{col:Math.floor((cx2+camX)/GS),row:Math.floor((cy2+camY)/GS)}; }
@@ -1070,6 +1908,8 @@ function saveGame(){
     SMST:{},
     fish_count:FISH.length,
     caught:[...CAUGHT],
+    semeni_npcs: SEMENI_NPCS.map(n=>({...n})),
+    super_chests: Object.keys(SEMENI_SUPER_CHESTS),
     camX,camY, seq, ts:Date.now()
   };
   try{
@@ -1101,6 +1941,9 @@ function loadGame(){
     for(let i=0;i<fc;i++) if(FISH.length<5) spawnFisherman();
     // caught fish
     (data.caught||[]).forEach(n=>CAUGHT.add(n));
+    // Semeni NPCs
+    if(data.semeni_npcs) SEMENI_NPCS.push(...data.semeni_npcs);
+    if(data.super_chests) data.super_chests.forEach(id=>SEMENI_SUPER_CHESTS[id]=true);
     // cam
     camX=data.camX||0; camY=data.camY||40;
     seq=data.seq||seq;
