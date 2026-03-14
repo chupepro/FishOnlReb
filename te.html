@@ -153,6 +153,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <div class="nb" id="nb-chickenpen" onclick="pick('chickenpen')"><div class="ni">🐔</div><div>Курятник</div><div class="nc">120🪙</div></div>
   <div class="nb" id="nb-milkdel" onclick="pick('milkdel')"><div class="ni">🥛</div><div>БанкоДел</div><div class="nc">100🪙</div></div>
   <div class="nb" id="nb-eggpack" onclick="pick('eggpack')"><div class="ni">🥚</div><div>УпаковкоДел</div><div class="nc">100🪙</div></div>
+  <div class="nb" id="nb-raidspot" onclick="pick('raidspot')"><div class="ni">🏰</div><div>Место Рейда</div><div class="nc">200🪙</div></div>
+  <div class="nb" id="nb-raidtower" onclick="pick('raidtower')"><div class="ni">🗼</div><div>Рейд Башня</div><div class="nc">150🪙</div></div>
   <div class="nb" id="nb-del"  onclick="pick('del')"><div class="ni">🗑️</div><div>Снос</div><div class="nc">—</div></div>
 </div></div>
 
@@ -212,6 +214,34 @@ function hud(){
   const hn=document.getElementById('hn'); if(hn) hn.textContent=SEMENI_NPCS.length;
 }
 
+// Raid HUD overlay — drawn on canvas AFTER X.restore() so it's screen-space
+function drawRaidHUD(){
+  if(!RAID_STATE.active) return;
+  if(RAID_STATE.raidRunning){
+    const t=RAID_STATE.raidTimeLeft||0;
+    const pct=t/20;
+    // Background bar
+    const bw=Math.min(W*0.5, 260), bh=18, bx=(W-bw)/2, by=56;
+    X.fillStyle='rgba(0,0,0,.7)'; X.fillRect(bx-4,by-4,bw+8,bh+8);
+    X.fillStyle='rgba(200,30,10,.3)'; X.fillRect(bx,by,bw,bh);
+    // fill
+    const col=pct>0.5?'#e8c040':pct>0.25?'#e88020':'#e82020';
+    X.fillStyle=col; X.fillRect(bx,by,bw*pct,bh);
+    X.strokeStyle='rgba(255,80,30,.8)'; X.lineWidth=2; X.strokeRect(bx,by,bw,bh);
+    // text
+    X.fillStyle='#fff'; X.font=`bold ${13}px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(`⚔️ РЕЙД: ${Math.ceil(t)}с  |  👺 ${RAID_STATE.goblins.filter(g=>g.alive).length}`, W/2, by+bh/2);
+  } else if(RAID_STATE.waveTimer>0){
+    const t=Math.ceil(RAID_STATE.waveTimer);
+    X.fillStyle='rgba(0,0,0,.55)';
+    X.fillRect(W/2-80,54,160,18);
+    X.fillStyle='#f5c060'; X.font=`bold 12px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(`⏳ Следующий рейд: ${t}с`, W/2, 63);
+  }
+}
+
 // ── Map ─────────────────────────────────────
 const COLS=14, ROWS=18;
 let camX=0, camY=40;
@@ -254,16 +284,34 @@ const MBIND = {};
 const SMST = {};  // id→{phase:'idle'|'open'|'smelt'|'pour', t:0}
 
 // ── Costs / Names ────────────────────────────
-const COST={bur:50,conv:15,chest:40,furn:80,wshp:120,mkt:150,seed:60,cowpen:180,chickenpen:120,milkdel:100,eggpack:100};
-const NAME={bur:'Бур',conv:'Конвейер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел'};
+const COST={bur:50,conv:15,chest:40,furn:80,wshp:120,mkt:150,seed:60,cowpen:180,chickenpen:120,milkdel:100,eggpack:100,raidspot:200,raidtower:150};
+const NAME={bur:'Бур',conv:'Конвейер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня'};
 
 // ── Place / Demolish ─────────────────────────
 function place(type, col, row){
   if(col<0||col>=COLS||row<0||row>=ROWS) return;
+
+  // RAIDTOWER: special — placed ON TOP of existing raidspot, must check before occupied guard
+  if(type==='raidtower'){
+    const spot=G[row][col];
+    if(!spot||spot.type!=='raidspot') return toast('Рейд Башня — только на Месте Рейда!');
+    if(spot.hasTower) return toast('Башня уже стоит здесь!');
+    if(R.gold<COST.raidtower) return toast('Мало монет 🪙');
+    spend('gold',COST.raidtower);
+    spot.hasTower=true;
+    checkRaidActivation();
+    toast('🗼 Рейд Башня установлена!');
+    return;
+  }
+
   if(G[row][col])                         return toast('Место занято!');
   if(MAP[row][col]===1)                   return toast('На воде нельзя!');
   if(type==='bur'&&MAP[row][col]!==2)     return toast('Бур — только на камне ⛏️');
   if((type==='cowpen'||type==='chickenpen')&&MAP[row][col]!==0) return toast('Загон — только на траве 🌿');
+  if(type==='raidspot'){
+    if(col>=4) return toast('Место Рейда — только на левой части карты!');
+    if(MAP[row][col]!==0) return toast('Место Рейда — только на траве 🌿');
+  }
   const cost = COST[type]||0;
   if(R.gold < cost)                       return toast('Мало монет 🪙');
   spend('gold', cost);
@@ -509,6 +557,8 @@ let lastT=0, GT=0;
 function update(dt){
   GT+=dt;
   updateSemeniNpcs(dt);
+  updateRaid(dt);
+  updateFisherChests(dt);
 
   // ---- Buildings ----
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
@@ -663,6 +713,8 @@ function update(dt){
           else if(d.bars>0){ d.bars--; earn('gold',8); obj.timer=0; }
           else if(d.milk_bottle>0){ d.milk_bottle--; earn('gold',12); obj.timer=0; toast('+12🪙 молоко! 🥛'); }
           else if(d.egg_pack>0){ d.egg_pack--; earn('gold',20); obj.timer=0; toast('+20🪙 яйца! 🥚'); }
+          else if((d.milk||0)>0){ d.milk--; earn('gold',6); obj.timer=0; toast('+6🪙 молоко (сырое) 🐄'); }
+          else if((d.eggs||0)>0){ d.eggs--; earn('gold',4); obj.timer=0; toast('+4🪙 яйцо (сырое) 🥚'); }
         }
       }
     }
@@ -736,8 +788,12 @@ function frame(ts){
   drawParticles();
   drawFishermen();
   drawSemeniNpcs();
+  drawRaidGoblins();
+  drawRaidUnits();
+  drawFisherChests();
   if(gCol!==null&&curTool) drawGhost();
   X.restore();
+  drawRaidHUD(); // screen-space overlay
   requestAnimationFrame(frame);
 }
 
@@ -815,9 +871,11 @@ function drawBuildings(){
     const obj=G[r][c]; if(!obj) continue;
     X.save();
     const x=c*GS, y=r*GS;
-    ({bur:dBur, conv:dConv, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack})[obj.type]?.(x,y,obj);
+    ({bur:dBur, conv:dConv, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack, raidspot:dRaidSpot})[obj.type]?.(x,y,obj);
     X.restore();
   }
+  // Draw raid beam between top and bottom towers
+  drawRaidBeam();
 }
 
 // BUR ─────────────────────────────────────────
@@ -1657,7 +1715,8 @@ function drawSemeniNpcs(){
   for(const npc of SEMENI_NPCS){
     if(npc.wx===undefined||npc.wy===undefined) continue;
     if(!isFinite(npc.wx)||!isFinite(npc.wy)) continue;
-    const wx=npc.wx-camX, wy=npc.wy-camY;
+    // wx/wy are WORLD coords; canvas already translated by -camX/-camY
+    const wx=npc.wx, wy=npc.wy;
     const bob=Math.sin(npc.bob)*2;
     const isDrilling=npc.state==='drilling';
     const isWalking=npc.state==='walk_to_ore'||npc.state==='walk_to_chest';
@@ -1728,6 +1787,771 @@ function drawSemeniNpcs(){
   }
 }
 
+// RAID BEAM ───────────────────────────────────
+function drawRaidBeam(){
+  const top=RAID_STATE.topTower, bot=RAID_STATE.botTower;
+  if(!top||!bot) return;
+  const t=GT;
+  // World coords of tower centers — canvas already translated by -camX/-camY
+  const x1=top.col*GS+GS/2, y1=top.row*GS+GS/2;
+  const x2=bot.col*GS+GS/2, y2=bot.row*GS+GS/2;
+
+  const activated=RAID_STATE.active;
+  const pulse=0.55+Math.sin(t*4)*.45;
+  const pulse2=0.4+Math.sin(t*6+1)*.4;
+
+  // Outer glow beam
+  X.save();
+  X.globalAlpha=activated ? pulse*0.35 : 0.18;
+  const beamGrad=X.createLinearGradient(x1,y1,x2,y2);
+  beamGrad.addColorStop(0, activated?'rgba(255,80,30,0)':'rgba(255,200,60,0)');
+  beamGrad.addColorStop(0.5, activated?`rgba(255,80,30,1)`:`rgba(255,200,60,1)`);
+  beamGrad.addColorStop(1, activated?'rgba(255,80,30,0)':'rgba(255,200,60,0)');
+  X.strokeStyle=beamGrad;
+  X.lineWidth=activated?18:10;
+  X.lineCap='round';
+  X.beginPath(); X.moveTo(x1,y1); X.lineTo(x2,y2); X.stroke();
+  X.globalAlpha=1;
+
+  // Core beam
+  X.globalAlpha=activated ? pulse : 0.5;
+  const coreGrad=X.createLinearGradient(x1,y1,x2,y2);
+  coreGrad.addColorStop(0, activated?'rgba(255,180,60,0)':'rgba(255,240,120,0)');
+  coreGrad.addColorStop(0.5, activated?`rgba(255,220,80,1)`:`rgba(255,255,180,1)`);
+  coreGrad.addColorStop(1, activated?'rgba(255,180,60,0)':'rgba(255,240,120,0)');
+  X.strokeStyle=coreGrad;
+  X.lineWidth=activated?5:2.5;
+  X.beginPath(); X.moveTo(x1,y1); X.lineTo(x2,y2); X.stroke();
+  X.globalAlpha=1;
+
+  // Animated energy particles running along beam
+  if(activated){
+    const particleCount=6;
+    for(let i=0;i<particleCount;i++){
+      const phase=((t*0.7+i/particleCount)%1);
+      const px=lerp(x1,x2,phase), py=lerp(y1,y2,phase);
+      const alpha=Math.sin(phase*Math.PI)*0.9;
+      X.globalAlpha=alpha;
+      X.fillStyle='rgba(255,240,100,1)';
+      X.beginPath(); X.arc(px,py,3+Math.sin(t*8+i)*1.5,0,Math.PI*2); X.fill();
+      // small glow around each particle
+      const pg=X.createRadialGradient(px,py,0,px,py,10);
+      pg.addColorStop(0,'rgba(255,180,40,0.5)'); pg.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=pg; X.beginPath(); X.arc(px,py,10,0,Math.PI*2); X.fill();
+    }
+    X.globalAlpha=1;
+  }
+
+  // Tower anchor glows
+  const anchorColor=activated?`rgba(255,100,30,${pulse})`:`rgba(255,210,60,0.6)`;
+  X.fillStyle=anchorColor;
+  X.beginPath(); X.arc(x1,y1,activated?9+pulse*4:6,0,Math.PI*2); X.fill();
+  X.beginPath(); X.arc(x2,y2,activated?9+pulse*4:6,0,Math.PI*2); X.fill();
+  const ag1=X.createRadialGradient(x1,y1,0,x1,y1,activated?30:18);
+  ag1.addColorStop(0,activated?`rgba(255,80,20,${pulse*0.5})`:`rgba(255,210,60,0.3)`);
+  ag1.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=ag1; X.beginPath(); X.arc(x1,y1,activated?30:18,0,Math.PI*2); X.fill();
+  const ag2=X.createRadialGradient(x2,y2,0,x2,y2,activated?30:18);
+  ag2.addColorStop(0,activated?`rgba(255,80,20,${pulse*0.5})`:`rgba(255,210,60,0.3)`);
+  ag2.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=ag2; X.beginPath(); X.arc(x2,y2,activated?30:18,0,Math.PI*2); X.fill();
+
+  X.restore();
+}
+
+// RAIDSPOT ─────────────────────────────────────
+function dRaidSpot(x,y,obj){
+  const t=GT;
+  const hasTower=obj.hasTower;
+  // Ground — dark reinforced earth
+  const bg=X.createLinearGradient(x,y,x+GS,y+GS);
+  bg.addColorStop(0,'#2a1a0a'); bg.addColorStop(1,'#1a0e04');
+  X.fillStyle=bg; X.fillRect(x,y,GS,GS);
+  // grid pattern
+  X.strokeStyle='rgba(200,150,60,.2)'; X.lineWidth=0.8;
+  for(let i=1;i<4;i++){
+    X.beginPath(); X.moveTo(x+i*GS/4,y); X.lineTo(x+i*GS/4,y+GS); X.stroke();
+    X.beginPath(); X.moveTo(x,y+i*GS/4); X.lineTo(x+GS,y+i*GS/4); X.stroke();
+  }
+  // corner markers
+  X.fillStyle='#c4863a';
+  [[4,4],[GS-7,4],[4,GS-7],[GS-7,GS-7]].forEach(([ox,oy])=>{
+    X.fillRect(x+ox,y+oy,3,3);
+  });
+
+  if(!hasTower){
+    // empty spot — dashed border, tower outline ghost
+    X.strokeStyle='rgba(196,134,58,.5)'; X.lineWidth=2;
+    X.setLineDash([5,4]);
+    rrx(x+3,y+3,GS-6,GS-6,5); X.stroke();
+    X.setLineDash([]);
+    // ghost tower icon
+    X.globalAlpha=0.35;
+    X.font=`${GS*.45}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('🗼',x+GS*.5,y+GS*.5);
+    X.globalAlpha=1;
+    X.fillStyle='rgba(255,215,0,.65)'; X.font=`bold ${GS*.1}px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='top';
+    X.fillText('МЕСТО',x+GS*.5,y+GS*.06);
+  } else {
+    // TOWER! — draw detailed tower
+    // base stones
+    const stg=X.createLinearGradient(x+GS*.15,y+GS*.5,x+GS*.85,y+GS*.98);
+    stg.addColorStop(0,'#7a6040'); stg.addColorStop(1,'#3a2c18');
+    X.fillStyle=stg; rrx(x+GS*.12,y+GS*.52,GS*.76,GS*.46,4); X.fill();
+    X.strokeStyle='rgba(0,0,0,.3)'; X.lineWidth=1;
+    for(let ri=0;ri<3;ri++) for(let ci=0;ci<3;ci++){
+      X.strokeRect(x+GS*(.14+ci*.25),y+GS*(.54+ri*.14),GS*.23,GS*.12);
+    }
+    // tower shaft
+    const tg=X.createLinearGradient(x+GS*.3,y+GS*.08,x+GS*.7,y+GS*.55);
+    tg.addColorStop(0,'#9a8060'); tg.addColorStop(1,'#5a4030');
+    X.fillStyle=tg; X.fillRect(x+GS*.32,y+GS*.1,GS*.36,GS*.44);
+    X.strokeStyle='rgba(255,200,100,.25)'; X.lineWidth=1;
+    for(let wi=0;wi<4;wi++) X.strokeRect(x+GS*(.34+wi*.08),y+GS*.14,GS*.06,GS*.08);
+    // battlements (merlons)
+    X.fillStyle='#7a6040';
+    for(let i=0;i<4;i++) X.fillRect(x+GS*(.3+i*.17),y+GS*.06,GS*.1,GS*.08);
+    // flag
+    const flagWave=Math.sin(t*3)*4;
+    X.fillStyle='#cc2020'; X.strokeStyle='#8a1010'; X.lineWidth=0.8;
+    X.beginPath();
+    X.moveTo(x+GS*.5,y+GS*.02);
+    X.lineTo(x+GS*.75+flagWave,y+GS*.02);
+    X.lineTo(x+GS*.7+flagWave,y+GS*.09);
+    X.lineTo(x+GS*.5,y+GS*.1);
+    X.closePath(); X.fill(); X.stroke();
+    // flagpole
+    X.strokeStyle='#c8a050'; X.lineWidth=1.5;
+    X.beginPath(); X.moveTo(x+GS*.5,y); X.lineTo(x+GS*.5,y+GS*.12); X.stroke();
+    // glow if raid active
+    if(RAID_STATE.active){
+      const pulse=0.15+Math.sin(t*4)*.1;
+      X.fillStyle=`rgba(255,80,40,${pulse})`;
+      X.fillRect(x,y,GS,GS);
+      // warning beacon
+      X.fillStyle=`rgba(255,120,40,${0.7+Math.sin(t*6)*.3})`;
+      X.beginPath(); X.arc(x+GS*.5,y+GS*.03,GS*.06,0,Math.PI*2); X.fill();
+    }
+  }
+}
+
+// ════════════════════════════════════════════
+//  RAID SYSTEM
+// ════════════════════════════════════════════
+const RAID_STATE = {
+  active: false,
+  goblins: [],
+  units: [],
+  waveTimer: 0,
+  waveCooldown: 60,  // 60 seconds between waves — raid lasts much longer
+  waveNum: 0,
+  menuOpen: false,
+  battleMusic: null,
+  musicPlaying: false,
+  topTower: null,
+  botTower: null,
+};
+
+const UNIT_DEFS = {
+  minigun:  {name:'Миниганщик', icon:'🔫', cost:80,  hp:80,  dmg:15, rate:0.4, range:3.5, color:'#2060c0'},
+  sniper:   {name:'Снайпер',    icon:'🎯', cost:120, hp:50,  dmg:45, rate:1.8, range:7,   color:'#206020'},
+  shotgun:  {name:'Дробашер',   icon:'💥', cost:100, hp:120, dmg:30, rate:0.9, range:2.5, color:'#804020'},
+};
+
+const GOBLIN_DEF = {hp:60, speed:GS*0.6, dmg:5, reward:10, chestReward:true};
+
+function checkRaidActivation(){
+  // Need one tower in top half (rows 0..ROWS/2-1) and one in bottom half (rows ROWS/2..ROWS-1)
+  // Both must be in left cols (0-3)
+  let topTower=null, botTower=null;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const o=G[r][c];
+    if(o&&o.type==='raidspot'&&o.hasTower&&c<4){
+      if(r<ROWS/2) topTower=o;
+      else botTower=o;
+    }
+  }
+  if(topTower&&botTower){
+    if(!RAID_STATE.active){
+      RAID_STATE.active=true;
+      RAID_STATE.topTower=topTower;
+      RAID_STATE.botTower=botTower;
+      RAID_STATE.waveTimer=20;
+      toast('⚔️ Рейд активирован! Гоблины атакуют через 20 сек!');
+      playBattleMusic();
+    }
+  }
+  // Store for beam drawing even before activation
+  RAID_STATE.topTower=topTower;
+  RAID_STATE.botTower=botTower;
+}
+
+function playBattleMusic(){
+  if(RAID_STATE.musicPlaying) return;
+  try{
+    if(!RAID_STATE.battleMusic){
+      RAID_STATE.battleMusic=new Audio('https://fine.sunproxy.net/file/aG8yNVhZR3dUc3crVVFoaisreTl4aFVmYzR2QTBVM28rcWhhSy9WVVNLUjhKRjJDZTVTUTFFeWt0MG9XN3dVakFzeXdVRWdVbkgzb29rSjVlT0xEblF4MzhQSFNLamRhMSthRlo1UUg0c1E9/Dlya_Bitvy_s_zlodeem_-_Dlya_Bitvy_s_zlodeem_(SkySound.cc).mp3');
+      RAID_STATE.battleMusic.loop=true;
+      RAID_STATE.battleMusic.volume=0.45;
+    }
+    RAID_STATE.battleMusic.play().then(()=>{ RAID_STATE.musicPlaying=true; }).catch(()=>{});
+  }catch(e){}
+}
+
+function stopBattleMusic(){
+  if(RAID_STATE.battleMusic&&RAID_STATE.musicPlaying){
+    RAID_STATE.battleMusic.pause();
+    RAID_STATE.battleMusic.currentTime=0;
+    RAID_STATE.musicPlaying=false;
+  }
+}
+
+function spawnGoblinWave(){
+  if(!RAID_STATE.active) return;
+  RAID_STATE.waveNum++;
+  const count = 50; // всегда 50 гоблинов!
+  RAID_STATE.goblins = []; // очищаем старых
+  RAID_STATE.raidTimeLeft = 20; // рейд длится 20 сек
+  RAID_STATE.raidRunning = true;
+  playBattleMusic();
+
+  // Спавним с левого края карты, разброс по Y
+  for(let i=0;i<count;i++){
+    // Спавним строго в пределах карты по Y, только на строках с травой или камнем
+    const spawnRow = Math.floor(Math.random()*ROWS);
+    const spawnY = spawnRow*GS + GS/2;
+    const delay = Math.random()*3;
+    RAID_STATE.goblins.push({
+      wx: -GS*(1 + Math.random()*3),
+      wy: spawnY,
+      hp: 60 + RAID_STATE.waveNum*8,
+      maxHp: 60 + RAID_STATE.waveNum*8,
+      speed: GS*(0.55 + Math.random()*0.25),
+      alive: true,
+      spawned: false,
+      spawnDelay: delay,
+      bob: Math.random()*Math.PI*2,
+      walkCycle: 0,
+      attackTimer: 0,
+      id: nid(),
+    });
+  }
+  toast(`⚔️ РЕЙД! 50 гоблинов! У вас 20 секунд!`);
+}
+
+function openRaidMenu(col,row){
+  const obj=G[row]?.[col];
+  if(!obj||obj.type!=='raidspot'||!obj.hasTower) return;
+  if(!RAID_STATE.active){ toast('⚔️ Нужно башню сверху И снизу левой части карты!'); return; }
+  const b=document.getElementById('pbody'); b.innerHTML='';
+  document.getElementById('ptitle').textContent='⚔️ Нанять Юнитов';
+  for(const [key,def] of Object.entries(UNIT_DEFS)){
+    const div=document.createElement('div');
+    div.className='fe';
+    div.innerHTML=`<span style="font-size:24px">${def.icon}</span>
+      <div style="flex:1"><b>${def.name}</b><br>
+      <span style="font-size:11px;opacity:.6">💪${def.hp} ⚔️${def.dmg} 🔁${def.rate}s 📏${def.range} клеток</span></div>
+      <button onclick="buyUnit('${key}')" style="background:#c4863a;border:1.5px solid #ffd700;border-radius:8px;color:#1a0900;font-family:'Cinzel',serif;font-size:11px;padding:5px 10px;cursor:pointer">${def.cost}🪙</button>`;
+    b.appendChild(div);
+  }
+  const unitCount={};
+  for(const u of RAID_STATE.units) unitCount[u.type]=(unitCount[u.type]||0)+1;
+  const info=document.createElement('div');
+  info.style.cssText='margin-top:10px;padding:8px;background:rgba(0,0,0,.1);border-radius:8px;font-size:12px;color:#4a2e0a;';
+  info.innerHTML='<b>Юниты:</b> '+(Object.entries(unitCount).map(([k,v])=>UNIT_DEFS[k].icon+'×'+v).join(' ')||'нет')+
+    (RAID_STATE.raidRunning?`<br><b style="color:#c00">⏱ Рейд: ${Math.ceil(RAID_STATE.raidTimeLeft||0)}с</b>`:'<br>Купи юнитов до следующего рейда!');
+  b.appendChild(info);
+  document.getElementById('popup').classList.add('on');
+}
+
+function buyUnit(type){
+  const def=UNIT_DEFS[type];
+  if(!def) return;
+  if(R.gold<def.cost){ toast('Мало монет!'); return; }
+  spend('gold',def.cost);
+  // Спавним на свободной траве в левой части карты
+  let spawnWx=GS*2, spawnWy=GS*Math.floor(ROWS/2);
+  for(let attempt=0;attempt<50;attempt++){
+    const c=Math.floor(Math.random()*6);
+    const r=Math.floor(1+Math.random()*(ROWS-2));
+    if(MAP[r][c]===0 && !G[r][c]){
+      spawnWx=c*GS+GS/2; spawnWy=r*GS+GS/2; break;
+    }
+  }
+  RAID_STATE.units.push({
+    type,
+    wx: spawnWx,
+    wy: spawnWy,
+    hp: def.hp,
+    maxHp: def.hp,
+    dmg: def.dmg,
+    rate: def.rate,
+    range: def.range*GS,
+    moveSpeed: GS*1.8, // юниты двигаются!
+    alive: true,
+    attackTimer: 0,
+    bob: Math.random()*Math.PI*2,
+    walkCycle: 0,
+    target: null,
+    targetGoblin: null,
+    shootFlash: 0,
+    id: nid(),
+  });
+  toast(def.icon+' '+def.name+' нанят!');
+  closePopup();
+}
+
+function updateRaid(dt){
+  if(!RAID_STATE.active) return;
+
+  // Рейд запущен — таймер
+  if(RAID_STATE.raidRunning){
+    RAID_STATE.raidTimeLeft = Math.max(0, (RAID_STATE.raidTimeLeft||0) - dt);
+
+    // Таймер вышел — рейд заканчивается
+    if(RAID_STATE.raidTimeLeft<=0 && RAID_STATE.raidRunning){
+      RAID_STATE.raidRunning = false;
+      const survived = RAID_STATE.goblins.filter(g=>g.alive).length;
+      RAID_STATE.goblins.forEach(g=>g.alive=false);
+      if(survived > 0){
+        const penalty = survived * 5;
+        R.gold = Math.max(0, R.gold - penalty);
+        hud();
+        toast(`💀 Рейд закончился! ${survived} прорвалось! -${penalty}🪙`);
+      } else {
+        const reward = 80 + RAID_STATE.waveNum*20;
+        earn('gold', reward);
+        toast(`🏆 РЕЙД ОТБИТ! +${reward}🪙 + Рыбак-Сундук!`);
+        spawnFisherChest();
+      }
+      stopBattleMusic();
+      // Следующий рейд через 60 сек
+      RAID_STATE.waveTimer = 60;
+    }
+  } else {
+    // Ждём следующего рейда
+    RAID_STATE.waveTimer -= dt;
+    if(RAID_STATE.waveTimer <= 0){
+      spawnGoblinWave();
+    }
+  }
+
+  // Обновляем гоблинов
+  for(const g of RAID_STATE.goblins){
+    if(!g.alive) continue;
+    // Задержка спавна
+    if(g.spawnDelay > 0){ g.spawnDelay -= dt; continue; }
+    g.bob += dt*2.5;
+    g.walkCycle += dt*4;
+    // Ищем ближайшего юнита — если есть в радиусе 4 клеток, атакуем
+    let nearestUnit = null, nearUDist = Infinity;
+    for(const u of RAID_STATE.units){
+      if(!u.alive) continue;
+      const dx=u.wx-g.wx, dy=u.wy-g.wy;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<GS*4 && d<nearUDist){ nearUDist=d; nearestUnit=u; }
+    }
+    if(nearestUnit && nearUDist < GS*0.8){
+      // Атакуем юнита
+      g.attackTimer += dt;
+      if(g.attackTimer >= 1.2){
+        g.attackTimer = 0;
+        nearestUnit.hp -= 12;
+        if(nearestUnit.hp <= 0) nearestUnit.alive = false;
+      }
+    } else if(nearestUnit){
+      // Идём к юниту
+      const dx=nearestUnit.wx-g.wx, dy=nearestUnit.wy-g.wy;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      g.wx += dx/d * g.speed * dt;
+      g.wy += dy/d * g.speed * dt;
+    } else {
+      // Идём вправо к деревне
+      g.wx += g.speed * dt;
+    }
+    if(g.wx > COLS*GS){
+      g.alive = false;
+      R.gold = Math.max(0, R.gold-8);
+      hud();
+    }
+  }
+
+  // Обновляем юнитов — двигаются к ближайшему гоблину
+  for(const u of RAID_STATE.units){
+    if(!u.alive) continue;
+    u.bob += dt*1.5;
+    u.walkCycle = (u.walkCycle||0) + dt*3;
+    if(u.shootFlash > 0) u.shootFlash -= dt;
+
+    // Найти ближайшего живого гоблина
+    let nearest=null, nearD=Infinity;
+    for(const g of RAID_STATE.goblins){
+      if(!g.alive || g.spawnDelay>0) continue;
+      const dx=g.wx-u.wx, dy=g.wy-u.wy;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<nearD){ nearD=d; nearest=g; }
+    }
+    u.targetGoblin = nearest;
+
+    if(nearest){
+      if(nearD > u.range){
+        // Двигаемся к гоблину
+        const dx=nearest.wx-u.wx, dy=nearest.wy-u.wy;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        u.wx += dx/d * u.moveSpeed * dt;
+        u.wy += dy/d * u.moveSpeed * dt;
+      } else {
+        // В зоне стрельбы — атакуем
+        u.attackTimer += dt;
+        if(u.attackTimer >= u.rate){
+          u.attackTimer = 0;
+          nearest.hp -= u.dmg;
+          u.shootFlash = 0.2;
+          u.target = {wx:nearest.wx, wy:nearest.wy};
+          if(nearest.hp <= 0){
+            nearest.alive = false;
+            earn('gold', GOBLIN_DEF.reward);
+          }
+        }
+      }
+    }
+  }
+
+  // Очищаем мёртвых
+  RAID_STATE.goblins = RAID_STATE.goblins.filter(g=>g.alive||g.spawnDelay>0);
+  RAID_STATE.units   = RAID_STATE.units.filter(u=>u.alive);
+}
+
+let FISHER_CHESTS=[];
+
+function spawnFisherChest(){
+  // Place on a free grass tile
+  for(let attempt=0;attempt<30;attempt++){
+    const c=Math.floor(Math.random()*(COLS-4));
+    const r=Math.floor(Math.random()*ROWS);
+    if(!G[r][c]&&MAP[r][c]===0){
+      FISHER_CHESTS.push({
+        wx: c*GS+GS/2,
+        wy: r*GS+GS/2,
+        col:c, row:r,
+        timer:0,
+        tongueAnim:0,
+        tongueLash:false,
+        tongueDir:0,
+        id:nid(),
+      });
+      toast('🎣 Рыбак-Сундук появился! Он сам ловит рыбу!');
+      return;
+    }
+  }
+}
+
+function updateFisherChests(dt){
+  for(const fc of FISHER_CHESTS){
+    fc.timer+=dt;
+    if(fc.timer>=2){
+      fc.timer=0;
+      // Направление к ближайшей водяной клетке
+      let bestWc=-1, bestWr=-1, bestDist=Infinity;
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+        if(MAP[r][c]===1){
+          const dx=c*GS+GS/2-fc.wx, dy=r*GS+GS/2-fc.wy;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if(d<bestDist){bestDist=d;bestWc=c;bestWr=r;}
+        }
+      }
+      if(bestWc>=0){
+        const dx=bestWc*GS+GS/2-fc.wx, dy=bestWr*GS+GS/2-fc.wy;
+        fc.tongueDir=Math.atan2(dy,dx);
+        fc.tongueTarget={wx:bestWc*GS+GS/2, wy:bestWr*GS+GS/2};
+      }
+      // Ловим рыбу и кладём в ближайший сундук
+      let nearest=null, nearD=Infinity;
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+        if(G[r][c]&&G[r][c].type==='chest'){
+          const dx=G[r][c].col*GS+GS/2-fc.wx;
+          const dy=G[r][c].row*GS+GS/2-fc.wy;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if(d<nearD){nearD=d;nearest=G[r][c];}
+        }
+      }
+      if(nearest){ cs(nearest.id).fish=(cs(nearest.id).fish||0)+1; earn('fish',1); }
+      else earn('fish',1);
+    }
+  }
+}
+
+function drawFisherChests(){
+  for(const fc of FISHER_CHESTS){
+    const sx=fc.wx, sy=fc.wy;
+    const t=GT;
+    X.save(); X.translate(sx,sy);
+
+    // Shadow
+    X.fillStyle='rgba(0,0,0,.22)';
+    X.beginPath(); X.ellipse(0,GS*.3,GS*.32,GS*.09,0,0,Math.PI*2); X.fill();
+
+    // ── Fishing LINE extending toward water ──
+    const lineAnim = (Math.sin(t*1.8)*0.5+0.5); // 0..1
+    const dir = fc.tongueDir||0;
+    const maxLen = GS*2.5;
+    const lineLen = maxLen * lineAnim;
+    const lx = Math.cos(dir)*lineLen, ly = Math.sin(dir)*lineLen;
+
+    // fishing line
+    X.strokeStyle='rgba(180,140,80,.7)'; X.lineWidth=1.5; X.setLineDash([3,3]);
+    X.beginPath(); X.moveTo(GS*.18,-GS*.2); X.lineTo(GS*.18+lx, -GS*.2+ly); X.stroke();
+    X.setLineDash([]);
+    // bobber at end
+    if(lineAnim>0.6){
+      const alpha=Math.min(1,(lineAnim-0.6)*2.5);
+      X.globalAlpha=alpha;
+      X.fillStyle='#e03020';
+      X.beginPath(); X.arc(GS*.18+lx,-GS*.2+ly,3.5,0,Math.PI*2); X.fill();
+      X.fillStyle='#f0f0f0';
+      X.beginPath(); X.arc(GS*.18+lx,-GS*.2+ly+2,3.5,Math.PI,Math.PI*2); X.fill();
+      // fish splash when near end
+      if(lineAnim>0.85){
+        X.font=`${GS*.22}px serif`; X.textAlign='center'; X.textBaseline='middle';
+        X.fillText('🐟',GS*.18+lx,-GS*.2+ly-GS*.2);
+      }
+      X.globalAlpha=1;
+    }
+
+    // ── Chest body — warm wood ──
+    const cg=X.createLinearGradient(-GS*.32,-GS*.18,GS*.32,GS*.28);
+    cg.addColorStop(0,'#c08040'); cg.addColorStop(0.5,'#a06030'); cg.addColorStop(1,'#7a4520');
+    X.fillStyle=cg; rrx(-GS*.32,-GS*.18,GS*.64,GS*.46,5); X.fill();
+    X.strokeStyle='#5a3010'; X.lineWidth=2; rrx(-GS*.32,-GS*.18,GS*.64,GS*.46,5); X.stroke();
+
+    // lid (top part)
+    const lidG=X.createLinearGradient(-GS*.32,-GS*.22,GS*.32,-GS*.04);
+    lidG.addColorStop(0,'#d09050'); lidG.addColorStop(1,'#b07030');
+    X.fillStyle=lidG; rrx(-GS*.32,-GS*.22,GS*.64,GS*.18,5); X.fill();
+    X.strokeStyle='#5a3010'; X.lineWidth=1.5; rrx(-GS*.32,-GS*.22,GS*.64,GS*.18,5); X.stroke();
+
+    // metal band across middle
+    X.fillStyle='#8a6820'; X.fillRect(-GS*.32,-GS*.04,GS*.64,GS*.05);
+    // rivets
+    X.fillStyle='#c0a030';
+    [-GS*.22, 0, GS*.22].forEach(rx=>{
+      X.beginPath(); X.arc(rx,-GS*.015,2.5,0,Math.PI*2); X.fill();
+    });
+    // lock clasp
+    X.fillStyle='#c8a828'; rrx(-GS*.06,-GS*.06,GS*.12,GS*.1,3); X.fill();
+    X.strokeStyle='#8a7018'; X.lineWidth=1.5; rrx(-GS*.06,-GS*.06,GS*.12,GS*.1,3); X.stroke();
+    X.fillStyle='#4a3808';
+    X.beginPath(); X.arc(0,-GS*.02,GS*.025,0,Math.PI*2); X.fill();
+
+    // ── Fishing rod sticking out of lid ──
+    X.strokeStyle='#6a4010'; X.lineWidth=3; X.lineCap='round';
+    X.beginPath(); X.moveTo(GS*.05,-GS*.22); X.lineTo(GS*.18,-GS*.48); X.stroke();
+    X.strokeStyle='#a07030'; X.lineWidth=1.5;
+    X.beginPath(); X.moveTo(GS*.05,-GS*.22); X.lineTo(GS*.18,-GS*.48); X.stroke();
+    // reel
+    X.fillStyle='#8a6820';
+    X.beginPath(); X.arc(GS*.09,-GS*.31,GS*.04,0,Math.PI*2); X.fill();
+
+    // ── Smile face on chest front ──
+    X.fillStyle='rgba(60,30,5,.5)';
+    // eyes
+    X.beginPath(); X.arc(-GS*.1,GS*.06,GS*.025,0,Math.PI*2); X.fill();
+    X.beginPath(); X.arc(GS*.1,GS*.06,GS*.025,0,Math.PI*2); X.fill();
+    // smile
+    X.strokeStyle='rgba(60,30,5,.5)'; X.lineWidth=1.5; X.lineCap='round';
+    X.beginPath();
+    X.arc(0,GS*.05,GS*.1,0.3,Math.PI-0.3); X.stroke();
+
+    // ── "РЫБ-СУНДУК" label ──
+    X.fillStyle='rgba(255,220,120,.9)'; X.font=`bold ${GS*.09}px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='top';
+    X.fillText('РЫБ-СУНДУК',0,-GS*.35);
+
+    // ── Fish counter badge ──
+    X.fillStyle='rgba(255,200,50,.95)';
+    X.beginPath(); X.arc(GS*.3,-GS*.2,GS*.13,0,Math.PI*2); X.fill();
+    X.fillStyle='#3a2000'; X.font=`bold ${GS*.1}px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('🎣',GS*.3,-GS*.2);
+
+    X.restore();
+  }
+}
+
+function drawRaidGoblins(){
+  for(const g of RAID_STATE.goblins){
+    if(!g.alive) continue;
+    // world coords — canvas already translated
+    const sx=g.wx, sy=g.wy;
+    const t=GT;
+    const bob=Math.sin(g.bob)*2;
+
+    // HP bar (world coords, no scale)
+    const hpPct=g.hp/g.maxHp;
+    X.fillStyle='rgba(0,0,0,.5)'; X.fillRect(sx-GS*.3,sy-GS*.55,GS*.6,5);
+    X.fillStyle=hpPct>0.5?'#44cc44':'#cc4444';
+    X.fillRect(sx-GS*.3,sy-GS*.55,GS*.6*hpPct,5);
+
+    X.save();
+    X.translate(sx, sy+bob);
+    X.scale(GS*.38/40, GS*.38/40);
+
+    // shadow
+    X.fillStyle='rgba(0,0,0,.25)';
+    X.beginPath(); X.ellipse(0,30,24,8,0,0,Math.PI*2); X.fill();
+
+    // legs — walking
+    const legSwing=Math.sin(g.walkCycle)*14;
+    X.save(); X.translate(-8,18); X.rotate((-legSwing+5)*Math.PI/180);
+    X.fillStyle='#2a6020'; X.fillRect(-3,0,6,12);
+    X.fillStyle='#1a4015'; X.fillRect(-4,11,8,5);
+    X.restore();
+    X.save(); X.translate(8,18); X.rotate((legSwing+5)*Math.PI/180);
+    X.fillStyle='#2a6020'; X.fillRect(-3,0,6,12);
+    X.fillStyle='#1a4015'; X.fillRect(-4,11,8,5);
+    X.restore();
+
+    // body
+    const bg=X.createLinearGradient(-10,-5,10,18);
+    bg.addColorStop(0,'#3a8030'); bg.addColorStop(1,'#1e4018');
+    X.fillStyle=bg;
+    X.beginPath(); X.ellipse(0,6,10,13,0,0,Math.PI*2); X.fill();
+    X.strokeStyle='rgba(0,0,0,.3)'; X.lineWidth=1;
+    X.beginPath(); X.ellipse(0,6,10,13,0,0,Math.PI*2); X.stroke();
+
+    // arms — swinging
+    const armSwing=Math.sin(g.walkCycle+Math.PI)*18;
+    X.save(); X.translate(-12,2); X.rotate(armSwing*Math.PI/180);
+    X.fillStyle='#2a6020'; X.fillRect(-2.5,0,5,10);
+    X.fillStyle='#5a3010'; X.fillRect(-3.5,9,7,4);
+    X.beginPath(); X.arc(0,13,5,0,Math.PI*2); X.fill();
+    X.restore();
+    X.save(); X.translate(12,2); X.rotate(-armSwing*Math.PI/180);
+    X.fillStyle='#2a6020'; X.fillRect(-2.5,0,5,10);
+    X.restore();
+
+    // head
+    const hg=X.createRadialGradient(0,-16,0,0,-16,12);
+    hg.addColorStop(0,'#50a040'); hg.addColorStop(1,'#2a5a20');
+    X.fillStyle=hg; X.beginPath(); X.arc(0,-16,12,0,Math.PI*2); X.fill();
+    X.fillStyle='#3a7030';
+    X.beginPath(); X.moveTo(-12,-12); X.lineTo(-18,-22); X.lineTo(-8,-18); X.closePath(); X.fill();
+    X.beginPath(); X.moveTo(12,-12); X.lineTo(18,-22); X.lineTo(8,-18); X.closePath(); X.fill();
+    X.fillStyle='#ffdd00';
+    X.beginPath(); X.ellipse(-5,-18,3.5,2.5,0,0,Math.PI*2); X.fill();
+    X.beginPath(); X.ellipse(5,-18,3.5,2.5,0,0,Math.PI*2); X.fill();
+    X.fillStyle='#000';
+    X.beginPath(); X.arc(-5,-18,1.5,0,Math.PI*2); X.fill();
+    X.beginPath(); X.arc(5,-18,1.5,0,Math.PI*2); X.fill();
+    X.fillStyle='#206015'; X.beginPath(); X.arc(0,-13,3,0,Math.PI*2); X.fill();
+    X.fillStyle='#eedd99';
+    X.fillRect(-4,-10,3,4); X.fillRect(1,-10,3,4);
+    X.fillStyle='#6a5020';
+    X.beginPath(); X.arc(0,-23,8,Math.PI,0); X.fill();
+    X.fillStyle='#8a7030'; X.fillRect(-8,-24,16,4);
+
+    X.restore(); // единственный restore
+  }
+}
+
+function drawRaidUnits(){
+  for(const u of RAID_STATE.units){
+    if(!u.alive) continue;
+    const sx=u.wx, sy=u.wy;
+    const def=UNIT_DEFS[u.type];
+    const bob=Math.sin(u.bob)*1.5;
+
+    // HP bar + icon (world coords, no scale)
+    const hpPct=u.hp/u.maxHp;
+    X.fillStyle='rgba(0,0,0,.5)'; X.fillRect(sx-GS*.25,sy-GS*.5,GS*.5,4);
+    X.fillStyle='#44cc44'; X.fillRect(sx-GS*.25,sy-GS*.5,GS*.5*hpPct,4);
+    X.font=`${GS*.14}px serif`; X.textAlign='center'; X.textBaseline='bottom';
+    X.fillText(def.icon,sx,sy-GS*.52);
+
+    // shoot flash (world coords)
+    if(u.shootFlash>0&&u.target){
+      const tx=u.target.wx-sx, ty=u.target.wy-sy;
+      const tlen=Math.sqrt(tx*tx+ty*ty)||1;
+      X.save();
+      X.translate(sx,sy+bob);
+      X.strokeStyle='rgba(255,240,100,.9)'; X.lineWidth=2; X.lineCap='round';
+      X.beginPath(); X.moveTo(0,0); X.lineTo(tx/tlen*30,ty/tlen*30); X.stroke();
+      X.fillStyle='rgba(255,255,100,.8)';
+      X.beginPath(); X.arc(0,0,5,0,Math.PI*2); X.fill();
+      X.restore();
+    }
+
+    // Unit body — one save/restore for translate+scale
+    X.save();
+    X.translate(sx, sy+bob);
+
+    // shadow
+    X.fillStyle='rgba(0,0,0,.2)';
+    X.beginPath(); X.ellipse(0,GS*.28,GS*.2,GS*.06,0,0,Math.PI*2); X.fill();
+
+    X.scale(GS*.4/40, GS*.4/40);
+
+    const colors={minigun:{body:'#1a3a7a',armor:'#2a5ab0'},sniper:{body:'#1a3a1a',armor:'#2a5a2a'},shotgun:{body:'#5a2a10',armor:'#8a4a20'}};
+    const col=colors[u.type]||colors.minigun;
+
+    // legs — animated when moving
+    const isMoving = u.targetGoblin && Math.sqrt((u.targetGoblin.wx-u.wx)**2+(u.targetGoblin.wy-u.wy)**2) > u.range;
+    const legSwing = isMoving ? Math.sin(u.walkCycle||0)*14 : 0;
+    // left leg
+    X.save(); X.translate(-4,12); X.rotate((-legSwing)*Math.PI/180);
+    X.fillStyle=col.body; X.fillRect(-3.5,0,7,11); X.fillStyle='#1a1a2a'; X.fillRect(-4.5,10,8,4);
+    X.restore();
+    // right leg
+    X.save(); X.translate(4,12); X.rotate((legSwing)*Math.PI/180);
+    X.fillStyle=col.body; X.fillRect(-3.5,0,7,11); X.fillStyle='#1a1a2a'; X.fillRect(-4.5,10,8,4);
+    X.restore();
+
+    // body + armor
+    const abg=X.createLinearGradient(-11,-6,11,16);
+    abg.addColorStop(0,col.armor); abg.addColorStop(1,col.body);
+    X.fillStyle=abg;
+    X.beginPath(); X.ellipse(0,4,11,14,0,0,Math.PI*2); X.fill();
+    X.fillStyle='rgba(255,255,255,.1)';
+    X.beginPath(); X.ellipse(0,2,7,9,0,0,Math.PI*2); X.fill();
+
+    // arms
+    X.fillStyle=col.body; X.fillRect(-18,0,6,10); X.fillRect(12,0,6,10);
+
+    // weapon
+    if(u.type==='minigun'){
+      X.fillStyle='#444'; X.fillRect(12,-2,18,5);
+      X.save(); X.translate(30,0); X.rotate(GT*8);
+      for(let i=0;i<3;i++){
+        X.save(); X.rotate(i*Math.PI*2/3);
+        X.fillStyle='#666'; X.fillRect(-1,-6,2,5); X.restore();
+      }
+      X.restore();
+    } else if(u.type==='sniper'){
+      X.fillStyle='#333'; X.fillRect(12,-1,22,3);
+      X.fillStyle='#222'; X.fillRect(30,-2.5,4,6);
+      X.fillStyle='#555'; X.fillRect(20,-4,5,3);
+    } else {
+      X.fillStyle='#5a3010'; X.fillRect(12,0,14,4); X.fillRect(12,-4,14,4);
+      X.fillStyle='#333'; X.fillRect(24,-4.5,4,9);
+    }
+
+    // head + helmet
+    const hbg=X.createLinearGradient(-8,-26,8,-10);
+    hbg.addColorStop(0,col.armor); hbg.addColorStop(1,col.body);
+    X.fillStyle=hbg; X.beginPath(); X.arc(0,-18,10,0,Math.PI*2); X.fill();
+    X.fillStyle=col.armor;
+    X.beginPath(); X.arc(0,-22,8,Math.PI,0); X.fill();
+    X.fillRect(-8,-23,16,5);
+    X.fillStyle='rgba(100,200,255,.5)'; X.fillRect(-6,-22,12,5);
+    X.fillStyle='rgba(255,255,255,.9)';
+    X.beginPath(); X.ellipse(-4,-17,2.5,2,0,0,Math.PI*2); X.fill();
+    X.beginPath(); X.ellipse(4,-17,2.5,2,0,0,Math.PI*2); X.fill();
+
+    X.restore(); // единственный restore — возвращает translate+scale
+  }
+}
+
 // ── Ghost ─────────────────────────────────────
 let gCol=null, gRow=null;
 function drawGhost(){
@@ -1735,12 +2559,18 @@ function drawGhost(){
   const c=gCol, r=gRow;
   if(c<0||c>=COLS||r<0||r>=ROWS) return;
   const x=c*GS, y=r*GS;
-  const ok=!G[r][c]&&MAP[r][c]!==1
-    &&(curTool!=='bur'||MAP[r][c]===2)
-    &&(curTool!=='cowpen'||MAP[r][c]===0)
-    &&(curTool!=='chickenpen'||MAP[r][c]===0)
-    &&(curTool!=='milkdel'||MAP[r][c]===0)
-    &&(curTool!=='eggpack'||MAP[r][c]===0);
+  let ok;
+  if(curTool==='raidtower'){
+    ok = G[r][c]&&G[r][c].type==='raidspot'&&!G[r][c].hasTower;
+  } else {
+    ok=!G[r][c]&&MAP[r][c]!==1
+      &&(curTool!=='bur'||MAP[r][c]===2)
+      &&(curTool!=='cowpen'||MAP[r][c]===0)
+      &&(curTool!=='chickenpen'||MAP[r][c]===0)
+      &&(curTool!=='milkdel'||MAP[r][c]===0)
+      &&(curTool!=='eggpack'||MAP[r][c]===0)
+      &&(curTool!=='raidspot'||(MAP[r][c]===0&&c<3));
+  }
   X.globalAlpha=.55;
   X.fillStyle=ok?'rgba(255,255,80,.1)':'rgba(255,40,40,.18)'; X.fillRect(x,y,GS,GS);
   X.strokeStyle=ok?'#ffd700':'#ff4444'; X.lineWidth=2.2; rrx(x+2,y+2,GS-4,GS-4,5); X.stroke();
@@ -1768,7 +2598,7 @@ let curTool=null;
 function pick(t){
   curTool=t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('sel'));
-  const map={null:'nb-null',bur:'nb-bur',conv:'nb-conv',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack'};
+  const map={null:'nb-null',bur:'nb-bur',conv:'nb-conv',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower'};
   document.getElementById(map[t]||'nb-null')?.classList.add('sel');
   if(t) toast('Выбрано: '+NAME[t]+' — тапни на карту');
 }
@@ -1861,8 +2691,11 @@ function handleTap(tx,ty){
   }
   if(!curTool){
     const o=G[row]?.[col];
-    if(o){ if(o.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); }
-           else toast(NAME[o.type]); }
+    if(o){
+      if(o.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); }
+      else if(o.type==='raidspot'&&o.hasTower){ openRaidMenu(col,row); }
+      else toast(NAME[o.type]);
+    }
     return;
   }
   if(curTool==='del'){ demolish(col,row); return; }
@@ -1910,6 +2743,10 @@ function saveGame(){
     caught:[...CAUGHT],
     semeni_npcs: SEMENI_NPCS.map(n=>({...n})),
     super_chests: Object.keys(SEMENI_SUPER_CHESTS),
+    raid_units: RAID_STATE.units.map(u=>({...u, targetGoblin:null, target:null})),
+    fisher_chests: FISHER_CHESTS.map(f=>({...f})),
+    raid_waveNum: RAID_STATE.waveNum,
+    raid_waveTimer: RAID_STATE.waveTimer,
     camX,camY, seq, ts:Date.now()
   };
   try{
@@ -1944,10 +2781,31 @@ function loadGame(){
     // Semeni NPCs
     if(data.semeni_npcs) SEMENI_NPCS.push(...data.semeni_npcs);
     if(data.super_chests) data.super_chests.forEach(id=>SEMENI_SUPER_CHESTS[id]=true);
+    // Raid units
+    if(data.raid_units) RAID_STATE.units.push(...data.raid_units.map(u=>({...u,moveSpeed:u.moveSpeed||GS*1.8,targetGoblin:null,target:null,shootFlash:0})));
+    // Fisher chests
+    if(data.fisher_chests){
+      FISHER_CHESTS.push(...data.fisher_chests.map(f=>{
+        // Пересчитываем направление к воде
+        let bestDist=Infinity, dir=0;
+        for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+          if(MAP[r][c]===1){
+            const dx=c*GS+GS/2-f.wx, dy=r*GS+GS/2-f.wy;
+            const d=Math.sqrt(dx*dx+dy*dy);
+            if(d<bestDist){bestDist=d;dir=Math.atan2(dy,dx);}
+          }
+        }
+        return {...f, tongueDir:dir, timer:f.timer||0};
+      }));
+    }
+    // Raid state
+    if(data.raid_waveNum) RAID_STATE.waveNum=data.raid_waveNum;
+    if(data.raid_waveTimer) RAID_STATE.waveTimer=data.raid_waveTimer;
     // cam
     camX=data.camX||0; camY=data.camY||40;
     seq=data.seq||seq;
     hud();
+    checkRaidActivation();
     return true;
   } catch(e){ return false; }
 }
