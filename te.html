@@ -1,112 +1,1421 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🪵 КЛЁВОЕ МЕСТО | В разработке</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at center, #2d1b0d 0%, #1a0f06 100%);
-            color: #f3e5ab;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>🪵 Клёвое Место</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=IM+Fell+English@400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:'IM Fell English',serif;}
+#c{position:fixed;inset:0;width:100%;height:100%;}
 
-        .title-font {
-            font-family: 'Unbounded', cursive;
-        }
+#top{position:fixed;top:0;left:0;right:0;z-index:50;pointer-events:none;
+  background:linear-gradient(180deg,rgba(8,4,0,.98) 50%,transparent);
+  padding:env(safe-area-inset-top,0) 0 0;}
+#ti{display:flex;align-items:center;gap:5px;padding:7px 8px 14px;overflow-x:auto;scrollbar-width:none;}
+#ti::-webkit-scrollbar{display:none;}
+#ttl{font-family:'Cinzel',serif;font-size:13px;color:#e8c887;letter-spacing:.5px;
+  text-shadow:0 0 8px rgba(196,134,58,1);flex-shrink:0;pointer-events:auto;}
+.chip{display:flex;align-items:center;gap:3px;background:rgba(10,5,0,.92);
+  border:1.5px solid #c4863a;border-radius:20px;padding:4px 9px;
+  color:#f5e9c8;font-size:12px;font-weight:700;white-space:nowrap;
+  pointer-events:auto;flex-shrink:0;}
+.chip span:first-child{font-size:13px;}
+#bjrn{pointer-events:auto;margin-left:auto;flex-shrink:0;
+  background:#7a4f1e;border:1.5px solid #c4863a;border-radius:9px;
+  color:#f5e9c8;font-family:'Cinzel',serif;font-size:11px;padding:4px 9px;cursor:pointer;}
 
-        .log-container {
-            position: relative;
-            animation: float 3s ease-in-out infinite;
-        }
+#nav{position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:linear-gradient(0deg,rgba(8,4,0,.99) 60%,transparent);
+  padding:0 0 env(safe-area-inset-bottom,4px);}
+#ns{display:flex;gap:5px;padding:10px 8px 8px;overflow-x:auto;scrollbar-width:none;}
+#ns::-webkit-scrollbar{display:none;}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:rgba(12,6,0,.94);border:2px solid #4a3010;border-radius:12px;
+  padding:6px 6px 4px;min-width:54px;color:#f5e9c8;font-size:9px;
+  cursor:pointer;flex-shrink:0;user-select:none;transition:all .12s;}
+.nb .ni{font-size:22px;line-height:1;}
+.nb .nc{color:#ffd700;font-size:9px;margin-top:1px;}
+.nb.sel{border-color:#ffd700;background:rgba(55,25,0,.98);transform:scale(1.07);}
+.nb:active{transform:scale(.92);}
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
+#toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-4px);
+  background:rgba(8,4,0,.97);border:2px solid #c4863a;border-radius:12px;
+  padding:6px 14px;color:#f5e9c8;font-size:12px;z-index:200;
+  opacity:0;transition:all .2s;pointer-events:none;
+  text-align:center;max-width:86vw;white-space:nowrap;}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #8b4513, #cd853f);
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(205, 133, 63, 0.5);
-            animation: load 5s ease-in-out infinite;
-        }
+#popup{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;}
+#popup.on{display:flex;}
+#pb{background:#f5e9c8;border:3px solid #4a2e0a;border-radius:16px;
+  padding:18px;max-width:300px;width:88vw;max-height:74vh;overflow-y:auto;position:relative;}
+#pb h2{font-family:'Cinzel',serif;color:#4a2e0a;font-size:16px;text-align:center;margin-bottom:12px;}
+.fe{display:flex;align-items:center;gap:8px;background:rgba(74,46,10,.1);
+  border-radius:9px;padding:7px 9px;margin-bottom:5px;color:#4a2e0a;font-size:13px;}
+.fe.lk{opacity:.28;filter:blur(.7px);}
+#pc{position:absolute;top:10px;right:11px;background:none;border:none;font-size:20px;cursor:pointer;color:#4a2e0a;}
 
-        @keyframes load {
-            0% { width: 5%; }
-            50% { width: 85%; }
-            100% { width: 5%; }
-        }
+#ctx{position:fixed;z-index:400;background:rgba(8,4,0,.97);
+  border:2px solid #c4863a;border-radius:13px;padding:5px;
+  display:none;flex-direction:column;gap:3px;min-width:150px;}
+#ctx.on{display:flex;}
+.cm{background:none;border:none;color:#f5e9c8;font-family:'IM Fell English',serif;
+  font-size:12px;padding:7px 11px;border-radius:8px;cursor:pointer;
+  text-align:left;display:flex;align-items:center;gap:7px;}
+.cm:hover,.cm:active{background:rgba(196,134,58,.22);}
 
-        .wood-texture {
-            background-color: #3e2723;
-            background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
-            border: 4px solid #5d4037;
-        }
+/* ── TUTORIAL OVERLAY ── */
+#tut{position:fixed;inset:0;z-index:500;pointer-events:none;}
+#tut-box{position:fixed;left:50%;transform:translateX(-50%);
+  background:rgba(8,4,0,.97);border:2px solid #c4863a;border-radius:16px;
+  padding:14px 18px 12px;max-width:min(88vw,340px);pointer-events:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,.7);}
+#tut-box.top{top:72px;} #tut-box.bot{bottom:96px;}
+#tut-title{font-family:'Cinzel',serif;color:#e8c887;font-size:14px;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;}
+#tut-step{color:#f5e9c8;font-size:13px;line-height:1.5;margin-bottom:10px;}
+#tut-btns{display:flex;gap:8px;justify-content:flex-end;}
+.tbtn{background:#7a4f1e;border:1.5px solid #c4863a;border-radius:9px;
+  color:#f5e9c8;font-family:'Cinzel',serif;font-size:11px;padding:5px 12px;cursor:pointer;}
+.tbtn.pri{background:#c4863a;color:#1a0900;}
+.tbtn:active{opacity:.75;}
+#tut-prog{display:flex;gap:4px;align-items:center;margin-bottom:8px;}
+.tp{width:22px;height:4px;border-radius:3px;background:#3a2008;transition:background .3s;}
+.tp.done{background:#c4863a;} .tp.cur{background:#ffd700;}
 
-        .glow {
-            text-shadow: 0 0 10px rgba(243, 229, 171, 0.3);
-        }
-    </style>
+/* animated finger */
+#finger{position:fixed;z-index:600;pointer-events:none;
+  font-size:38px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));
+  transition:left .55s cubic-bezier(.4,0,.2,1),top .55s cubic-bezier(.4,0,.2,1),opacity .3s;
+  transform:translate(-50%,-50%);}
+#finger.tap{animation:fingerTap .5s ease;}
+#finger.swipe{animation:fingerSwipe 1.2s ease infinite;}
+@keyframes fingerTap{0%{transform:translate(-50%,-50%) scale(1)}40%{transform:translate(-50%,-50%) scale(.78)}70%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes fingerSwipe{0%{transform:translate(-50%,-50%) translateX(0)}50%{transform:translate(-50%,-50%) translateX(60px)}100%{transform:translate(-50%,-50%) translateX(0)}}
+
+/* highlight ring on map */
+#hl{position:fixed;z-index:490;pointer-events:none;border:3px solid #ffd700;border-radius:6px;
+  box-shadow:0 0 0 4px rgba(255,215,0,.25),0 0 18px 6px rgba(255,215,0,.2);
+  transition:all .4s cubic-bezier(.4,0,.2,1);opacity:0;}
+#hl.on{opacity:1;}
+
+/* save button */
+#savebtn{pointer-events:auto;flex-shrink:0;
+  background:#2a5a20;border:1.5px solid #5a9a40;border-radius:9px;
+  color:#f5e9c8;font-family:'Cinzel',serif;font-size:11px;padding:4px 9px;cursor:pointer;
+  transition:background .15s;}
+#savebtn:active{background:#3a7a28;}
+#savebtn.saved{background:#1a4015;border-color:#4a7a30;}
+</style>
 </head>
 <body>
+<canvas id="c"></canvas>
 
-    <div class="max-w-md w-full px-6 text-center">
-        <!-- Иконка бревна/дерева -->
-        <div class="log-container mb-8">
-            <div class="text-8xl">🪵</div>
-        </div>
+<div id="top"><div id="ti">
+  <span id="ttl">🪵 Клёвое Место</span>
+  <div class="chip"><span>🪙</span><span id="hg">200</span></div>
+  <div class="chip"><span>🪨</span><span id="ho">0</span></div>
+  <div class="chip"><span>🔩</span><span id="hb">0</span></div>
+  <div class="chip"><span>🎣</span><span id="hr">0</span></div>
+  <button id="savebtn" onclick="saveGame()">💾</button>
+  <button id="bjrn" onclick="openJournal()">📖</button>
+</div></div>
 
-        <!-- Заголовок -->
-        <h1 class="title-font text-3xl md:text-4xl mb-4 uppercase tracking-tighter glow">
-            КЛЁВОЕ МЕСТО
-        </h1>
-
-        <!-- Статус -->
-        <div class="wood-texture p-6 rounded-2xl shadow-2xl relative overflow-hidden">
-            <h2 class="text-xl font-bold mb-2 text-white">ВЕДУТСЯ РАБОТЫ</h2>
-            <p class="text-sm opacity-90 mb-6 leading-relaxed">
-                Мы полируем кору и подрезаем ветки. <br>
-                Игра будет доступна в течение <span class="font-bold text-orange-400">1-2 часов</span>.
-            </p>
-
-            <!-- Полоска загрузки -->
-            <div class="w-full h-3 bg-black/40 rounded-full mb-2">
-                <div class="progress-bar"></div>
-            </div>
-            <p class="text-[10px] uppercase tracking-widest opacity-50">Идет подготовка окружения...</p>
-        </div>
-
-        <!-- Просьба -->
-        <div class="mt-8 space-y-4">
-            <p class="text-lg font-semibold animate-pulse">
-                Ожидайте, пожалуйста! 🙏
-            </p>
-            <p class="text-xs opacity-40 uppercase tracking-widest">
-                Пожалуйста, не удаляйте игру
-            </p>
-        </div>
+<!-- Tutorial overlay -->
+<div id="tut">
+  <div id="hl"></div>
+  <div id="tut-box" class="bot" style="display:none">
+    <div id="tut-title">🎓 <span id="tut-t">Обучение</span></div>
+    <div id="tut-prog"></div>
+    <div id="tut-step">...</div>
+    <div id="tut-btns">
+      <button class="tbtn" onclick="endTutorial()">Пропустить</button>
+      <button class="tbtn pri" id="tbtn-next" onclick="tutNext()">Дальше →</button>
     </div>
+  </div>
+</div>
+<div id="finger" style="opacity:0">👆</div>
 
-    <!-- Декоративные частицы -->
-    <div class="absolute inset-0 pointer-events-none opacity-20">
-        <div class="absolute top-10 left-10 text-2xl">🌲</div>
-        <div class="absolute bottom-20 right-10 text-2xl">🍂</div>
-        <div class="absolute top-1/4 right-1/4 text-xl">🪵</div>
-    </div>
+<div id="nav"><div id="ns">
+  <div class="nb sel" id="nb-null" onclick="pick(null)"><div class="ni">👆</div><div>Курсор</div><div class="nc">—</div></div>
+  <div class="nb" id="nb-bur"  onclick="pick('bur')"><div class="ni">⛏️</div><div>Бур</div><div class="nc">50🪙</div></div>
+  <div class="nb" id="nb-conv" onclick="pick('conv')"><div class="ni">➡️</div><div>Конвейер</div><div class="nc">15🪙</div></div>
+  <div class="nb" id="nb-chest" onclick="pick('chest')"><div class="ni">📦</div><div>Сундук</div><div class="nc">40🪙</div></div>
+  <div class="nb" id="nb-furn" onclick="pick('furn')"><div class="ni">🔥</div><div>Плавильщик</div><div class="nc">80🪙</div></div>
+  <div class="nb" id="nb-wshp" onclick="pick('wshp')"><div class="ni">🔨</div><div>Мастерская</div><div class="nc">120🪙</div></div>
+  <div class="nb" id="nb-mkt"  onclick="pick('mkt')"><div class="ni">🏪</div><div>Рынок</div><div class="nc">150🪙</div></div>
+  <div class="nb" id="nb-del"  onclick="pick('del')"><div class="ni">🗑️</div><div>Снос</div><div class="nc">—</div></div>
+</div></div>
 
+<div id="toast"></div>
+<div id="popup"><div id="pb">
+  <h2 id="ptitle">Журнал</h2><button id="pc" onclick="closePopup()">✕</button>
+  <div id="pbody"></div>
+</div></div>
+<div id="ctx">
+  <button class="cm" id="cm-rot"  onclick="ctxRotate()">🔄 Повернуть конвейер</button>
+  <button class="cm" id="cm-bind" onclick="ctxBind()">🔗 Привязать к рынку</button>
+  <button class="cm" id="cm-info" onclick="ctxInfo()">📋 Содержимое</button>
+  <button class="cm" id="cm-del"  onclick="ctxDel()">🗑️ Снести</button>
+  <button class="cm" onclick="closeCtx()">✕ Закрыть</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  КЛЁВОЕ МЕСТО  v3 — fixed routing + visuals
+// ════════════════════════════════════════════
+const cv = document.getElementById('c');
+const X  = cv.getContext('2d');
+let W, H, GS;
+function resize() {
+  W = cv.width  = window.innerWidth;
+  H = cv.height = window.innerHeight;
+  GS = Math.max(50, Math.min(72, Math.round(Math.min(W,H)/8)));
+}
+resize(); addEventListener('resize', resize);
+
+// ── Resources ──────────────────────────────
+const R = {gold:200, ore:0, bars:0, rods:0, fish:0};
+function earn(k,v){ R[k]+=v; hud(); }
+function spend(k,v){ R[k]-=v; hud(); }
+function hud(){
+  document.getElementById('hg').textContent = R.gold;
+  document.getElementById('ho').textContent = R.ore;
+  document.getElementById('hb').textContent = R.bars;
+  document.getElementById('hr').textContent = R.rods;
+}
+
+// ── Map ─────────────────────────────────────
+const COLS=14, ROWS=18;
+let camX=0, camY=40;
+// 0=grass  1=water  2=rock
+const MAP=[];
+for(let r=0;r<ROWS;r++){ MAP[r]=[];
+  for(let c=0;c<COLS;c++){
+    if(c>=COLS-3)              MAP[r][c]=1;
+    else if((r<4&&c<5)||(r===6&&c>=1&&c<=5)||(r===10&&c<=3)) MAP[r][c]=2;
+    else                       MAP[r][c]=0;
+  }
+}
+
+// ── Grid ────────────────────────────────────
+const G=[];
+for(let r=0;r<ROWS;r++){ G[r]=[]; for(let c=0;c<COLS;c++) G[r][c]=null; }
+
+let seq=0; const nid=()=>seq++;
+
+// Conveyor directions: 0=→  1=↓  2=←  3=↑
+const DIR4 = [[1,0],[0,1],[-1,0],[0,-1]];
+const DARR  = ['→','↓','←','↑'];
+
+// ── Chest storage ────────────────────────────
+const CSTORE = {};
+function cs(id){ if(!CSTORE[id]) CSTORE[id]={ore:0,bars:0,rods:0,fish:0}; return CSTORE[id]; }
+
+// ── Market bindings  mktId→chestId ──────────
+const MBIND = {};
+
+// ── Smelter animation state ──────────────────
+const SMST = {};  // id→{phase:'idle'|'open'|'smelt'|'pour', t:0}
+
+// ── Costs / Names ────────────────────────────
+const COST={bur:50,conv:15,chest:40,furn:80,wshp:120,mkt:150};
+const NAME={bur:'Бур',conv:'Конвейер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос'};
+
+// ── Place / Demolish ─────────────────────────
+function place(type, col, row){
+  if(col<0||col>=COLS||row<0||row>=ROWS) return;
+  if(G[row][col])                         return toast('Место занято!');
+  if(MAP[row][col]===1)                   return toast('На воде нельзя!');
+  if(type==='bur'&&MAP[row][col]!==2)     return toast('Бур — только на камне ⛏️');
+  const cost = COST[type]||0;
+  if(R.gold < cost)                       return toast('Мало монет 🪙');
+  spend('gold', cost);
+  const obj = {type, col, row, id:nid(), dir:0, timer:0, progress:0};
+  G[row][col] = obj;
+  if(type==='chest') cs(obj.id);
+  if(type==='furn')  SMST[obj.id]={phase:'idle',t:0};
+  toast(NAME[type]+' построена ✅');
+}
+
+function demolish(col, row){
+  if(!G[row][col]) return;
+  const t=G[row][col].type;
+  G[row][col]=null;
+  // kill any particle destined here
+  for(let i=PTCL.length-1;i>=0;i--)
+    if(PTCL[i].dc===col&&PTCL[i].dr===row) PTCL.splice(i,1);
+  toast(NAME[t]+' снесена');
+}
+
+// ── Particles (items on conveyors) ───────────
+const PTCL=[];
+function spawnP(sc,sr, icon, dc,dr){
+  // world coords of cell centres
+  PTCL.push({
+    sx: sc*GS+GS/2, sy: sr*GS+GS/2,
+    tx: dc*GS+GS/2, ty: dr*GS+GS/2,
+    icon, t:0, sc,sr, dc,dr, done:false
+  });
+}
+
+// KEY FIX: find the OUTPUT cell for a given cell
+// Burr has no dir; it emits to any adjacent conveyor / chest
+// Conveyors use obj.dir
+function outputOf(col, row){
+  const obj = G[row][col];
+  if(!obj) return null;
+
+  if(obj.type==='bur'){
+    // look in all 4 dirs for conveyor or chest
+    for(const [dc,dr] of DIR4){
+      const nc=col+dc, nr=row+dr;
+      if(nc<0||nc>=COLS||nr<0||nr>=ROWS) continue;
+      const nb=G[nr][nc];
+      if(nb && (nb.type==='conv'||nb.type==='chest')) return {col:nc,row:nr,obj:nb};
+    }
+    return null; // nothing adjacent
+  }
+
+  if(obj.type==='conv'){
+    const [dc,dr]=DIR4[obj.dir];
+    const nc=col+dc, nr=row+dr;
+    if(nc<0||nc>=COLS||nr<0||nr>=ROWS) return null;
+    const nb=G[nr][nc]; return nb?{col:nc,row:nr,obj:nb}:null;
+  }
+
+  // furnace / workshop: same as conv (use dir for output lane)
+  if(obj.type==='furn'||obj.type==='wshp'){
+    const [dc,dr]=DIR4[obj.dir];
+    const nc=col+dc, nr=row+dr;
+    if(nc<0||nc>=COLS||nr<0||nr>=ROWS) return null;
+    const nb=G[nr][nc]; return nb?{col:nc,row:nr,obj:nb}:null;
+  }
+  return null;
+}
+
+// adjacent object of given type
+function adjOf(col, row, type){
+  for(const [dc,dr] of DIR4){
+    const nb=G[row+dr]?.[col+dc];
+    if(nb&&nb.type===type) return nb;
+  }
+  return null;
+}
+
+// deliver icon to chest
+function deliver(chestId, icon){
+  const d=cs(chestId);
+  if(icon==='ore')  d.ore++;
+  else if(icon==='bar')  d.bars++;
+  else if(icon==='rod')  d.rods++;
+  else if(icon==='fish') d.fish++;
+}
+
+// ── Fishermen ────────────────────────────────
+const FISH=[];
+const FISHDB=[
+  {n:'Окунь',i:'🐟',r:'обычная'},{n:'Карась',i:'🐠',r:'обычная'},
+  {n:'Щука',i:'🦈',r:'редкая'}, {n:'Лещ',i:'🐡',r:'обычная'},
+  {n:'Сом',i:'🐠',r:'редкая'},  {n:'Судак',i:'🐟',r:'ценная'},
+  {n:'Форель',i:'🐡',r:'ценная'},{n:'Осётр',i:'🦈',r:'легендарная'},
+];
+const CAUGHT=new Set();
+
+function spawnFisherman(){
+  if(FISH.length>=5) return;
+  const wc=COLS-3;
+  FISH.push({
+    x:(wc-0.5)*GS, y:(1.2+FISH.length*1.9)*GS,
+    bob:Math.random()*Math.PI*2, t:Math.random()*4,
+    catchT: 6+Math.random()*6, carry:null, carryA:0
+  });
+  toast('🎣 Новый рыбак прибыл!');
+}
+
+// ── Main update ──────────────────────────────
+let lastT=0, GT=0;
+
+function update(dt){
+  GT+=dt;
+
+  // ---- Buildings ----
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const obj=G[r][c]; if(!obj) continue;
+    obj.timer+=dt;
+
+    // BUR — produce ore every 4s
+    if(obj.type==='bur'){
+      obj.progress = (obj.timer%4)/4;
+      if(obj.timer>=4){
+        obj.timer=0;
+        const nx=outputOf(c,r);
+        if(nx){ spawnP(c,r,'ore',nx.col,nx.row); }
+        else   { earn('ore',1); }
+      }
+    }
+
+    // FURNACE — pull ore from adjacent chest, smelt it
+    if(obj.type==='furn'){
+      const sm = SMST[obj.id]||(SMST[obj.id]={phase:'idle',t:0});
+      if(sm.phase==='idle'){
+        const adjChest=adjOf(c,r,'chest');
+        if(adjChest && cs(adjChest.id).ore>0 && obj.timer>0.8){
+          cs(adjChest.id).ore--;
+          sm.phase='open'; sm.t=0; obj.timer=0;
+        }
+      }
+      if(sm.phase!=='idle') sm.t+=dt;
+      if(sm.phase==='open'  && sm.t>0.55) sm.phase='smelt';
+      if(sm.phase==='smelt' && sm.t>2.6 ){ sm.phase='pour'; sm.t=0; }
+      if(sm.phase==='pour'){
+        sm.phase='idle'; sm.t=0;
+        earn('bars',1);
+        const nx=outputOf(c,r);
+        if(nx){ spawnP(c,r,'bar',nx.col,nx.row); }
+      }
+    }
+
+    // WORKSHOP — consume 2 bars → rod every 5s
+    if(obj.type==='wshp'){
+      obj.progress=(obj.timer%5)/5;
+      if(R.bars>=2 && obj.timer>=5){
+        obj.timer=0; spend('bars',2); earn('rods',1);
+        const nx=outputOf(c,r);
+        if(nx){ spawnP(c,r,'rod',nx.col,nx.row); }
+        maybeSpawnFish();
+      }
+    }
+
+    // MARKET — sell from bound chest
+    if(obj.type==='mkt'){
+      const bId=MBIND[obj.id];
+      if(bId && obj.timer>2.2){
+        // find the chest object
+        let ch=null;
+        outer: for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+          if(G[rr][cc]&&G[rr][cc].id===bId){ch=G[rr][cc];break outer;}
+        }
+        if(ch){
+          const d=cs(bId);
+          if(d.fish>0){ d.fish--; earn('gold',15); obj.timer=0; toast('+15🪙 рыба продана!'); }
+          else if(d.rods>0){ d.rods--; earn('gold',28); obj.timer=0; toast('+28🪙 удочка!'); }
+          else if(d.bars>0){ d.bars--; earn('gold',8);  obj.timer=0; }
+        }
+      }
+    }
+  }
+
+  // ---- Particles ----
+  for(let i=PTCL.length-1;i>=0;i--){
+    const p=PTCL[i];
+    if(p.done){ PTCL.splice(i,1); continue; }
+    p.t = Math.min(1, p.t+dt*1.6);
+    p.cx = lerp(p.sx, p.tx, ease(p.t));  // current X
+    p.cy = lerp(p.sy, p.ty, ease(p.t));  // current Y
+    if(p.t>=1){
+      p.done=true;
+      const dst=G[p.dr]?.[p.dc];
+      if(dst){
+        if(dst.type==='chest'){
+          deliver(dst.id, p.icon);
+        } else if(dst.type==='conv'){
+          // pass along the chain
+          const nx=outputOf(p.dc, p.dr);
+          if(nx){ spawnP(p.dc,p.dr, p.icon, nx.col,nx.row); }
+          // else particle disappears (end of line)
+        }
+        // arriving at furn/wshp/mkt — just disappear (they pull from chest)
+      }
+    }
+  }
+
+  // ---- Fishermen ----
+  for(const f of FISH){
+    f.t+=dt; f.bob+=dt*1.7;
+    f.catchT-=dt;
+    if(f.catchT<=0){
+      f.catchT=6+Math.random()*7;
+      const fish=FISHDB[0|(Math.random()*FISHDB.length)];
+      CAUGHT.add(fish.n); f.carry=fish.i; f.carryA=1.3;
+      earn('fish',1);
+      toast(fish.i+' Поймал '+fish.n+'!');
+      // deposit to first available chest
+      for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+        if(G[rr][cc]&&G[rr][cc].type==='chest'){ cs(G[rr][cc].id).fish++; goto: break; }
+      }
+    }
+    if(f.carryA>0) f.carryA=Math.max(0,f.carryA-dt*.7);
+  }
+}
+
+function maybeSpawnFish(){ if(R.rods>FISH.length&&FISH.length<5) spawnFisherman(); }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function ease(t){ return t<.5?2*t*t:1-(-2*t+2)**2/2; }
+
+// ════════════════════════════════════════════
+//  DRAW
+// ════════════════════════════════════════════
+function frame(ts){
+  const dt=Math.min((ts-lastT)/1000,.1); lastT=ts;
+  update(dt);
+  X.clearRect(0,0,W,H);
+  X.save(); X.translate(-camX,-camY);
+  drawTerrain();
+  drawGridLines();
+  drawBuildings();
+  drawParticles();
+  drawFishermen();
+  if(gCol!==null&&curTool) drawGhost();
+  X.restore();
+  requestAnimationFrame(frame);
+}
+
+// ── Terrain ──────────────────────────────────
+function drawTerrain(){
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const m=MAP[r][c], x=c*GS, y=r*GS;
+    if(m===1)      drawWater(x,y,c,r);
+    else if(m===2) drawRock(x,y,c,r);
+    else           drawGrass(x,y,c,r);
+  }
+  // sandy shore transition
+  const wx=(COLS-3)*GS;
+  const sg=X.createLinearGradient(wx-10,0,wx+12,0);
+  sg.addColorStop(0,'rgba(160,135,90,0)');
+  sg.addColorStop(.5,'rgba(190,165,100,.6)');
+  sg.addColorStop(1,'rgba(160,135,90,0)');
+  X.fillStyle=sg; X.fillRect(wx-10,0,22,ROWS*GS);
+}
+
+function drawGrass(x,y,c,r){
+  X.fillStyle=((r+c)&1)?'#558039':'#5a8a3c'; X.fillRect(x,y,GS,GS);
+  const h=(r*13+c*7)%19;
+  if(h<3){ X.fillStyle='#496f2a'; X.fillRect(x+GS*.2,y+GS*.6,3,6); X.fillRect(x+GS*.5,y+GS*.55,3,7); }
+  if(h===8){ X.fillStyle='#ffe066'; X.beginPath(); X.arc(x+GS*.55,y+GS*.43,2.5,0,Math.PI*2); X.fill(); }
+}
+
+function drawRock(x,y,c,r){
+  X.fillStyle='#606060'; X.fillRect(x,y,GS,GS);
+  X.fillStyle='#6e6c6a'; X.fillRect(x+3,y+3,GS-6,GS-6);
+  X.strokeStyle='#505050'; X.lineWidth=1.2;
+  X.beginPath(); X.moveTo(x+GS*.18,y+GS*.28); X.lineTo(x+GS*.44,y+GS*.6);  X.stroke();
+  X.beginPath(); X.moveTo(x+GS*.58,y+GS*.22); X.lineTo(x+GS*.74,y+GS*.52); X.stroke();
+  // ore vein
+  const oc=((c+r)%3===0)?'#c88035':'#90aab8';
+  X.fillStyle=oc;
+  X.beginPath(); X.arc(x+GS*.65,y+GS*.38,GS*.08,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(255,220,140,.4)';
+  X.beginPath(); X.arc(x+GS*.65,y+GS*.38,GS*.04,0,Math.PI*2); X.fill();
+  X.fillStyle=oc;
+  X.beginPath(); X.arc(x+GS*.28,y+GS*.65,GS*.055,0,Math.PI*2); X.fill();
+  if(Math.sin(GT*3.5+c*2.1+r*1.3)>.84){
+    X.fillStyle='rgba(255,230,130,.9)'; drawStar(X,x+GS*.65,y+GS*.38,GS*.06,4);
+  }
+}
+
+function drawWater(x,y,c,r){
+  const g=X.createLinearGradient(x,y,x,y+GS);
+  g.addColorStop(0,'#2868a0'); g.addColorStop(1,'#1c4a78');
+  X.fillStyle=g; X.fillRect(x,y,GS,GS);
+  if(((c+r+0|(GT))&3)===0){
+    X.fillStyle='rgba(255,255,255,.15)';
+    X.beginPath(); X.ellipse(x+GS*.4+Math.sin(GT+c)*.08*GS,y+GS*.4,GS*.1,GS*.05,.3,0,Math.PI*2); X.fill();
+  }
+}
+
+function drawGridLines(){
+  X.strokeStyle='rgba(255,255,255,.032)'; X.lineWidth=.5;
+  for(let r=0;r<=ROWS;r++){ X.beginPath(); X.moveTo(0,r*GS); X.lineTo(COLS*GS,r*GS); X.stroke(); }
+  for(let c=0;c<=COLS;c++){ X.beginPath(); X.moveTo(c*GS,0); X.lineTo(c*GS,ROWS*GS); X.stroke(); }
+}
+
+function drawStar(ctx,x,y,r,pts){
+  ctx.beginPath();
+  for(let i=0;i<pts*2;i++){
+    const a=i*Math.PI/pts-Math.PI/2, rr=i%2?r*.38:r;
+    i?ctx.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a)):ctx.moveTo(x+rr*Math.cos(a),y+rr*Math.sin(a));
+  }
+  ctx.closePath(); ctx.fill();
+}
+
+// ── Buildings ────────────────────────────────
+function drawBuildings(){
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const obj=G[r][c]; if(!obj) continue;
+    X.save();
+    const x=c*GS, y=r*GS;
+    ({bur:dBur, conv:dConv, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt})[obj.type]?.(x,y,obj);
+    X.restore();
+  }
+}
+
+// BUR ─────────────────────────────────────────
+function dBur(x,y,obj){
+  const t=GT;
+  // platform
+  X.fillStyle='#4a3018'; rrx(x+5,y+GS*.57,GS-10,GS*.4,5); X.fill();
+  X.strokeStyle='#6a4828'; X.lineWidth=1.5; rrx(x+5,y+GS*.57,GS-10,GS*.4,5); X.stroke();
+  // body
+  const bg=X.createLinearGradient(x+GS*.28,y+GS*.1,x+GS*.72,y+GS*.58);
+  bg.addColorStop(0,'#9898a2'); bg.addColorStop(.5,'#78787e'); bg.addColorStop(1,'#585860');
+  X.fillStyle=bg; rrx(x+GS*.26,y+GS*.12,GS*.48,GS*.48,5); X.fill();
+  X.strokeStyle='rgba(255,255,255,.2)'; X.lineWidth=1.5;
+  X.beginPath(); X.moveTo(x+GS*.3,y+GS*.16); X.lineTo(x+GS*.3,y+GS*.57); X.stroke();
+  for(let i=1;i<3;i++){ X.strokeStyle='rgba(255,255,255,.1)'; X.lineWidth=1;
+    X.beginPath(); X.moveTo(x+GS*.26,y+GS*(.16+i*.14)); X.lineTo(x+GS*.74,y+GS*(.16+i*.14)); X.stroke(); }
+  // rotating drill
+  X.save(); X.translate(x+GS*.5,y+GS*.63); X.rotate(t*5.5);
+  for(let i=0;i<3;i++){
+    X.save(); X.rotate(i*Math.PI*2/3);
+    const dg=X.createLinearGradient(0,0,0,-GS*.15); dg.addColorStop(0,'#d08040'); dg.addColorStop(1,'#906020');
+    X.fillStyle=dg; X.fillRect(-2.5,-GS*.15,5,GS*.15); X.restore();
+  }
+  X.fillStyle='#c8a040'; X.beginPath(); X.arc(0,0,4,0,Math.PI*2); X.fill();
+  X.restore();
+  // progress arc
+  X.strokeStyle='rgba(255,215,60,.7)'; X.lineWidth=3.5; X.lineCap='round';
+  X.beginPath(); X.arc(x+GS*.5,y+GS*.63,GS*.21,-Math.PI/2,-Math.PI/2+Math.PI*2*obj.progress); X.stroke();
+  // sparks
+  if(Math.sin(t*8+obj.id)>.78){
+    for(let i=0;i<4;i++){
+      const a=t*9+i*1.57;
+      X.fillStyle=`rgba(255,${140+i*28},20,.9)`;
+      X.beginPath(); X.arc(x+GS*.5+Math.cos(a)*GS*.24,y+GS*.63+Math.sin(a)*GS*.1,2.5,0,Math.PI*2); X.fill();
+    }
+  }
+  lbl(x,y,'⛏️',GS*.22);
+}
+
+// CONVEYOR ────────────────────────────────────
+function dConv(x,y,obj){
+  const t=GT, d=obj.dir;
+  X.fillStyle='#362008'; rrx(x+3,y+3,GS-6,GS-6,7); X.fill();
+  X.save(); X.beginPath(); rrx(x+5,y+5,GS-10,GS-10,5); X.clip();
+  const isH=(d===0||d===2), spd=(d===2||d===3)?-1:1, off=(t*52*spd)%(GS*.42);
+  X.strokeStyle='rgba(210,160,60,.7)'; X.lineWidth=3.8;
+  if(isH){ for(let s=-GS*.42+off;s<GS;s+=GS*.42){ X.beginPath(); X.moveTo(x+5+s,y+5); X.lineTo(x+5+s,y+GS-5); X.stroke(); } }
+  else   { for(let s=-GS*.42+off;s<GS;s+=GS*.42){ X.beginPath(); X.moveTo(x+5,y+5+s); X.lineTo(x+GS-5,y+5+s); X.stroke(); } }
+  X.restore();
+  X.strokeStyle='#6a4820'; X.lineWidth=2; rrx(x+3,y+3,GS-6,GS-6,7); X.stroke();
+  X.fillStyle='rgba(255,235,170,.8)'; X.font=`bold ${GS*.35}px serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText(DARR[d],x+GS*.5,y+GS*.5);
+}
+
+// CHEST ───────────────────────────────────────
+function dChest(x,y,obj){
+  const t=GT, cd=cs(obj.id);
+  const total=cd.ore+cd.bars+cd.rods+cd.fish;
+  // lid angle — open if adjacent furnace is pulling
+  let lidAng=0;
+  for(const [dc,dr] of DIR4){
+    const nb=G[obj.row+dr]?.[obj.col+dc];
+    if(nb&&nb.type==='furn'){
+      const sm=SMST[nb.id];
+      if(sm&&(sm.phase==='open'||sm.phase==='smelt')) lidAng=-Math.PI*.44;
+    }
+  }
+  const cx2=x+GS*.5;
+  // shadow
+  X.fillStyle='rgba(0,0,0,.3)'; X.beginPath(); X.ellipse(cx2,y+GS*.9,GS*.38,GS*.08,0,0,Math.PI*2); X.fill();
+  // BODY
+  const bg=X.createLinearGradient(x+GS*.08,y+GS*.46,x+GS*.92,y+GS*.92);
+  bg.addColorStop(0,'#9c6430'); bg.addColorStop(.5,'#7c5020'); bg.addColorStop(1,'#4e3010');
+  X.fillStyle=bg; rrx(x+GS*.08,y+GS*.47,GS*.84,GS*.44,GS*.05); X.fill();
+  // planks
+  X.strokeStyle='rgba(0,0,0,.22)'; X.lineWidth=1;
+  for(let i=1;i<3;i++){ X.beginPath(); X.moveTo(x+GS*.09,y+GS*(.48+i*.12)); X.lineTo(x+GS*.91,y+GS*(.48+i*.12)); X.stroke(); }
+  // metal band
+  const mb=X.createLinearGradient(x+GS*.08,y+GS*.63,x+GS*.08,y+GS*.7);
+  mb.addColorStop(0,'#e0c040'); mb.addColorStop(1,'#a88020');
+  X.fillStyle=mb; X.fillRect(x+GS*.08,y+GS*.63,GS*.84,GS*.07);
+  // rivets
+  X.fillStyle='#f0d050';
+  [.15,.3,.5,.7,.85].forEach(bx=>{ X.beginPath(); X.arc(x+GS*bx,y+GS*.665,2.5,0,Math.PI*2); X.fill(); });
+  // corner fittings
+  X.fillStyle='#c8a835';
+  [[.1,.5],[.86,.5],[.1,.84],[.86,.84]].forEach(([bx,by])=>{ rrx(x+GS*bx-3,y+GS*by-3,6,6,2); X.fill(); });
+  X.fillStyle='#c8a835'; X.fillRect(x+GS*.08,y+GS*.81,GS*.84,GS*.05);
+
+  // LID
+  X.save(); X.translate(cx2,y+GS*.47); X.rotate(lidAng); X.translate(-cx2,-(y+GS*.47));
+  const lg=X.createLinearGradient(x+GS*.08,y+GS*.22,x+GS*.92,y+GS*.47);
+  lg.addColorStop(0,'#b07838'); lg.addColorStop(.6,'#8a5820'); lg.addColorStop(1,'#5a3810');
+  X.fillStyle=lg;
+  X.beginPath();
+  X.moveTo(x+GS*.07,y+GS*.47); X.lineTo(x+GS*.93,y+GS*.47);
+  X.lineTo(x+GS*.89,y+GS*.3);
+  X.quadraticCurveTo(cx2,y+GS*.17,x+GS*.11,y+GS*.3);
+  X.closePath(); X.fill();
+  // lid planks
+  X.strokeStyle='rgba(0,0,0,.15)'; X.lineWidth=1;
+  X.beginPath(); X.moveTo(x+GS*.18,y+GS*.38); X.lineTo(x+GS*.82,y+GS*.38); X.stroke();
+  X.beginPath(); X.moveTo(x+GS*.14,y+GS*.3);  X.lineTo(x+GS*.86,y+GS*.3);  X.stroke();
+  // lid band
+  const lb=X.createLinearGradient(x+GS*.08,y+GS*.44,x+GS*.08,y+GS*.48);
+  lb.addColorStop(0,'#e0c040'); lb.addColorStop(1,'#b09020');
+  X.fillStyle=lb; X.fillRect(x+GS*.08,y+GS*.44,GS*.84,GS*.04);
+  // lock
+  X.fillStyle='#d8b838'; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.fill();
+  X.strokeStyle='rgba(255,255,255,.28)'; X.lineWidth=1; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.stroke();
+  X.strokeStyle='#b09020'; X.lineWidth=2.2; X.lineCap='round';
+  X.beginPath(); X.arc(cx2,y+GS*.345,GS*.04,Math.PI,0); X.stroke();
+  X.fillStyle='rgba(0,0,0,.4)'; X.beginPath(); X.arc(cx2,y+GS*.375,2.5,0,Math.PI*2); X.fill();
+  X.fillRect(cx2-1.5,y+GS*.375,3,4);
+  X.restore();
+
+  // open glow
+  if(lidAng<-.1){
+    X.save(); X.globalAlpha=.22; X.fillStyle='#ffd060'; X.fillRect(x+GS*.08,y+GS*.47,GS*.84,GS*.18); X.restore();
+  }
+  // badge
+  if(total>0){
+    X.fillStyle='rgba(255,205,50,.95)'; X.beginPath(); X.arc(x+GS*.85,y+GS*.2,GS*.15,0,Math.PI*2); X.fill();
+    X.fillStyle='#2a1600'; X.font=`bold ${GS*.13}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(total>99?'99+':total,x+GS*.85,y+GS*.2);
+  }
+  // contents row
+  const items=[];
+  if(cd.ore>0)  items.push('⛏️'+cd.ore);
+  if(cd.bars>0) items.push('🔩'+cd.bars);
+  if(cd.rods>0) items.push('🎣'+cd.rods);
+  if(cd.fish>0) items.push('🐟'+cd.fish);
+  if(items.length){
+    X.font=`${GS*.12}px serif`; X.textAlign='left'; X.textBaseline='top'; X.fillStyle='rgba(255,255,200,.9)';
+    items.slice(0,2).forEach((it,i)=>X.fillText(it,x+GS*(.06+i*.47),y+GS*.93));
+  }
+  // bind ring
+  if(Object.values(MBIND).includes(obj.id)){
+    X.font=`${GS*.18}px serif`; X.textAlign='right'; X.textBaseline='top'; X.fillText('🔗',x+GS*.97,y+GS*.04);
+  }
+}
+
+// FURNACE ─────────────────────────────────────
+function dFurn(x,y,obj){
+  const t=GT, sm=SMST[obj.id]||{phase:'idle',t:0};
+  const melting=sm.phase==='smelt';
+  // brick base
+  const bb=X.createLinearGradient(x+GS*.08,y+GS*.28,x+GS*.92,y+GS*.98);
+  bb.addColorStop(0,'#7a2210'); bb.addColorStop(1,'#4a1008');
+  X.fillStyle=bb; rrx(x+GS*.08,y+GS*.28,GS*.84,GS*.7,GS*.04); X.fill();
+  // brick detail
+  X.strokeStyle='rgba(0,0,0,.2)'; X.lineWidth=.8;
+  for(let row=0;row<5;row++){ const by=y+GS*(.3+row*.13), off=row%2?GS*.18:0;
+    for(let col=-1;col<5;col++){ X.strokeRect(x+GS*.08+col*GS*.27+off,by,GS*.25,GS*.11); } }
+  // chimneys
+  X.fillStyle='#581008'; X.fillRect(x+GS*.18,y,GS*.22,GS*.35); X.fillRect(x+GS*.58,y+GS*.05,GS*.2,GS*.3);
+  X.fillStyle='#3a0808'; X.fillRect(x+GS*.16,y-GS*.03,GS*.26,GS*.05); X.fillRect(x+GS*.56,y+GS*.02,GS*.24,GS*.05);
+  // inner glow
+  const gi=melting?0.85+Math.sin(t*6)*.15:0.3+Math.sin(t*1.8)*.12;
+  const fg=X.createRadialGradient(x+GS*.5,y+GS*.62,0,x+GS*.5,y+GS*.62,GS*.52);
+  fg.addColorStop(0,`rgba(255,130,10,${gi})`); fg.addColorStop(.6,`rgba(220,60,0,${gi*.4})`); fg.addColorStop(1,'rgba(150,0,0,0)');
+  X.fillStyle=fg; X.fillRect(x,y+GS*.2,GS,GS*.8);
+  // mouth
+  X.fillStyle=`rgba(255,90,10,${.5+Math.sin(t*4)*.28})`; X.beginPath(); X.ellipse(x+GS*.5,y+GS*.64,GS*.26,GS*.2,0,0,Math.PI*2); X.fill();
+  X.fillStyle=`rgba(255,215,60,${.35+Math.sin(t*5)*.25})`; X.beginPath(); X.ellipse(x+GS*.5,y+GS*.64,GS*.14,GS*.11,0,0,Math.PI*2); X.fill();
+  // smoke
+  for(let s=0;s<3;s++){ const sp=(t*28+s*22)%60, sa=Math.max(0,.55-sp/60);
+    X.fillStyle=`rgba(110,100,90,${sa})`; X.beginPath(); X.arc(x+GS*(.22+s*.28),y-sp,7+sp*.22,0,Math.PI*2); X.fill(); }
+  // melting particle + sparks
+  if(melting){
+    const pt=sm.t/2.6;
+    X.save(); X.globalAlpha=1-pt*.85;
+    drawOreGem(x+GS*.5+Math.cos(t*4)*GS*.12, y+GS*.62-pt*GS*.22, GS*.12);
+    X.restore();
+    for(let k=0;k<6;k++){ const ka=t*7+k*1.05;
+      X.fillStyle=`rgba(255,${130+k*18},0,.85)`;
+      X.beginPath(); X.arc(x+GS*.5+Math.cos(ka)*GS*.28,y+GS*.64+Math.sin(ka)*GS*.12,2.2,0,Math.PI*2); X.fill(); }
+  }
+  // NPC
+  const sw=melting?Math.sin(t*7)*28:Math.sin(t*1.8)*6;
+  const bob=melting?Math.sin(t*3)*2.5:Math.sin(t*1.5)*1.8;
+  drawNPC(x+GS*.5,y+GS*.16+bob,'smelter',sw,melting);
+  lbl(x,y,'🔥',GS*.22);
+}
+
+// WORKSHOP ────────────────────────────────────
+function dWshp(x,y,obj){
+  const t=GT, work=obj.progress>.01;
+  X.fillStyle='#7a5a2a'; rrx(x+4,y+GS*.38,GS-8,GS*.6,4); X.fill();
+  X.strokeStyle='rgba(0,0,0,.18)'; X.lineWidth=1;
+  for(let i=1;i<4;i++){ X.beginPath(); X.moveTo(x+4,y+GS*(.39+i*.14)); X.lineTo(x+GS-4,y+GS*(.39+i*.14)); X.stroke(); }
+  // roof
+  const rg=X.createLinearGradient(x,y+GS*.4,x+GS*.5,y+GS*.04);
+  rg.addColorStop(0,'#4a2e0e'); rg.addColorStop(1,'#382208');
+  X.fillStyle=rg; X.beginPath(); X.moveTo(x,y+GS*.42); X.lineTo(x+GS*.5,y+GS*.04); X.lineTo(x+GS,y+GS*.42); X.closePath(); X.fill();
+  // window glow
+  X.fillStyle='#ffd890'; X.fillRect(x+GS*.22,y+GS*.46,GS*.25,GS*.24);
+  const wg=X.createRadialGradient(x+GS*.35,y+GS*.58,0,x+GS*.35,y+GS*.58,GS*.32);
+  wg.addColorStop(0,'rgba(255,210,80,.28)'); wg.addColorStop(1,'rgba(255,150,0,0)');
+  X.fillStyle=wg; X.fillRect(x,y+GS*.3,GS,GS*.7);
+  // door
+  X.fillStyle='#5a3810'; rrx(x+GS*.6,y+GS*.6,GS*.26,GS*.38,3); X.fill();
+  // NPC
+  const sw=work?Math.sin(t*6)*22:Math.sin(t*1.6)*6;
+  drawNPC(x+GS*.5,y+GS*.18,'crafter',sw,work);
+  if(work&&Math.sin(t*5+2)>.8){ X.font='12px serif'; X.textAlign='center'; X.fillText('✨',x+GS*.72,y+GS*.22); }
+  // progress bar
+  X.fillStyle='rgba(0,0,0,.42)'; X.fillRect(x+5,y+GS*.9,GS-10,7);
+  X.fillStyle='#88cc42'; X.fillRect(x+5,y+GS*.9,(GS-10)*obj.progress,7);
+  lbl(x,y,'🔨',GS*.22);
+}
+
+// MARKET ──────────────────────────────────────
+function dMkt(x,y,obj){
+  const t=GT, bound=MBIND[obj.id];
+  X.fillStyle='#8b4513'; X.fillRect(x+4,y+GS*.42,GS-8,GS*.56);
+  const ag=X.createLinearGradient(x,y+GS*.28,x,y+GS*.48);
+  ag.addColorStop(0,'#c0391c'); ag.addColorStop(1,'#921c0c');
+  X.fillStyle=ag; X.fillRect(x,y+GS*.3,GS,GS*.2);
+  X.fillStyle='rgba(255,255,255,.28)';
+  for(let i=0;i<5;i++) X.fillRect(x+i*(GS/5),y+GS*.3,GS/10,GS*.2);
+  X.fillStyle='#921c0c';
+  for(let i=0;i<7;i++){ X.beginPath(); X.arc(x+i*(GS/6)+GS/12,y+GS*.5,GS*.065,0,Math.PI); X.fill(); }
+  X.fillStyle='#a06228'; X.fillRect(x+6,y+GS*.48,GS-12,GS*.1);
+  X.fillStyle='#ffd700'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.fillText('РЫНОК',x+GS*.5,y+GS*.28);
+  drawNPC(x+GS*.5,y+GS*.18,'merchant',Math.sin(t*1.4)*5,!!bound);
+  // bind indicator
+  X.strokeStyle=bound?'#ffd700':'rgba(255,255,255,.25)'; X.lineWidth=2;
+  X.beginPath(); X.arc(x+GS*.87,y+GS*.16,GS*.1,0,Math.PI*2); X.stroke();
+  if(bound){ X.font=`${GS*.14}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText('🔗',x+GS*.87,y+GS*.16); }
+  lbl(x,y,'🏪',GS*.2);
+}
+
+// ── NPC ──────────────────────────────────────
+const NPCPAL={
+  smelter: {body:'#8b1a00',hat:'#5a0f00',acc:'#ff6600'},
+  crafter: {body:'#2d5a27',hat:'#1a3a15',acc:'#8bc34a'},
+  merchant:{body:'#5a3a8a',hat:'#2d1d45',acc:'#ffd700'},
+  fisherman:{body:'#1a4f7a',hat:'#0d2e47',acc:'#5ba3e0'},
+};
+function drawNPC(wx,wy,type,armSwing,working){
+  const c=NPCPAL[type]||NPCPAL.crafter;
+  const s=GS*.42, lw=s*.18;
+  const t=GT, ls=working?Math.sin(t*6)*10:Math.sin(t*2)*3;
+  X.save(); X.translate(wx,wy); X.scale(s/40,s/40);
+  // shadow
+  X.fillStyle='rgba(0,0,0,.18)'; X.beginPath(); X.ellipse(0,22,10,3.5,0,0,Math.PI*2); X.fill();
+  // legs
+  X.strokeStyle=c.body; X.lineWidth=lw*1.1; X.lineCap='round';
+  [-3,3].forEach((lx,i)=>{
+    X.save(); X.translate(lx,10); X.rotate((i?-1:1)*ls*Math.PI/180);
+    X.beginPath(); X.moveTo(0,0); X.lineTo(0,13); X.stroke(); X.restore();
+  });
+  // body
+  const bg=X.createLinearGradient(-8,-2,8,12); bg.addColorStop(0,bright(c.body)); bg.addColorStop(1,c.body);
+  X.fillStyle=bg; rrx(-8,-2,16,14,3); X.fill();
+  // arms
+  X.strokeStyle=c.body; X.lineWidth=lw; X.lineCap='round';
+  [[-9,1,-1],[9,1,1]].forEach(([ax,ay,side])=>{
+    X.save(); X.translate(ax,ay); X.rotate(armSwing*side*Math.PI/180);
+    X.beginPath(); X.moveTo(0,0); X.lineTo(side*4,10); X.stroke(); X.restore();
+  });
+  // head
+  const hg=X.createRadialGradient(1,-11,0,1,-11,9); hg.addColorStop(0,'#fae0a8'); hg.addColorStop(1,'#f4c999');
+  X.fillStyle=hg; X.beginPath(); X.ellipse(0,-10,8,8,0,0,Math.PI*2); X.fill();
+  X.fillStyle='#2a2020';
+  [[-3,-10],[3,-10]].forEach(([ex,ey])=>{ X.beginPath(); X.ellipse(ex,ey,1.5,working?2:1.5,0,0,Math.PI*2); X.fill(); });
+  X.strokeStyle='#a05028'; X.lineWidth=1.2;
+  X.beginPath(); X.arc(0,-8,2.8,working?.08:.2,working?Math.PI-.08:Math.PI-.2); X.stroke();
+  // hat
+  X.fillStyle=c.hat; rrx(-9,-21,18,9,3); X.fill(); rrx(-7,-29,14,10,3); X.fill();
+  X.fillStyle=c.acc; X.fillRect(-9,-14,18,2.5);
+  // tools
+  if(type==='smelter'&&working){
+    X.strokeStyle='#ffd080'; X.lineWidth=2.5;
+    X.save(); X.translate(10,2); X.rotate(armSwing*.8*Math.PI/180);
+    X.beginPath(); X.moveTo(0,0); X.lineTo(8,6); X.stroke();
+    X.fillStyle='#aaa'; X.beginPath(); X.ellipse(8,6,4,2,-.5,0,Math.PI*2); X.fill(); X.restore();
+  }
+  if(type==='crafter'){
+    X.save(); X.translate(10,1); X.rotate(-armSwing*.7*Math.PI/180);
+    X.strokeStyle='#8bc34a'; X.lineWidth=2; X.beginPath(); X.moveTo(0,0); X.lineTo(6,8); X.stroke();
+    X.fillStyle='#bbb'; X.fillRect(3,5,6,3); X.restore();
+  }
+  if(type==='fisherman'){
+    X.save(); X.translate(10,0); X.rotate(-armSwing*.5*Math.PI/180);
+    X.strokeStyle='#c4863a'; X.lineWidth=1.8; X.beginPath(); X.moveTo(0,0); X.lineTo(14,-8); X.stroke();
+    X.strokeStyle='rgba(180,210,255,.8)'; X.lineWidth=1; X.beginPath(); X.moveTo(14,-8); X.lineTo(14+Math.sin(GT*1.5)*3,8); X.stroke();
+    X.restore();
+  }
+  X.restore();
+}
+function bright(hex){ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return`rgb(${Math.min(255,r+45)},${Math.min(255,g+45)},${Math.min(255,b+45)})`; }
+
+// ── Ore gem (beautiful crystalline) ──────────
+function drawOreGem(wx,wy,s){
+  X.save(); X.translate(wx,wy); X.rotate(GT*.35);
+  // outer hex crystal
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/2, r=s*(i%2===0?1:.68);
+    i?X.lineTo(r*Math.cos(a),r*Math.sin(a)):X.moveTo(r*Math.cos(a),r*Math.sin(a));
+  }
+  X.closePath();
+  const gg=X.createRadialGradient(0,0,0,0,0,s);
+  gg.addColorStop(0,'#ffe898'); gg.addColorStop(.3,'#c88030'); gg.addColorStop(.65,'#8a5015'); gg.addColorStop(1,'#4a2800');
+  X.fillStyle=gg; X.fill();
+  // bright facets
+  X.fillStyle='rgba(255,255,255,.42)';
+  X.beginPath(); X.moveTo(0,-s*.82); X.lineTo(s*.44,-s*.22); X.lineTo(0,0); X.closePath(); X.fill();
+  X.fillStyle='rgba(255,255,200,.2)';
+  X.beginPath(); X.moveTo(-s*.34,-s*.54); X.lineTo(0,0); X.lineTo(-s*.62,0); X.closePath(); X.fill();
+  // copper vein dot
+  X.fillStyle='#c87030'; X.beginPath(); X.arc(s*.18,s*.1,s*.22,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(255,210,110,.6)'; X.beginPath(); X.arc(s*.18,s*.1,s*.1,0,Math.PI*2); X.fill();
+  // outer edge glow
+  X.strokeStyle='rgba(255,210,80,.55)'; X.lineWidth=1.8;
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/2, r=s*(i%2===0?1:.68);
+    i?X.lineTo(r*Math.cos(a),r*Math.sin(a)):X.moveTo(r*Math.cos(a),r*Math.sin(a));
+  }
+  X.closePath(); X.stroke();
+  // sparkle
+  if(Math.sin(GT*4+wx+wy)>.72){ X.fillStyle='rgba(255,255,255,.95)'; drawStar(X,-s*.5,-s*.48,s*.14,4); }
+  X.restore();
+}
+
+// ── Particles draw ───────────────────────────
+function drawParticles(){
+  for(const p of PTCL){
+    const px=p.cx??p.sx, py=p.cy??p.sy;
+    if(p.icon==='ore'){
+      // halo
+      const gl=X.createRadialGradient(px,py,0,px,py,GS*.28);
+      gl.addColorStop(0,'rgba(220,150,40,.55)'); gl.addColorStop(1,'rgba(180,100,20,0)');
+      X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.28,0,Math.PI*2); X.fill();
+      // shadow
+      X.fillStyle='rgba(0,0,0,.22)'; X.beginPath(); X.ellipse(px,py+GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
+      drawOreGem(px,py,GS*.17);
+    } else {
+      // icon particles (bars, rods, fish)
+      const PCOL={bar:'rgba(220,170,30,.5)',rod:'rgba(60,140,220,.45)',fish:'rgba(40,160,80,.45)'};
+      const gl=X.createRadialGradient(px,py,0,px,py,GS*.22);
+      gl.addColorStop(0,PCOL[p.icon]||'rgba(200,200,200,.4)'); gl.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.22,0,Math.PI*2); X.fill();
+      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(px,py+GS*.12,GS*.1,GS*.04,0,0,Math.PI*2); X.fill();
+      const ICON={bar:'🔩',rod:'🎣',fish:'🐟'};
+      X.font=`${GS*.34}px serif`; X.textAlign='center'; X.textBaseline='middle';
+      X.fillText(ICON[p.icon]||'●',px,py);
+    }
+  }
+}
+
+// ── Fishermen draw ───────────────────────────
+function drawFishermen(){
+  for(const f of FISH){
+    const bob=Math.sin(f.bob)*2.5;
+    X.save(); X.translate(f.x,f.y+bob);
+    drawNPC(0,0,'fisherman',Math.sin(f.t*1.5)*9,false);
+    X.restore();
+    if(f.carryA>0){
+      X.globalAlpha=f.carryA; X.font=`${GS*.28}px serif`; X.textAlign='center';
+      X.fillText(f.carry,f.x,f.y-GS*.5); X.globalAlpha=1;
+    }
+  }
+}
+
+// ── Ghost ─────────────────────────────────────
+let gCol=null, gRow=null;
+function drawGhost(){
+  if(!curTool||curTool==='del') return;
+  const c=gCol, r=gRow;
+  if(c<0||c>=COLS||r<0||r>=ROWS) return;
+  const x=c*GS, y=r*GS;
+  const ok=!G[r][c]&&MAP[r][c]!==1&&(curTool!=='bur'||MAP[r][c]===2);
+  X.globalAlpha=.55;
+  X.fillStyle=ok?'rgba(255,255,80,.1)':'rgba(255,40,40,.18)'; X.fillRect(x,y,GS,GS);
+  X.strokeStyle=ok?'#ffd700':'#ff4444'; X.lineWidth=2.2; rrx(x+2,y+2,GS-4,GS-4,5); X.stroke();
+  const IC={bur:'⛏️',conv:'➡️',chest:'📦',furn:'🔥',wshp:'🔨',mkt:'🏪'};
+  X.font=`${GS*.38}px serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText(IC[curTool]||'',x+GS*.5,y+GS*.5);
+  X.globalAlpha=1;
+}
+
+// ── Helpers ───────────────────────────────────
+function rrx(x,y,w,h,r){
+  X.beginPath(); X.moveTo(x+r,y); X.lineTo(x+w-r,y); X.arcTo(x+w,y,x+w,y+r,r);
+  X.lineTo(x+w,y+h-r); X.arcTo(x+w,y+h,x+w-r,y+h,r); X.lineTo(x+r,y+h);
+  X.arcTo(x,y+h,x,y+h-r,r); X.lineTo(x,y+r); X.arcTo(x,y,x+r,y,r); X.closePath();
+}
+function lbl(x,y,ic,sz){
+  X.font=`${sz}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText(ic,x+GS*.5,y+GS*.07);
+}
+
+// ── Place initial free market ────────────────
+G[ROWS-2][0]={type:'mkt',col:0,row:ROWS-2,id:nid(),dir:0,timer:0,progress:0};
+
+// ── Input ─────────────────────────────────────
+let curTool=null;
+function pick(t){
+  curTool=t;
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('sel'));
+  const map={null:'nb-null',bur:'nb-bur',conv:'nb-conv',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del'};
+  document.getElementById(map[t]||'nb-null')?.classList.add('sel');
+  if(t) toast('Выбрано: '+NAME[t]+' — тапни на карту');
+}
+
+let ctxT={col:-1,row:-1};
+let bindSrc=null;
+function closeCtx(){ document.getElementById('ctx').classList.remove('on'); }
+function openCtx(col,row,cx2,cy2){
+  const obj=G[row]?.[col]; if(!obj) return;
+  ctxT={col,row};
+  const ctx2=document.getElementById('ctx');
+  document.getElementById('cm-rot').style.display  = obj.type==='conv'?'flex':'none';
+  document.getElementById('cm-bind').style.display = obj.type==='mkt'?'flex':'none';
+  document.getElementById('cm-info').style.display = obj.type==='chest'?'flex':'none';
+  ctx2.style.left=Math.min(cx2,W-165)+'px'; ctx2.style.top=Math.min(cy2,H-170)+'px';
+  ctx2.classList.add('on');
+}
+function ctxRotate(){ const o=G[ctxT.row]?.[ctxT.col]; if(o&&o.type==='conv'){o.dir=(o.dir+1)%4; toast('Конвейер: '+DARR[o.dir]);} closeCtx(); }
+function ctxBind(){ bindSrc=G[ctxT.row]?.[ctxT.col]; closeCtx(); toast('🔗 Теперь тапни на сундук'); }
+function ctxInfo(){ const o=G[ctxT.row]?.[ctxT.col]; if(o?.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); } closeCtx(); }
+function ctxDel(){ demolish(ctxT.col,ctxT.row); closeCtx(); }
+
+function p2g(cx2,cy2){ return{col:Math.floor((cx2+camX)/GS),row:Math.floor((cy2+camY)/GS)}; }
+
+// touch/mouse
+let ps=null,pc2=null,pd=0,lpt=null;
+cv.addEventListener('touchstart',e=>{
+  e.preventDefault(); clearTimeout(lpt);
+  if(e.touches.length===1){
+    ps={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    pc2={x:camX,y:camY}; pd=0;
+    const{col,row}=p2g(ps.x,ps.y);
+    lpt=setTimeout(()=>{ openCtx(col,row,ps.x,ps.y); ps=null; },480);
+  }
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+  e.preventDefault(); clearTimeout(lpt);
+  if(e.touches.length===1&&ps){
+    const dx=e.touches[0].clientX-ps.x, dy=e.touches[0].clientY-ps.y;
+    pd=Math.sqrt(dx*dx+dy*dy);
+    if(pd>8&&!curTool){
+      camX=Math.max(-GS,Math.min(COLS*GS-W+GS,pc2.x-dx));
+      camY=Math.max(-GS,Math.min(ROWS*GS-H+200,pc2.y-dy));
+    }
+    const{col,row}=p2g(e.touches[0].clientX,e.touches[0].clientY); gCol=col; gRow=row;
+  }
+},{passive:false});
+cv.addEventListener('touchend',e=>{ e.preventDefault(); clearTimeout(lpt); if(pd<14&&ps) handleTap(ps.x,ps.y); ps=null; },{passive:false});
+cv.addEventListener('mousedown',e=>{ ps={x:e.clientX,y:e.clientY}; pc2={x:camX,y:camY}; pd=0; });
+cv.addEventListener('mousemove',e=>{
+  if(ps){ const dx=e.clientX-ps.x,dy=e.clientY-ps.y; pd=Math.sqrt(dx*dx+dy*dy);
+    if(pd>6&&!curTool){ camX=Math.max(-GS,Math.min(COLS*GS-W+GS,pc2.x-dx)); camY=Math.max(-GS,Math.min(ROWS*GS-H+200,pc2.y-dy)); } }
+  const{col,row}=p2g(e.clientX,e.clientY); gCol=col; gRow=row;
+});
+cv.addEventListener('mouseup',e=>{ if(pd<8) handleTap(e.clientX,e.clientY); ps=null; });
+cv.addEventListener('contextmenu',e=>{ e.preventDefault(); const{col,row}=p2g(e.clientX,e.clientY); openCtx(col,row,e.clientX,e.clientY); });
+
+function handleTap(tx,ty){
+  closeCtx();
+  const{col,row}=p2g(tx,ty); gCol=col; gRow=row;
+  if(bindSrc){
+    const t=G[row]?.[col];
+    if(t&&t.type==='chest'){ MBIND[bindSrc.id]=t.id; toast('🔗 Рынок привязан к сундуку!'); }
+    else toast('Нужен сундук!');
+    bindSrc=null; return;
+  }
+  if(!curTool){
+    const o=G[row]?.[col];
+    if(o){ if(o.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); }
+           else toast(NAME[o.type]); }
+    return;
+  }
+  if(curTool==='del'){ demolish(col,row); return; }
+  place(curTool,col,row);
+}
+
+// ── Journal ───────────────────────────────────
+function openJournal(){
+  document.getElementById('ptitle').textContent='📖 Рыбный журнал';
+  const b=document.getElementById('pbody'); b.innerHTML='';
+  for(const f of FISHDB){
+    const caught=CAUGHT.has(f.n); const d=document.createElement('div');
+    d.className='fe'+(caught?'':' lk');
+    d.innerHTML=`<span style="font-size:22px">${caught?f.i:'❓'}</span><div><b>${caught?f.n:'???'}</b><br><span style="font-size:11px;opacity:.5">${f.r}</span></div>`;
+    b.appendChild(d);
+  }
+  if(!CAUGHT.size) b.innerHTML='<p style="text-align:center;opacity:.5;padding:16px;color:#3a2000">Построй Мастерскую — появятся рыбаки!</p>';
+  document.getElementById('popup').classList.add('on');
+}
+function closePopup(){ document.getElementById('popup').classList.remove('on'); }
+
+// ── Toast ─────────────────────────────────────
+let toastTm;
+function toast(m){
+  const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on');
+  clearTimeout(toastTm); toastTm=setTimeout(()=>el.classList.remove('on'),2500);
+}
+
+// ════════════════════════════════════════════
+//  SAVE / LOAD
+// ════════════════════════════════════════════
+const SAVE_KEY='klyovoe_v3';
+
+function saveGame(){
+  const grid_save=[];
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const o=G[r][c]; if(o) grid_save.push({...o});
+  }
+  const data={
+    R:{...R}, grid:grid_save,
+    CSTORE:JSON.parse(JSON.stringify(CSTORE)),
+    MBIND:{...MBIND},
+    SMST:{},
+    fish_count:FISH.length,
+    caught:[...CAUGHT],
+    camX,camY, seq, ts:Date.now()
+  };
+  try{
+    localStorage.setItem(SAVE_KEY,JSON.stringify(data));
+    const btn=document.getElementById('savebtn');
+    btn.textContent='✅'; btn.classList.add('saved');
+    setTimeout(()=>{ btn.textContent='💾'; btn.classList.remove('saved'); },1800);
+  } catch(e){ toast('Ошибка сохранения 😢'); }
+}
+
+function loadGame(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const data=JSON.parse(raw);
+    // resources
+    Object.assign(R, data.R);
+    // grid
+    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G[r][c]=null;
+    for(const o of data.grid){
+      G[o.row][o.col]={...o};
+      if(o.type==='furn') SMST[o.id]={phase:'idle',t:0};
+    }
+    // chest stores
+    Object.assign(CSTORE, data.CSTORE||{});
+    Object.assign(MBIND,  data.MBIND||{});
+    // fishermen
+    const fc=Math.min(data.fish_count||0,5);
+    for(let i=0;i<fc;i++) if(FISH.length<5) spawnFisherman();
+    // caught fish
+    (data.caught||[]).forEach(n=>CAUGHT.add(n));
+    // cam
+    camX=data.camX||0; camY=data.camY||40;
+    seq=data.seq||seq;
+    hud();
+    return true;
+  } catch(e){ return false; }
+}
+
+// autosave every 30s
+setInterval(()=>{ if(R.gold!==200||Object.values(G).some(r=>r.some(c=>c))) saveGame(); },30000);
+
+// ════════════════════════════════════════════
+//  TUTORIAL  v2 — fully linear, no waitFor
+// ════════════════════════════════════════════
+const TUT_KEY='klyovoe_tut_v2';
+let tutStep=0;
+let fingerCur=null;
+
+// ── helpers called by each step ──────────────
+function btn(id){ return document.getElementById(id)?.getBoundingClientRect(); }
+function bcx(r){ return r?(r.left+r.right)/2:W/2; }
+function bcy(r){ return r?(r.top+r.bottom)/2:H-70; }
+function worldPx(col,row){ return {x:col*GS+GS/2-camX, y:row*GS+GS/2-camY}; }
+
+// Build steps array fresh every call so positions use current GS/cam
+function buildSteps(){
+  const bur   = btn('nb-bur'),  conv  = btn('nb-conv'),
+        chest = btn('nb-chest'),furn  = btn('nb-furn'),
+        wshp  = btn('nb-wshp'), mkt   = btn('nb-mkt'),
+        del   = btn('nb-del'),  save  = btn('savebtn'),
+        jrn   = btn('bjrn');
+  const rock   = worldPx(1,1);   // first rock cell
+  const conv1  = worldPx(2,1);   // next to bur
+  const conv2  = worldPx(3,1);
+  const chestP = worldPx(4,1);
+  const furnP  = worldPx(5,1);
+  const wshpP  = worldPx(5,3);
+  const mktP   = worldPx(0, ROWS-2); // free market spot
+  const mapCtr = {x:W*.38, y:H*.45};
+
+  // pos: 'top' = box under HUD  |  'bot' = box above nav
+  // finger: {x,y, anim:'tap'|'swipe'|'hold'|'point'}
+  // hl: {x,y,w,h} absolute screen rect  |  null
+  return [
+    /*0*/ {
+      title:'🎉 Добро пожаловать!',
+      lines:['Клёвое Место — строй завод, добывай руду,','делай удочки и лови рыбу на продажу! 🎣','','Давай пройдём краткое обучение — всего 2 минуты!'],
+      pos:'bot', finger:null, hl:null },
+
+    /*1*/ {
+      title:'🗺️ Карта',
+      lines:['Двигай карту пальцем — просто тяни по экрану.','Зелёное — трава.  Синее — вода.','Серое — КАМЕНЬ с рудой ⛏️ — вот тут нужен бур!'],
+      pos:'bot',
+      finger:{x:mapCtr.x, y:mapCtr.y, anim:'swipe'},
+      hl:{x:GS*0-camX, y:GS*0-camY, w:GS*6, h:GS*4} },
+
+    /*2*/ {
+      title:'⛏️ Бур — шаг 1',
+      lines:['БУР добывает руду автоматически.','Стоит 50🪙  Ставится только на серый камень.','','👇 Вот кнопка Бур в меню:'],
+      pos:'top',
+      finger:{x:bcx(bur), y:bcy(bur), anim:'tap'},
+      hl: bur?{x:bur.left-4,y:bur.top-4,w:bur.width+8,h:bur.height+8}:null },
+
+    /*3*/ {
+      title:'⛏️ Бур — поставь!',
+      lines:['Выбери ⛏️ Бур внизу, потом тапни','на серую клетку с рудой на карте.','','👇 Сюда тапни:'],
+      pos:'bot',
+      finger:{x:rock.x, y:rock.y, anim:'tap'},
+      hl:{x:rock.x-GS,y:rock.y-GS,w:GS*4,h:GS*3} },
+
+    /*4*/ {
+      title:'➡️ Конвейер — шаг 2',
+      lines:['КОНВЕЙЕР везёт руду между зданиями.','Стоит 15🪙  Стрелка показывает направление.','Долгий тап на конвейер → повернуть! 🔄','','👇 Кнопка Конвейер:'],
+      pos:'top',
+      finger:{x:bcx(conv), y:bcy(conv), anim:'tap'},
+      hl: conv?{x:conv.left-4,y:conv.top-4,w:conv.width+8,h:conv.height+8}:null },
+
+    /*5*/ {
+      title:'➡️ Конвейер — цепочка',
+      lines:['Поставь 2–3 конвейера рядом с буром.','Они образуют дорожку для руды.','Руда едет туда куда смотрит стрелка ➡️','','👇 Ставь здесь:'],
+      pos:'bot',
+      finger:{x:conv1.x, y:conv1.y, anim:'tap'},
+      hl:{x:conv1.x-GS*.5,y:conv1.y-GS*.5,w:GS*4,h:GS*2} },
+
+    /*6*/ {
+      title:'📦 Сундук — шаг 3',
+      lines:['СУНДУК хранит всё: руду, слитки, удочки, рыбу.','Ставь в конце цепочки конвейеров.','Тапни на сундук → увидишь содержимое!','','👇 Кнопка Сундук:'],
+      pos:'top',
+      finger:{x:bcx(chest), y:bcy(chest), anim:'tap'},
+      hl: chest?{x:chest.left-4,y:chest.top-4,w:chest.width+8,h:chest.height+8}:null },
+
+    /*7*/ {
+      title:'📦 Сундук — поставь!',
+      lines:['Выбери 📦 Сундук и поставь его','в конце конвейеров — руда поедет прямо туда!','','👇 Сюда:'],
+      pos:'bot',
+      finger:{x:chestP.x, y:chestP.y, anim:'tap'},
+      hl:{x:chestP.x-GS*.5,y:chestP.y-GS*.5,w:GS*2,h:GS*2} },
+
+    /*8*/ {
+      title:'💎 Руда едет!',
+      lines:['Посмотри — кристаллы руды скользят','по конвейеру и падают в сундук.','Это твой первый маленький завод! 🏭','','Бур даёт 1 руду каждые 4 секунды.'] ,
+      pos:'bot', finger:null, hl:null },
+
+    /*9*/ {
+      title:'🔥 Плавильщик — шаг 4',
+      lines:['ПЛАВИЛЬЩИК берёт руду из соседнего сундука','и переплавляет в металлические слитки 🔩','Ставь его вплотную к сундуку!','','👇 Кнопка Плавильщик:'],
+      pos:'top',
+      finger:{x:bcx(furn), y:bcy(furn), anim:'tap'},
+      hl: furn?{x:furn.left-4,y:furn.top-4,w:furn.width+8,h:furn.height+8}:null },
+
+    /*10*/ {
+      title:'🔥 Анимация плавки',
+      lines:['Когда руда есть в сундуке рядом:','1️⃣ Сундук открывается','2️⃣ НПС хватает руду','3️⃣ Бросает в огонь — летят искры!','4️⃣ Слиток выходит на конвейер 🔩'],
+      pos:'bot', finger:null, hl:null },
+
+    /*11*/ {
+      title:'🔨 Мастерская — шаг 5',
+      lines:['МАСТЕРСКАЯ делает удочки 🎣','из 2 слитков 🔩🔩  за 5 секунд.','После первой удочки появится рыбак!','','👇 Кнопка Мастерская:'],
+      pos:'top',
+      finger:{x:bcx(wshp), y:bcy(wshp), anim:'tap'},
+      hl: wshp?{x:wshp.left-4,y:wshp.top-4,w:wshp.width+8,h:wshp.height+8}:null },
+
+    /*12*/ {
+      title:'🎣 Рыбаки',
+      lines:['Каждая новая удочка = новый рыбак на озере.','Рыбаки ловят рыбу и кладут её в сундук.','В журнале 📖 — 8 видов рыбы для коллекции!'],
+      pos:'bot',
+      finger:{x:bcx(jrn), y:bcy(jrn), anim:'tap'},
+      hl: jrn?{x:jrn.left-4,y:jrn.top-4,w:jrn.width+8,h:jrn.height+8}:null },
+
+    /*13*/ {
+      title:'🏪 Рынок — шаг 6',
+      lines:['РЫНОК продаёт рыбу и удочки за монеты 🪙','В начале игры у тебя уже есть БЕСПЛАТНЫЙ рынок!','','Чтобы он работал — нужно ПРИВЯЗАТЬ его к сундуку:','Долгий тап на рынок → «Привязать к сундуку»','Затем тапни на нужный сундук.'],
+      pos:'bot',
+      finger:{x:mktP.x, y:mktP.y, anim:'hold'},
+      hl:{x:mktP.x-GS*.5,y:mktP.y-GS*.5,w:GS*2,h:GS*2} },
+
+    /*14*/ {
+      title:'🔄 Повернуть конвейер',
+      lines:['Конвейер по умолчанию смотрит →','Чтобы повернуть — долгий тап на конвейер','→ «Повернуть» в меню.','','Так можно строить линии в любом направлении!'],
+      pos:'bot',
+      finger:{x:conv2.x, y:conv2.y, anim:'hold'},
+      hl:{x:conv2.x-GS*.6,y:conv2.y-GS*.6,w:GS*2.2,h:GS*2.2} },
+
+    /*15*/ {
+      title:'🗑️ Снос',
+      lines:['Ошибся? Кнопка СНОС внизу или','долгий тап на здание → «Снести».','Монеты не возвращаются!','','👇 Кнопка Снос:'],
+      pos:'top',
+      finger:{x:bcx(del), y:bcy(del), anim:'tap'},
+      hl: del?{x:del.left-4,y:del.top-4,w:del.width+8,h:del.height+8}:null },
+
+    /*16*/ {
+      title:'💾 Сохранение',
+      lines:['Нажми 💾 — игра сохранится.','При следующем открытии всё вернётся!','Автосохранение каждые 30 секунд.','','👇 Кнопка сохранения:'],
+      pos:'bot',
+      finger: save?{x:bcx(save), y:bcy(save), anim:'tap'}:{x:W-60,y:50,anim:'tap'},
+      hl: save?{x:save.left-4,y:save.top-4,w:save.width+8,h:save.height+8}:null },
+
+    /*17*/ {
+      title:'🏆 Готово! Вся схема:',
+      lines:['⛏️ Бур → ➡️ Конвейеры → 📦 Сундук',
+             '📦 Сундук ← 🔥 Плавильщик → ➡️ → 📦',
+             '📦 Сундук ← 🔨 Мастерская → удочки',
+             '🎣 Рыбаки → 📦 Сундук → 🏪 Рынок → 🪙',
+             '','Удачи строить своё Клёвое Место! 🎉'],
+      pos:'bot', finger:null, hl:null },
+  ];
+}
+
+function startTutorial(){
+  // give player plenty of gold for tutorial
+  if(R.gold<2000){ R.gold=2000; hud(); }
+  tutStep=0;
+  document.getElementById('tut-box').style.display='block';
+  renderTutStep();
+}
+
+function endTutorial(){
+  document.getElementById('tut-box').style.display='none';
+  hideFinger(); hideHL();
+  localStorage.setItem(TUT_KEY,'1');
+  toast('Удачи в игре! Строй своё Клёвое Место 🎣');
+}
+
+function tutNext(){
+  const steps=buildSteps();
+  tutStep++;
+  if(tutStep>=steps.length){ endTutorial(); return; }
+  renderTutStep();
+}
+
+function renderTutStep(){
+  const steps=buildSteps();
+  if(tutStep>=steps.length){ endTutorial(); return; }
+  const s=steps[tutStep];
+
+  // position box
+  const box=document.getElementById('tut-box');
+  box.className=s.pos==='top'?'top':'bot';
+
+  // title
+  document.getElementById('tut-t').textContent=s.title;
+
+  // text — render each line, blank line = spacer
+  const stepEl=document.getElementById('tut-step');
+  stepEl.innerHTML='';
+  s.lines.forEach(line=>{
+    const p=document.createElement('div');
+    if(line===''){p.style.height='6px';}
+    else{p.textContent=line;}
+    stepEl.appendChild(p);
+  });
+
+  // progress dots
+  const prog=document.getElementById('tut-prog'); prog.innerHTML='';
+  const total=steps.length;
+  // show max 12 dots, rest as "..."
+  const show=Math.min(total,12);
+  for(let i=0;i<show;i++){
+    const d=document.createElement('div');
+    const idx=Math.floor(i*total/show);
+    d.className='tp'+(idx<tutStep?' done':idx===tutStep?' cur':'');
+    prog.appendChild(d);
+  }
+  // step counter
+  const ctr=document.createElement('span');
+  ctr.style.cssText='color:#c4863a;font-size:10px;margin-left:4px;flex-shrink:0;';
+  ctr.textContent=`${tutStep+1}/${total}`;
+  prog.appendChild(ctr);
+
+  // next button — always active
+  const nb=document.getElementById('tbtn-next');
+  nb.textContent=tutStep>=steps.length-1?'Начать игру! 🚀':'Дальше →';
+  nb.style.opacity='1';
+  nb.onclick=tutNext; // always works
+
+  // finger animation
+  if(s.finger) showFinger(s.finger);
+  else hideFinger();
+
+  // highlight
+  if(s.hl) showHL(s.hl);
+  else hideHL();
+}
+
+// ── Finger ────────────────────────────────────
+function showFinger(cfg){
+  const el=document.getElementById('finger');
+  clearInterval(fingerCur);
+  el.style.transition='left .5s cubic-bezier(.4,0,.2,1),top .5s cubic-bezier(.4,0,.2,1),opacity .3s';
+  el.style.opacity='1';
+  el.style.transform='translate(-50%,-50%)';
+
+  if(cfg.anim==='swipe'){
+    el.textContent='👆';
+    el.style.left=cfg.x+'px'; el.style.top=cfg.y+'px';
+    // animate back and forth
+    let dir=1, pos=0;
+    fingerCur=setInterval(()=>{
+      pos+=dir*3;
+      if(pos>70||pos<0) dir*=-1;
+      el.style.left=(cfg.x+pos)+'px';
+    },20);
+  } else if(cfg.anim==='hold'){
+    el.textContent='✋';
+    el.style.left=cfg.x+'px'; el.style.top=cfg.y+'px';
+    let sc=1,d=1;
+    fingerCur=setInterval(()=>{
+      sc+=d*.035; if(sc>1.22||sc<.82) d*=-1;
+      el.style.transform=`translate(-50%,-50%) scale(${sc})`;
+    },35);
+  } else {
+    // tap — repeating bounce
+    el.textContent='👆';
+    el.style.left=cfg.x+'px'; el.style.top=cfg.y+'px';
+    let up=true;
+    fingerCur=setInterval(()=>{
+      up=!up;
+      el.style.top=(cfg.y+(up?-8:0))+'px';
+    },350);
+  }
+}
+
+function hideFinger(){
+  clearInterval(fingerCur);
+  document.getElementById('finger').style.opacity='0';
+}
+
+// ── Highlight ─────────────────────────────────
+function showHL(cfg){
+  const el=document.getElementById('hl');
+  el.style.left  =cfg.x+'px'; el.style.top   =cfg.y+'px';
+  el.style.width =cfg.w+'px'; el.style.height=cfg.h+'px';
+  el.classList.add('on');
+}
+function hideHL(){ document.getElementById('hl').classList.remove('on'); }
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+hud();
+
+const loaded=loadGame();
+if(loaded){
+  spawnFisherman();
+  requestAnimationFrame(frame);
+  toast('💾 Игра загружена!');
+} else {
+  spawnFisherman();
+  requestAnimationFrame(frame);
+  if(!localStorage.getItem(TUT_KEY)){
+    setTimeout(startTutorial, 700);
+  } else {
+    toast('⛏️ Бур на камень → Конвейер → Сундук  |  Долгий тап = меню');
+  }
+}
+</script>
 </body>
 </html>
-
