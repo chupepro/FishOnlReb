@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🪵 КЛЁВОЕ МЕСТО | В разработке</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center, #2d1b0d 0%, #1a0f06 100%);
+            color: #f3e5ab;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .title-font {
+            font-family: 'Unbounded', cursive;
+        }
+
+        .log-container {
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #8b4513, #cd853f);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(205, 133, 63, 0.5);
+            animation: load 5s ease-in-out infinite;
+        }
+
+        @keyframes load {
+            0% { width: 5%; }
+            50% { width: 85%; }
+            100% { width: 5%; }
+        }
+
+        .wood-texture {
+            background-color: #3e2723;
+            background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+            border: 4px solid #5d4037;
+        }
+
+        .glow {
+            text-shadow: 0 0 10px rgba(243, 229, 171, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-md w-full px-6 text-center">
+        <!-- Иконка бревна/дерева -->
+        <div class="log-container mb-8">
+            <div class="text-8xl">🪵</div>
+        </div>
+
+        <!-- Заголовок -->
+        <h1 class="title-font text-3xl md:text-4xl mb-4 uppercase tracking-tighter glow">
+            КЛЁВОЕ МЕСТО
+        </h1>
+
+        <!-- Статус -->
+        <div class="wood-texture p-6 rounded-2xl shadow-2xl relative overflow-hidden">
+            <h2 class="text-xl font-bold mb-2 text-white">ВЕДУТСЯ РАБОТЫ</h2>
+            <p class="text-sm opacity-90 mb-6 leading-relaxed">
+                Мы полируем кору и подрезаем ветки. <br>
+                Игра будет доступна в течение <span class="font-bold text-orange-400">1-2 часов</span>.
+            </p>
+
+            <!-- Полоска загрузки -->
+            <div class="w-full h-3 bg-black/40 rounded-full mb-2">
+                <div class="progress-bar"></div>
+            </div>
+            <p class="text-[10px] uppercase tracking-widest opacity-50">Идет подготовка окружения...</p>
+        </div>
+
+        <!-- Просьба -->
+        <div class="mt-8 space-y-4">
+            <p class="text-lg font-semibold animate-pulse">
+                Ожидайте, пожалуйста! 🙏
+            </p>
+            <p class="text-xs opacity-40 uppercase tracking-widest">
+                Пожалуйста, не удаляйте игру
+            </p>
+        </div>
+    </div>
+
+    <!-- Декоративные частицы -->
+    <div class="absolute inset-0 pointer-events-none opacity-20">
+        <div class="absolute top-10 left-10 text-2xl">🌲</div>
+        <div class="absolute bottom-20 right-10 text-2xl">🍂</div>
+        <div class="absolute top-1/4 right-1/4 text-xl">🪵</div>
+    </div>
+
+</body>
+</html>
+
