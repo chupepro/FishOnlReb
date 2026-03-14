@@ -118,6 +118,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <span id="ttl">🪵 Клёвое Место</span>
   <div class="chip"><span>🪙</span><span id="hg">200</span></div>
   <div class="chip"><span>🪨</span><span id="ho">0</span></div>
+  <div class="chip" title="Руда нужна для строительства!"><span>⛏️</span><span id="hore">0</span></div>
   <div class="chip"><span>🔩</span><span id="hb">0</span></div>
   <div class="chip"><span>🎣</span><span id="hr">0</span></div>
   <div class="chip"><span>🌱</span><span id="hn">0</span>/<span>10</span></div>
@@ -143,18 +144,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
 <div id="nav"><div id="ns">
   <div class="nb sel" id="nb-null" onclick="pick(null)"><div class="ni">👆</div><div>Курсор</div><div class="nc">—</div></div>
   <div class="nb" id="nb-bur"  onclick="pick('bur')"><div class="ni">⛏️</div><div>Бур</div><div class="nc">50🪙</div></div>
+  <div class="nb" id="nb-bur2" onclick="pick('bur2')"><div class="ni">🔩</div><div>Мега-Бур</div><div class="nc">220🪙+5⛏️</div></div>
+  <div class="nb" id="nb-landspot" onclick="pick('landspot')"><div class="ni">🗺️</div><div>Купить 5×5</div><div class="nc">300🪙</div></div>
   <div class="nb" id="nb-conv" onclick="pick('conv')"><div class="ni">➡️</div><div>Конвейер</div><div class="nc">15🪙</div></div>
-  <div class="nb" id="nb-chest" onclick="pick('chest')"><div class="ni">📦</div><div>Сундук</div><div class="nc">40🪙</div></div>
-  <div class="nb" id="nb-furn" onclick="pick('furn')"><div class="ni">🔥</div><div>Плавильщик</div><div class="nc">80🪙</div></div>
-  <div class="nb" id="nb-wshp" onclick="pick('wshp')"><div class="ni">🔨</div><div>Мастерская</div><div class="nc">120🪙</div></div>
-  <div class="nb" id="nb-mkt"  onclick="pick('mkt')"><div class="ni">🏪</div><div>Рынок</div><div class="nc">150🪙</div></div>
+  <div class="nb" id="nb-conv2" onclick="pick('conv2')"><div class="ni">⚡</div><div>Супер-Конв.</div><div class="nc">400🪙+8⛏️</div></div>
+  <div class="nb" id="nb-teleport" onclick="pick('teleport')"><div class="ni">🌀</div><div>Телепортер</div><div class="nc">800🪙+15⛏️</div></div>
+  <div class="nb" id="nb-chest" onclick="pick('chest')"><div class="ni">📦</div><div>Сундук</div><div class="nc">40🪙+2⛏️</div></div>
+  <div class="nb" id="nb-furn" onclick="pick('furn')"><div class="ni">🔥</div><div>Плавильщик</div><div class="nc">80🪙+4⛏️</div></div>
+  <div class="nb" id="nb-wshp" onclick="pick('wshp')"><div class="ni">🔨</div><div>Мастерская</div><div class="nc">120🪙+6⛏️</div></div>
+  <div class="nb" id="nb-mkt"  onclick="pick('mkt')"><div class="ni">🏪</div><div>Рынок</div><div class="nc">150🪙+3⛏️</div></div>
   <div class="nb" id="nb-seed" onclick="pick('seed')"><div class="ni">🌱</div><div>Səməni</div><div class="nc">60🪙</div></div>
-  <div class="nb" id="nb-cowpen"  onclick="pick('cowpen')"><div class="ni">🐄</div><div>Коровник</div><div class="nc">180🪙</div></div>
-  <div class="nb" id="nb-chickenpen" onclick="pick('chickenpen')"><div class="ni">🐔</div><div>Курятник</div><div class="nc">120🪙</div></div>
-  <div class="nb" id="nb-milkdel" onclick="pick('milkdel')"><div class="ni">🥛</div><div>БанкоДел</div><div class="nc">100🪙</div></div>
-  <div class="nb" id="nb-eggpack" onclick="pick('eggpack')"><div class="ni">🥚</div><div>УпаковкоДел</div><div class="nc">100🪙</div></div>
-  <div class="nb" id="nb-raidspot" onclick="pick('raidspot')"><div class="ni">🏰</div><div>Место Рейда</div><div class="nc">200🪙</div></div>
-  <div class="nb" id="nb-raidtower" onclick="pick('raidtower')"><div class="ni">🗼</div><div>Рейд Башня</div><div class="nc">150🪙</div></div>
+  <div class="nb" id="nb-cowpen"  onclick="pick('cowpen')"><div class="ni">🐄</div><div>Коровник</div><div class="nc">180🪙+3⛏️</div></div>
+  <div class="nb" id="nb-chickenpen" onclick="pick('chickenpen')"><div class="ni">🐔</div><div>Курятник</div><div class="nc">120🪙+2⛏️</div></div>
+  <div class="nb" id="nb-milkdel" onclick="pick('milkdel')"><div class="ni">🥛</div><div>БанкоДел</div><div class="nc">100🪙+2⛏️</div></div>
+  <div class="nb" id="nb-eggpack" onclick="pick('eggpack')"><div class="ni">🥚</div><div>УпаковкоДел</div><div class="nc">100🪙+2⛏️</div></div>
+  <div class="nb" id="nb-raidspot" onclick="pick('raidspot')"><div class="ni">🏰</div><div>Место Рейда</div><div class="nc">200🪙+5⛏️</div></div>
+  <div class="nb" id="nb-raidtower" onclick="pick('raidtower')"><div class="ni">🗼</div><div>Рейд Башня</div><div class="nc">150🪙+8⛏️</div></div>
   <div class="nb" id="nb-del"  onclick="pick('del')"><div class="ni">🗑️</div><div>Снос</div><div class="nc">—</div></div>
 </div></div>
 
@@ -166,6 +171,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
 <div id="ctx">
   <button class="cm" id="cm-rot"  onclick="ctxRotate()">🔄 Повернуть конвейер</button>
   <button class="cm" id="cm-bind" onclick="ctxBind()">🔗 Привязать к рынку</button>
+  <button class="cm" id="cm-tbind" onclick="ctxTBind()">🌀 Связать телепортер</button>
   <button class="cm" id="cm-info" onclick="ctxInfo()">📋 Содержимое</button>
   <button class="cm" id="cm-del"  onclick="ctxDel()">🗑️ Снести</button>
   <button class="cm" onclick="closeCtx()">✕ Закрыть</button>
@@ -209,6 +215,7 @@ function spend(k,v){ R[k]-=v; hud(); }
 function hud(){
   document.getElementById('hg').textContent = R.gold;
   document.getElementById('ho').textContent = R.ore;
+  const hore=document.getElementById('hore'); if(hore) hore.textContent=R.ore;
   document.getElementById('hb').textContent = R.bars;
   document.getElementById('hr').textContent = R.rods;
   const hn=document.getElementById('hn'); if(hn) hn.textContent=SEMENI_NPCS.length;
@@ -243,9 +250,9 @@ function drawRaidHUD(){
 }
 
 // ── Map ─────────────────────────────────────
-const COLS=14, ROWS=18;
+let COLS=14, ROWS=18;
 let camX=0, camY=40;
-// 0=grass  1=water  2=rock
+// 0=grass  1=water  2=rock  3=locked(тёмный, нельзя строить — нужно купить)
 const MAP=[];
 for(let r=0;r<ROWS;r++){ MAP[r]=[];
   for(let c=0;c<COLS;c++){
@@ -258,6 +265,26 @@ for(let r=0;r<ROWS;r++){ MAP[r]=[];
 // ── Grid ────────────────────────────────────
 const G=[];
 for(let r=0;r<ROWS;r++){ G[r]=[]; for(let c=0;c<COLS;c++) G[r][c]=null; }
+
+// Добавить 5 новых строк снизу
+function expandMapDown(){
+  const newRows=5;
+  for(let i=0;i<newRows;i++){
+    const r=ROWS+i;
+    MAP[r]=[];
+    G[r]=[];
+    for(let c=0;c<COLS;c++){
+      // Случайный ландшафт: 50% трава, 35% камень, 15% вода (у правого края)
+      if(c>=COLS-3) MAP[r][c]=1;
+      else{
+        const rnd=Math.random();
+        MAP[r][c] = rnd<0.35 ? 2 : 0;
+      }
+      G[r][c]=null;
+    }
+  }
+  ROWS+=newRows;
+}
 
 let seq=0; const nid=()=>seq++;
 
@@ -278,14 +305,38 @@ const SEMENI_SUPER_CHESTS = {}; // chestId→true (marks super chests)
 // pen buildings produce milk/eggs over time
 
 // ── Market bindings  mktId→chestId ──────────
-const MBIND = {};
+const MBIND = {}; // mktId → chestId
+const TBIND = {}; // teleport_redId → teleport_blueId (пары телепортеров)
 
 // ── Smelter animation state ──────────────────
 const SMST = {};  // id→{phase:'idle'|'open'|'smelt'|'pour', t:0}
 
 // ── Costs / Names ────────────────────────────
-const COST={bur:50,conv:15,chest:40,furn:80,wshp:120,mkt:150,seed:60,cowpen:180,chickenpen:120,milkdel:100,eggpack:100,raidspot:200,raidtower:150};
-const NAME={bur:'Бур',conv:'Конвейер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня'};
+// [gold, ore] — руда нужна для строительства!
+const COST={
+  bur:      [50,  0],
+  bur2:     [220, 5],
+  conv:     [15,  0],
+  conv2:    [400, 8],
+  teleport: [800,15],
+  chest:    [40,  2],
+  furn:     [80,  4],
+  wshp:     [120, 6],
+  mkt:      [150, 3],
+  seed:     [60,  0],
+  cowpen:   [180, 3],
+  chickenpen:[120,2],
+  milkdel:  [100, 2],
+  eggpack:  [100, 2],
+  raidspot: [200, 5],
+  raidtower:[150, 8],
+  landspot: [300, 0],
+};
+// Удобные геттеры
+function costGold(t){ return Array.isArray(COST[t])?COST[t][0]:(COST[t]||0); }
+function costOre(t){  return Array.isArray(COST[t])?COST[t][1]:0; }
+
+const NAME={bur:'Бур',bur2:'Мега-Бур',conv:'Конвейер',conv2:'Супер-Конвейер',teleport:'Телепортер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня',landspot:'Купить Место'};
 
 // ── Place / Demolish ─────────────────────────
 function place(type, col, row){
@@ -296,13 +347,37 @@ function place(type, col, row){
     const spot=G[row][col];
     if(!spot||spot.type!=='raidspot') return toast('Рейд Башня — только на Месте Рейда!');
     if(spot.hasTower) return toast('Башня уже стоит здесь!');
-    if(R.gold<COST.raidtower) return toast('Мало монет 🪙');
-    spend('gold',COST.raidtower);
+    if(R.gold<costGold('raidtower')) return toast('Мало монет 🪙');
+    if(R.ore<costOre('raidtower'))  return toast(`Мало руды ⛏️ (нужно ${costOre('raidtower')})`);
+    spend('gold',costGold('raidtower'));
+    if(costOre('raidtower')>0) spend('ore',costOre('raidtower'));
     spot.hasTower=true;
     checkRaidActivation();
     toast('🗼 Рейд Башня установлена!');
     return;
   }
+
+  // LANDSPOT: купить любую пустую клетку — случайно станет травой или камнем
+  if(type==='landspot'){
+    if(R.gold<costGold('landspot')) return toast('Мало монет 🪙');
+    spend('gold',costGold('landspot'));
+    const oldROWS=ROWS;
+    expandMapDown();
+    // Анимация подсветки новых тайлов
+    if(!window._landReveal) window._landReveal=[];
+    for(let r=oldROWS;r<ROWS;r++) for(let c=0;c<COLS;c++){
+      if(MAP[r][c]!==1) window._landReveal.push({c,r,t:MAP[r][c],age:0});
+    }
+    // Камера скользит вниз к новым землям
+    camY=Math.max(camY, (oldROWS-3)*GS);
+    const rocks=window._landReveal.filter(v=>v.r>=oldROWS&&v.t===2).length;
+    const grass=window._landReveal.filter(v=>v.r>=oldROWS&&v.t===0).length;
+    toast(`🗺️ +5 новых строк открыто! ⛏️${rocks} камня  🌿${grass} травы`);
+    return;
+  }
+
+  // BUR2 — только на камне как обычный бур
+  if(type==='bur2' && MAP[row][col]!==2) return toast('Мега-Бур — только на камне ⛏️');
 
   if(G[row][col])                         return toast('Место занято!');
   if(MAP[row][col]===1)                   return toast('На воде нельзя!');
@@ -312,9 +387,12 @@ function place(type, col, row){
     if(col>=4) return toast('Место Рейда — только на левой части карты!');
     if(MAP[row][col]!==0) return toast('Место Рейда — только на траве 🌿');
   }
-  const cost = COST[type]||0;
-  if(R.gold < cost)                       return toast('Мало монет 🪙');
+  const cost = costGold(type)||0;
+  const oreCost = costOre(type)||0;
+  if(R.gold < cost)                       return toast(`Мало монет 🪙 (нужно ${cost})`);
+  if(R.ore  < oreCost)                    return toast(`Мало руды ⛏️ (нужно ${oreCost})`);
   spend('gold', cost);
+  if(oreCost>0) spend('ore', oreCost);
   const obj = {type, col, row, id:nid(), dir:0, timer:0, progress:0};
   G[row][col] = obj;
   if(type==='chest') cs(obj.id);
@@ -340,10 +418,19 @@ function demolish(col, row){
 const PTCL=[];
 function spawnP(sc,sr, icon, dc,dr){
   if(!isFinite(sc)||!isFinite(sr)||!isFinite(dc)||!isFinite(dr)) return;
+  // Скорость зависит от конвейера-НОСИТЕЛЯ (destination)
+  const dst = G[dr]?.[dc];
+  const isFast     = dst && dst.type==='conv2';
+  const isTeleport = dst && dst.type==='teleport';
+  const speed = isFast ? 5.5 : 1.6;
   PTCL.push({
     sx: sc*GS+GS/2, sy: sr*GS+GS/2,
     tx: dc*GS+GS/2, ty: dr*GS+GS/2,
-    icon, t:0, sc,sr, dc,dr, done:false
+    icon, t:0, sc,sr, dc,dr, done:false,
+    speed,
+    isTeleport,
+    isFast,
+    scale: 1.0,
   });
 }
 
@@ -354,7 +441,7 @@ function outputOf(col, row){
   const obj = G[row][col];
   if(!obj) return null;
 
-  if(obj.type==='bur'){
+  if(obj.type==='bur'||obj.type==='bur2'){
     // look in all 4 dirs for conveyor or chest
     for(const [dc,dr] of DIR4){
       const nc=col+dc, nr=row+dr;
@@ -365,7 +452,7 @@ function outputOf(col, row){
     return null; // nothing adjacent
   }
 
-  if(obj.type==='conv'){
+  if(obj.type==='conv'||obj.type==='conv2'||obj.type==='teleport'){
     const [dc,dr]=DIR4[obj.dir];
     const nc=col+dc, nr=row+dr;
     if(nc<0||nc>=COLS||nr<0||nr>=ROWS) return null;
@@ -565,20 +652,36 @@ function update(dt){
     const obj=G[r][c]; if(!obj) continue;
     obj.timer+=dt;
 
-    // BUR — produce ore every 4s, alternates with seed_ore if seed adjacent
+    // BUR — produce ore every 4s
     if(obj.type==='bur'){
       obj.progress = (obj.timer%4)/4;
       if(obj.timer>=4){
         obj.timer=0;
-        // Check for adjacent seed — alternate ore type
         const hasSeed = adjOf(c,r,'seed')!==null;
-        if(hasSeed){
-          obj._seedToggle = !obj._seedToggle;
-        }
+        if(hasSeed){ obj._seedToggle = !obj._seedToggle; }
         const icon = (hasSeed && obj._seedToggle) ? 'seed_ore' : 'ore';
         const nx=outputOf(c,r);
         if(nx){ spawnP(c,r,icon,nx.col,nx.row); }
         else   { if(icon==='ore') earn('ore',1); }
+      }
+    }
+
+    // BUR2 — produce 2 ore every 2s, bigger sparks, glows
+    if(obj.type==='bur2'){
+      obj.progress = (obj.timer%2)/2;
+      if(obj.timer>=2){
+        obj.timer=0;
+        const hasSeed = adjOf(c,r,'seed')!==null;
+        if(hasSeed){ obj._seedToggle = !obj._seedToggle; }
+        const icon = (hasSeed && obj._seedToggle) ? 'seed_ore' : 'ore';
+        const nx=outputOf(c,r);
+        // Выдаём 2 частицы
+        if(nx){
+          spawnP(c,r,icon,nx.col,nx.row);
+          setTimeout(()=>{ if(nx) spawnP(c,r,icon,nx.col,nx.row); },200);
+        } else {
+          if(icon==='ore'){ earn('ore',1); earn('ore',1); }
+        }
       }
     }
 
@@ -724,29 +827,62 @@ function update(dt){
   for(let i=PTCL.length-1;i>=0;i--){
     const p=PTCL[i];
     if(p.done){ PTCL.splice(i,1); continue; }
-    p.t = Math.min(1, p.t+dt*1.6);
-    p.cx = lerp(p.sx, p.tx, ease(p.t));  // current X
-    p.cy = lerp(p.sy, p.ty, ease(p.t));  // current Y
+    p.t = Math.min(1, p.t+dt*(p.speed||1.6));
+    // conv2: частица растёт каждые 2 секунды реального времени
+    if(p.isFast){
+      p._scaleT=(p._scaleT||0)+dt;
+      if(p._scaleT>=0.36){ p._scaleT=0; p.scale=Math.min(2.5, (p.scale||1)+0.15); }
+    }
+    // teleport: мгновенно + уменьшается
+    if(p.isTeleport){ p.scale=Math.max(0.3,(p.scale||1)-dt*2); }
+    p.cx = lerp(p.sx, p.tx, ease(p.t));
+    p.cy = lerp(p.sy, p.ty, ease(p.t));
     if(p.t>=1){
       p.done=true;
       const dst=G[p.dr]?.[p.dc];
       if(dst){
         if(dst.type==='chest'){
           deliver(dst.id, p.icon);
-        } else if(dst.type==='conv'){
+        } else if(dst.type==='teleport'){
+          // Телепортер — если это красный (есть пара), прыгаем к синему выходу
+          const pairedId=TBIND[dst.id];
+          if(pairedId){
+            // Найти синий телепортер
+            let blueObj=null, bc=-1, br=-1;
+            outer2: for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+              if(G[rr][cc]&&G[rr][cc].id===pairedId){blueObj=G[rr][cc];bc=cc;br=rr;break outer2;}
+            }
+            if(blueObj){
+              // Спавним из синего телепортера дальше
+              const nx=outputOf(bc,br);
+              if(nx){
+                const tp=spawnP(bc,br,p.icon,nx.col,nx.row);
+                // Найти частицу и пометить как телепортированную
+                if(PTCL.length>0){
+                  const last=PTCL[PTCL.length-1];
+                  last.isTeleported=true; last.scale=0.3;
+                }
+              } else {
+                // Рядом сундук?
+                const adjC=adjOf(bc,br,'chest');
+                if(adjC) deliver(adjC.id, p.icon);
+              }
+            }
+          } else {
+            // Без пары — обычный конвейер-выход
+            const nx=outputOf(p.dc, p.dr);
+            if(nx) spawnP(p.dc,p.dr, p.icon, nx.col,nx.row);
+          }
+        } else if(dst.type==='conv'||dst.type==='conv2'){
           const nx=outputOf(p.dc, p.dr);
           if(nx){ spawnP(p.dc,p.dr, p.icon, nx.col,nx.row); }
         } else if(dst.type==='milkdel' && p.icon==='milk'){
-          // milk arrives directly into milkdel buffer
           dst._milkBuf=(dst._milkBuf||0)+1;
         } else if(dst.type==='eggpack' && p.icon==='egg'){
-          // egg arrives directly into eggpack buffer
           dst._eggBuf=(dst._eggBuf||0)+1;
         } else if(dst.type==='furn' && p.icon==='ore'){
-          // ore can arrive at furnace directly — store in furnace buffer
           dst._oreBuf=(dst._oreBuf||0)+1;
         }
-        // mkt, wshp etc — disappear (they pull from chest)
       }
     }
   }
@@ -804,6 +940,22 @@ function drawTerrain(){
     if(m===1)      drawWater(x,y,c,r);
     else if(m===2) drawRock(x,y,c,r);
     else           drawGrass(x,y,c,r);
+  }
+  // ── Land reveal flash animation ──
+  if(window._landReveal&&window._landReveal.length){
+    window._landReveal=window._landReveal.filter(v=>v.age<1.2);
+    for(const v of window._landReveal){
+      v.age+=0.04;
+      const a=Math.max(0, 0.7-v.age*0.7);
+      const col=v.t===2?`rgba(255,200,80,${a})`:`rgba(120,255,80,${a})`;
+      X.fillStyle=col;
+      X.fillRect(v.c*GS, v.r*GS, GS, GS);
+      // пульсирующий border
+      if(v.age<0.6){
+        X.strokeStyle=v.t===2?`rgba(255,160,20,${a*1.5})`:`rgba(60,220,60,${a*1.5})`;
+        X.lineWidth=3; X.strokeRect(v.c*GS+1,v.r*GS+1,GS-2,GS-2);
+      }
+    }
   }
   // sandy shore transition
   const wx=(COLS-3)*GS;
@@ -871,7 +1023,7 @@ function drawBuildings(){
     const obj=G[r][c]; if(!obj) continue;
     X.save();
     const x=c*GS, y=r*GS;
-    ({bur:dBur, conv:dConv, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack, raidspot:dRaidSpot})[obj.type]?.(x,y,obj);
+    ({bur:dBur, bur2:dBur2, conv:dConv, conv2:dConv2, teleport:dTeleport, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack, raidspot:dRaidSpot, landspot:dLandSpot})[obj.type]?.(x,y,obj);
     X.restore();
   }
   // Draw raid beam between top and bottom towers
@@ -915,10 +1067,129 @@ function dBur(x,y,obj){
   lbl(x,y,'⛏️',GS*.22);
 }
 
+// BUR2 — Мега-Бур ─────────────────────────────
+function dBur2(x,y,obj){
+  const t=GT;
+  const cx=x+GS*.5, cy=y+GS*.5;
+  // === ОСНОВАНИЕ — массивная тёмная плита ===
+  const baseG=X.createLinearGradient(x,y+GS*.54,x+GS,y+GS);
+  baseG.addColorStop(0,'#5a4070'); baseG.addColorStop(1,'#28182e');
+  X.fillStyle=baseG; rrx(x+2,y+GS*.54,GS-4,GS*.44,6); X.fill();
+  X.strokeStyle='#9060c0'; X.lineWidth=2; rrx(x+2,y+GS*.54,GS-4,GS*.44,6); X.stroke();
+  // болты
+  [[x+8,y+GS*.58],[x+GS-8,y+GS*.58],[x+8,y+GS*.94],[x+GS-8,y+GS*.94]].forEach(([bx,by])=>{
+    X.fillStyle='#c090e0'; X.beginPath(); X.arc(bx,by,3,0,Math.PI*2); X.fill();
+    X.fillStyle='rgba(255,255,255,.35)'; X.beginPath(); X.arc(bx-1,by-1,1.2,0,Math.PI*2); X.fill();
+  });
+  // шильдик
+  X.fillStyle='rgba(40,10,70,.88)'; rrx(x+GS*.12,y+GS*.56,GS*.76,GS*.1,3); X.fill();
+  X.fillStyle='#e0b0ff'; X.font=`bold ${GS*.085}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText('МЕГА-БУР', cx, y+GS*.61);
+
+  // === КОРПУС — гексагон ===
+  const hcy=y+GS*.29, hr=GS*.27;
+  const bodyG=X.createLinearGradient(x+GS*.18,y+GS*.05,x+GS*.82,y+GS*.54);
+  bodyG.addColorStop(0,'#c090e0'); bodyG.addColorStop(.35,'#8050b0'); bodyG.addColorStop(.7,'#583088'); bodyG.addColorStop(1,'#381050');
+  X.fillStyle=bodyG;
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/6;
+    i===0?X.moveTo(cx+hr*Math.cos(a),hcy+hr*Math.sin(a)):X.lineTo(cx+hr*Math.cos(a),hcy+hr*Math.sin(a));
+  }
+  X.closePath(); X.fill();
+  // hex glow border
+  X.strokeStyle=`rgba(220,150,255,${0.55+Math.sin(t*3)*.45})`; X.lineWidth=2.5;
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/6;
+    i===0?X.moveTo(cx+hr*Math.cos(a),hcy+hr*Math.sin(a)):X.lineTo(cx+hr*Math.cos(a),hcy+hr*Math.sin(a));
+  }
+  X.closePath(); X.stroke();
+
+  // === ЯДРО — пульсирует ===
+  const coreR=GS*(.07+Math.sin(t*4)*.02);
+  const cg2=X.createRadialGradient(cx,hcy,0,cx,hcy,coreR*3);
+  cg2.addColorStop(0,'rgba(255,230,255,1)'); cg2.addColorStop(.4,'rgba(210,100,255,.85)'); cg2.addColorStop(1,'rgba(100,30,180,0)');
+  X.fillStyle=cg2; X.beginPath(); X.arc(cx,hcy,coreR*3,0,Math.PI*2); X.fill();
+  X.fillStyle='#fff'; X.beginPath(); X.arc(cx,hcy,coreR,0,Math.PI*2); X.fill();
+
+  // === ОРБИТАЛЬНЫЕ КОЛЬЦА ===
+  for(let ring=0;ring<2;ring++){
+    const rr=GS*(.12+ring*.07);
+    const ra=t*(ring===0?2.8:-2)+(ring*1.05);
+    X.strokeStyle=`rgba(${ring===0?'230,160,255':'160,255,220'},${0.5+Math.sin(t*3+ring)*.3})`;
+    X.lineWidth=1.5;
+    X.beginPath(); X.ellipse(cx,hcy,rr,rr*.38,ra,0,Math.PI*2); X.stroke();
+    const dotX=cx+Math.cos(t*(ring===0?2.8:-2)+ring)*rr;
+    const dotY=hcy+Math.sin(t*(ring===0?2.8:-2)+ring)*rr*.38;
+    X.fillStyle=ring===0?'#e090ff':'#90ffd0';
+    X.beginPath(); X.arc(dotX,dotY,2.5,0,Math.PI*2); X.fill();
+  }
+
+  // === БУРОВАЯ ГОЛОВКА — 4 лезвия ===
+  const drillY=y+GS*.67;
+  X.save(); X.translate(cx,drillY); X.rotate(t*9);
+  for(let i=0;i<4;i++){
+    X.save(); X.rotate(i*Math.PI/2);
+    const dg=X.createLinearGradient(0,0,0,-GS*.18);
+    dg.addColorStop(0,'#e040ff'); dg.addColorStop(.5,'#9020c0'); dg.addColorStop(1,'#4a0888');
+    X.fillStyle=dg;
+    X.beginPath(); X.moveTo(-3.5,0); X.lineTo(-2,-GS*.18); X.lineTo(2,-GS*.18); X.lineTo(3.5,0); X.closePath(); X.fill();
+    X.strokeStyle=`rgba(255,180,255,${.7+Math.sin(t*9+i)*.3})`; X.lineWidth=1.2; X.lineCap='round';
+    X.beginPath(); X.moveTo(-2,-GS*.18); X.lineTo(2,-GS*.18); X.stroke();
+    X.restore();
+  }
+  // центральная шестерня
+  const cgg=X.createRadialGradient(0,0,0,0,0,GS*.065);
+  cgg.addColorStop(0,'#fff'); cgg.addColorStop(.5,'#d080ff'); cgg.addColorStop(1,'#7020b0');
+  X.fillStyle=cgg; X.beginPath(); X.arc(0,0,GS*.065,0,Math.PI*2); X.fill();
+  X.restore();
+
+  // === ПРОГРЕСС ARC ===
+  X.strokeStyle='rgba(80,0,120,.3)'; X.lineWidth=6; X.lineCap='round';
+  X.beginPath(); X.arc(cx,drillY,GS*.26,-Math.PI/2,Math.PI*1.5); X.stroke();
+  const prog=obj.progress||0;
+  X.strokeStyle=`rgba(${180+prog*75},${80+prog*100},255,.95)`; X.lineWidth=5;
+  X.beginPath(); X.arc(cx,drillY,GS*.26,-Math.PI/2,-Math.PI/2+Math.PI*2*prog); X.stroke();
+
+  // === ЭНЕРГЕТИЧЕСКИЕ ИСКРЫ ===
+  for(let i=0;i<6;i++){
+    const sa=t*7+i*(Math.PI*2/6);
+    const sr=GS*(.23+Math.sin(t*4+i)*.04);
+    if(Math.sin(t*6+i*1.1)>0.3){
+      X.fillStyle=`rgba(255,${140+i*18},255,${.5+Math.sin(t*5+i)*.45})`;
+      X.beginPath(); X.arc(cx+Math.cos(sa)*sr, drillY+Math.sin(sa)*sr*.38, 2+Math.sin(t*8+i), 0, Math.PI*2); X.fill();
+    }
+  }
+  // пыль бурения
+  for(let i=0;i<5;i++){
+    const dp=(t*1.8+i*.4)%1;
+    X.fillStyle=`rgba(190,140,230,${.65*(1-dp)})`;
+    X.beginPath(); X.arc(cx+Math.cos(t*3+i*1.2)*GS*.14, drillY+dp*GS*.18, 2.5*(1-dp*.5), 0, Math.PI*2); X.fill();
+  }
+
+  // === БОКОВЫЕ ТРУБКИ охлаждения ===
+  [[x+GS*.12,y+GS*.16],[x+GS*.82,y+GS*.2]].forEach(([tx,ty],idx)=>{
+    const tg=X.createLinearGradient(tx,ty,tx,ty+GS*.28);
+    tg.addColorStop(0,'#7050a8'); tg.addColorStop(1,'#3a1860');
+    X.fillStyle=tg; rrx(tx-4,ty,8,GS*.28,3); X.fill();
+    X.strokeStyle='#b080d0'; X.lineWidth=1; rrx(tx-4,ty,8,GS*.28,3); X.stroke();
+    const glow=X.createRadialGradient(tx,ty+GS*.07,0,tx,ty+GS*.07,11);
+    glow.addColorStop(0,`rgba(190,100,255,${.35+Math.sin(t*3+idx)*.25})`); glow.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=glow; X.beginPath(); X.arc(tx,ty+GS*.07,11,0,Math.PI*2); X.fill();
+  });
+
+  // мини-оператор
+  drawNPC(x+GS*.13,y+GS*.17+Math.sin(t*2)*1.5,'smelter',Math.sin(t*3)*8,true);
+  lbl(x,y,'⚡',GS*.2);
+}
+
+// LANDSPOT — нет рисования (тайл меняется сразу при покупке)
+function dLandSpot(x,y,obj){}
+
 // COWPEN — Коровник ───────────────────────────
 function dCowPen(x,y,obj){
   const t=GT;
-  // Fence border
   X.fillStyle='#6B4F14'; X.fillRect(x+1,y+1,GS-2,GS-2);
   X.fillStyle='#3a7a22'; X.fillRect(x+6,y+6,GS-12,GS-12);
   // Fence rails
@@ -1058,6 +1329,102 @@ function dEggPack(x,y,obj){
   X.fillText('УпаковкоДел',x+GS*.5,y+GS*.17);
 }
 
+
+// CONV2 — Супер-Конвейер ─────────────────────
+function dConv2(x,y,obj){
+  const t=GT, d=obj.dir;
+  // Светящийся золотой корпус
+  X.fillStyle='#1a1008'; rrx(x+2,y+2,GS-4,GS-4,8); X.fill();
+  // Пульсирующая подсветка
+  const pulse=0.4+Math.sin(t*5)*0.3;
+  const glow=X.createRadialGradient(x+GS*.5,y+GS*.5,0,x+GS*.5,y+GS*.5,GS*.7);
+  glow.addColorStop(0,`rgba(255,220,30,${pulse*.3})`); glow.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=glow; X.fillRect(x,y,GS,GS);
+  // Быстрые полосы конвейера
+  X.save(); X.beginPath(); rrx(x+4,y+4,GS-8,GS-8,6); X.clip();
+  const isH=(d===0||d===2), spd=(d===2||d===3)?-1:1;
+  const off=(t*180*spd)%(GS*.32); // очень быстро
+  X.strokeStyle=`rgba(255,210,40,${0.7+pulse*.3})`; X.lineWidth=4;
+  if(isH){ for(let s=-GS*.32+off;s<GS;s+=GS*.32){ X.beginPath(); X.moveTo(x+4+s,y+4); X.lineTo(x+4+s,y+GS-4); X.stroke(); } }
+  else   { for(let s=-GS*.32+off;s<GS;s+=GS*.32){ X.beginPath(); X.moveTo(x+4,y+4+s); X.lineTo(x+GS-4,y+4+s); X.stroke(); } }
+  X.restore();
+  // Обводка золотая
+  X.strokeStyle=`rgba(255,200,0,${0.6+pulse*.4})`; X.lineWidth=2.5; rrx(x+2,y+2,GS-4,GS-4,8); X.stroke();
+  // Угловые болты светящиеся
+  [[x+7,y+7],[x+GS-7,y+7],[x+7,y+GS-7],[x+GS-7,y+GS-7]].forEach(([bx,by])=>{
+    X.fillStyle=`rgba(255,240,80,${0.7+pulse*.3})`; X.beginPath(); X.arc(bx,by,3,0,Math.PI*2); X.fill();
+  });
+  // Стрелка яркая
+  X.fillStyle=`rgba(255,240,100,${0.85+pulse*.15})`; X.font=`bold ${GS*.4}px serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText(DARR[d],x+GS*.5,y+GS*.5);
+  // Метка
+  X.fillStyle='rgba(255,200,0,.7)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top';
+  X.fillText('СУПЕР',x+GS*.5,y+GS*.04);
+}
+
+// TELEPORT — Телепортер ───────────────────────
+function dTeleport(x,y,obj){
+  const t=GT, d=obj.dir;
+  const cx=x+GS*.5, cy=y+GS*.5;
+  const isRed=obj._isRed||TBIND[obj.id]; // красный = источник
+  const isBlue=obj._isBlue||Object.values(TBIND).includes(obj.id); // синий = выход
+  const unlinked=!isRed&&!isBlue;
+
+  // Цвет по типу
+  const col1=isRed?'255,80,60':isBlue?'60,160,255':'180,100,255';
+  const col2=isRed?'200,20,0':isBlue?'20,80,200':'80,40,160';
+
+  // Тёмная база
+  X.fillStyle='#080418'; rrx(x+2,y+2,GS-4,GS-4,10); X.fill();
+
+  // Вращающийся портал
+  for(let i=0;i<3;i++){
+    const r=GS*(.38-i*.09);
+    const rot=t*(i%2===0?1.5:-2)+i*0.8;
+    X.strokeStyle=`rgba(${col1},${0.5+Math.sin(t*3+i)*.35})`;
+    X.lineWidth=2+i*.5;
+    X.beginPath(); X.ellipse(cx,cy,r,r*.4,rot,0,Math.PI*2); X.stroke();
+  }
+
+  // Центральный портал
+  const portalG=X.createRadialGradient(cx,cy,0,cx,cy,GS*.22);
+  portalG.addColorStop(0,`rgba(255,255,255,${0.6+Math.sin(t*4)*.25})`);
+  portalG.addColorStop(.35,`rgba(${col1},0.7)`);
+  portalG.addColorStop(1,`rgba(${col2},0)`);
+  X.fillStyle=portalG; X.beginPath(); X.arc(cx,cy,GS*.22,0,Math.PI*2); X.fill();
+
+  // Искры
+  for(let i=0;i<6;i++){
+    const sa=t*4+i*1.047;
+    const sr=GS*.28+Math.sin(t*5+i)*GS*.05;
+    if(Math.sin(t*7+i*1.2)>0.3){
+      X.fillStyle=`rgba(${col1},${0.6+Math.sin(t*6+i)*.4})`;
+      X.beginPath(); X.arc(cx+Math.cos(sa)*sr, cy+Math.sin(sa)*sr*.45, 2.2,0,Math.PI*2); X.fill();
+    }
+  }
+
+  // Стрелка (только у синего — показывает выход)
+  if(isBlue||unlinked){
+    X.fillStyle=`rgba(${col1},0.9)`; X.font=`bold ${GS*.38}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(DARR[d],cx,cy);
+  }
+
+  // Метка
+  const label=isRed?'🔴 ВХОД':isBlue?'🔵 ВЫХОД':'🌀 ТЕЛЕПОРТ';
+  X.fillStyle=`rgba(${col1},.85)`; X.font=`bold ${GS*.085}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top';
+  X.fillText(label,cx,y+GS*.04);
+
+  // Обводка
+  X.strokeStyle=`rgba(${col1},${0.5+Math.sin(t*3)*.5})`; X.lineWidth=2.5; rrx(x+2,y+2,GS-4,GS-4,10); X.stroke();
+
+  // Если не связан — мигающий знак вопроса
+  if(unlinked){
+    X.globalAlpha=0.5+Math.sin(t*4)*.5;
+    X.fillStyle='#fff'; X.font=`${GS*.25}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('?',cx,cy);
+    X.globalAlpha=1;
+  }
+}
 
 function dConv(x,y,obj){
   const t=GT, d=obj.dir;
@@ -1665,34 +2032,50 @@ function drawParticles(){
   for(const p of PTCL){
     const px=p.cx??p.sx, py=p.cy??p.sy;
     if(!isFinite(px)||!isFinite(py)) continue;
+    const sc=p.scale||1;
+    X.save();
+    X.translate(px,py);
+    X.scale(sc,sc);
+    // Телепорт — синее кольцо вспышка
+    if(p.isTeleport){
+      const flash=X.createRadialGradient(0,0,0,0,0,GS*.3);
+      flash.addColorStop(0,'rgba(100,200,255,.6)'); flash.addColorStop(1,'rgba(0,100,255,0)');
+      X.fillStyle=flash; X.beginPath(); X.arc(0,0,GS*.3,0,Math.PI*2); X.fill();
+    }
+    // Супер-конвейер — золотое свечение растёт вместе со scale
+    if(p.isFast&&sc>1){
+      const gfr=X.createRadialGradient(0,0,0,0,0,GS*.3*sc);
+      gfr.addColorStop(0,`rgba(255,220,50,${0.35*(sc-1)})`); gfr.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=gfr; X.beginPath(); X.arc(0,0,GS*.3*sc,0,Math.PI*2); X.fill();
+    }
     if(p.icon==='ore'){
-      const gl=X.createRadialGradient(px,py,0,px,py,GS*.28);
+      const gl=X.createRadialGradient(0,0,0,0,0,GS*.28);
       gl.addColorStop(0,'rgba(220,150,40,.55)'); gl.addColorStop(1,'rgba(180,100,20,0)');
-      X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.28,0,Math.PI*2); X.fill();
-      X.fillStyle='rgba(0,0,0,.22)'; X.beginPath(); X.ellipse(px,py+GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
-      drawOreGem(px,py,GS*.17);
+      X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.28,0,Math.PI*2); X.fill();
+      X.fillStyle='rgba(0,0,0,.22)'; X.beginPath(); X.ellipse(0,GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
+      drawOreGem(0,0,GS*.17);
     } else if(p.icon==='seed_ore'){
-      // green halo + orbiting sparkles
-      const gl=X.createRadialGradient(px,py,0,px,py,GS*.3);
+      const gl=X.createRadialGradient(0,0,0,0,0,GS*.3);
       gl.addColorStop(0,'rgba(80,230,60,.6)'); gl.addColorStop(.5,'rgba(40,180,30,.25)'); gl.addColorStop(1,'rgba(20,120,10,0)');
-      X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.3,0,Math.PI*2); X.fill();
+      X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.3,0,Math.PI*2); X.fill();
       for(let k=0;k<4;k++){
         const ka=GT*4+k*1.57, kr=GS*.2+Math.sin(GT*3+k)*GS*.06;
         X.fillStyle=`rgba(150,255,80,${.4+Math.sin(GT*2+k)*.25})`;
-        X.beginPath(); X.arc(px+Math.cos(ka)*kr,py+Math.sin(ka)*kr*.5,1.8,0,Math.PI*2); X.fill();
+        X.beginPath(); X.arc(Math.cos(ka)*kr,Math.sin(ka)*kr*.5,1.8,0,Math.PI*2); X.fill();
       }
-      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(px,py+GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
-      drawSeedOreGem(px,py,GS*.17);
+      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(0,GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
+      drawSeedOreGem(0,0,GS*.17);
     } else {
       const PCOL={bar:'rgba(220,170,30,.5)',rod:'rgba(60,140,220,.45)',fish:'rgba(40,160,80,.45)',milk:'rgba(220,240,255,.6)',milk_bottle:'rgba(180,220,255,.5)',egg:'rgba(255,245,200,.6)',egg_pack:'rgba(255,230,120,.5)'};
-      const gl=X.createRadialGradient(px,py,0,px,py,GS*.22);
+      const gl=X.createRadialGradient(0,0,0,0,0,GS*.22);
       gl.addColorStop(0,PCOL[p.icon]||'rgba(200,200,200,.4)'); gl.addColorStop(1,'rgba(0,0,0,0)');
-      X.fillStyle=gl; X.beginPath(); X.arc(px,py,GS*.22,0,Math.PI*2); X.fill();
-      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(px,py+GS*.12,GS*.1,GS*.04,0,0,Math.PI*2); X.fill();
+      X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.22,0,Math.PI*2); X.fill();
+      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(0,GS*.12,GS*.1,GS*.04,0,0,Math.PI*2); X.fill();
       const ICON={bar:'🔩',rod:'🎣',fish:'🐟',milk:'🐄',milk_bottle:'🥛',egg:'🥚',egg_pack:'📦'};
       X.font=`${GS*.34}px serif`; X.textAlign='center'; X.textBaseline='middle';
-      X.fillText(ICON[p.icon]||'●',px,py);
+      X.fillText(ICON[p.icon]||'●',0,0);
     }
+    X.restore();
   }
 }
 
@@ -2565,6 +2948,7 @@ function drawGhost(){
   } else {
     ok=!G[r][c]&&MAP[r][c]!==1
       &&(curTool!=='bur'||MAP[r][c]===2)
+      &&(curTool!=='bur2'||MAP[r][c]===2)
       &&(curTool!=='cowpen'||MAP[r][c]===0)
       &&(curTool!=='chickenpen'||MAP[r][c]===0)
       &&(curTool!=='milkdel'||MAP[r][c]===0)
@@ -2574,7 +2958,7 @@ function drawGhost(){
   X.globalAlpha=.55;
   X.fillStyle=ok?'rgba(255,255,80,.1)':'rgba(255,40,40,.18)'; X.fillRect(x,y,GS,GS);
   X.strokeStyle=ok?'#ffd700':'#ff4444'; X.lineWidth=2.2; rrx(x+2,y+2,GS-4,GS-4,5); X.stroke();
-  const IC={bur:'⛏️',conv:'➡️',chest:'📦',furn:'🔥',wshp:'🔨',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚'};
+  const IC={bur:'⛏️',bur2:'🔩',conv:'➡️',conv2:'⚡',teleport:'🌀',chest:'📦',furn:'🔥',wshp:'🔨',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚',landspot:'🪙'};
   X.font=`${GS*.38}px serif`; X.textAlign='center'; X.textBaseline='middle';
   X.fillText(IC[curTool]||'',x+GS*.5,y+GS*.5);
   X.globalAlpha=1;
@@ -2598,7 +2982,7 @@ let curTool=null;
 function pick(t){
   curTool=t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('sel'));
-  const map={null:'nb-null',bur:'nb-bur',conv:'nb-conv',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower'};
+  const map={null:'nb-null',bur:'nb-bur',bur2:'nb-bur2',conv:'nb-conv',conv2:'nb-conv2',teleport:'nb-teleport',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower',landspot:'nb-landspot'};
   document.getElementById(map[t]||'nb-null')?.classList.add('sel');
   if(t) toast('Выбрано: '+NAME[t]+' — тапни на карту');
 }
@@ -2610,21 +2994,30 @@ function openCtx(col,row,cx2,cy2){
   const obj=G[row]?.[col]; if(!obj) return;
   ctxT={col,row};
   const ctx2=document.getElementById('ctx');
-  document.getElementById('cm-rot').style.display  = ['conv','cowpen','chickenpen','milkdel','eggpack','furn','wshp'].includes(obj.type)?'flex':'none';
-  document.getElementById('cm-bind').style.display = obj.type==='mkt'?'flex':'none';
-  document.getElementById('cm-info').style.display = obj.type==='chest'?'flex':'none';
+  document.getElementById('cm-rot').style.display   = ['conv','conv2','teleport','cowpen','chickenpen','milkdel','eggpack','furn','wshp'].includes(obj.type)?'flex':'none';
+  document.getElementById('cm-bind').style.display  = obj.type==='mkt'?'flex':'none';
+  document.getElementById('cm-tbind').style.display = obj.type==='teleport'?'flex':'none';
+  document.getElementById('cm-info').style.display  = obj.type==='chest'?'flex':'none';
   ctx2.style.left=Math.min(cx2,W-165)+'px'; ctx2.style.top=Math.min(cy2,H-170)+'px';
   ctx2.classList.add('on');
 }
 function ctxRotate(){
   const o=G[ctxT.row]?.[ctxT.col];
-  if(o&&(o.type==='conv'||o.type==='cowpen'||o.type==='chickenpen'||o.type==='milkdel'||o.type==='eggpack'||o.type==='furn'||o.type==='wshp')){
+  if(o&&(o.type==='conv'||o.type==='conv2'||o.type==='teleport'||o.type==='cowpen'||o.type==='chickenpen'||o.type==='milkdel'||o.type==='eggpack'||o.type==='furn'||o.type==='wshp')){
     o.dir=(o.dir+1)%4;
     toast((NAME[o.type]||'Здание')+': вывод '+DARR[o.dir]);
   }
   closeCtx();
 }
 function ctxBind(){ bindSrc=G[ctxT.row]?.[ctxT.col]; closeCtx(); toast('🔗 Теперь тапни на сундук'); }
+let tbindSrc=null;
+function ctxTBind(){
+  const o=G[ctxT.row]?.[ctxT.col];
+  if(!o||o.type!=='teleport') return;
+  tbindSrc=o;
+  closeCtx();
+  toast('🌀 Это КРАСНЫЙ телепортер. Тапни на второй телепортер (СИНИЙ выход)');
+}
 function ctxInfo(){
   const o=G[ctxT.row]?.[ctxT.col];
   if(o?.type==='chest'){
@@ -2689,6 +3082,15 @@ function handleTap(tx,ty){
     else toast('Нужен сундук!');
     bindSrc=null; return;
   }
+  if(tbindSrc){
+    const t=G[row]?.[col];
+    if(t&&t.type==='teleport'&&t.id!==tbindSrc.id){
+      TBIND[tbindSrc.id]=t.id;
+      tbindSrc._isRed=true; t._isBlue=true;
+      toast('🌀🔴→🔵 Телепортеры связаны! Предметы будут прыгать между ними!');
+    } else toast('Нужен второй телепортер!');
+    tbindSrc=null; return;
+  }
   if(!curTool){
     const o=G[row]?.[col];
     if(o){
@@ -2738,6 +3140,7 @@ function saveGame(){
     R:{...R}, grid:grid_save,
     CSTORE:JSON.parse(JSON.stringify(CSTORE)),
     MBIND:{...MBIND},
+    TBIND:{...TBIND},
     SMST:{},
     fish_count:FISH.length,
     caught:[...CAUGHT],
@@ -2747,7 +3150,9 @@ function saveGame(){
     fisher_chests: FISHER_CHESTS.map(f=>({...f})),
     raid_waveNum: RAID_STATE.waveNum,
     raid_waveTimer: RAID_STATE.waveTimer,
-    camX,camY, seq, ts:Date.now()
+    camX,camY, seq, ts:Date.now(),
+    mapROWS: ROWS,
+    mapData: MAP.map(row=>[...row])
   };
   try{
     localStorage.setItem(SAVE_KEY,JSON.stringify(data));
@@ -2762,31 +3167,63 @@ function loadGame(){
     const raw=localStorage.getItem(SAVE_KEY);
     if(!raw) return false;
     const data=JSON.parse(raw);
-    // resources
-    Object.assign(R, data.R);
-    // grid
-    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G[r][c]=null;
-    for(const o of data.grid){
-      G[o.row][o.col]={...o};
-      if(o.type==='furn') SMST[o.id]={phase:'idle',t:0};
+
+    // 1. Сначала восстанавливаем карту (до загрузки зданий!)
+    if(data.mapROWS && data.mapROWS > ROWS){
+      for(let r=ROWS; r<data.mapROWS; r++){
+        MAP[r] = data.mapData?.[r] ? [...data.mapData[r]] : Array(COLS).fill(0);
+        G[r]   = Array(COLS).fill(null);
+      }
+      ROWS = data.mapROWS;
     }
-    // chest stores
+    if(data.mapData){
+      for(let r=0; r<Math.min(data.mapData.length, ROWS); r++){
+        if(data.mapData[r]) for(let c=0;c<COLS;c++) MAP[r][c]=data.mapData[r][c]??MAP[r][c];
+      }
+    }
+
+    // 2. Ресурсы
+    Object.assign(R, data.R||{});
+
+    // 3. Грид
+    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G[r][c]=null;
+    for(const o of (data.grid||[])){
+      if(o.row>=0&&o.row<ROWS&&o.col>=0&&o.col<COLS){
+        G[o.row][o.col]={...o};
+        if(o.type==='furn') SMST[o.id]={phase:'idle',t:0};
+      }
+    }
+
+    // 4. Сундуки и привязки
     Object.assign(CSTORE, data.CSTORE||{});
     Object.assign(MBIND,  data.MBIND||{});
-    // fishermen
+    Object.assign(TBIND,  data.TBIND||{});
+
+    // 5. Восстанавливаем цвет телепортеров
+    for(const [redId,blueId] of Object.entries(TBIND)){
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+        if(G[r][c]&&String(G[r][c].id)===String(redId))  G[r][c]._isRed=true;
+        if(G[r][c]&&String(G[r][c].id)===String(blueId)) G[r][c]._isBlue=true;
+      }
+    }
+
+    // 6. Рыбаки
     const fc=Math.min(data.fish_count||0,5);
     for(let i=0;i<fc;i++) if(FISH.length<5) spawnFisherman();
-    // caught fish
     (data.caught||[]).forEach(n=>CAUGHT.add(n));
-    // Semeni NPCs
+
+    // 7. Семени НПС
     if(data.semeni_npcs) SEMENI_NPCS.push(...data.semeni_npcs);
     if(data.super_chests) data.super_chests.forEach(id=>SEMENI_SUPER_CHESTS[id]=true);
-    // Raid units
+
+    // 8. Рейд
     if(data.raid_units) RAID_STATE.units.push(...data.raid_units.map(u=>({...u,moveSpeed:u.moveSpeed||GS*1.8,targetGoblin:null,target:null,shootFlash:0})));
-    // Fisher chests
+    if(data.raid_waveNum)   RAID_STATE.waveNum=data.raid_waveNum;
+    if(data.raid_waveTimer) RAID_STATE.waveTimer=data.raid_waveTimer;
+
+    // 9. Рыбак-сундуки
     if(data.fisher_chests){
       FISHER_CHESTS.push(...data.fisher_chests.map(f=>{
-        // Пересчитываем направление к воде
         let bestDist=Infinity, dir=0;
         for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
           if(MAP[r][c]===1){
@@ -2798,16 +3235,15 @@ function loadGame(){
         return {...f, tongueDir:dir, timer:f.timer||0};
       }));
     }
-    // Raid state
-    if(data.raid_waveNum) RAID_STATE.waveNum=data.raid_waveNum;
-    if(data.raid_waveTimer) RAID_STATE.waveTimer=data.raid_waveTimer;
-    // cam
+
+    // 10. Камера и seq
     camX=data.camX||0; camY=data.camY||40;
     seq=data.seq||seq;
+
     hud();
     checkRaidActivation();
     return true;
-  } catch(e){ return false; }
+  } catch(e){ console.error('Load error:',e); return false; }
 }
 
 // autosave every 30s
