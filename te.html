@@ -113,6 +113,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
 </head>
 <body>
 <canvas id="c"></canvas>
+<canvas id="sh" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:10"></canvas>
 
 <div id="top"><div id="ti">
   <span id="ttl">🪵 Клёвое Место</span>
@@ -152,6 +153,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <div class="nb" id="nb-chest" onclick="pick('chest')"><div class="ni">📦</div><div>Сундук</div><div class="nc">40🪙+2⛏️</div></div>
   <div class="nb" id="nb-furn" onclick="pick('furn')"><div class="ni">🔥</div><div>Плавильщик</div><div class="nc">80🪙+4⛏️</div></div>
   <div class="nb" id="nb-wshp" onclick="pick('wshp')"><div class="ni">🔨</div><div>Мастерская</div><div class="nc">120🪙+6⛏️</div></div>
+  <div class="nb" id="nb-fishhouse" onclick="pick('fishhouse')"><div class="ni">🏠</div><div>Рыб.Домик</div><div class="nc">250🪙+6⛏️</div></div>
   <div class="nb" id="nb-mkt"  onclick="pick('mkt')"><div class="ni">🏪</div><div>Рынок</div><div class="nc">150🪙+3⛏️</div></div>
   <div class="nb" id="nb-seed" onclick="pick('seed')"><div class="ni">🌱</div><div>Səməni</div><div class="nc">60🪙</div></div>
   <div class="nb" id="nb-cowpen"  onclick="pick('cowpen')"><div class="ni">🐄</div><div>Коровник</div><div class="nc">180🪙+3⛏️</div></div>
@@ -331,12 +333,13 @@ const COST={
   raidspot: [200, 5],
   raidtower:[150, 8],
   landspot: [300, 0],
+  fishhouse:[250, 6],
 };
 // Удобные геттеры
 function costGold(t){ return Array.isArray(COST[t])?COST[t][0]:(COST[t]||0); }
 function costOre(t){  return Array.isArray(COST[t])?COST[t][1]:0; }
 
-const NAME={bur:'Бур',bur2:'Мега-Бур',conv:'Конвейер',conv2:'Супер-Конвейер',teleport:'Телепортер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня',landspot:'Купить Место'};
+const NAME={bur:'Бур',bur2:'Мега-Бур',conv:'Конвейер',conv2:'Супер-Конвейер',teleport:'Телепортер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня',landspot:'Купить Место',fishhouse:'Рыбацкий Домик'};
 
 // ── Place / Demolish ─────────────────────────
 function place(type, col, row){
@@ -383,6 +386,11 @@ function place(type, col, row){
   if(MAP[row][col]===1)                   return toast('На воде нельзя!');
   if(type==='bur'&&MAP[row][col]!==2)     return toast('Бур — только на камне ⛏️');
   if((type==='cowpen'||type==='chickenpen')&&MAP[row][col]!==0) return toast('Загон — только на траве 🌿');
+  if(type==='fishhouse'){
+    if(MAP[row][col]!==0) return toast('Рыбацкий Домик — только на траве 🌿');
+    const nearWater=DIR4.some(([dc,dr])=>MAP[row+dr]?.[col+dc]===1);
+    if(!nearWater) return toast('Рыбацкий Домик — только рядом с водой! 🌊');
+  }
   if(type==='raidspot'){
     if(col>=4) return toast('Место Рейда — только на левой части карты!');
     if(MAP[row][col]!==0) return toast('Место Рейда — только на траве 🌿');
@@ -717,6 +725,32 @@ function update(dt){
       }
     }
 
+    // FISHHOUSE — спавнит рыбаков, ускоряет ловлю, автодоставка в ближайший сундук
+    if(obj.type==='fishhouse'){
+      const lvl=obj._level||1;
+      const maxF=2+lvl*2;
+      const catchMult=1+lvl*0.4;
+      obj._spawnT=(obj._spawnT||0)+dt;
+      if(obj._spawnT>=5 && FISH.length<Math.min(maxF,10)){
+        obj._spawnT=0;
+        FISH.push({
+          x:(obj.col-0.5)*GS,
+          y:(obj.row+0.2+FISH.length*0.6)*GS,
+          bob:Math.random()*Math.PI*2, t:Math.random()*4,
+          catchT:(6+Math.random()*4)/catchMult,
+          carry:null, carryA:0,
+          houseId:obj.id, houseCol:obj.col, houseRow:obj.row,
+          level:lvl,
+        });
+        hud();
+        toast('🎣 Новый рыбак из домика!');
+      }
+      // Обновляем catchMult для всех рыбаков этого домика
+      for(const f of FISH){
+        if(f.houseId===obj.id) f._catchMult=catchMult;
+      }
+    }
+
     // COWPEN — produces 1 milk every 8s, outputs to conveyor, chest, or milkdel
     if(obj.type==='cowpen'){
       if(obj.timer>=8){
@@ -821,7 +855,7 @@ function update(dt){
         }
       }
     }
-  }
+  } // end buildings loop
 
   // ---- Particles ----
   for(let i=PTCL.length-1;i>=0;i--){
@@ -890,19 +924,88 @@ function update(dt){
   // ---- Fishermen ----
   for(const f of FISH){
     f.t+=dt; f.bob+=dt*1.7;
-    f.catchT-=dt;
-    if(f.catchT<=0){
-      f.catchT=6+Math.random()*7;
-      const fish=FISHDB[0|(Math.random()*FISHDB.length)];
-      CAUGHT.add(fish.n); f.carry=fish.i; f.carryA=1.3;
-      earn('fish',1);
-      toast(fish.i+' Поймал '+fish.n+'!');
-      // deposit to first available chest
-      for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
-        if(G[rr][cc]&&G[rr][cc].type==='chest'){ cs(G[rr][cc].id).fish++; goto: break; }
+
+    // Рыбаки из домика — ходят к сундуку с рыбой
+    if(f.houseId){
+      f.walkCycle=(f.walkCycle||0)+dt*3;
+
+      if(f.state==='fishing'||!f.state){
+        // Рыбалка у воды
+        f.catchT-=dt;
+        if(f.catchT<=0){
+          const mult=f._catchMult||1;
+          f.catchT=(5+Math.random()*5)/mult;
+          const fish=FISHDB[0|(Math.random()*FISHDB.length)];
+          CAUGHT.add(fish.n);
+          f.carry=fish.i; f.carryIcon=fish.i; f.carryA=1;
+          earn('fish',1);
+          toast(fish.i+' Поймал '+fish.n+'!');
+          // Найти ближайший сундук
+          let bestChest=null, bestDist=Infinity;
+          for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+            if(G[rr][cc]&&G[rr][cc].type==='chest'){
+              const hc=f.houseCol??cc, hr=f.houseRow??rr;
+              const d=Math.abs(cc-hc)+Math.abs(rr-hr);
+              if(d<bestDist){bestDist=d;bestChest=G[rr][cc];}
+            }
+          }
+          if(bestChest){
+            f.targetX=bestChest.col*GS+GS/2;
+            f.targetY=bestChest.row*GS+GS/2;
+            f.targetChestId=bestChest.id;
+            f.state='walk_to_chest';
+          }
+        }
+      } else if(f.state==='walk_to_chest'){
+        // Идём к сундуку
+        const tx=f.targetX, ty=f.targetY;
+        const dx=tx-f.x, dy=ty-f.y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        f.facing=dx>0?1:-1;
+        if(dist<8){
+          // Дошли — кладём рыбу
+          if(f.targetChestId) cs(f.targetChestId).fish=(cs(f.targetChestId).fish||0)+1;
+          f.carry=null; f.carryA=0;
+          // Анимация вброса
+          f._depositFlash=0.6;
+          // Идём обратно к воде (позиция рыбалки)
+          f.state='walk_to_water';
+          f.targetX=f.homeX||(COLS-2.5)*GS;
+          f.targetY=f.homeY||f.y;
+        } else {
+          const spd=GS*1.3*dt;
+          f.x+=dx/dist*spd; f.y+=dy/dist*spd;
+        }
+      } else if(f.state==='walk_to_water'){
+        const tx=f.targetX, ty=f.targetY;
+        const dx=tx-f.x, dy=ty-f.y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        f.facing=dx>0?1:-1;
+        if(dist<8){
+          f.state='fishing';
+          f.homeX=f.x; f.homeY=f.y;
+        } else {
+          const spd=GS*1.1*dt;
+          f.x+=dx/dist*spd; f.y+=dy/dist*spd;
+        }
       }
+      if(f._depositFlash>0) f._depositFlash-=dt*2;
+    } else {
+      // Обычный рыбак (без домика) — стоит на месте
+      f.catchT-=dt;
+      if(f.catchT<=0){
+        const mult=f._catchMult||1;
+        f.catchT=(6+Math.random()*7)/mult;
+        const fish=FISHDB[0|(Math.random()*FISHDB.length)];
+        CAUGHT.add(fish.n); f.carry=fish.i; f.carryA=1.3;
+        earn('fish',1);
+        toast(fish.i+' Поймал '+fish.n+'!');
+        for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+          if(G[rr][cc]&&G[rr][cc].type==='chest'){ cs(G[rr][cc].id).fish++; break; }
+        }
+      }
+      if(f.carryA>0) f.carryA=Math.max(0,f.carryA-dt*.7);
     }
-    if(f.carryA>0) f.carryA=Math.max(0,f.carryA-dt*.7);
   }
 }
 
@@ -929,8 +1032,161 @@ function frame(ts){
   drawFisherChests();
   if(gCol!==null&&curTool) drawGhost();
   X.restore();
-  drawRaidHUD(); // screen-space overlay
+  drawRaidHUD();
+  drawShaders(dt);
   requestAnimationFrame(frame);
+}
+
+// ════════════════════════════════════════════
+//  SHADER SYSTEM
+// ════════════════════════════════════════════
+const SH=document.getElementById('sh');
+const SX=SH.getContext('2d');
+let _st=0;
+const _wp=[];
+for(let i=0;i<55;i++) _wp.push({x:Math.random(),y:Math.random(),spd:.12+Math.random()*.22,sz:.8+Math.random()*1.4,a:.15+Math.random()*.35,dr:Math.random()*.04-.02});
+
+function drawShaders(dt){
+  _st+=dt;
+  const t=_st;
+  SH.width=W; SH.height=H;
+  SX.clearRect(0,0,W,H);
+  const vx=W/2,vy=H/2,vr=Math.max(W,H)*.75;
+
+  // 1. Виньетка
+  const vig=SX.createRadialGradient(vx,vy,vr*.25,vx,vy,vr);
+  vig.addColorStop(0,'rgba(0,0,0,0)');
+  vig.addColorStop(.55,'rgba(0,0,0,0)');
+  vig.addColorStop(.8,'rgba(0,0,0,0.2)');
+  vig.addColorStop(1,'rgba(0,0,0,0.7)');
+  SX.fillStyle=vig; SX.fillRect(0,0,W,H);
+
+  // 2. Атмосферный туман сверху
+  const fog=SX.createLinearGradient(0,0,0,H*.32);
+  fog.addColorStop(0,`rgba(120,160,220,${.1+Math.sin(t*.3)*.025})`);
+  fog.addColorStop(.7,'rgba(120,160,220,.03)');
+  fog.addColorStop(1,'rgba(0,0,0,0)');
+  SX.fillStyle=fog; SX.fillRect(0,0,W,H*.32);
+
+  // 3. Bloom воды (экранные координаты)
+  SX.globalCompositeOperation='screen';
+  const wx=(COLS-2)*GS-camX;
+  const wbloom=SX.createRadialGradient(wx,vy,0,wx,vy,GS*4);
+  wbloom.addColorStop(0,`rgba(30,90,255,${.05+Math.sin(t*1.1)*.015})`);
+  wbloom.addColorStop(.6,'rgba(10,40,150,.02)');
+  wbloom.addColorStop(1,'rgba(0,0,0,0)');
+  SX.fillStyle=wbloom; SX.fillRect(0,0,W,H);
+  SX.globalCompositeOperation='source-over';
+
+  // 4. Частицы пыли / пыльца
+  SX.globalCompositeOperation='screen';
+  for(const p of _wp){
+    p.x+=p.dr*dt+p.spd*dt*.4;
+    p.y-=p.spd*dt*.25;
+    if(p.x>1.08) p.x=-.08;
+    if(p.y<-.04){p.y=1.04;p.x=Math.random();}
+    const px=p.x*W,py=p.y*H;
+    const pg=SX.createRadialGradient(px,py,0,px,py,p.sz*3.5);
+    pg.addColorStop(0,`rgba(255,235,160,${p.a})`);
+    pg.addColorStop(1,'rgba(0,0,0,0)');
+    SX.fillStyle=pg; SX.beginPath(); SX.arc(px,py,p.sz*3.5,0,Math.PI*2); SX.fill();
+  }
+  SX.globalCompositeOperation='source-over';
+
+  // 5. День/ночь цикл (120 сек)
+  const day=(t*.5/60)%(Math.PI*2);
+  const night=Math.max(0,(Math.cos(day)+1)/2);
+  if(night>.02){
+    SX.fillStyle=`rgba(4,8,36,${night*.58})`; SX.fillRect(0,0,W,H);
+    if(night>.25){
+      const sa=Math.min(1,(night-.25)*1.8)*.8;
+      for(let i=0;i<90;i++){
+        const sx2=((i*137.5)%1)*W, sy2=((i*97.3)%1)*H*.55;
+        const tw=.4+Math.sin(t*3+i*1.1)*.35;
+        SX.fillStyle=`rgba(255,255,245,${tw*sa})`;
+        SX.beginPath(); SX.arc(sx2,sy2,.7+Math.sin(t*2+i*.7)*.4,0,Math.PI*2); SX.fill();
+      }
+    }
+    if(night>.5){
+      const ma=Math.min(1,(night-.5)*2.5)*.92;
+      const mx=W*.82,my=H*.07;
+      const mg=SX.createRadialGradient(mx,my,0,mx,my,GS*2);
+      mg.addColorStop(0,`rgba(200,215,255,${ma*.45})`);
+      mg.addColorStop(.35,`rgba(160,185,255,${ma*.15})`);
+      mg.addColorStop(1,'rgba(0,0,0,0)');
+      SX.fillStyle=mg; SX.fillRect(0,0,W,H);
+      SX.fillStyle=`rgba(238,245,255,${ma})`;
+      SX.beginPath(); SX.arc(mx,my,GS*.38,0,Math.PI*2); SX.fill();
+      SX.fillStyle=`rgba(4,8,36,${ma*.9})`;
+      SX.beginPath(); SX.arc(mx+GS*.16,my,GS*.34,0,Math.PI*2); SX.fill();
+      // лунная дорожка на воде
+      const trail=SX.createLinearGradient(wx-GS,H*.3,wx,H*.7);
+      trail.addColorStop(0,'rgba(200,215,255,0)');
+      trail.addColorStop(.5,`rgba(200,215,255,${ma*.12})`);
+      trail.addColorStop(1,'rgba(200,215,255,0)');
+      SX.fillStyle=trail; SX.fillRect(wx-GS,H*.3,GS*1.5,H*.4);
+    }
+  } else {
+    // Солнечное свечение
+    const sg=SX.createRadialGradient(W*.1,H*.04,0,W*.1,H*.04,W*.55);
+    sg.addColorStop(0,`rgba(255,240,170,${.06+Math.sin(t*.7)*.015})`);
+    sg.addColorStop(.22,`rgba(255,190,60,${.025+Math.sin(t*.5)*.008})`);
+    sg.addColorStop(1,'rgba(0,0,0,0)');
+    SX.fillStyle=sg; SX.fillRect(0,0,W,H);
+    // Световой луч
+    const beamA=(t*.09)%(Math.PI*2);
+    if(Math.sin(beamA)>.92){
+      const bi=(Math.sin(beamA)-.92)*12.5;
+      SX.save(); SX.globalAlpha=bi*.055;
+      SX.translate(W*.1,H*.04);
+      SX.rotate(.42);
+      const bgrad=SX.createLinearGradient(0,0,W*.8,0);
+      bgrad.addColorStop(0,'rgba(255,240,150,1)');
+      bgrad.addColorStop(1,'rgba(255,240,150,0)');
+      SX.fillStyle=bgrad;
+      SX.beginPath(); SX.moveTo(0,-H*.04); SX.lineTo(W*.85,H*-.6); SX.lineTo(W*.85,H*.6); SX.lineTo(0,H*.04); SX.closePath(); SX.fill();
+      SX.restore();
+    }
+  }
+
+  // 6. Рейд — красная пульсация
+  if(RAID_STATE.raidRunning){
+    SX.fillStyle=`rgba(160,15,0,${.045+Math.sin(t*9)*.025})`; SX.fillRect(0,0,W,H);
+    const rv=SX.createRadialGradient(vx,vy,vr*.35,vx,vy,vr);
+    rv.addColorStop(0,'rgba(0,0,0,0)');
+    rv.addColorStop(1,`rgba(220,0,0,${.2+Math.sin(t*5)*.08})`);
+    SX.fillStyle=rv; SX.fillRect(0,0,W,H);
+  }
+
+  // 7. Тончайшие scanlines
+  SX.globalAlpha=.022;
+  for(let y=0;y<H;y+=3){ SX.fillStyle='rgba(0,0,0,1)'; SX.fillRect(0,y,W,1); }
+  SX.globalAlpha=1;
+
+  // 8. Тёплый грейд снизу
+  const wg=SX.createLinearGradient(0,H*.65,0,H);
+  wg.addColorStop(0,'rgba(0,0,0,0)');
+  wg.addColorStop(1,'rgba(35,15,0,.07)');
+  SX.fillStyle=wg; SX.fillRect(0,H*.65,W,H*.35);
+
+  // 9. Редкий глинт
+  const gp=(t*.15)%(Math.PI*2);
+  if(Math.sin(gp)>.93){
+    const gi=(Math.sin(gp)-.93)*14.3;
+    const glx=W*(.25+Math.sin(t*.11)*.45);
+    SX.save(); SX.translate(glx,0); SX.rotate(-.18);
+    const gl2=SX.createLinearGradient(-W*.25,0,W*.25,0);
+    gl2.addColorStop(0,'rgba(255,255,255,0)');
+    gl2.addColorStop(.5,`rgba(255,255,255,${gi*.045})`);
+    gl2.addColorStop(1,'rgba(255,255,255,0)');
+    SX.fillStyle=gl2; SX.fillRect(-W*.3,-H,W*.6,H*2); SX.restore();
+  }
+
+  // 10. Хроматическая аберрация по углам
+  const ca=SX.createRadialGradient(vx,vy,vr*.6,vx,vy,vr);
+  ca.addColorStop(0,'rgba(0,0,0,0)');
+  ca.addColorStop(1,'rgba(60,0,80,.04)');
+  SX.fillStyle=ca; SX.fillRect(0,0,W,H);
 }
 
 // ── Terrain ──────────────────────────────────
@@ -967,38 +1223,135 @@ function drawTerrain(){
 }
 
 function drawGrass(x,y,c,r){
-  X.fillStyle=((r+c)&1)?'#558039':'#5a8a3c'; X.fillRect(x,y,GS,GS);
-  const h=(r*13+c*7)%19;
-  if(h<3){ X.fillStyle='#496f2a'; X.fillRect(x+GS*.2,y+GS*.6,3,6); X.fillRect(x+GS*.5,y+GS*.55,3,7); }
-  if(h===8){ X.fillStyle='#ffe066'; X.beginPath(); X.arc(x+GS*.55,y+GS*.43,2.5,0,Math.PI*2); X.fill(); }
-}
+  // Base — двухцветный шахматный фон
+  const base=((r+c)&1)?'#4e7a32':'#568540';
+  X.fillStyle=base; X.fillRect(x,y,GS,GS);
 
-function drawRock(x,y,c,r){
-  X.fillStyle='#606060'; X.fillRect(x,y,GS,GS);
-  X.fillStyle='#6e6c6a'; X.fillRect(x+3,y+3,GS-6,GS-6);
-  X.strokeStyle='#505050'; X.lineWidth=1.2;
-  X.beginPath(); X.moveTo(x+GS*.18,y+GS*.28); X.lineTo(x+GS*.44,y+GS*.6);  X.stroke();
-  X.beginPath(); X.moveTo(x+GS*.58,y+GS*.22); X.lineTo(x+GS*.74,y+GS*.52); X.stroke();
-  // ore vein
-  const oc=((c+r)%3===0)?'#c88035':'#90aab8';
-  X.fillStyle=oc;
-  X.beginPath(); X.arc(x+GS*.65,y+GS*.38,GS*.08,0,Math.PI*2); X.fill();
-  X.fillStyle='rgba(255,220,140,.4)';
-  X.beginPath(); X.arc(x+GS*.65,y+GS*.38,GS*.04,0,Math.PI*2); X.fill();
-  X.fillStyle=oc;
-  X.beginPath(); X.arc(x+GS*.28,y+GS*.65,GS*.055,0,Math.PI*2); X.fill();
-  if(Math.sin(GT*3.5+c*2.1+r*1.3)>.84){
-    X.fillStyle='rgba(255,230,130,.9)'; drawStar(X,x+GS*.65,y+GS*.38,GS*.06,4);
+  // Текстура — лёгкий градиент освещения сверху
+  const lg=X.createLinearGradient(x,y,x,y+GS);
+  lg.addColorStop(0,'rgba(255,255,255,0.06)');
+  lg.addColorStop(0.4,'rgba(0,0,0,0)');
+  lg.addColorStop(1,'rgba(0,0,0,0.1)');
+  X.fillStyle=lg; X.fillRect(x,y,GS,GS);
+
+  // Детали — трава, цветы, мелкие камни (детерминированно по c,r)
+  const seed=(c*31+r*17);
+  // Пучки травы
+  const h=(r*13+c*7)%19;
+  if(h<5){
+    const bx=x+GS*((seed%5)*.14+.12), by=y+GS*((seed%7)*.08+.52);
+    X.strokeStyle=`hsl(${105+(seed%15)},65%,${28+(seed%8)}%)`; X.lineWidth=1.2; X.lineCap='round';
+    for(let b=0;b<3;b++){
+      const sw=Math.sin(GT*1.2+(c+b)*0.9)*2.5;
+      X.beginPath(); X.moveTo(bx+b*4,by); X.quadraticCurveTo(bx+b*4+sw,by-GS*.18,bx+b*4+sw*1.5,by-GS*.28); X.stroke();
+    }
+  }
+  // Мелкие цветы
+  if(h===8||h===15){
+    const fx=x+GS*((seed%9)*.07+.18), fy=y+GS*((seed%6)*.1+.38);
+    const hue=h===8?55:300; // жёлтый или розовый
+    X.fillStyle=`hsl(${hue},90%,65%)`;
+    for(let p=0;p<5;p++){
+      const pa=p/5*Math.PI*2;
+      X.beginPath(); X.ellipse(fx+Math.cos(pa)*2.8,fy+Math.sin(pa)*2.8,2.2,1.6,pa,0,Math.PI*2); X.fill();
+    }
+    X.fillStyle=`hsl(${hue+20},100%,85%)`; X.beginPath(); X.arc(fx,fy,1.8,0,Math.PI*2); X.fill();
+  }
+  // Камешки
+  if(h===11||h===3){
+    X.fillStyle=`rgba(150,140,120,0.5)`;
+    X.beginPath(); X.ellipse(x+GS*((seed%7)*.1+.3),y+GS*((seed%8)*.09+.6),3,2,0.4,0,Math.PI*2); X.fill();
   }
 }
 
+function drawRock(x,y,c,r){
+  // Базовый цвет камня
+  const shade1='#606060', shade2='#6e6c6a', shade3='#585654';
+  X.fillStyle=shade1; X.fillRect(x,y,GS,GS);
+
+  // Внутренняя плитка с градиентом
+  const rg=X.createLinearGradient(x,y,x+GS,y+GS);
+  rg.addColorStop(0,'#72706e'); rg.addColorStop(0.5,'#646260'); rg.addColorStop(1,'#4e4c4a');
+  X.fillStyle=rg; X.fillRect(x+2,y+2,GS-4,GS-4);
+
+  // Highlight сверху-слева
+  X.fillStyle='rgba(255,255,255,0.07)'; X.fillRect(x+2,y+2,GS-4,GS*.3);
+
+  // Трещины
+  X.strokeStyle='rgba(35,32,30,0.55)'; X.lineWidth=1.2; X.lineCap='round';
+  X.beginPath(); X.moveTo(x+GS*.15,y+GS*.25); X.lineTo(x+GS*.42,y+GS*.58); X.lineTo(x+GS*.38,y+GS*.82); X.stroke();
+  X.beginPath(); X.moveTo(x+GS*.55,y+GS*.18); X.lineTo(x+GS*.76,y+GS*.5); X.stroke();
+  X.beginPath(); X.moveTo(x+GS*.6,y+GS*.62); X.lineTo(x+GS*.85,y+GS*.78); X.stroke();
+  // Тонкая дополнительная трещина
+  X.strokeStyle='rgba(35,32,30,0.3)'; X.lineWidth=0.7;
+  X.beginPath(); X.moveTo(x+GS*.22,y+GS*.7); X.lineTo(x+GS*.48,y+GS*.88); X.stroke();
+
+  // Рудные жилы
+  const isGold=((c+r)%3===0);
+  const oc=isGold?'#c88035':'#90aab8';
+  const oc2=isGold?'#e8a850':'#b0c8d8';
+  // Основная жила
+  X.fillStyle=oc; X.beginPath(); X.arc(x+GS*.65,y+GS*.38,GS*.09,0,Math.PI*2); X.fill();
+  X.fillStyle=oc2; X.beginPath(); X.arc(x+GS*.65,y+GS*.38,GS*.05,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(255,230,180,.5)'; X.beginPath(); X.arc(x+GS*.63,y+GS*.35,GS*.025,0,Math.PI*2); X.fill();
+  // Вторая жила
+  X.fillStyle=oc; X.beginPath(); X.arc(x+GS*.28,y+GS*.65,GS*.065,0,Math.PI*2); X.fill();
+  X.fillStyle=oc2; X.beginPath(); X.arc(x+GS*.28,y+GS*.65,GS*.032,0,Math.PI*2); X.fill();
+  // Мелкие крупицы
+  X.fillStyle=oc;
+  X.beginPath(); X.arc(x+GS*.48,y+GS*.22,GS*.03,0,Math.PI*2); X.fill();
+  X.beginPath(); X.arc(x+GS*.8,y+GS*.72,GS*.025,0,Math.PI*2); X.fill();
+
+  // Мерцание жилы
+  if(Math.sin(GT*3.5+c*2.1+r*1.3)>.84){
+    X.fillStyle=isGold?'rgba(255,220,80,.9)':'rgba(200,230,255,.9)';
+    drawStar(X,x+GS*.65,y+GS*.38,GS*.07,4);
+  }
+  // Маленькие угловые сколы
+  X.fillStyle='rgba(30,28,26,0.35)';
+  X.beginPath(); X.moveTo(x,y); X.lineTo(x+5,y); X.lineTo(x,y+5); X.closePath(); X.fill();
+  X.beginPath(); X.moveTo(x+GS,y+GS); X.lineTo(x+GS-5,y+GS); X.lineTo(x+GS,y+GS-5); X.closePath(); X.fill();
+}
+
 function drawWater(x,y,c,r){
+  // Глубокий градиент воды
   const g=X.createLinearGradient(x,y,x,y+GS);
-  g.addColorStop(0,'#2868a0'); g.addColorStop(1,'#1c4a78');
+  g.addColorStop(0,'#2c78b8'); g.addColorStop(0.5,'#1e5888'); g.addColorStop(1,'#142e50');
   X.fillStyle=g; X.fillRect(x,y,GS,GS);
-  if(((c+r+0|(GT))&3)===0){
-    X.fillStyle='rgba(255,255,255,.15)';
-    X.beginPath(); X.ellipse(x+GS*.4+Math.sin(GT+c)*.08*GS,y+GS*.4,GS*.1,GS*.05,.3,0,Math.PI*2); X.fill();
+
+  // Лёгкое горизонтальное мерцание
+  const shimmer=X.createLinearGradient(x,y,x+GS,y);
+  shimmer.addColorStop(0,'rgba(255,255,255,0)');
+  shimmer.addColorStop(0.5,`rgba(255,255,255,${0.04+Math.sin(GT*1.5+c*.7)*0.02})`);
+  shimmer.addColorStop(1,'rgba(255,255,255,0)');
+  X.fillStyle=shimmer; X.fillRect(x,y,GS,GS);
+
+  // Волны — несколько эллипсов
+  const wt=GT+c*.55+r*.38;
+  for(let w=0;w<2;w++){
+    const wp=(wt*0.8+w*1.6)%2;
+    const wa=Math.max(0,Math.sin(wp*Math.PI)*0.22);
+    X.strokeStyle=`rgba(255,255,255,${wa})`;
+    X.lineWidth=1.2; X.lineCap='round';
+    X.beginPath();
+    X.ellipse(
+      x+GS*(.18+w*.35)+Math.sin(GT*.7+c+w)*GS*.06,
+      y+GS*(.3+w*.35),
+      GS*(.12+w*.04), GS*.04, 0.2, 0, Math.PI
+    );
+    X.stroke();
+  }
+
+  // Пена у берега (правого)
+  if(c===COLS-3){
+    X.fillStyle=`rgba(255,255,255,${0.12+Math.sin(GT*2+r*.8)*.05})`;
+    X.beginPath(); X.ellipse(x+GS*.1,y+GS*.5+Math.sin(GT*1.5+r)*GS*.1,GS*.08,GS*.035,.2,0,Math.PI*2); X.fill();
+  }
+
+  // Отражение — размытое светлое пятно
+  if(((c*7+r*3)%5)===0){
+    X.fillStyle=`rgba(100,180,255,${0.08+Math.sin(GT*2.2+c*1.4)*.04})`;
+    X.beginPath(); X.ellipse(x+GS*.55,y+GS*.45,GS*.15,GS*.06,-.2,0,Math.PI*2); X.fill();
   }
 }
 
@@ -1023,7 +1376,7 @@ function drawBuildings(){
     const obj=G[r][c]; if(!obj) continue;
     X.save();
     const x=c*GS, y=r*GS;
-    ({bur:dBur, bur2:dBur2, conv:dConv, conv2:dConv2, teleport:dTeleport, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack, raidspot:dRaidSpot, landspot:dLandSpot})[obj.type]?.(x,y,obj);
+    ({bur:dBur, bur2:dBur2, conv:dConv, conv2:dConv2, teleport:dTeleport, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack, raidspot:dRaidSpot, landspot:dLandSpot, fishhouse:dFishHouse})[obj.type]?.(x,y,obj);
     X.restore();
   }
   // Draw raid beam between top and bottom towers
@@ -1186,6 +1539,78 @@ function dBur2(x,y,obj){
 
 // LANDSPOT — нет рисования (тайл меняется сразу при покупке)
 function dLandSpot(x,y,obj){}
+
+// FISHHOUSE — Рыбацкий Домик ──────────────────
+function dFishHouse(x,y,obj){
+  const t=GT, lvl=obj._level||1;
+  const myFish=FISH.filter(f=>f.houseId===obj.id).length;
+
+  // Фундамент
+  X.fillStyle='#5a3a10'; X.fillRect(x+3,y+GS*.62,GS-6,GS*.36);
+  X.fillStyle='#7a5020'; X.fillRect(x+3,y+GS*.62,GS-6,5);
+
+  // Стены
+  const wg=X.createLinearGradient(x+GS*.08,y+GS*.26,x+GS*.92,y+GS*.64);
+  wg.addColorStop(0,'#c8883a'); wg.addColorStop(1,'#8a5520');
+  X.fillStyle=wg; X.fillRect(x+GS*.08,y+GS*.32,GS*.84,GS*.32);
+  X.strokeStyle='rgba(80,40,10,.35)'; X.lineWidth=1;
+  for(let i=0;i<4;i++){ X.beginPath(); X.moveTo(x+GS*.08,y+GS*(.35+i*.075)); X.lineTo(x+GS*.92,y+GS*(.35+i*.075)); X.stroke(); }
+  X.strokeStyle='#6a4018'; X.lineWidth=1.5; X.strokeRect(x+GS*.08,y+GS*.32,GS*.84,GS*.32);
+
+  // Крыша
+  const rg=X.createLinearGradient(x,y+GS*.1,x+GS*.5,y+GS*.32);
+  rg.addColorStop(0,'#8a3510'); rg.addColorStop(1,'#5a2008');
+  X.fillStyle=rg;
+  X.beginPath(); X.moveTo(x+GS*.04,y+GS*.33); X.lineTo(x+GS*.5,y+GS*.06); X.lineTo(x+GS*.96,y+GS*.33); X.closePath(); X.fill();
+  X.strokeStyle='#3a1005'; X.lineWidth=2;
+  X.beginPath(); X.moveTo(x+GS*.04,y+GS*.33); X.lineTo(x+GS*.5,y+GS*.06); X.lineTo(x+GS*.96,y+GS*.33); X.stroke();
+  X.strokeStyle='rgba(0,0,0,.2)'; X.lineWidth=0.8;
+  for(let i=0;i<5;i++){ const py=y+GS*(.12+i*.04); X.beginPath(); X.moveTo(x+GS*(.5-i*.09),py); X.lineTo(x+GS*(.5+i*.09),py); X.stroke(); }
+
+  // Дверь
+  X.fillStyle='#4a2808'; rrx(x+GS*.38,y+GS*.42,GS*.24,GS*.22,3); X.fill();
+  X.strokeStyle='#6a3810'; X.lineWidth=1.2; rrx(x+GS*.38,y+GS*.42,GS*.24,GS*.22,3); X.stroke();
+  X.fillStyle='#c89040'; X.beginPath(); X.arc(x+GS*.59,y+GS*.53,2.5,0,Math.PI*2); X.fill();
+
+  // Окно со светом
+  X.fillStyle=`rgba(255,220,${myFish>0?100:60},${myFish>0?0.5+Math.sin(t*2.5)*.15:0.3})`; X.fillRect(x+GS*.14,y+GS*.37,GS*.16,GS*.14);
+  X.strokeStyle='#5a3010'; X.lineWidth=1.2; X.strokeRect(x+GS*.14,y+GS*.37,GS*.16,GS*.14);
+  X.strokeStyle='rgba(80,50,10,.5)'; X.lineWidth=0.8;
+  X.beginPath(); X.moveTo(x+GS*.22,y+GS*.37); X.lineTo(x+GS*.22,y+GS*.51); X.stroke();
+  X.beginPath(); X.moveTo(x+GS*.14,y+GS*.44); X.lineTo(x+GS*.30,y+GS*.44); X.stroke();
+
+  // Труба + дым
+  X.fillStyle='#4a2808'; X.fillRect(x+GS*.66,y,GS*.1,GS*.16);
+  X.fillStyle='#3a1808'; X.fillRect(x+GS*.64,y-GS*.02,GS*.14,GS*.04);
+  for(let i=0;i<3;i++){
+    const dp=(t*0.7+i*0.55)%1;
+    X.fillStyle=`rgba(180,170,160,${0.45*(1-dp)})`;
+    X.beginPath(); X.arc(x+GS*.71+Math.sin(t*1.5+i*2)*GS*.05, y-dp*GS*.35, GS*(0.06+dp*0.07),0,Math.PI*2); X.fill();
+  }
+
+  // Удочка
+  X.strokeStyle='#6a4010'; X.lineWidth=2; X.lineCap='round';
+  X.beginPath(); X.moveTo(x+GS*.88,y+GS*.38); X.lineTo(x+GS*.97,y+GS*.2); X.stroke();
+  X.strokeStyle='rgba(150,150,120,.55)'; X.lineWidth=1;
+  X.beginPath(); X.moveTo(x+GS*.97,y+GS*.2); X.lineTo(x+GS*.97+Math.sin(t*2)*5,y+GS*.32); X.stroke();
+  // поплавок
+  X.fillStyle='#e04020'; X.beginPath(); X.arc(x+GS*.97+Math.sin(t*2)*5,y+GS*.33,2.5,0,Math.PI*2); X.fill();
+
+  // Звёздочки уровня
+  X.font=`${GS*.12}px serif`; X.textAlign='left';
+  for(let i=0;i<lvl;i++) X.fillText('⭐',x+GS*(.05+i*.22),y+GS*.3);
+
+  // Счётчик рыбаков
+  if(myFish>0){
+    X.fillStyle='rgba(255,200,50,.95)'; X.beginPath(); X.arc(x+GS*.85,y+GS*.18,GS*.13,0,Math.PI*2); X.fill();
+    X.fillStyle='#3a2000'; X.font=`bold ${GS*.12}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(myFish,x+GS*.85,y+GS*.18);
+  }
+
+  // Метка
+  X.fillStyle='rgba(100,60,20,.85)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top';
+  X.fillText('РЫБ.ДОМИК',x+GS*.5,y+GS*.96);
+}
 
 // COWPEN — Коровник ───────────────────────────
 function dCowPen(x,y,obj){
@@ -1445,19 +1870,28 @@ function dChest(x,y,obj){
   const t=GT, cd=cs(obj.id);
   const total=cd.ore+cd.bars+cd.rods+cd.fish+(cd.seed_ore||0)+(cd.milk||0)+(cd.milk_bottle||0)+(cd.eggs||0)+(cd.egg_pack||0);
   const isSuper=SEMENI_SUPER_CHESTS[obj.id];
+  const cx2=x+GS*.5;
 
-  // lid angle — open if adjacent furnace is pulling
-  let lidAng=0;
+  // Плавный угол крышки — открывается от плавильщика ИЛИ когда рыбак приходит
+  let targetLidAng=0;
   for(const [dc,dr] of DIR4){
     const nb=G[obj.row+dr]?.[obj.col+dc];
     if(nb&&nb.type==='furn'){
       const sm=SMST[nb.id];
-      if(sm&&(sm.phase==='open'||sm.phase==='smelt')) lidAng=-Math.PI*.44;
+      if(sm&&(sm.phase==='open'||sm.phase==='smelt')) targetLidAng=-Math.PI*.5;
     }
   }
-  const cx2=x+GS*.5;
+  // Рыбак идёт к этому сундуку?
+  const fishmanComing=FISH.some(f=>f.targetChestId===obj.id&&f.state==='walk_to_chest');
+  if(fishmanComing) targetLidAng=-Math.PI*.45;
 
-  // SUPER SEMENI CHEST — glowing green aura + ornate look
+  // Плавная интерполяция крышки
+  if(!obj._lidAng) obj._lidAng=0;
+  obj._lidAng+=(targetLidAng-obj._lidAng)*0.18;
+  const lidAng=obj._lidAng;
+  const isOpen=lidAng<-.05;
+
+  // SUPER SEMENI CHEST аура
   if(isSuper){
     const pulse=0.5+Math.sin(t*2.5)*0.3;
     const aura=X.createRadialGradient(cx2,y+GS*.6,0,cx2,y+GS*.6,GS*.7);
@@ -1465,44 +1899,70 @@ function dChest(x,y,obj){
     aura.addColorStop(.5,`rgba(40,200,30,${pulse*.15})`);
     aura.addColorStop(1,'rgba(0,0,0,0)');
     X.fillStyle=aura; X.fillRect(x-GS*.2,y-GS*.2,GS*1.4,GS*1.4);
-    // rotating sparkles
     for(let i=0;i<6;i++){
       const sa=t*1.8+i*1.047, sr=GS*.46;
-      const sx2=cx2+Math.cos(sa)*sr*.7, sy2=y+GS*.55+Math.sin(sa)*sr*.35;
       X.fillStyle=`rgba(150,255,80,${.3+Math.sin(t*3+i)*.25})`;
-      X.beginPath(); X.arc(sx2,sy2,2.2,0,Math.PI*2); X.fill();
+      X.beginPath(); X.arc(cx2+Math.cos(sa)*sr*.7,y+GS*.55+Math.sin(sa)*sr*.35,2.2,0,Math.PI*2); X.fill();
     }
   }
 
-  // shadow
-  X.fillStyle='rgba(0,0,0,.3)'; X.beginPath(); X.ellipse(cx2,y+GS*.9,GS*.38,GS*.08,0,0,Math.PI*2); X.fill();
-  // BODY
-  const bodyCol1=isSuper?'#2a8a3a':'#9c6430';
+  // Свечение когда открыт
+  if(isOpen){
+    const glowAlpha=0.12+Math.abs(lidAng/Math.PI*.5)*0.25;
+    const openGlow=X.createRadialGradient(cx2,y+GS*.55,0,cx2,y+GS*.55,GS*.6);
+    openGlow.addColorStop(0,`rgba(${isSuper?'80,255,60':'255,200,60'},${glowAlpha*2})`);
+    openGlow.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=openGlow; X.fillRect(x-GS*.1,y-GS*.1,GS*1.2,GS*1.2);
+
+    // Частицы из открытого сундука
+    if(total>0){
+      for(let i=0;i<4;i++){
+        const pt=(t*1.8+i*.6)%1;
+        const px=cx2+(Math.sin(t*2+i*1.5))*GS*.2;
+        const py=y+GS*.47-pt*GS*.35;
+        X.fillStyle=`rgba(${isSuper?'150,255,80':'255,215,60'},${.7*(1-pt)})`;
+        X.beginPath(); X.arc(px,py,1.8+pt*1.5,0,Math.PI*2); X.fill();
+      }
+    }
+  }
+
+  // Тень
+  X.fillStyle='rgba(0,0,0,.28)'; X.beginPath(); X.ellipse(cx2,y+GS*.93,GS*.38,GS*.07,0,0,Math.PI*2); X.fill();
+
+  // ТЕЛО сундука — детализированное
+  const bodyCol1=isSuper?'#2a8a3a':'#a06835';
   const bodyCol2=isSuper?'#1a6228':'#7c5020';
   const bodyCol3=isSuper?'#0e3d18':'#4e3010';
   const bg=X.createLinearGradient(x+GS*.08,y+GS*.46,x+GS*.92,y+GS*.92);
   bg.addColorStop(0,bodyCol1); bg.addColorStop(.5,bodyCol2); bg.addColorStop(1,bodyCol3);
   X.fillStyle=bg; rrx(x+GS*.08,y+GS*.47,GS*.84,GS*.44,GS*.05); X.fill();
-  // planks
-  X.strokeStyle='rgba(0,0,0,.22)'; X.lineWidth=1;
+  // доски
+  X.strokeStyle='rgba(0,0,0,.25)'; X.lineWidth=1;
   for(let i=1;i<3;i++){ X.beginPath(); X.moveTo(x+GS*.09,y+GS*(.48+i*.12)); X.lineTo(x+GS*.91,y+GS*(.48+i*.12)); X.stroke(); }
-  // metal band
-  const bandCol=isSuper?'#60ff80':'#e0c040';
-  const bandCol2=isSuper?'#30c050':'#a88020';
+  // вертикальные доски
+  X.strokeStyle='rgba(0,0,0,.1)'; X.lineWidth=.7;
+  [.3,.5,.7].forEach(bx=>{ X.beginPath(); X.moveTo(x+GS*bx,y+GS*.48); X.lineTo(x+GS*bx,y+GS*.91); X.stroke(); });
+  // металлическая полоса
+  const bandCol=isSuper?'#60ff80':'#e8c840';
+  const bandCol2=isSuper?'#30c050':'#b08828';
   const mb=X.createLinearGradient(x+GS*.08,y+GS*.63,x+GS*.08,y+GS*.7);
   mb.addColorStop(0,bandCol); mb.addColorStop(1,bandCol2);
   X.fillStyle=mb; X.fillRect(x+GS*.08,y+GS*.63,GS*.84,GS*.07);
-  // rivets
-  X.fillStyle=isSuper?'#a0ffb0':'#f0d050';
-  [.15,.3,.5,.7,.85].forEach(bx=>{ X.beginPath(); X.arc(x+GS*bx,y+GS*.665,2.5,0,Math.PI*2); X.fill(); });
-  // corner fittings
-  X.fillStyle=isSuper?'#50d860':'#c8a835';
+  // заклёпки
+  X.fillStyle=isSuper?'#a0ffb0':'#f8e060';
+  [.15,.3,.5,.7,.85].forEach(bx=>{
+    X.beginPath(); X.arc(x+GS*bx,y+GS*.665,2.5,0,Math.PI*2); X.fill();
+    X.fillStyle='rgba(255,255,255,.5)'; X.beginPath(); X.arc(x+GS*bx-0.8,y+GS*.658,1,0,Math.PI*2); X.fill();
+    X.fillStyle=isSuper?'#a0ffb0':'#f8e060';
+  });
+  // угловые фитинги
+  X.fillStyle=isSuper?'#50d860':'#d4b040';
   [[.1,.5],[.86,.5],[.1,.84],[.86,.84]].forEach(([bx,by])=>{ rrx(x+GS*bx-3,y+GS*by-3,6,6,2); X.fill(); });
-  X.fillStyle=isSuper?'#50d860':'#c8a835'; X.fillRect(x+GS*.08,y+GS*.81,GS*.84,GS*.05);
+  X.fillStyle=isSuper?'#50d860':'#d4b040'; X.fillRect(x+GS*.08,y+GS*.81,GS*.84,GS*.05);
 
-  // LID
+  // КРЫШКА
   X.save(); X.translate(cx2,y+GS*.47); X.rotate(lidAng); X.translate(-cx2,-(y+GS*.47));
-  const lidCol1=isSuper?'#3aaa4a':'#b07838';
+  const lidCol1=isSuper?'#3aaa4a':'#b87838';
   const lidCol2=isSuper?'#257835':'#8a5820';
   const lidCol3=isSuper?'#133d1d':'#5a3810';
   const lg=X.createLinearGradient(x+GS*.08,y+GS*.22,x+GS*.92,y+GS*.47);
@@ -1513,17 +1973,20 @@ function dChest(x,y,obj){
   X.lineTo(x+GS*.89,y+GS*.3);
   X.quadraticCurveTo(cx2,y+GS*.17,x+GS*.11,y+GS*.3);
   X.closePath(); X.fill();
-  // lid planks
-  X.strokeStyle='rgba(0,0,0,.15)'; X.lineWidth=1;
+  // Доски крышки
+  X.strokeStyle='rgba(0,0,0,.18)'; X.lineWidth=1;
   X.beginPath(); X.moveTo(x+GS*.18,y+GS*.38); X.lineTo(x+GS*.82,y+GS*.38); X.stroke();
   X.beginPath(); X.moveTo(x+GS*.14,y+GS*.3);  X.lineTo(x+GS*.86,y+GS*.3);  X.stroke();
-  // lid band
+  // Highlight на крышке
+  X.strokeStyle='rgba(255,255,255,.12)'; X.lineWidth=1.5;
+  X.beginPath(); X.moveTo(x+GS*.12,y+GS*.29); X.quadraticCurveTo(cx2,y+GS*.18,x+GS*.88,y+GS*.29); X.stroke();
+  // полоса крышки
   const lb=X.createLinearGradient(x+GS*.08,y+GS*.44,x+GS*.08,y+GS*.48);
   lb.addColorStop(0,bandCol); lb.addColorStop(1,bandCol2);
   X.fillStyle=lb; X.fillRect(x+GS*.08,y+GS*.44,GS*.84,GS*.04);
-  // lock
-  X.fillStyle=isSuper?'#60ff80':'#d8b838'; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.fill();
-  X.strokeStyle='rgba(255,255,255,.28)'; X.lineWidth=1; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.stroke();
+  // замок
+  X.fillStyle=isSuper?'#60ff80':'#e8c840'; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.fill();
+  X.strokeStyle='rgba(255,255,255,.3)'; X.lineWidth=1; rrx(cx2-GS*.09,y+GS*.34,GS*.18,GS*.12,GS*.02); X.stroke();
   X.strokeStyle=isSuper?'#20a030':'#b09020'; X.lineWidth=2.2; X.lineCap='round';
   X.beginPath(); X.arc(cx2,y+GS*.345,GS*.04,Math.PI,0); X.stroke();
   X.fillStyle='rgba(0,0,0,.4)'; X.beginPath(); X.arc(cx2,y+GS*.375,2.5,0,Math.PI*2); X.fill();
@@ -1534,7 +1997,6 @@ function dChest(x,y,obj){
   if(isSuper){
     X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.fillStyle='#80ffb0';
     X.fillText('Səməni',cx2,y+GS*.13);
-    // Semeni gem on lid
     X.save(); X.translate(cx2,y+GS*.22+Math.sin(t*3)*.03*GS);
     const sg2=X.createRadialGradient(0,0,0,0,0,GS*.1);
     sg2.addColorStop(0,'#d0ffb0'); sg2.addColorStop(.5,'#50e030'); sg2.addColorStop(1,'#1a6010');
@@ -1545,18 +2007,15 @@ function dChest(x,y,obj){
     X.restore();
   }
 
-  // open glow
-  if(lidAng<-.1){
-    X.save(); X.globalAlpha=.22; X.fillStyle=isSuper?'#60ff60':'#ffd060'; X.fillRect(x+GS*.08,y+GS*.47,GS*.84,GS*.18); X.restore();
-  }
-  // badge
+  // Счётчик
   if(total>0){
     X.fillStyle=isSuper?'rgba(80,255,100,.95)':'rgba(255,205,50,.95)';
     X.beginPath(); X.arc(x+GS*.85,y+GS*.2,GS*.15,0,Math.PI*2); X.fill();
+    X.strokeStyle='rgba(255,255,255,.3)'; X.lineWidth=1; X.beginPath(); X.arc(x+GS*.85,y+GS*.2,GS*.15,0,Math.PI*2); X.stroke();
     X.fillStyle='#0a2000'; X.font=`bold ${GS*.13}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
     X.fillText(total>99?'99+':total,x+GS*.85,y+GS*.2);
   }
-  // contents row
+  // Содержимое
   const items=[];
   if(cd.ore>0)           items.push('⛏️'+cd.ore);
   if(cd.seed_ore>0)      items.push('🌱'+cd.seed_ore);
@@ -1571,7 +2030,7 @@ function dChest(x,y,obj){
     X.font=`${GS*.12}px serif`; X.textAlign='left'; X.textBaseline='top'; X.fillStyle='rgba(255,255,200,.9)';
     items.slice(0,2).forEach((it,i)=>X.fillText(it,x+GS*(.06+i*.47),y+GS*.93));
   }
-  // bind ring
+  // Привязка к рынку
   if(Object.values(MBIND).includes(obj.id)){
     X.font=`${GS*.18}px serif`; X.textAlign='right'; X.textBaseline='top'; X.fillText('🔗',x+GS*.97,y+GS*.04);
   }
@@ -2049,31 +2508,99 @@ function drawParticles(){
       X.fillStyle=gfr; X.beginPath(); X.arc(0,0,GS*.3*sc,0,Math.PI*2); X.fill();
     }
     if(p.icon==='ore'){
-      const gl=X.createRadialGradient(0,0,0,0,0,GS*.28);
-      gl.addColorStop(0,'rgba(220,150,40,.55)'); gl.addColorStop(1,'rgba(180,100,20,0)');
-      X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.28,0,Math.PI*2); X.fill();
-      X.fillStyle='rgba(0,0,0,.22)'; X.beginPath(); X.ellipse(0,GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
-      drawOreGem(0,0,GS*.17);
-    } else if(p.icon==='seed_ore'){
       const gl=X.createRadialGradient(0,0,0,0,0,GS*.3);
-      gl.addColorStop(0,'rgba(80,230,60,.6)'); gl.addColorStop(.5,'rgba(40,180,30,.25)'); gl.addColorStop(1,'rgba(20,120,10,0)');
+      gl.addColorStop(0,'rgba(240,170,50,.7)'); gl.addColorStop(.5,'rgba(200,120,30,.4)'); gl.addColorStop(1,'rgba(160,80,10,0)');
       X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.3,0,Math.PI*2); X.fill();
+      X.fillStyle='rgba(0,0,0,.18)'; X.beginPath(); X.ellipse(0,GS*.15,GS*.13,GS*.04,0,0,Math.PI*2); X.fill();
+      drawOreGem(0,0,GS*.18);
+    } else if(p.icon==='seed_ore'){
+      const gl=X.createRadialGradient(0,0,0,0,0,GS*.32);
+      gl.addColorStop(0,'rgba(100,240,70,.65)'); gl.addColorStop(.5,'rgba(50,180,30,.3)'); gl.addColorStop(1,'rgba(20,120,10,0)');
+      X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.32,0,Math.PI*2); X.fill();
       for(let k=0;k<4;k++){
-        const ka=GT*4+k*1.57, kr=GS*.2+Math.sin(GT*3+k)*GS*.06;
-        X.fillStyle=`rgba(150,255,80,${.4+Math.sin(GT*2+k)*.25})`;
+        const ka=GT*4+k*1.57, kr=GS*.21+Math.sin(GT*3+k)*GS*.05;
+        X.fillStyle=`rgba(160,255,90,${.4+Math.sin(GT*2+k)*.25})`;
         X.beginPath(); X.arc(Math.cos(ka)*kr,Math.sin(ka)*kr*.5,1.8,0,Math.PI*2); X.fill();
       }
-      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(0,GS*.14,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
-      drawSeedOreGem(0,0,GS*.17);
+      X.fillStyle='rgba(0,0,0,.18)'; X.beginPath(); X.ellipse(0,GS*.14,GS*.13,GS*.04,0,0,Math.PI*2); X.fill();
+      drawSeedOreGem(0,0,GS*.18);
+    } else if(p.icon==='bar'){
+      // Золотой слиток
+      const bg=X.createLinearGradient(-GS*.16,-GS*.1,GS*.16,GS*.1);
+      bg.addColorStop(0,'#e8d060'); bg.addColorStop(.35,'#c8a828'); bg.addColorStop(.65,'#a88018'); bg.addColorStop(1,'#806010');
+      X.fillStyle=bg; rrx(-GS*.16,-GS*.11,GS*.32,GS*.22,3); X.fill();
+      X.strokeStyle='rgba(255,240,120,.6)'; X.lineWidth=1.5; rrx(-GS*.16,-GS*.11,GS*.32,GS*.22,3); X.stroke();
+      X.fillStyle='rgba(255,255,200,.35)'; X.fillRect(-GS*.14,-GS*.09,GS*.28,GS*.06);
+      X.fillStyle='rgba(255,230,80,.9)'; X.font=`bold ${GS*.11}px sans-serif`;
+      X.textAlign='center'; X.textBaseline='middle'; X.fillText('Au',0,GS*.02);
+      const glw=X.createRadialGradient(0,0,0,0,0,GS*.24); glw.addColorStop(0,'rgba(255,210,50,.3)'); glw.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=glw; X.beginPath(); X.arc(0,0,GS*.24,0,Math.PI*2); X.fill();
+    } else if(p.icon==='rod'){
+      // Удочка
+      X.strokeStyle='#7a4e1a'; X.lineWidth=3; X.lineCap='round';
+      X.beginPath(); X.moveTo(-GS*.14,GS*.14); X.quadraticCurveTo(0,-GS*.04,GS*.14,-GS*.14); X.stroke();
+      X.strokeStyle='#b87c38'; X.lineWidth=1.5;
+      X.beginPath(); X.moveTo(-GS*.14,GS*.14); X.quadraticCurveTo(0,-GS*.04,GS*.14,-GS*.14); X.stroke();
+      X.strokeStyle='rgba(200,220,255,.55)'; X.lineWidth=.8; X.setLineDash([2,2]);
+      X.beginPath(); X.moveTo(GS*.14,-GS*.14); X.lineTo(GS*.22,-GS*.05); X.stroke(); X.setLineDash([]);
+      X.strokeStyle='#bbb'; X.lineWidth=1.4;
+      X.beginPath(); X.arc(GS*.22,0,GS*.055,-Math.PI/2,Math.PI/2); X.stroke();
+      const rg=X.createRadialGradient(0,0,0,0,0,GS*.22); rg.addColorStop(0,'rgba(60,140,220,.25)'); rg.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=rg; X.beginPath(); X.arc(0,0,GS*.22,0,Math.PI*2); X.fill();
+    } else if(p.icon==='fish'){
+      // Рыба нарисованная
+      const fg=X.createLinearGradient(-GS*.18,0,GS*.18,0);
+      fg.addColorStop(0,'#258048'); fg.addColorStop(.4,'#36a858'); fg.addColorStop(.7,'#46c068'); fg.addColorStop(1,'#288848');
+      X.fillStyle=fg;
+      X.beginPath(); X.ellipse(0,0,GS*.18,GS*.09,0,0,Math.PI*2); X.fill();
+      X.beginPath(); X.moveTo(-GS*.15,0); X.lineTo(-GS*.25,-GS*.09); X.lineTo(-GS*.25,GS*.09); X.closePath(); X.fill();
+      X.fillStyle='rgba(200,255,210,.4)'; X.beginPath(); X.ellipse(GS*.02,GS*.02,GS*.11,GS*.045,0,0,Math.PI*2); X.fill();
+      X.fillStyle='#fff'; X.beginPath(); X.arc(GS*.1,-GS*.01,GS*.028,0,Math.PI*2); X.fill();
+      X.fillStyle='#111'; X.beginPath(); X.arc(GS*.11,-GS*.01,GS*.014,0,Math.PI*2); X.fill();
+      X.strokeStyle='rgba(0,100,50,.22)'; X.lineWidth=.8;
+      X.beginPath(); X.arc(GS*.04,0,GS*.065,-.8,.8); X.stroke();
+      X.beginPath(); X.arc(-GS*.05,0,GS*.065,-.8,.8); X.stroke();
+      const fg2=X.createRadialGradient(0,0,0,0,0,GS*.24); fg2.addColorStop(0,'rgba(60,200,100,.28)'); fg2.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=fg2; X.beginPath(); X.arc(0,0,GS*.24,0,Math.PI*2); X.fill();
+    } else if(p.icon==='milk'){
+      X.fillStyle='#cce8f6'; rrx(-GS*.1,-GS*.12,GS*.2,GS*.24,3); X.fill();
+      X.strokeStyle='#80b0d0'; X.lineWidth=1.5; rrx(-GS*.1,-GS*.12,GS*.2,GS*.24,3); X.stroke();
+      X.fillStyle='rgba(255,255,255,.75)'; X.fillRect(-GS*.08,-GS*.1,GS*.16,GS*.06);
+      X.fillStyle='rgba(100,170,215,.5)'; X.beginPath(); X.ellipse(0,-GS*.12,GS*.1,GS*.034,0,0,Math.PI*2); X.fill();
+      const mg=X.createRadialGradient(0,0,0,0,0,GS*.22); mg.addColorStop(0,'rgba(200,235,255,.38)'); mg.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=mg; X.beginPath(); X.arc(0,0,GS*.22,0,Math.PI*2); X.fill();
+    } else if(p.icon==='milk_bottle'){
+      X.fillStyle='#eaf6ff';
+      X.beginPath(); X.moveTo(-GS*.055,-GS*.15); X.lineTo(-GS*.1,GS*.1); X.arc(0,GS*.1,GS*.1,Math.PI,0); X.lineTo(GS*.055,-GS*.15); X.closePath(); X.fill();
+      X.strokeStyle='#88bedd'; X.lineWidth=1.2;
+      X.beginPath(); X.moveTo(-GS*.055,-GS*.15); X.lineTo(-GS*.1,GS*.1); X.arc(0,GS*.1,GS*.1,Math.PI,0); X.lineTo(GS*.055,-GS*.15); X.closePath(); X.stroke();
+      X.fillStyle='#48a0cc'; rrx(-GS*.048,-GS*.18,GS*.096,GS*.05,2); X.fill();
+      X.fillStyle='rgba(255,252,245,.65)'; X.beginPath(); X.arc(0,GS*.05,GS*.065,0,Math.PI*2); X.fill();
+      X.fillStyle='rgba(255,255,255,.55)'; X.beginPath(); X.ellipse(-GS*.028,-GS*.06,GS*.022,GS*.055,-.4,0,Math.PI*2); X.fill();
+    } else if(p.icon==='egg'){
+      const eg=X.createRadialGradient(-GS*.04,-GS*.07,0,0,GS*.03,GS*.18);
+      eg.addColorStop(0,'#fffde0'); eg.addColorStop(.5,'#f5e898'); eg.addColorStop(1,'#d4c058');
+      X.fillStyle=eg;
+      X.beginPath(); X.moveTo(0,-GS*.14); X.bezierCurveTo(GS*.12,-GS*.14,GS*.14,GS*.04,GS*.1,GS*.12); X.bezierCurveTo(GS*.06,GS*.18,-GS*.06,GS*.18,-GS*.1,GS*.12); X.bezierCurveTo(-GS*.14,GS*.04,-GS*.12,-GS*.14,0,-GS*.14); X.closePath(); X.fill();
+      X.strokeStyle='rgba(180,155,55,.45)'; X.lineWidth=1;
+      X.beginPath(); X.moveTo(0,-GS*.14); X.bezierCurveTo(GS*.12,-GS*.14,GS*.14,GS*.04,GS*.1,GS*.12); X.bezierCurveTo(GS*.06,GS*.18,-GS*.06,GS*.18,-GS*.1,GS*.12); X.bezierCurveTo(-GS*.14,GS*.04,-GS*.12,-GS*.14,0,-GS*.14); X.closePath(); X.stroke();
+      X.fillStyle='rgba(255,255,225,.5)'; X.beginPath(); X.ellipse(-GS*.038,-GS*.065,GS*.036,GS*.065,-.3,0,Math.PI*2); X.fill();
+    } else if(p.icon==='egg_pack'){
+      const epg=X.createLinearGradient(-GS*.15,-GS*.1,GS*.15,GS*.12);
+      epg.addColorStop(0,'#f0e8b0'); epg.addColorStop(1,'#c4b068');
+      X.fillStyle=epg; rrx(-GS*.16,-GS*.12,GS*.32,GS*.24,4); X.fill();
+      X.strokeStyle='#9c8838'; X.lineWidth=1.5; rrx(-GS*.16,-GS*.12,GS*.32,GS*.24,4); X.stroke();
+      [[-GS*.08,0],[0,0],[GS*.08,0]].forEach(([ex,ey])=>{
+        X.fillStyle='#fffde0'; X.beginPath(); X.ellipse(ex,ey,GS*.05,GS*.065,0,0,Math.PI*2); X.fill();
+        X.strokeStyle='rgba(155,135,45,.4)'; X.lineWidth=.8; X.beginPath(); X.ellipse(ex,ey,GS*.05,GS*.065,0,0,Math.PI*2); X.stroke();
+      });
+      const epgl=X.createRadialGradient(0,0,0,0,0,GS*.25); epgl.addColorStop(0,'rgba(255,225,75,.28)'); epgl.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=epgl; X.beginPath(); X.arc(0,0,GS*.25,0,Math.PI*2); X.fill();
     } else {
-      const PCOL={bar:'rgba(220,170,30,.5)',rod:'rgba(60,140,220,.45)',fish:'rgba(40,160,80,.45)',milk:'rgba(220,240,255,.6)',milk_bottle:'rgba(180,220,255,.5)',egg:'rgba(255,245,200,.6)',egg_pack:'rgba(255,230,120,.5)'};
       const gl=X.createRadialGradient(0,0,0,0,0,GS*.22);
-      gl.addColorStop(0,PCOL[p.icon]||'rgba(200,200,200,.4)'); gl.addColorStop(1,'rgba(0,0,0,0)');
+      gl.addColorStop(0,'rgba(200,200,200,.4)'); gl.addColorStop(1,'rgba(0,0,0,0)');
       X.fillStyle=gl; X.beginPath(); X.arc(0,0,GS*.22,0,Math.PI*2); X.fill();
-      X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(0,GS*.12,GS*.1,GS*.04,0,0,Math.PI*2); X.fill();
-      const ICON={bar:'🔩',rod:'🎣',fish:'🐟',milk:'🐄',milk_bottle:'🥛',egg:'🥚',egg_pack:'📦'};
-      X.font=`${GS*.34}px serif`; X.textAlign='center'; X.textBaseline='middle';
-      X.fillText(ICON[p.icon]||'●',0,0);
+      X.font=`${GS*.3}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText('●',0,0);
     }
     X.restore();
   }
@@ -2082,13 +2609,57 @@ function drawParticles(){
 // ── Fishermen draw ───────────────────────────
 function drawFishermen(){
   for(const f of FISH){
-    const bob=Math.sin(f.bob)*2.5;
-    X.save(); X.translate(f.x,f.y+bob);
-    drawNPC(0,0,'fisherman',Math.sin(f.t*1.5)*9,false);
+    const isWalking = f.state==='walk_to_chest'||f.state==='walk_to_water';
+    const isFishing = !f.state||f.state==='fishing';
+    const bob = isFishing ? Math.sin(f.bob)*2.5 : Math.sin(f.walkCycle||0)*1.5;
+    const armSwing = isWalking ? Math.sin(f.walkCycle||0)*22 : (isFishing ? Math.sin(f.t*1.5)*9 : 5);
+    const facing = f.facing||1;
+
+    X.save();
+    X.translate(f.x, f.y+bob);
+    if(facing<0) X.scale(-1,1); // отзеркалить если идёт влево
+    drawNPC(0,0,'fisherman',armSwing,isWalking);
     X.restore();
-    if(f.carryA>0){
-      X.globalAlpha=f.carryA; X.font=`${GS*.28}px serif`; X.textAlign='center';
-      X.fillText(f.carry,f.x,f.y-GS*.5); X.globalAlpha=1;
+
+    // Рыба над головой
+    if(f.carry&&(f.carryA||0)>0){
+      X.save();
+      X.globalAlpha=Math.min(1,f.carryA||1);
+      // Лёгкое покачивание рыбы
+      const fishBob=Math.sin(f.t*3)*3;
+      X.font=`${GS*.3}px serif`; X.textAlign='center'; X.textBaseline='middle';
+      X.fillText(f.carry, f.x, f.y-GS*.58+fishBob);
+      X.globalAlpha=1;
+      X.restore();
+    }
+
+    // Вспышка при сдаче в сундук
+    if((f._depositFlash||0)>0){
+      const fl=f._depositFlash;
+      X.save();
+      X.globalAlpha=fl*.7;
+      X.fillStyle='#ffd700';
+      X.beginPath(); X.arc(f.x,f.y-GS*.3,GS*.25*fl,0,Math.PI*2); X.fill();
+      // Монетки разлетаются
+      for(let i=0;i<5;i++){
+        const a=i/5*Math.PI*2, r=GS*.3*(1-fl);
+        X.fillStyle=`rgba(255,215,0,${fl})`;
+        X.font=`${GS*.14}px serif`; X.textAlign='center';
+        X.fillText('🪙', f.x+Math.cos(a)*r, f.y-GS*.3+Math.sin(a)*r);
+      }
+      X.globalAlpha=1; X.restore();
+    }
+
+    // Иконка состояния над головой
+    if(isFishing){
+      // Удочка анимация — поплавок прыгает
+      const rodBob=Math.sin(f.t*2)*2;
+      X.font=`${GS*.15}px serif`; X.textAlign='center';
+      X.fillText('🎣', f.x+GS*.18, f.y-GS*.5+rodBob);
+    } else if(f.state==='walk_to_chest'){
+      // Стрелка к сундуку
+      X.font=`${GS*.13}px serif`; X.textAlign='center';
+      X.fillText('📦', f.x, f.y-GS*.72);
     }
   }
 }
@@ -2448,6 +3019,51 @@ function openRaidMenu(col,row){
   document.getElementById('popup').classList.add('on');
 }
 
+function openFishHouseMenu(col,row){
+  const obj=G[row]?.[col]; if(!obj||obj.type!=='fishhouse') return;
+  const lvl=obj._level||1;
+  const upgCost=[0,200,400,600,800];
+  const upgOre =[0,4,8,12,16];
+  const maxLvl=4;
+  const myFish=FISH.filter(f=>f.houseId===obj.id).length;
+  const b=document.getElementById('pbody'); b.innerHTML='';
+  document.getElementById('ptitle').textContent='🏠 Рыбацкий Домик';
+  b.innerHTML=`
+    <div style="text-align:center;padding:8px 0;color:#4a2e0a">
+      <div style="font-size:28px">🏠</div>
+      <div style="font-family:'Cinzel',serif;font-size:14px;font-weight:bold">Уровень ${lvl}</div>
+      <div style="font-size:12px;opacity:.7;margin-top:4px">🎣 Рыбаков: ${myFish} / ${2+lvl*2} &nbsp;|&nbsp; ⚡ Скорость: x${(1+lvl*0.4).toFixed(1)}</div>
+    </div>
+    <div style="margin:8px 0;padding:8px;background:rgba(74,46,10,.08);border-radius:8px;color:#4a2e0a;font-size:12px">
+      <b>Рыбаки от этого домика:</b><br>
+      • Автоматически кладут рыбу в ближайший сундук<br>
+      • Чем выше уровень — тем быстрее ловят и больше рыбаков
+    </div>
+    ${lvl<maxLvl?`
+    <div class="fe" style="cursor:pointer" onclick="upgradeFishHouse(${col},${row})">
+      <span style="font-size:22px">⬆️</span>
+      <div><b>Улучшить до уровня ${lvl+1}</b><br>
+      <span style="font-size:11px;opacity:.7">Рыбаков: ${2+(lvl+1)*2} | Скорость: x${(1+(lvl+1)*0.4).toFixed(1)}</span></div>
+      <div style="font-weight:bold;color:#c4863a">${upgCost[lvl]}🪙 + ${upgOre[lvl]}⛏️</div>
+    </div>`:'<div style="text-align:center;padding:12px;color:#4a2e0a;font-family:Cinzel,serif">🏆 МАКСИМАЛЬНЫЙ УРОВЕНЬ!</div>'}
+  `;
+  document.getElementById('popup').classList.add('on');
+}
+
+function upgradeFishHouse(col,row){
+  const obj=G[row]?.[col]; if(!obj||obj.type!=='fishhouse') return;
+  const lvl=obj._level||1;
+  const upgCost=[0,200,400,600,800];
+  const upgOre =[0,4,8,12,16];
+  if(lvl>=4) return;
+  if(R.gold<upgCost[lvl]) return toast(`Мало монет! Нужно ${upgCost[lvl]}🪙`);
+  if(R.ore<upgOre[lvl])   return toast(`Мало руды! Нужно ${upgOre[lvl]}⛏️`);
+  spend('gold',upgCost[lvl]); spend('ore',upgOre[lvl]);
+  obj._level=(obj._level||1)+1;
+  toast(`🏠 Домик улучшен до уровня ${obj._level}!`);
+  closePopup();
+  openFishHouseMenu(col,row);
+}
 function buyUnit(type){
   const def=UNIT_DEFS[type];
   if(!def) return;
@@ -2958,7 +3574,7 @@ function drawGhost(){
   X.globalAlpha=.55;
   X.fillStyle=ok?'rgba(255,255,80,.1)':'rgba(255,40,40,.18)'; X.fillRect(x,y,GS,GS);
   X.strokeStyle=ok?'#ffd700':'#ff4444'; X.lineWidth=2.2; rrx(x+2,y+2,GS-4,GS-4,5); X.stroke();
-  const IC={bur:'⛏️',bur2:'🔩',conv:'➡️',conv2:'⚡',teleport:'🌀',chest:'📦',furn:'🔥',wshp:'🔨',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚',landspot:'🪙'};
+  const IC={bur:'⛏️',bur2:'🔩',conv:'➡️',conv2:'⚡',teleport:'🌀',chest:'📦',furn:'🔥',wshp:'🔨',fishhouse:'🏠',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚',landspot:'🪙'};
   X.font=`${GS*.38}px serif`; X.textAlign='center'; X.textBaseline='middle';
   X.fillText(IC[curTool]||'',x+GS*.5,y+GS*.5);
   X.globalAlpha=1;
@@ -2982,7 +3598,7 @@ let curTool=null;
 function pick(t){
   curTool=t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('sel'));
-  const map={null:'nb-null',bur:'nb-bur',bur2:'nb-bur2',conv:'nb-conv',conv2:'nb-conv2',teleport:'nb-teleport',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower',landspot:'nb-landspot'};
+  const map={null:'nb-null',bur:'nb-bur',bur2:'nb-bur2',conv:'nb-conv',conv2:'nb-conv2',teleport:'nb-teleport',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',fishhouse:'nb-fishhouse',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower',landspot:'nb-landspot'};
   document.getElementById(map[t]||'nb-null')?.classList.add('sel');
   if(t) toast('Выбрано: '+NAME[t]+' — тапни на карту');
 }
@@ -3096,6 +3712,7 @@ function handleTap(tx,ty){
     if(o){
       if(o.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); }
       else if(o.type==='raidspot'&&o.hasTower){ openRaidMenu(col,row); }
+      else if(o.type==='fishhouse'){ openFishHouseMenu(col,row); }
       else toast(NAME[o.type]);
     }
     return;
