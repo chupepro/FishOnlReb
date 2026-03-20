@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GRAFFITI PRO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Oswald:wght@300;400;700&display=swap');
+        :root { --coin:#ffd700; --glow:#ffaa00; }
+        *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0; }
+        body,html{ width:100%;height:100%;overflow:hidden;background:#0a0a0a;touch-action:none;font-family:'Oswald',sans-serif;color:#fff; }
+
+        #mainCanvas{ display:block;position:absolute;top:0;left:0;width:100%;height:100%;cursor:crosshair; }
+        #tplCanvas  { display:block;position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;opacity:.25; }
+
+        /* HUD TOP */
+        #hud-top{
+            position:absolute;top:0;left:0;right:0;padding:12px 16px 8px;
+            display:flex;align-items:center;justify-content:space-between;
+            background:linear-gradient(to bottom,rgba(0,0,0,.88) 70%,transparent);
+            z-index:20;pointer-events:none;
+        }
+        .title{ font-family:'Black Ops One',cursive;font-size:clamp(13px,3.5vw,19px);letter-spacing:2px;text-shadow:0 0 20px rgba(255,80,0,.7); }
+        .subtitle{ font-size:9px;color:#ff6a00;letter-spacing:3px;margin-top:1px; }
+        #coin-badge{
+            display:flex;align-items:center;gap:6px;
+            background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);
+            border-radius:20px;padding:5px 12px;pointer-events:all;cursor:pointer;
+        }
+        #coin-badge:active{ background:rgba(255,215,0,.22); }
+        #coin-count{ font-family:'Black Ops One',cursive;font-size:15px;color:var(--coin);text-shadow:0 0 10px var(--glow); }
+        #color-indicator{ width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.25); }
+
+        /* TEMPLATE HUD */
+        #tpl-hud{
+            position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:21;
+            background:rgba(0,0,0,.82);border-radius:0 0 18px 18px;
+            padding:8px 20px 12px;display:flex;flex-direction:column;align-items:center;gap:5px;
+        }
+        #tpl-hud.hidden{ display:none; }
+        .tpl-name-lbl{ font-family:'Black Ops One',cursive;font-size:11px;letter-spacing:2px;color:#ffd700; }
+        .prog-wrap{ width:160px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden; }
+        .prog-bar  { height:100%;background:linear-gradient(90deg,#ffd700,#ff8800);border-radius:3px;transition:width .25s; }
+        #tpl-done-btn{
+            font-family:'Black Ops One',cursive;font-size:10px;letter-spacing:1px;
+            background:linear-gradient(90deg,#ffd700,#ff8800);color:#000;
+            border:none;border-radius:12px;padding:5px 16px;cursor:pointer;opacity:.4;
+            transition:opacity .2s;
+        }
+        #tpl-done-btn.ready{ opacity:1; }
+        #tpl-done-btn:active{ filter:brightness(.85); }
+
+        /* BOTTOM UI */
+        #ui-bottom{
+            position:absolute;bottom:0;left:0;right:0;z-index:20;
+            background:linear-gradient(to top,rgba(0,0,0,.97) 65%,transparent);
+            padding:8px 14px 18px;
+        }
+        #palette-row{ display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:10px;flex-wrap:wrap; }
+        .swatch{
+            width:clamp(30px,7.5vw,44px);height:clamp(30px,7.5vw,44px);
+            border-radius:50%;border:2px solid rgba(255,255,255,.15);
+            cursor:pointer;flex-shrink:0;position:relative;
+            transition:transform .15s,border-color .15s,box-shadow .15s;
+        }
+        .swatch.locked::after{
+            content:'🔒';position:absolute;inset:0;display:flex;
+            align-items:center;justify-content:center;font-size:12px;
+            background:rgba(0,0,0,.65);border-radius:50%;
+        }
+        .swatch.active{ transform:scale(1.22);border-color:#fff;box-shadow:0 0 18px var(--c),0 0 6px rgba(255,255,255,.4); }
+        .swatch:active:not(.locked){ transform:scale(.9); }
+        #custom-color-wrap{ position:relative; }
+        #custom-color-btn{
+            width:clamp(30px,7.5vw,44px);height:clamp(30px,7.5vw,44px);
+            border-radius:50%;border:2px dashed rgba(255,255,255,.3);
+            background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
+            cursor:pointer;overflow:hidden;
+        }
+        #custom-color-input{ position:absolute;inset:0;opacity:0;cursor:pointer; }
+
+        #controls-row{ display:flex;gap:10px;align-items:center;justify-content:center; }
+        .slider-block{ display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;max-width:120px; }
+        .slider-label{ font-size:8px;letter-spacing:2px;color:#666;text-transform:uppercase; }
+        input[type=range]{ -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(255,255,255,.1);outline:none; }
+        input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.5);cursor:pointer; }
+        input[type=range]::-moz-range-thumb{ width:18px;height:18px;border-radius:50%;background:#fff;border:none;cursor:pointer; }
+        .icon-btn{
+            font-family:'Black Ops One',cursive;font-size:11px;letter-spacing:1px;
+            background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);
+            padding:9px 16px;border-radius:24px;cursor:pointer;white-space:nowrap;
+            transition:transform .1s,background .1s;flex-shrink:0;
+        }
+        .icon-btn:active{ transform:scale(.92);background:rgba(255,255,255,.2); }
+        .icon-btn.danger{ background:rgba(255,30,0,.15);border-color:rgba(255,30,0,.3); }
+
+        /* SPRAY CURSOR */
+        #spray-cursor{
+            position:absolute;pointer-events:none;z-index:30;
+            border-radius:50%;border:1px solid rgba(255,255,255,.35);
+            transform:translate(-50%,-50%);display:none;
+        }
+
+        /* MODALS */
+        .modal-overlay{
+            position:fixed;inset:0;z-index:100;
+            background:rgba(0,0,0,.88);backdrop-filter:blur(6px);
+            display:flex;align-items:center;justify-content:center;padding:16px;
+            opacity:0;pointer-events:none;transition:opacity .25s;
+        }
+        .modal-overlay.open{ opacity:1;pointer-events:all; }
+        .modal-box{
+            background:#111;border:1px solid rgba(255,255,255,.1);border-radius:20px;
+            width:100%;max-width:500px;max-height:88vh;overflow:hidden;
+            display:flex;flex-direction:column;transform:scale(.94);transition:transform .25s;
+        }
+        .modal-overlay.open .modal-box{ transform:scale(1); }
+        .modal-header{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;
+        }
+        .modal-title{ font-family:'Black Ops One',cursive;font-size:18px;letter-spacing:2px; }
+        .modal-close{
+            width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+            border:none;cursor:pointer;color:#fff;font-size:16px;
+            display:flex;align-items:center;justify-content:center;
+        }
+        .modal-close:active{ background:rgba(255,255,255,.2); }
+        .modal-body{ overflow-y:auto;padding:16px 20px 20px;flex:1; }
+        .modal-body::-webkit-scrollbar{ width:4px; }
+        .modal-body::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.15);border-radius:2px; }
+
+        /* TEMPLATES */
+        .tpl-grid{ display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+        .tpl-card{
+            background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+            border-radius:14px;overflow:hidden;cursor:pointer;position:relative;
+            transition:border-color .15s,transform .15s;
+        }
+        .tpl-card:active{ transform:scale(.97); }
+        .tpl-card.done{ border-color:rgba(100,255,100,.35); }
+        .tpl-card.active-tpl{ border-color:rgba(255,200,0,.6);box-shadow:0 0 14px rgba(255,200,0,.2); }
+        .tpl-preview{
+            width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+            font-size:clamp(36px,10vw,58px);background:linear-gradient(135deg,#1a1a1a,#252525);position:relative;
+        }
+        .tpl-done-badge{
+            position:absolute;top:6px;right:6px;background:rgba(0,200,80,.85);
+            border-radius:10px;font-size:9px;font-weight:700;padding:2px 6px;letter-spacing:1px;
+        }
+        .tpl-info{ padding:10px 10px 12px; }
+        .tpl-card-name{ font-family:'Black Ops One',cursive;font-size:13px;letter-spacing:1px; }
+        .tpl-meta{ display:flex;align-items:center;justify-content:space-between;margin-top:5px; }
+        .tpl-diff{ font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:8px; }
+        .diff-easy  { background:rgba(0,200,80,.2);color:#00c850; }
+        .diff-medium{ background:rgba(255,165,0,.2);color:#ffa500; }
+        .diff-hard  { background:rgba(255,40,40,.2);color:#ff4040; }
+        .tpl-reward{ display:flex;align-items:center;gap:3px;font-size:11px;color:var(--coin);font-family:'Black Ops One',cursive; }
+
+        /* SHOP */
+        .shop-sec-title{ font-family:'Black Ops One',cursive;font-size:13px;letter-spacing:2px;color:#888;margin:4px 0 12px; }
+        .box-grid{ display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+        .box-card{
+            background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+            border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;
+            transition:transform .15s,border-color .15s;
+        }
+        .box-card:active{ transform:scale(.95); }
+        .box-card:hover{ border-color:rgba(255,215,0,.35); }
+        .box-emoji{ font-size:36px;margin-bottom:8px; }
+        .box-name{ font-family:'Black Ops One',cursive;font-size:13px;letter-spacing:1px;margin-bottom:4px; }
+        .box-desc{ font-size:9px;color:#555;letter-spacing:1px;margin-bottom:10px;line-height:1.4; }
+        .box-price{ display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:12px;padding:4px 12px;font-family:'Black Ops One',cursive;font-size:13px;color:var(--coin); }
+
+        /* BOX OPEN */
+        #box-overlay{
+            position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.94);
+            display:none;flex-direction:column;align-items:center;justify-content:center;
+            gap:18px;text-align:center;padding:20px;
+        }
+        #box-overlay.show{ display:flex; }
+        #box-big-emoji{ font-size:80px;animation:boxBounce .5s ease; }
+        @keyframes boxBounce{ 0%{transform:scale(0)} 70%{transform:scale(1.15)} 100%{transform:scale(1)} }
+        #box-reveal-title{ font-family:'Black Ops One',cursive;font-size:clamp(14px,4vw,22px);letter-spacing:2px; }
+        #box-drops-wrap{ display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:360px; }
+        .drop-item{ display:flex;flex-direction:column;align-items:center;gap:5px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 14px;min-width:75px; }
+        .drop-swatch{ width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.2); }
+        .drop-name{ font-size:9px;letter-spacing:1px;color:#ccc; }
+        .drop-rarity{ font-size:8px;padding:2px 6px;border-radius:6px; }
+        .rarity-common   { background:rgba(180,180,180,.2);color:#aaa; }
+        .rarity-rare     { background:rgba(80,140,255,.2);color:#5090ff; }
+        .rarity-epic     { background:rgba(180,80,255,.2);color:#cc55ff; }
+        .rarity-legendary{ background:rgba(255,180,0,.2);color:#ffb400; }
+        #close-box-btn{ font-family:'Black Ops One',cursive;font-size:14px;letter-spacing:2px;background:#fff;color:#000;border:none;border-radius:24px;padding:12px 36px;cursor:pointer; }
+        #close-box-btn:active{ background:#ccc; }
+
+        /* TOAST */
+        #toast{
+            position:fixed;bottom:115px;left:50%;transform:translateX(-50%);
+            background:rgba(20,20,20,.95);border:1px solid rgba(255,255,255,.1);
+            border-radius:20px;padding:10px 20px;font-family:'Black Ops One',cursive;
+            font-size:12px;letter-spacing:1px;white-space:nowrap;z-index:300;
+            opacity:0;transition:opacity .2s;pointer-events:none;
+        }
+        #toast.show{ opacity:1; }
+        .coin-fly{
+            position:fixed;z-index:400;pointer-events:none;
+            font-family:'Black Ops One',cursive;font-size:18px;color:var(--coin);
+            text-shadow:0 0 10px var(--glow);animation:coinUp 1.3s ease forwards;
+        }
+        @keyframes coinUp{ 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-90px) scale(.6)} }
+
+        @supports (padding-bottom:env(safe-area-inset-bottom)){
+            #ui-bottom{ padding-bottom:calc(16px + env(safe-area-inset-bottom)); }
+        }
+    </style>
+</head>
+<body>
+<canvas id="mainCanvas"></canvas>
+<canvas id="tplCanvas"></canvas>
+<div id="spray-cursor"></div>
+
+<div id="hud-top">
+    <div><div class="title">VANDAL ENGINE</div><div class="subtitle">v5.2 · PRO EDITION</div></div>
+    <div style="display:flex;gap:10px;align-items:center;pointer-events:all;">
+        <div id="coin-badge" onclick="openShop()">
+            <span style="font-size:16px">🪙</span>
+            <span id="coin-count">0</span>
+        </div>
+        <div id="color-indicator" style="background:#ff1e00;"></div>
+    </div>
+</div>
+
+<div id="tpl-hud" class="hidden">
+    <div class="tpl-name-lbl" id="tpl-name-lbl">МАКЕТ</div>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+    <button id="tpl-done-btn" onclick="finishTemplate()">ГОТОВО ✓</button>
+</div>
+
+<div id="ui-bottom">
+    <div id="palette-row"></div>
+    <div id="controls-row">
+        <div class="slider-block">
+            <span class="slider-label">Размер</span>
+            <input type="range" id="size-range" min="5" max="80" step="1" value="22">
+        </div>
+        <div class="slider-block">
+            <span class="slider-label">Напор</span>
+            <input type="range" id="flow-range" min="1" max="10" step=".5" value="5">
+        </div>
+        <button class="icon-btn" onclick="openTemplates()">📋 МАКЕТЫ</button>
+        <button class="icon-btn danger" onclick="clearCanvas()">BUFF</button>
+    </div>
+</div>
+
+<!-- TEMPLATES MODAL -->
+<div class="modal-overlay" id="modal-tpl">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">📋 МАКЕТЫ</div>
+            <button class="modal-close" onclick="closeModal('modal-tpl')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="font-size:11px;color:#444;letter-spacing:1px;margin-bottom:14px;">Рисуй по шаблону — зарабатывай 🪙 Графикоины</div>
+            <div class="tpl-grid" id="tpl-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- SHOP MODAL -->
+<div class="modal-overlay" id="modal-shop">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">🛒 МАГАЗИН</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="display:flex;align-items:center;gap:5px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);border-radius:12px;padding:4px 10px;">
+                    <span>🪙</span>
+                    <span id="shop-coins" style="font-family:'Black Ops One',cursive;font-size:14px;color:var(--coin);">0</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('modal-shop')">✕</button>
+            </div>
+        </div>
+        <div class="modal-body">
+            <div class="shop-sec-title">ГРАФИБОКСЫ</div>
+            <div class="box-grid" id="box-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- BOX OPEN -->
+<div id="box-overlay">
+    <div id="box-big-emoji">📦</div>
+    <div id="box-reveal-title">ТЫ ОТКРЫЛ</div>
+    <div id="box-drops-wrap"></div>
+    <button id="close-box-btn" onclick="closeBoxOverlay()">ЗАБРАТЬ</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  SAVE / LOAD
+// ─────────────────────────────────────────────
+let coins          = 0;
+let unlockedColors = new Set();
+let doneTpls       = new Set();
+
+function save() {
+    try { localStorage.setItem('gp2', JSON.stringify({ coins, uc:[...unlockedColors], dt:[...doneTpls] })); } catch(e){}
+}
+function load() {
+    try {
+        const s = JSON.parse(localStorage.getItem('gp2')||'{}');
+        if (s.coins != null) coins = s.coins;
+        if (s.uc)  unlockedColors = new Set(s.uc);
+        if (s.dt)  doneTpls       = new Set(s.dt);
+    } catch(e){}
+}
+
+// ─────────────────────────────────────────────
+//  DATA
+// ─────────────────────────────────────────────
+const PAINTS = [
+    {id:'red',     name:'Красный',     hex:'#ff1e00', rarity:'common',    base:true},
+    {id:'orange',  name:'Оранжевый',   hex:'#ff6a00', rarity:'common',    base:true},
+    {id:'yellow',  name:'Жёлтый',      hex:'#fffb00', rarity:'common',    base:true},
+    {id:'green',   name:'Зелёный',     hex:'#00ff44', rarity:'common',    base:true},
+    {id:'blue',    name:'Синий',       hex:'#0095ff', rarity:'common',    base:true},
+    {id:'purple',  name:'Фиолетовый',  hex:'#cc00ff', rarity:'common',    base:true},
+    {id:'white',   name:'Белый',       hex:'#ffffff', rarity:'common',    base:true},
+    {id:'black',   name:'Чёрный',      hex:'#111111', rarity:'common',    base:true},
+    // rare
+    {id:'npink',   name:'Неон Розовый',hex:'#ff00aa', rarity:'rare'},
+    {id:'ncyan',   name:'Неон Циан',   hex:'#00ffee', rarity:'rare'},
+    {id:'gold',    name:'Золото',      hex:'#ffd700', rarity:'rare'},
+    {id:'crimson', name:'Кримзон',     hex:'#dc143c', rarity:'rare'},
+    {id:'toxic',   name:'Токсик',      hex:'#aaff00', rarity:'rare'},
+    {id:'sky',     name:'Небесный',    hex:'#87ceeb', rarity:'rare'},
+    {id:'mint',    name:'Мята',        hex:'#44ffaa', rarity:'rare'},
+    {id:'coral',   name:'Коралл',      hex:'#ff6b6b', rarity:'rare'},
+    // epic
+    {id:'deeppurp',name:'Дип Пёрпл',  hex:'#6600cc', rarity:'epic'},
+    {id:'magma',   name:'Магма',       hex:'#ff3300', rarity:'epic'},
+    {id:'ice',     name:'Ледяной',     hex:'#aaeeff', rarity:'epic'},
+    {id:'void',    name:'Войд',        hex:'#220033', rarity:'epic'},
+    {id:'chrome',  name:'Хром',        hex:'#c0c0c0', rarity:'epic'},
+    {id:'blood',   name:'Кровь',       hex:'#8b0000', rarity:'epic'},
+    {id:'matrix',  name:'Матрица',     hex:'#00ff41', rarity:'epic'},
+    // legendary
+    {id:'aurora',  name:'Аврора',      hex:'#33ffcc', rarity:'legendary'},
+    {id:'hellfire',name:'Адский Огонь',hex:'#ff6600', rarity:'legendary'},
+    {id:'galaxy',  name:'Галактика',   hex:'#4422aa', rarity:'legendary'},
+    {id:'holo',    name:'Голограмма',  hex:'#ff77ff', rarity:'legendary'},
+    {id:'obsidian',name:'Обсидиан',    hex:'#1a0030', rarity:'legendary'},
+];
+
+const BOXES = [
+    {id:'basic',  name:'Базовый Бокс', emoji:'📦', price:50,  desc:'3 краски · Редкие',                drops:3, pool:'rare'},
+    {id:'pro',    name:'Про Бокс',     emoji:'🎁', price:150, desc:'4 краски · Редкие + Эпические',    drops:4, pool:'rare|epic'},
+    {id:'legend', name:'Легенд Бокс',  emoji:'💎', price:400, desc:'5 красок · Эпические + Легенды',   drops:5, pool:'epic|legendary'},
+    {id:'mega',   name:'Мега Бокс',    emoji:'🔥', price:700, desc:'7 красок · Всё включено',           drops:7, pool:'rare|epic|legendary'},
+];
+
+const TEMPLATES = [
+    {id:'star',      name:'Звезда',    emoji:'⭐', diff:'easy',   reward:30,  cover:40, hint:'5 лучей из центра'},
+    {id:'crown',     name:'Корона',    emoji:'👑', diff:'easy',   reward:35,  cover:40, hint:'3 зубца + основание'},
+    {id:'lightning', name:'Молния',    emoji:'⚡', diff:'easy',   reward:30,  cover:40, hint:'Зигзаг сверху вниз'},
+    {id:'skull',     name:'Череп',     emoji:'💀', diff:'medium', reward:60,  cover:45, hint:'Купол, глаза, зубы'},
+    {id:'fire',      name:'Огонь',     emoji:'🔥', diff:'medium', reward:55,  cover:45, hint:'Языки пламени'},
+    {id:'bomb',      name:'Бомба',     emoji:'💣', diff:'medium', reward:65,  cover:45, hint:'Круг + фитиль + искра'},
+    {id:'eye',       name:'Глаз',      emoji:'👁', diff:'medium', reward:70,  cover:45, hint:'Миндаль + зрачок'},
+    {id:'dragon',    name:'Дракон',    emoji:'🐉', diff:'hard',   reward:120, cover:50, hint:'Тело, крылья, огонь'},
+    {id:'wildstyle', name:'Вайлдстайл',emoji:'🔡', diff:'hard',   reward:150, cover:50, hint:'Буквы VDL с шипами'},
+    {id:'3d_block',  name:'3D Буква',  emoji:'🔲', diff:'hard',   reward:130, cover:50, hint:'Контур + боковая тень'},
+];
+
+// ─────────────────────────────────────────────
+//  CANVAS
+// ─────────────────────────────────────────────
+const canvas   = document.getElementById('mainCanvas');
+const ctx      = canvas.getContext('2d');
+const tplCvs   = document.getElementById('tplCanvas');
+const tplCtx   = tplCvs.getContext('2d');
+let W, H;
+
+// Снимок чистой стены для pixel-diff
+let wallSnapshot = null;
+
+function resize() {
+    W = canvas.width = tplCvs.width = window.innerWidth;
+    H = canvas.height = tplCvs.height = window.innerHeight;
+    paintWall();
+    snapWall();
+    if (activeTpl) drawOverlay(activeTpl);
+}
+
+function paintWall() {
+    const bw=80, bh=36, gap=3;
+    ctx.fillStyle='#232018';
+    ctx.fillRect(0,0,W,H);
+    for (let row=0; row*(bh+gap)<H+bh; row++) {
+        const off=(row%2)*(bw/2);
+        for (let col=-1; col*(bw+gap)-off<W+bw; col++) {
+            const x=col*(bw+gap)-off, y=row*(bh+gap);
+            const v=32+((row*7+col*13)%14);
+            ctx.fillStyle=`rgb(${v+8},${v-3},${v-6})`;
+            ctx.fillRect(x,y,bw,bh);
+            ctx.fillStyle='rgba(0,0,0,.22)';
+            ctx.fillRect(x,y,bw,1); ctx.fillRect(x,y,1,bh);
+        }
+    }
+}
+
+// Снимаем ImageData чистой стены
+function snapWall() {
+    wallSnapshot = ctx.getImageData(0, 0, W, H);
+}
+
+// ─────────────────────────────────────────────
+//  TEMPLATE DRAWING
+// ─────────────────────────────────────────────
+function drawOverlay(id) {
+    tplCtx.clearRect(0,0,W,H);
+    const cx=W/2, cy=H/2, sz=Math.min(W,H)*.35;
+    tplCtx.save();
+    tplCtx.strokeStyle='#fff'; tplCtx.fillStyle='#fff';
+    tplCtx.lineWidth=2.5; tplCtx.setLineDash([8,5]);
+    tplCtx.lineCap='round'; tplCtx.lineJoin='round';
+    drawShape(id, tplCtx, cx, cy, sz);
+    tplCtx.restore();
+    const tpl=TEMPLATES.find(t=>t.id===id);
+    tplCtx.save();
+    tplCtx.globalAlpha=.4; tplCtx.fillStyle='#fff';
+    tplCtx.font='bold 11px Oswald'; tplCtx.textAlign='center';
+    tplCtx.fillText('ПОДСКАЗКА: '+tpl.hint.toUpperCase(), W/2, cy+sz*.78+22);
+    tplCtx.restore();
+}
+
+// Строит маску (широкие линии) для pixel-diff сравнения
+// Возвращает ImageData маски (ненулевой альфа = зона шаблона)
+function buildMask(id) {
+    const mc = document.createElement('canvas');
+    mc.width=W; mc.height=H;
+    const mc2 = mc.getContext('2d');
+    mc2.strokeStyle='#fff'; mc2.fillStyle='#fff';
+    mc2.lineWidth = Math.max(spraySize*3, 45); // жирная зона засчёта
+    mc2.setLineDash([]); mc2.lineCap='round'; mc2.lineJoin='round';
+    const cx=W/2, cy=H/2, sz=Math.min(W,H)*.35;
+    drawShape(id, mc2, cx, cy, sz);
+    return mc2.getImageData(0, 0, W, H);
+}
+
+// Универсальная функция рисования — принимает любой ctx
+function drawShape(id, c, cx, cy, sz) {
+    switch(id) {
+        case 'star':      shapeStar(c,cx,cy,sz);       break;
+        case 'crown':     shapeCrown(c,cx,cy,sz);      break;
+        case 'lightning': shapeLightning(c,cx,cy,sz);  break;
+        case 'skull':     shapeSkull(c,cx,cy,sz);      break;
+        case 'fire':      shapeFire(c,cx,cy,sz);       break;
+        case 'bomb':      shapeBomb(c,cx,cy,sz);       break;
+        case 'eye':       shapeEye(c,cx,cy,sz);        break;
+        case 'dragon':    shapeDragon(c,cx,cy,sz);     break;
+        case 'wildstyle': shapeWild(c,cx,cy,sz);       break;
+        case '3d_block':  shape3D(c,cx,cy,sz);         break;
+    }
+}
+
+function shapeStar(c,cx,cy,sz){
+    const ro=sz*.6,ri=sz*.24,n=5;
+    c.beginPath();
+    for(let i=0;i<n*2;i++){
+        const r=i%2?ri:ro, a=i*Math.PI/n-Math.PI/2;
+        i?c.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r):c.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);
+    }
+    c.closePath(); c.stroke();
+}
+function shapeCrown(c,cx,cy,sz){
+    const w=sz*1.2,h=sz*.8,y0=cy+sz*.1;
+    c.beginPath();
+    c.moveTo(cx-w/2,y0); c.lineTo(cx-w/2,y0-h);
+    c.lineTo(cx-w/6,y0-h*.5); c.lineTo(cx,y0-h*1.05);
+    c.lineTo(cx+w/6,y0-h*.5); c.lineTo(cx+w/2,y0-h);
+    c.lineTo(cx+w/2,y0); c.closePath(); c.stroke();
+    [cx-w*.3,cx,cx+w*.3].forEach(x=>{c.beginPath();c.arc(x,y0-h*.25,sz*.06,0,Math.PI*2);c.stroke();});
+}
+function shapeLightning(c,cx,cy,sz){
+    c.beginPath();
+    c.moveTo(cx+sz*.15,cy-sz*.65); c.lineTo(cx-sz*.2,cy-sz*.05);
+    c.lineTo(cx+sz*.08,cy-sz*.05); c.lineTo(cx-sz*.15,cy+sz*.65);
+    c.lineTo(cx+sz*.2,cy+sz*.05);  c.lineTo(cx-sz*.08,cy+sz*.05);
+    c.closePath(); c.stroke();
+}
+function shapeSkull(c,cx,cy,sz){
+    c.beginPath(); c.arc(cx,cy-sz*.05,sz*.45,Math.PI*.85,Math.PI*.15); c.stroke();
+    c.beginPath();
+    c.moveTo(cx-sz*.42,cy+sz*.15); c.lineTo(cx-sz*.35,cy+sz*.45);
+    c.lineTo(cx+sz*.35,cy+sz*.45); c.lineTo(cx+sz*.42,cy+sz*.15); c.stroke();
+    for(let i=0;i<5;i++){const tx=cx-sz*.28+i*sz*.14; c.beginPath();c.rect(tx,cy+sz*.22,sz*.1,sz*.16);c.stroke();}
+    [-1,1].forEach(s=>{c.beginPath();c.arc(cx+s*sz*.2,cy-sz*.1,sz*.11,0,Math.PI*2);c.stroke();});
+    c.beginPath();c.moveTo(cx,cy);c.lineTo(cx-sz*.07,cy+sz*.15);c.lineTo(cx+sz*.07,cy+sz*.15);c.closePath();c.stroke();
+}
+function shapeFire(c,cx,cy,sz){
+    const y0=cy+sz*.5;
+    c.beginPath(); c.moveTo(cx,y0);
+    c.bezierCurveTo(cx-sz*.55,cy+sz*.2,cx-sz*.6,cy-sz*.2,cx-sz*.1,cy-sz*.3);
+    c.bezierCurveTo(cx-sz*.25,cy-sz*.6,cx,cy-sz*.75,cx,cy-sz*.65);
+    c.bezierCurveTo(cx+sz*.25,cy-sz*.6,cx+sz*.5,cy-sz*.3,cx+sz*.1,cy-sz*.3);
+    c.bezierCurveTo(cx+sz*.6,cy-sz*.2,cx+sz*.55,cy+sz*.2,cx,y0); c.stroke();
+    c.beginPath(); c.moveTo(cx,y0-sz*.1);
+    c.bezierCurveTo(cx-sz*.2,cy+sz*.1,cx-sz*.15,cy-sz*.25,cx,cy-sz*.4);
+    c.bezierCurveTo(cx+sz*.15,cy-sz*.25,cx+sz*.2,cy+sz*.1,cx,y0-sz*.1); c.stroke();
+}
+function shapeBomb(c,cx,cy,sz){
+    c.beginPath(); c.arc(cx,cy+sz*.05,sz*.45,0,Math.PI*2); c.stroke();
+    c.beginPath();
+    c.moveTo(cx+sz*.32,cy-sz*.3);
+    c.bezierCurveTo(cx+sz*.5,cy-sz*.55,cx+sz*.3,cy-sz*.7,cx+sz*.45,cy-sz*.85); c.stroke();
+    c.beginPath(); c.arc(cx+sz*.45,cy-sz*.85,sz*.06,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(cx-sz*.15,cy-sz*.12,sz*.09,0,Math.PI*2); c.stroke();
+}
+function shapeEye(c,cx,cy,sz){
+    c.beginPath();
+    c.moveTo(cx-sz*.65,cy);
+    c.bezierCurveTo(cx-sz*.3,cy-sz*.4,cx+sz*.3,cy-sz*.4,cx+sz*.65,cy);
+    c.bezierCurveTo(cx+sz*.3,cy+sz*.4,cx-sz*.3,cy+sz*.4,cx-sz*.65,cy); c.stroke();
+    c.beginPath(); c.arc(cx,cy,sz*.28,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(cx,cy,sz*.12,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(cx+sz*.09,cy-sz*.09,sz*.04,0,Math.PI*2); c.stroke();
+}
+function shapeDragon(c,cx,cy,sz){
+    c.beginPath(); c.moveTo(cx-sz*.6,cy+sz*.3);
+    c.bezierCurveTo(cx-sz*.2,cy+sz*.5,cx+sz*.2,cy+sz*.4,cx+sz*.65,cy-sz*.1); c.stroke();
+    c.beginPath(); c.arc(cx+sz*.65,cy-sz*.1,sz*.18,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.moveTo(cx,cy+sz*.1); c.lineTo(cx-sz*.35,cy-sz*.55); c.lineTo(cx+sz*.15,cy-sz*.2); c.closePath(); c.stroke();
+    c.beginPath(); c.moveTo(cx+sz*.25,cy); c.lineTo(cx+sz*.05,cy-sz*.6); c.lineTo(cx+sz*.5,cy-sz*.15); c.closePath(); c.stroke();
+    c.beginPath(); c.moveTo(cx-sz*.6,cy+sz*.3);
+    c.bezierCurveTo(cx-sz*.85,cy+sz*.45,cx-sz*.9,cy+sz*.2,cx-sz*.75,cy); c.stroke();
+    c.beginPath(); c.moveTo(cx+sz*.8,cy-sz*.05);
+    c.bezierCurveTo(cx+sz*1.1,cy-sz*.2,cx+sz*1.0,cy+sz*.15,cx+sz*.83,cy+sz*.08); c.stroke();
+}
+function shapeWild(c,cx,cy,sz){
+    [
+        [[cx-sz*.55,cy-sz*.45],[cx-sz*.42,cy+sz*.35],[cx-sz*.29,cy-sz*.45]],
+        [[cx-sz*.18,cy-sz*.45],[cx-sz*.18,cy+sz*.35],[cx+sz*.08,cy+sz*.3],[cx+sz*.15,cy-sz*.1],[cx+sz*.08,cy-sz*.45]],
+        [[cx+sz*.24,cy-sz*.45],[cx+sz*.24,cy+sz*.35],[cx+sz*.55,cy+sz*.35]],
+    ].forEach(pts=>{
+        c.beginPath(); pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y)); c.stroke();
+    });
+    [[cx-sz*.55,cy-sz*.45,-25],[cx+sz*.55,cy+sz*.35,25]].forEach(([x,y,deg])=>{
+        c.save(); c.translate(x,y); c.rotate(deg*Math.PI/180);
+        c.beginPath(); c.moveTo(0,0); c.lineTo(-12,-18); c.lineTo(12,-18); c.closePath(); c.stroke();
+        c.restore();
+    });
+}
+function shape3D(c,cx,cy,sz){
+    const d=sz*.18;
+    c.beginPath(); c.rect(cx-sz*.3,cy-sz*.5,sz*.6,sz); c.stroke();
+    c.beginPath();
+    c.moveTo(cx-sz*.3,cy-sz*.5); c.lineTo(cx-sz*.3+d,cy-sz*.5-d);
+    c.lineTo(cx+sz*.3+d,cy-sz*.5-d); c.lineTo(cx+sz*.3,cy-sz*.5); c.closePath(); c.stroke();
+    c.beginPath();
+    c.moveTo(cx+sz*.3,cy-sz*.5); c.lineTo(cx+sz*.3+d,cy-sz*.5-d);
+    c.lineTo(cx+sz*.3+d,cy+sz*.5-d); c.lineTo(cx+sz*.3,cy+sz*.5); c.closePath(); c.stroke();
+    c.save(); c.setLineDash([4,8]);
+    c.beginPath(); c.moveTo(cx-sz*.3,cy); c.lineTo(cx+sz*.3,cy); c.stroke();
+    c.beginPath(); c.moveTo(cx,cy-sz*.5); c.lineTo(cx,cy+sz*.5); c.stroke();
+    c.restore();
+}
+
+// ─────────────────────────────────────────────
+//  COVERAGE — pixel diff
+// ─────────────────────────────────────────────
+let activeTpl   = null;
+let tplMaskData = null;   // ImageData маски (какие пиксели считать)
+let coverTimer  = null;
+let tplProgress = 0;
+
+function startTemplate(id) {
+    activeTpl   = id;
+    tplProgress = 0;
+    // Маску строим с жирными линиями — они определяют «зону» шаблона
+    tplMaskData = buildMask(id);
+    drawOverlay(id);
+    const tpl = TEMPLATES.find(t=>t.id===id);
+    document.getElementById('tpl-name-lbl').textContent = tpl.name.toUpperCase();
+    setProgress(0);
+    document.getElementById('tpl-hud').classList.remove('hidden');
+}
+
+function stopTemplate(msg) {
+    activeTpl = null; tplMaskData = null; tplProgress = 0;
+    clearTimeout(coverTimer);
+    tplCtx.clearRect(0,0,W,H);
+    document.getElementById('tpl-hud').classList.add('hidden');
+    if(msg) showToast(msg);
+}
+
+// Сравниваем пиксели mainCanvas с wallSnapshot в зонах маски
+// Если пиксель изменился — значит там нарисовали
+function measureCoverage() {
+    if (!tplMaskData || !wallSnapshot) return 0;
+
+    const mask  = tplMaskData.data;
+    const now   = ctx.getImageData(0, 0, W, H).data;
+    const wall  = wallSnapshot.data;
+
+    let total = 0, painted = 0;
+    // Шагаем с шагом 4 пикселя для скорости (достаточно точно)
+    for (let i = 0; i < mask.length; i += 16) {
+        if (mask[i+3] < 10) continue; // пиксель вне маски
+        total++;
+        // Разница между текущим канвасом и чистой стеной
+        const dr = Math.abs(now[i]   - wall[i]);
+        const dg = Math.abs(now[i+1] - wall[i+1]);
+        const db = Math.abs(now[i+2] - wall[i+2]);
+        if (dr + dg + db > 30) painted++; // порог — минимальные изменения
+    }
+    if (total === 0) return 0;
+    return Math.round((painted / total) * 100);
+}
+
+function scheduleCoverage() {
+    clearTimeout(coverTimer);
+    coverTimer = setTimeout(() => {
+        if (!activeTpl) return;
+        const pct = measureCoverage();
+        tplProgress = pct;
+        setProgress(pct);
+    }, 100);
+}
+
+function setProgress(pct) {
+    document.getElementById('prog-bar').style.width = pct + '%';
+    const btn = document.getElementById('tpl-done-btn');
+    const tpl = TEMPLATES.find(t=>t.id===activeTpl);
+    const needed = tpl ? tpl.cover : 40;
+    btn.classList.toggle('ready', pct >= needed);
+}
+
+// ─────────────────────────────────────────────
+//  SPRAY ENGINE
+// ─────────────────────────────────────────────
+let currentColor = '#ff1e00';
+let spraySize    = 22;
+let sprayFlow    = 5;
+let isDrawing    = false;
+let lastX=0, lastY=0;
+let drips = [];
+
+function sprayStep(x, y, pressure) {
+    const r=spraySize, fl=sprayFlow/10;
+    const [rr,gg,bb]=hexRgb(currentColor);
+    ctx.save();
+    const g=ctx.createRadialGradient(x,y,0,x,y,r*.65);
+    g.addColorStop(0,   `rgba(${rr},${gg},${bb},${.42*fl*pressure})`);
+    g.addColorStop(.45, `rgba(${rr},${gg},${bb},${.16*fl*pressure})`);
+    g.addColorStop(1,   `rgba(${rr},${gg},${bb},0)`);
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r*.65,0,Math.PI*2); ctx.fill();
+
+    ctx.fillStyle=currentColor;
+    for(let i=0,pc=Math.floor(r*3*fl);i<pc;i++){
+        const rd=gauss()*r*.75, a=Math.random()*Math.PI*2;
+        const px=x+Math.cos(a)*rd, py=y+Math.sin(a)*rd;
+        const f=1-rd/r, ds=(Math.random()*1.2+.3)*f;
+        ctx.globalAlpha=Math.min(1,(Math.random()*.6+.3)*f*fl*pressure);
+        ctx.fillRect(px-ds/2,py-ds/2,ds,ds);
+    }
+    for(let i=0,dc=Math.floor(r*1.2*fl);i<dc;i++){
+        const rd=r*(.6+Math.random()*.6), a=Math.random()*Math.PI*2;
+        ctx.globalAlpha=Math.max(0,(1-(rd-r*.6)/(r*.6))*.12*fl*pressure);
+        ctx.fillRect(x+Math.cos(a)*rd,y+Math.sin(a)*rd,1,1);
+    }
+    ctx.restore();
+    if (activeTpl) scheduleCoverage();
+}
+
+function gauss(){
+    let u=0,v=0;
+    while(!u)u=Math.random(); while(!v)v=Math.random();
+    return Math.min(Math.abs(Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v))/3,1);
+}
+function hexRgb(h){
+    const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+    return m?[parseInt(m[1],16),parseInt(m[2],16),parseInt(m[3],16)]:[255,255,255];
+}
+
+// ─────────────────────────────────────────────
+//  DRIPS
+// ─────────────────────────────────────────────
+function maybeDrip(x,y,pres){
+    if(Math.random()<pres*.04*(sprayFlow/10)){
+        const [r,g,b]=hexRgb(currentColor);
+        drips.push({x:x+(Math.random()-.5)*spraySize*.4,y,len:0,
+            maxLen:Math.random()*120+40,spd:Math.random()*1.2+.5,
+            w:Math.random()*2.5+1,r,g,b,a:.7+Math.random()*.3});
+    }
+}
+function tickDrips(){
+    drips=drips.filter(d=>d.len<d.maxLen);
+    drips.forEach(d=>{
+        const t=d.len/d.maxLen;
+        ctx.save(); ctx.globalAlpha=d.a*(1-t*.5);
+        ctx.fillStyle=`rgb(${d.r},${d.g},${d.b})`;
+        ctx.beginPath(); ctx.arc(d.x,d.y+d.len,d.w*(1-t*.6),0,Math.PI*2); ctx.fill();
+        ctx.restore();
+        d.len+=d.spd; d.spd*=.995;
+    });
+}
+
+// ─────────────────────────────────────────────
+//  POINTER
+// ─────────────────────────────────────────────
+function xy(e){ return e.touches?[e.touches[0].clientX,e.touches[0].clientY]:[e.clientX,e.clientY]; }
+function onDown(e){
+    if(e.target!==canvas) return;
+    isDrawing=true; [lastX,lastY]=xy(e);
+}
+function onMove(e){
+    const [x,y]=xy(e);
+    moveCursor(x,y);
+    if(!isDrawing) return;
+    const dist=Math.hypot(x-lastX,y-lastY);
+    const pres=Math.max(.1,Math.min(1.5,8/(dist+2)));
+    const steps=Math.max(1,Math.floor(dist/3));
+    for(let i=0;i<=steps;i++){
+        const t=i/steps;
+        sprayStep(lastX+(x-lastX)*t, lastY+(y-lastY)*t, pres);
+    }
+    maybeDrip(x,y,pres);
+    lastX=x; lastY=y;
+}
+function onUp(){ isDrawing=false; }
+
+const cur=document.getElementById('spray-cursor');
+function moveCursor(x,y){
+    cur.style.display='block';
+    cur.style.left=x+'px'; cur.style.top=y+'px';
+    cur.style.width=spraySize*2+'px'; cur.style.height=spraySize*2+'px';
+    cur.style.borderColor=currentColor;
+}
+
+// ─────────────────────────────────────────────
+//  PALETTE
+// ─────────────────────────────────────────────
+function buildPalette(){
+    const row=document.getElementById('palette-row');
+    row.innerHTML='';
+    PAINTS.forEach(p=>{
+        const locked=!unlockedColors.has(p.id);
+        const el=document.createElement('div');
+        el.className='swatch'+(locked?' locked':'')+(currentColor===p.hex&&!locked?' active':'');
+        el.style.cssText=`background:${locked?'#2a2a2a':p.hex};--c:${p.hex};`;
+        if(!locked) el.onclick=()=>pickSwatch(el,p.hex);
+        else el.onclick=()=>showToast('🔒 Открой в Графибоксе!');
+        row.appendChild(el);
+    });
+    const wrap=document.createElement('div'); wrap.id='custom-color-wrap';
+    wrap.innerHTML=`<div id="custom-color-btn"></div><input type="color" id="cci" value="${currentColor}">`;
+    row.appendChild(wrap);
+    document.getElementById('cci').oninput=e=>{
+        document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+        setColor(e.target.value);
+    };
+}
+function pickSwatch(el,hex){
+    document.querySelectorAll('.swatch').forEach(s=>s.classList.remove('active'));
+    el.classList.add('active'); setColor(hex);
+}
+function setColor(hex){
+    currentColor=hex;
+    const ci=document.getElementById('color-indicator');
+    ci.style.background=hex; ci.style.boxShadow=`0 0 16px ${hex}`;
+}
+
+// ─────────────────────────────────────────────
+//  TEMPLATES UI
+// ─────────────────────────────────────────────
+function openTemplates(){
+    const grid=document.getElementById('tpl-grid');
+    grid.innerHTML='';
+    TEMPLATES.forEach(tpl=>{
+        const done=doneTpls.has(tpl.id), isAct=activeTpl===tpl.id;
+        const card=document.createElement('div');
+        card.className='tpl-card'+(done?' done':'')+(isAct?' active-tpl':'');
+        const dl={easy:'ЛЁГКИЙ',medium:'СРЕДНИЙ',hard:'СЛОЖНЫЙ'}[tpl.diff];
+        card.innerHTML=`
+            <div class="tpl-preview">${tpl.emoji}${done?'<div class="tpl-done-badge">DONE ✓</div>':''}</div>
+            <div class="tpl-info">
+                <div class="tpl-card-name">${tpl.name}${isAct?' ▶':''}</div>
+                <div class="tpl-meta">
+                    <span class="tpl-diff diff-${tpl.diff}">${dl}</span>
+                    <span class="tpl-reward">🪙${tpl.reward}</span>
+                </div>
+            </div>`;
+        card.onclick=()=>selectTpl(tpl.id);
+        grid.appendChild(card);
+    });
+    openModal('modal-tpl');
+}
+
+function selectTpl(id){
+    if(activeTpl===id){ stopTemplate('Макет снят'); closeModal('modal-tpl'); return; }
+    startTemplate(id);
+    closeModal('modal-tpl');
+    const tpl=TEMPLATES.find(t=>t.id===id);
+    showToast(`📋 Рисуй «${tpl.name}» по контуру!`);
+}
+
+function finishTemplate(){
+    if(!activeTpl) return;
+    const tpl=TEMPLATES.find(t=>t.id===activeTpl);
+    if(tplProgress < tpl.cover){ showToast(`⚠️ Закрась больше! (${tplProgress}% / ${tpl.cover}%)`); return; }
+    const repeat=doneTpls.has(activeTpl);
+    const earned=repeat?Math.floor(tpl.reward*.3):tpl.reward;
+    coins+=earned; doneTpls.add(activeTpl);
+    save(); updateCoins(); spawnCoin(earned);
+    stopTemplate(repeat?`✅ +${earned} 🪙 (повтор)`:`🎉 +${earned} 🪙 Макет выполнен!`);
+}
+
+// ─────────────────────────────────────────────
+//  SHOP
+// ─────────────────────────────────────────────
+function openShop(){
+    const grid=document.getElementById('box-grid');
+    grid.innerHTML='';
+    BOXES.forEach(box=>{
+        const card=document.createElement('div');
+        card.className='box-card';
+        card.style.opacity=coins>=box.price?'1':'.45';
+        card.innerHTML=`
+            <div class="box-emoji">${box.emoji}</div>
+            <div class="box-name">${box.name}</div>
+            <div class="box-desc">${box.desc}</div>
+            <div class="box-price">🪙 ${box.price}</div>`;
+        card.onclick=()=>buyBox(box);
+        grid.appendChild(card);
+    });
+    document.getElementById('shop-coins').textContent=coins;
+    openModal('modal-shop');
+}
+
+function buyBox(box){
+    if(coins<box.price){ showToast('🪙 Мало Графикоинов!'); return; }
+    coins-=box.price; save(); updateCoins();
+    const rarities=box.pool.split('|');
+    const pool=PAINTS.filter(p=>!p.base&&rarities.includes(p.rarity)).map(p=>p.id);
+    // Fisher-Yates shuffle
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    const drops=pool.slice(0,box.drops);
+    drops.forEach(id=>unlockedColors.add(id));
+    save(); buildPalette();
+    showBoxOpen(box, drops);
+}
+
+function showBoxOpen(box, drops){
+    document.getElementById('box-big-emoji').textContent=box.emoji;
+    document.getElementById('box-reveal-title').textContent='ТЫ ОТКРЫЛ — '+box.name.toUpperCase();
+    const wrap=document.getElementById('box-drops-wrap');
+    wrap.innerHTML='';
+    const rn={common:'Обычная',rare:'Редкая',epic:'Эпическая',legendary:'ЛЕГЕНДА'};
+    drops.forEach(id=>{
+        const p=PAINTS.find(q=>q.id===id); if(!p) return;
+        const el=document.createElement('div'); el.className='drop-item';
+        el.innerHTML=`
+            <div class="drop-swatch" style="background:${p.hex};box-shadow:0 0 12px ${p.hex}66;"></div>
+            <div class="drop-name">${p.name}</div>
+            <div class="drop-rarity rarity-${p.rarity}">${rn[p.rarity]}</div>`;
+        wrap.appendChild(el);
+    });
+    closeModal('modal-shop');
+    const ov=document.getElementById('box-overlay'); ov.classList.add('show');
+    const be=document.getElementById('box-big-emoji');
+    be.style.animation='none'; void be.offsetWidth; be.style.animation='boxBounce .5s ease';
+}
+function closeBoxOverlay(){ document.getElementById('box-overlay').classList.remove('show'); }
+
+// ─────────────────────────────────────────────
+//  UTILS
+// ─────────────────────────────────────────────
+function updateCoins(){
+    document.getElementById('coin-count').textContent=coins;
+    const sc=document.getElementById('shop-coins'); if(sc)sc.textContent=coins;
+}
+function spawnCoin(n){
+    const el=document.createElement('div'); el.className='coin-fly';
+    el.textContent='+'+n+' 🪙';
+    el.style.left=(30+Math.random()*40)+'%'; el.style.top='35%';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),1400);
+}
+let toastTmr=null;
+function showToast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(toastTmr); toastTmr=setTimeout(()=>t.classList.remove('show'),2300);
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(ov=>{
+    ov.addEventListener('click',e=>{ if(e.target===ov) ov.classList.remove('open'); });
+});
+function clearCanvas(){
+    drips=[];
+    paintWall();
+    snapWall(); // обновляем снимок стены
+    if(activeTpl){ tplProgress=0; setProgress(0); drawOverlay(activeTpl); }
+}
+
+// ─────────────────────────────────────────────
+//  EVENTS
+// ─────────────────────────────────────────────
+canvas.addEventListener('mousedown',  onDown);
+canvas.addEventListener('mousemove',  onMove);
+canvas.addEventListener('mouseup',    onUp);
+canvas.addEventListener('mousemove',  e=>moveCursor(e.clientX,e.clientY));
+canvas.addEventListener('mouseleave', ()=>cur.style.display='none');
+canvas.addEventListener('touchstart', e=>{ e.preventDefault(); onDown(e); },{passive:false});
+canvas.addEventListener('touchmove',  e=>{ e.preventDefault(); onMove(e); },{passive:false});
+canvas.addEventListener('touchend',   onUp);
+
+document.getElementById('size-range').oninput=e=>spraySize=+e.target.value;
+document.getElementById('flow-range').oninput=e=>sprayFlow=+e.target.value;
+window.addEventListener('resize', resize);
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+load();
+// Все базовые краски — всегда открыты
+PAINTS.filter(p=>p.base).forEach(p=>unlockedColors.add(p.id));
+save();
+resize();         // рисует стену + делает снимок
+buildPalette();
+updateCoins();
+
+function loop(){ tickDrips(); requestAnimationFrame(loop); }
+loop();
+</script>
+</body>
+</html>
