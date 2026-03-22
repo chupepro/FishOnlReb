@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Роботное Место</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+body{background:#12121e;font-family:'Courier New',monospace;overflow:hidden;height:100dvh;display:flex;flex-direction:column;}
+
+/* HUD */
+#hud{background:#0a0a14;border-bottom:2px solid #1e3a6e;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:30;}
+#hud-title{font-size:11px;font-weight:bold;color:#44aaff;letter-spacing:2px;text-shadow:0 0 10px #2266cc;}
+#hud-res{display:flex;gap:9px;}
+.hres{font-size:10px;display:flex;align-items:center;gap:2px;}
+.hval{color:#ffe44a;font-weight:bold;}
+
+/* WORLD */
+#world{flex:1;position:relative;overflow:hidden;}
+canvas{display:block;width:100%;height:100%;}
+
+/* BOTTOM */
+#bottom{background:#0a0a14;border-top:2px solid #1e3a6e;padding:7px 10px 9px;flex-shrink:0;z-index:30;}
+#tabs{display:flex;gap:5px;margin-bottom:7px;}
+.tab{flex:1;padding:5px 1px;text-align:center;font-size:8px;font-weight:bold;letter-spacing:1px;border-radius:5px;border:1px solid #1e3a6e;color:#2a5a9a;background:#0a0a14;cursor:pointer;transition:all .15s;}
+.tab.on{color:#44aaff;border-color:#44aaff;background:#0a1525;box-shadow:0 0 8px #1144aa44;}
+#cards{display:flex;gap:7px;overflow-x:auto;min-height:86px;padding-bottom:2px;align-items:flex-start;}
+#cards::-webkit-scrollbar{display:none;}
+
+.card{flex-shrink:0;background:#0a1120;border:1.5px solid #1e3a6e;border-radius:10px;padding:7px 8px;min-width:68px;text-align:center;cursor:pointer;transition:all .15s;position:relative;}
+.card:active{transform:scale(0.92);}
+.card.sel{border-color:#44aaff;background:#0a1a2e;box-shadow:0 0 10px #2266aa44;}
+.card.locked{opacity:0.3;pointer-events:none;}
+.card.broken{border-color:#ff4422;animation:blink .6s infinite;}
+@keyframes blink{0%,100%{box-shadow:0 0 6px #ff4422;}50%{box-shadow:0 0 16px #ff4422;}}
+.card-e{font-size:22px;line-height:1;margin-bottom:2px;}
+.card-n{font-size:7px;color:#88aacc;font-weight:bold;line-height:1.2;}
+.card-c{font-size:7px;color:#ffe44a;margin-top:2px;}
+.card-lv{position:absolute;top:2px;left:4px;font-size:7px;color:#44aaff;font-weight:bold;}
+.card-cnt{position:absolute;top:2px;right:4px;font-size:7px;color:#44ff88;font-weight:bold;}
+.card-badge{position:absolute;top:-4px;right:-4px;background:#ff4422;color:#fff;font-size:8px;font-weight:bold;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;}
+
+/* Notif */
+#notif{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#0a0a14ee;border:1px solid #44aaff;color:#44aaff;padding:6px 16px;border-radius:20px;font-size:10px;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap;z-index:200;}
+#notif.show{opacity:1;}
+
+/* Event banner */
+#event-banner{position:fixed;top:48px;left:0;right:0;background:linear-gradient(90deg,#440000,#880000,#440000);border-bottom:1px solid #ff4422;color:#ffaaaa;padding:5px 12px;font-size:10px;font-weight:bold;text-align:center;z-index:150;display:none;animation:slide-in .4s ease;}
+@keyframes slide-in{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+
+/* Quest panel */
+#quest-panel{position:fixed;top:50px;right:8px;background:#0a1525dd;border:1px solid #2255aa;border-radius:8px;padding:7px 9px;font-size:8px;color:#88aacc;z-index:140;max-width:130px;display:none;}
+#quest-panel.show{display:block;}
+#quest-title{color:#44aaff;font-weight:bold;margin-bottom:4px;font-size:9px;}
+
+.floaty{position:fixed;pointer-events:none;z-index:300;font-size:12px;font-weight:bold;animation:fup .9s ease-out forwards;}
+@keyframes fup{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-45px) scale(1.2)}}
+
+/* Buyer popup */
+#buyer-popup{position:fixed;bottom:200px;left:50%;transform:translateX(-50%);background:#0a1525;border:2px solid #44aaff;border-radius:12px;padding:10px 16px;font-size:10px;color:#88aacc;z-index:180;display:none;text-align:center;min-width:200px;}
+#buyer-popup.show{display:block;}
+</style>
+</head>
+<body>
+<div id="hud">
+  <div id="hud-title">⚙ РОБОТНОЕ МЕСТО</div>
+  <div id="hud-res">
+    <div class="hres">⚙️<span class="hval" id="h-scrap">0</span></div>
+    <div class="hres">💰<span class="hval" id="h-cred">50</span></div>
+    <div class="hres">🤖<span class="hval" id="h-sold">0</span></div>
+    <div class="hres">⭐<span class="hval" id="h-rep">0</span></div>
+  </div>
+</div>
+<div id="event-banner" id="evt"></div>
+<div id="world"><canvas id="c"></canvas></div>
+<div id="bottom">
+  <div id="tabs">
+    <div class="tab on" id="t-factory" onclick="setTab('factory')">🏭 ЗАВОД</div>
+    <div class="tab" id="t-shop"    onclick="setTab('shop')">🛒 МАГАЗИН</div>
+    <div class="tab" id="t-upgrade" onclick="setTab('upgrade')">🔧 АПГРЕЙД</div>
+    <div class="tab" id="t-quests"  onclick="setTab('quests')">📋 КВЕСТЫ</div>
+  </div>
+  <div id="cards"></div>
+</div>
+<div id="notif"></div>
+<div id="buyer-popup"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CANVAS
+// ═══════════════════════════════════════════════
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const worldEl=document.getElementById('world');
+function resize(){canvas.width=worldEl.clientWidth;canvas.height=worldEl.clientHeight;}
+resize(); window.addEventListener('resize',()=>{resize();});
+
+// ═══════════════════════════════════════════════
+// ROBOT TYPES
+// ═══════════════════════════════════════════════
+const ROBOT_TYPES = {
+  basic:   {name:'Обычный',   emoji:'🤖', color:'#4488ff', price:60,  repReq:0,  colors:{body:'#2255cc',head:'#99bbdd',arm:'#339955',leg:'#996633'}},
+  soldier: {name:'Военный',   emoji:'🪖', color:'#44aa44', price:120, repReq:5,  colors:{body:'#336622',head:'#557744',arm:'#445533',leg:'#334422'}},
+  chef:    {name:'Повар',     emoji:'👨‍🍳', color:'#ffaa44', price:100, repReq:10, colors:{body:'#cc7722',head:'#ffffff',arm:'#dd9933',leg:'#aa6611'}},
+  cosmo:   {name:'Космонавт', emoji:'🚀', color:'#aa44ff', price:200, repReq:20, colors:{body:'#663399',head:'#aaddff',arm:'#552288',leg:'#441177'}},
+  medic:   {name:'Медик',     emoji:'🏥', color:'#ff4488', price:160, repReq:35, colors:{body:'#cc2255',head:'#ffccdd',arm:'#aa1144',leg:'#881133'}},
+};
+
+// ═══════════════════════════════════════════════
+// MACHINES
+// ═══════════════════════════════════════════════
+const MACHINE_DEFS = [
+  {id:'legs', name:'Сборщик ног',    emoji:'🦵', baseCost:20,  station:'legs', breakChance:0.003},
+  {id:'body', name:'Сборщик тела',   emoji:'🟦', baseCost:30,  station:'body', breakChance:0.002},
+  {id:'arms', name:'Сборщик рук',    emoji:'🦾', baseCost:25,  station:'arms', breakChance:0.003},
+  {id:'head', name:'Сборщик головы', emoji:'🤖', baseCost:35,  station:'head', breakChance:0.002},
+  {id:'paint',name:'Покрасочная',    emoji:'🎨', baseCost:50,  station:'paint',breakChance:0.004},
+  {id:'scrap', name:'Генератор',     emoji:'⚙️', baseCost:15,  station:null,   breakChance:0},
+];
+
+// ═══════════════════════════════════════════════
+// BUYERS
+// ═══════════════════════════════════════════════
+const BUYER_TYPES = [
+  {id:'army',    name:'Армия',     emoji:'⚔️',  wants:'soldier', bonus:1.5, repBonus:3},
+  {id:'resto',   name:'Ресторан',  emoji:'🍽️', wants:'chef',    bonus:1.4, repBonus:2},
+  {id:'nasa',    name:'НАСА',      emoji:'🛸',  wants:'cosmo',   bonus:2.0, repBonus:5},
+  {id:'hospital',name:'Больница',  emoji:'🏥',  wants:'medic',   bonus:1.8, repBonus:4},
+  {id:'market',  name:'Рынок',     emoji:'🏪',  wants:'basic',   bonus:1.0, repBonus:1},
+];
+
+// ═══════════════════════════════════════════════
+// QUESTS
+// ═══════════════════════════════════════════════
+const QUEST_POOL = [
+  {id:'q1', text:'Продай 3 Военных робота',   type:'sell', rtype:'soldier', count:3,  reward:{cred:150, scrap:20}, repReward:3},
+  {id:'q2', text:'Продай 5 Обычных роботов',  type:'sell', rtype:'basic',   count:5,  reward:{cred:200, scrap:0},  repReward:2},
+  {id:'q3', text:'Почини машину 3 раза',       type:'fix',  count:3,          reward:{cred:80,  scrap:30}, repReward:2},
+  {id:'q4', text:'Продай 2 Космонавта',        type:'sell', rtype:'cosmo',   count:2,  reward:{cred:300, scrap:0},  repReward:5},
+  {id:'q5', text:'Заработай 500 кредитов',     type:'earn', count:500,        reward:{cred:100, scrap:50}, repReward:3},
+  {id:'q6', text:'Продай 4 Повара',            type:'sell', rtype:'chef',    count:4,  reward:{cred:250, scrap:0},  repReward:4},
+  {id:'q7', text:'Продай 2 Медика',            type:'sell', rtype:'medic',   count:2,  reward:{cred:280, scrap:0},  repReward:4},
+];
+
+// ═══════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════
+const gs = {
+  scrap:50, credits:50, sold:0, reputation:0, totalEarned:0,
+  stations:[
+    {id:'legs', machine:null, level:1, broken:false},
+    {id:'body', machine:null, level:1, broken:false},
+    {id:'arms', machine:null, level:1, broken:false},
+    {id:'head', machine:null, level:1, broken:false},
+    {id:'paint',machine:null, level:1, broken:false},
+    {id:'finish',machine:'finish',level:1,broken:false},
+  ],
+  robots:[],       // on belt
+  walkers:[],      // on terrain
+  buyers:[],       // active buyers in shop
+  quests:[],       // active quests
+  questProgress:{},
+  owned:{},
+  machineLevels:{},// machineId -> level
+  currentRobotType:'basic',
+  fixCount:0,
+  earnedThisSession:0,
+  _scrapTimer:0, _spawnTimer:0, _buyerTimer:0, _eventTimer:0,
+  nextId:1, beltSpeed:1,
+  upgrades:{speed2:false,speed3:false,doubleScrap:false,autoFix:false},
+  activeEvent:null, eventTimer:0,
+};
+
+// ═══════════════════════════════════════════════
+// QUESTS INIT
+// ═══════════════════════════════════════════════
+function initQuests(){
+  // Pick 2 random quests
+  const pool = QUEST_POOL.filter(q=>!gs.quests.find(a=>a.id===q.id));
+  while(gs.quests.length<2 && pool.length>0){
+    const i=Math.floor(Math.random()*pool.length);
+    gs.quests.push({...pool[i], progress:0, done:false});
+    pool.splice(i,1);
+  }
+}
+initQuests();
+
+// ═══════════════════════════════════════════════
+// LAYOUT
+// ═══════════════════════════════════════════════
+function getBeltY(){return Math.floor(canvas.height*0.54);}
+function getStationX(i){
+  const pad=55,w=canvas.width-pad*2;
+  return Math.floor(pad+(w/(gs.stations.length-1))*i);
+}
+
+// ═══════════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════════
+const EVENTS=[
+  {id:'rush',   text:'⚡ СПЕШНЫЙ ЗАКАЗ! Цена x2 на 30 сек!', duration:30, effect:'price2'},
+  {id:'strike', text:'🔧 ЗАБАСТОВКА! Машины ломаются быстрее!', duration:20, effect:'moreBreak'},
+  {id:'bonus',  text:'💎 УДАЧА! Двойной лом 30 сек!', duration:30, effect:'scrap2'},
+  {id:'vip',    text:'⭐ ВИП-КЛИЕНТ! Покупает любого робота за x3!', duration:25, effect:'vip'},
+];
+function triggerEvent(){
+  const ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  gs.activeEvent=ev; gs.eventTimer=ev.duration;
+  const banner=document.getElementById('event-banner');
+  banner.textContent=ev.text; banner.style.display='block';
+  setTimeout(()=>banner.style.display='none',ev.duration*1000);
+  showNotif(ev.text);
+}
+
+// ═══════════════════════════════════════════════
+// SPAWN
+// ═══════════════════════════════════════════════
+function spawnRobot(){
+  const type=gs.currentRobotType;
+  gs.robots.push({
+    id:gs.nextId++, bx:0, type,
+    parts:{legs:false,body:false,arms:false,head:false,paint:false},
+    done:false, sellAnim:0, _sold:false,
+  });
+}
+
+function spawnBuyer(){
+  if(gs.buyers.length>=3) return;
+  const bt=BUYER_TYPES[Math.floor(Math.random()*BUYER_TYPES.length)];
+  // Only spawn if rep allows that robot type
+  const rtype=ROBOT_TYPES[bt.wants];
+  if(gs.reputation < rtype.repReq && Math.random()>0.3) {
+    // fallback to market
+    const mkt=BUYER_TYPES.find(b=>b.id==='market');
+    gs.buyers.push({...mkt, timeLeft:25});
+    return;
+  }
+  gs.buyers.push({...bt, timeLeft:25});
+}
+
+// ═══════════════════════════════════════════════
+// DRAWING
+// ═══════════════════════════════════════════════
+function draw(){
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  drawTerrain(W,H);
+  drawFactory(W,H);
+  gs.walkers.forEach(w=>drawWalker(w,W,H));
+  gs.robots.forEach(r=>drawRobotOnBelt(r,W));
+}
+
+// ── TERRAIN ──
+function drawTerrain(W,H){
+  const th=Math.floor(H*0.40);
+  // Sky
+  const sg=ctx.createLinearGradient(0,0,0,th*0.7);
+  sg.addColorStop(0,'#5599cc'); sg.addColorStop(1,'#aaddaa');
+  ctx.fillStyle=sg; ctx.fillRect(0,0,W,th);
+  // Ground
+  const gg=ctx.createLinearGradient(0,th*0.55,0,th);
+  gg.addColorStop(0,'#5aaa20'); gg.addColorStop(1,'#3a8010');
+  ctx.fillStyle=gg; ctx.fillRect(0,th*0.55,W,th*0.45+4);
+  // Grass detail
+  ctx.fillStyle='#4a9a18';
+  for(let i=0;i<20;i++){ctx.beginPath();ctx.ellipse(((i*137+20)%W),th*0.65+((i*71)%Math.floor(th*0.28)),12,4,0,0,Math.PI*2);ctx.fill();}
+  // Clouds (animated)
+  const ct=Date.now()/22000;
+  ctx.fillStyle='rgba(255,255,255,0.75)';
+  [[60,15,ct],[200,28,ct*0.7],[340,12,ct*1.3]].forEach(([bx,by,off])=>{
+    const cx2=(bx+off*W)%W;
+    ctx.beginPath();ctx.ellipse(cx2,by,28,10,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx2+18,by-4,18,8,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx2-16,by-3,16,8,0,0,Math.PI*2);ctx.fill();
+  });
+  // Trees
+  [[40,0.55],[0.25,0.52],[0.6,0.57],[0.82,0.53]].forEach(([fx,fy],i)=>{
+    const tx=(typeof fx==='number'&&fx<1)?fx*W:fx;
+    drawTree(tx,th*fy,0.5+i*0.05);
+  });
+  // Factory facade
+  const fy=th*0.57;
+  ctx.fillStyle='#1e1e30'; ctx.fillRect(0,fy,W,th-fy+4);
+  for(let i=0;i<7;i++){
+    const wx=18+i*(W/7);
+    if(wx+26<W){ctx.fillStyle='#ffcc44';ctx.fillRect(wx,fy+7,26,16);ctx.fillStyle='rgba(255,255,200,0.4)';ctx.fillRect(wx+2,fy+8,9,5);}
+  }
+  ctx.fillStyle='#1212'+'1e'; ctx.fillRect(0,fy-5,W,7);
+  ctx.fillStyle='#44aaff'; ctx.font='bold 10px Courier New'; ctx.textAlign='center';
+  ctx.fillText('⚙ РОБОТНОЕ МЕСТО ⚙',W/2,fy+1);
+}
+
+function drawTree(x,y,s){
+  ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+  ctx.fillStyle='#7a4a1a';ctx.fillRect(-5,0,10,22);
+  ctx.fillStyle='#2a7a10';ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#3a9a18';ctx.beginPath();ctx.arc(-5,-5,13,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(5,-4,12,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#4aaa20';ctx.beginPath();ctx.arc(0,-9,10,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+}
+
+// ── FACTORY ──
+function drawFactory(W,H){
+  const factH=Math.floor(H*0.60);
+  const factY=H-factH;
+  const fg=ctx.createLinearGradient(0,factY,0,H);
+  fg.addColorStop(0,'#1a1a2e');fg.addColorStop(1,'#0e0e1a');
+  ctx.fillStyle=fg;ctx.fillRect(0,factY,W,factH);
+  ctx.strokeStyle='rgba(40,60,100,0.2)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=44){ctx.beginPath();ctx.moveTo(x,factY);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=factY;y<H;y+=44){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  drawBelt(W,H);
+  drawStations(W,H);
+}
+
+function drawBelt(W,H){
+  const by=getBeltY(),bh=26,t=Date.now()/180*gs.beltSpeed;
+  ctx.fillStyle='rgba(0,0,0,0.35)';ctx.fillRect(0,by+bh/2+3,W,5);
+  const bg=ctx.createLinearGradient(0,by-bh/2,0,by+bh/2);
+  bg.addColorStop(0,'#3a3a4a');bg.addColorStop(0.5,'#555566');bg.addColorStop(1,'#2a2a38');
+  ctx.fillStyle=bg;ctx.fillRect(0,by-bh/2,W,bh);
+  ctx.save();ctx.beginPath();ctx.rect(0,by-bh/2,W,bh);ctx.clip();
+  const sw=22;ctx.fillStyle='rgba(0,0,0,0.15)';
+  for(let x=-(sw*2)+(t%(sw*2));x<W+sw*2;x+=sw*2){
+    ctx.beginPath();ctx.moveTo(x,by-bh/2);ctx.lineTo(x+sw,by-bh/2);ctx.lineTo(x+sw-7,by+bh/2);ctx.lineTo(x-7,by+bh/2);ctx.closePath();ctx.fill();
+  }
+  ctx.restore();
+  ctx.fillStyle='#7a7a8a';ctx.fillRect(0,by-bh/2-2,W,3);ctx.fillRect(0,by+bh/2-1,W,3);
+  drawRoller2(10,by,bh);drawRoller2(W-10,by,bh);
+  ctx.fillStyle='rgba(80,160,255,0.3)';ctx.font='10px Courier New';ctx.textAlign='center';ctx.textBaseline='middle';
+  for(let x=55;x<W-55;x+=90)ctx.fillText('▶',x,by);
+}
+
+function drawRoller2(x,by,bh){
+  const rg=ctx.createLinearGradient(x-12,0,x+12,0);
+  rg.addColorStop(0,'#444');rg.addColorStop(0.5,'#888');rg.addColorStop(1,'#444');
+  ctx.fillStyle=rg;ctx.beginPath();ctx.ellipse(x,by,12,bh/2,0,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#222';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(x,by,12,bh/2,0,0,Math.PI*2);ctx.stroke();
+}
+
+function drawStations(W,H){
+  const by=getBeltY();
+  gs.stations.forEach((slot,i)=>{
+    const sx=getStationX(i);
+    const isFinish=slot.id==='finish';
+    const hasMachine=slot.machine||isFinish;
+    const mdef=MACHINE_DEFS.find(m=>m.id===slot.machine);
+    const lv=gs.machineLevels[slot.id]||1;
+
+    // Pole
+    ctx.strokeStyle=hasMachine?(slot.broken?'#aa2200':'#3a5a88'):'#1e3050';
+    ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(sx,by-12);ctx.lineTo(sx,by-72);ctx.stroke();
+
+    if(hasMachine){
+      ctx.beginPath();ctx.moveTo(sx-22,by-72);ctx.lineTo(sx+22,by-72);ctx.stroke();
+    }
+
+    if(hasMachine){
+      const mEmoji=isFinish?'📦':(mdef?.emoji||'❓');
+      const mName=isFinish?'Упаковщик':(mdef?.name||'');
+      const bx2=sx-26,bby=by-116;
+
+      // Broken flash
+      if(slot.broken){
+        ctx.fillStyle=`rgba(255,50,0,${0.3+0.3*Math.sin(Date.now()/150)})`;
+        roundRect2(bx2-3,bby-3,58,50,8);ctx.fill();
+      }
+
+      // Box
+      const mg=ctx.createLinearGradient(bx2,bby,bx2,bby+44);
+      mg.addColorStop(0,slot.broken?'#3a1010':'#222a3e');
+      mg.addColorStop(1,slot.broken?'#1a0808':'#141825');
+      ctx.fillStyle=mg;roundRect2(bx2,bby,52,44,7);ctx.fill();
+      ctx.strokeStyle=slot.broken?'#ff4422':'#3355aa';
+      ctx.lineWidth=1.5;roundRect2(bx2,bby,52,44,7);ctx.stroke();
+
+      // Level pips
+      for(let l=0;l<lv;l++){
+        ctx.fillStyle='#44aaff';ctx.beginPath();ctx.arc(bx2+6+l*8,bby+5,2.5,0,Math.PI*2);ctx.fill();
+      }
+
+      // Pulse
+      if(!slot.broken){
+        const pulse=0.4+0.4*Math.sin(Date.now()/280+i);
+        ctx.fillStyle=`rgba(0,200,255,${pulse*0.8})`;
+        ctx.beginPath();ctx.arc(sx,bby+8,3.5,0,Math.PI*2);ctx.fill();
+      }
+
+      // Emoji & name
+      ctx.font='19px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(slot.broken?'💥':mEmoji,sx,bby+27);
+      ctx.fillStyle=slot.broken?'#ff6644':'#7799bb';
+      ctx.font='6.5px Courier New';ctx.textAlign='center';
+      ctx.fillText(slot.broken?'СЛОМАН!':mName,sx,bby+42);
+
+      // Arm
+      if(!slot.broken){
+        const armPhase=(Date.now()/550+i*0.8)%(Math.PI*2);
+        const armY=by-14+Math.sin(armPhase)*5;
+        ctx.strokeStyle='#4477aa';ctx.lineWidth=2;
+        ctx.beginPath();ctx.moveTo(sx,by-72);ctx.lineTo(sx,armY);ctx.stroke();
+        ctx.strokeStyle='#7799cc';ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(sx-5,armY);ctx.lineTo(sx,armY+4);ctx.lineTo(sx+5,armY);ctx.stroke();
+      } else {
+        // Wrench icon
+        ctx.font='13px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText('🔧',sx,by-28);
+      }
+    } else {
+      // Empty slot
+      ctx.fillStyle='rgba(30,50,80,0.3)';roundRect2(sx-20,by-82,40,36,5);ctx.fill();
+      ctx.strokeStyle='#1e3050';ctx.lineWidth=1;roundRect2(sx-20,by-82,40,36,5);ctx.stroke();
+      ctx.fillStyle='#2a4a66';ctx.font='16px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('➕',sx,by-64);
+      ctx.fillStyle='#2a4055';ctx.font='6px Courier New';ctx.fillText('ПУСТО',sx,by-46);
+    }
+  });
+}
+
+// ── ROBOT ON BELT ──
+function drawRobotOnBelt(r,W){
+  const by=getBeltY();
+  const x=28+r.bx*(W-56);
+  const y=by-13;
+  const pc=Object.values(r.parts).filter(Boolean).length;
+  const sc=0.42+pc*0.06;
+  const col=ROBOT_TYPES[r.type].colors;
+
+  ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);
+  ctx.fillStyle='rgba(0,0,0,0.25)';ctx.beginPath();ctx.ellipse(0,12,26,6,0,0,Math.PI*2);ctx.fill();
+  if(r.parts.legs){drawLeg2(-13,28,col.leg);drawLeg2(13,28,col.leg);}
+  if(r.parts.body) drawBody2(col);
+  if(r.parts.arms){drawArm2(-28,0,false,col.arm);drawArm2(28,0,true,col.arm);}
+  if(r.parts.head) drawHead2(r.type,col);
+  if(!pc){ctx.fillStyle='#2a2a3a';roundRect2(-14,0,28,10,3);ctx.fill();}
+  ctx.restore();
+
+  if(r.sellAnim>0){
+    ctx.save();ctx.globalAlpha=r.sellAnim;
+    ctx.font='bold 15px Courier New';ctx.fillStyle='#ffe44a';ctx.textAlign='center';
+    ctx.fillText('💰 ПРОДАН!',x,y-28-(1-r.sellAnim)*18);
+    ctx.restore();
+  }
+}
+
+// ── PART SHAPES ──
+function drawBody2(col){
+  ctx.fillStyle=col.body;roundRect2(-22,-18,44,36,7);ctx.fill();
+  ctx.strokeStyle=lighten(col.body);ctx.lineWidth=1.5;roundRect2(-17,-13,34,26,5);ctx.stroke();
+  ctx.fillStyle='#00ddff';ctx.beginPath();ctx.arc(0,0,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=darken(col.body);ctx.beginPath();ctx.arc(-23,0,6,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(23,0,6,0,Math.PI*2);ctx.fill();
+}
+function drawHead2(type,col){
+  ctx.fillStyle=col.head;ctx.beginPath();ctx.arc(0,-38,17,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=lighten(col.head);ctx.beginPath();ctx.arc(0,-40,12,0,Math.PI*2);ctx.fill();
+  if(type==='soldier'){
+    // helmet shape
+    ctx.fillStyle='#445533';roundRect2(-14,-54,28,16,3);ctx.fill();
+  } else if(type==='chef'){
+    // chef hat
+    ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(0,-52,8,0,Math.PI*2);ctx.fill();
+    roundRect2(-10,-56,20,8,2);ctx.fill();
+  } else if(type==='cosmo'){
+    // visor ring
+    ctx.strokeStyle='#aaddff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,-38,17,0,Math.PI*2);ctx.stroke();
+  } else if(type==='medic'){
+    // red cross
+    ctx.fillStyle='#ff2244';ctx.fillRect(-3,-44,6,14);ctx.fillRect(-7,-40,14,6);
+  }
+  ctx.fillStyle='rgba(0,200,255,0.5)';roundRect2(-11,-44,22,10,4);ctx.fill();
+  ctx.fillStyle='#00ffff';ctx.beginPath();ctx.arc(-6,-40,3.5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(6,-40,3.5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-5.5,-41,1.2,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(6.5,-41,1.2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#6688aa';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,-54);ctx.lineTo(0,-64);ctx.stroke();
+  ctx.fillStyle='#ff4444';ctx.beginPath();ctx.arc(0,-65,3.5,0,Math.PI*2);ctx.fill();
+}
+function drawArm2(x,y,flip,color){
+  ctx.save();ctx.translate(x,y);if(flip)ctx.scale(-1,1);
+  ctx.fillStyle=color;roundRect2(-8,-20,16,28,5);ctx.fill();
+  ctx.strokeStyle=lighten(color);ctx.lineWidth=1;roundRect2(-6,-17,12,22,4);ctx.stroke();
+  ctx.fillStyle=darken(color);ctx.beginPath();ctx.arc(0,10,7,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=lighten(color);ctx.beginPath();ctx.arc(0,10,4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=color;roundRect2(-6,16,12,18,4);ctx.fill();
+  ctx.fillStyle=lighten(color);roundRect2(-8,32,16,9,3);ctx.fill();
+  ctx.restore();
+}
+function drawLeg2(x,y,color){
+  ctx.save();ctx.translate(x,y);
+  ctx.fillStyle=color;roundRect2(-9,-4,18,22,5);ctx.fill();
+  ctx.strokeStyle=lighten(color);ctx.lineWidth=1;roundRect2(-6,-1,12,17,3);ctx.stroke();
+  ctx.fillStyle=darken(color);ctx.beginPath();ctx.arc(0,20,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=lighten(color);ctx.beginPath();ctx.arc(0,20,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=color;roundRect2(-7,27,14,19,4);ctx.fill();
+  ctx.fillStyle=darken(color);roundRect2(-10,44,20,8,3);ctx.fill();
+  ctx.restore();
+}
+
+// ── WALKERS ──
+function drawWalker(w,W,H){
+  const t=Date.now()/1000;
+  const walk=Math.sin(t*3+w.phase);
+  const bob=Math.sin(t*2.5+w.phase)*3;
+  const th=Math.floor(H*0.40);
+  const groundY=th*0.7;
+  if(w.y>groundY)w.y=groundY;
+  const col=ROBOT_TYPES[w.type].colors;
+  ctx.save();ctx.translate(w.x,w.y+bob);
+  if(w.vx<0)ctx.scale(-1,1);
+  ctx.scale(0.38,0.38);
+  ctx.fillStyle='rgba(0,0,0,0.18)';ctx.beginPath();ctx.ellipse(0,55,22,5,0,0,Math.PI*2);ctx.fill();
+  ctx.save();ctx.translate(-13,28);ctx.rotate(walk*0.35);drawLeg2(0,0,col.leg);ctx.restore();
+  ctx.save();ctx.translate(13,28);ctx.rotate(-walk*0.35);drawLeg2(0,0,col.leg);ctx.restore();
+  drawBody2(col);
+  ctx.save();ctx.translate(-28,3);ctx.rotate(-walk*0.25);ctx.scale(0.85,0.85);drawArm2(0,0,false,col.arm);ctx.restore();
+  ctx.save();ctx.translate(28,3);ctx.rotate(walk*0.25);ctx.scale(0.85,0.85);drawArm2(0,0,true,col.arm);ctx.restore();
+  ctx.save();ctx.translate(0,0);ctx.scale(0.9,0.9);drawHead2(w.type,col);ctx.restore();
+  // Type badge
+  ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(ROBOT_TYPES[w.type].emoji,0,-75);
+  ctx.restore();
+}
+
+// ── HELPERS ──
+function lighten(hex){
+  try{const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgb(${Math.min(255,r+60)},${Math.min(255,g+60)},${Math.min(255,b+60)})`;}catch{return hex;}
+}
+function darken(hex){
+  try{const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgb(${Math.max(0,r-40)},${Math.max(0,g-40)},${Math.max(0,b-40)})`;}catch{return hex;}
+}
+function roundRect2(x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+}
+
+// ═══════════════════════════════════════════════
+// GAME LOOP
+// ═══════════════════════════════════════════════
+let lastT=0;
+function loop(ts){
+  const dt=Math.min((ts-lastT)/1000,0.1);lastT=ts;
+  const W=canvas.width;
+
+  // Scrap
+  gs._scrapTimer+=dt;
+  const scrapRate=(1+(gs.owned['scrap']||0)*1.5)*(gs.upgrades.doubleScrap?2:1)*(gs.activeEvent?.effect==='scrap2'?2:1);
+  if(gs._scrapTimer>2.5/scrapRate){gs._scrapTimer=0;gs.scrap+=Math.ceil(scrapRate);updateHUD();}
+
+  // Spawn robots
+  gs._spawnTimer+=dt;
+  const spawnRate=Math.max(3, 6-gs.beltSpeed);
+  if(gs._spawnTimer>spawnRate){gs._spawnTimer=0;if(gs.robots.length<4)spawnRobot();}
+
+  // Buyers
+  gs._buyerTimer+=dt;
+  if(gs._buyerTimer>12){gs._buyerTimer=0;spawnBuyer();}
+  gs.buyers.forEach(b=>{b.timeLeft-=dt;});
+  gs.buyers=gs.buyers.filter(b=>b.timeLeft>0);
+
+  // Random events
+  gs._eventTimer+=dt;
+  if(gs._eventTimer>45+Math.random()*30){gs._eventTimer=0;triggerEvent();}
+  if(gs.activeEvent){gs.eventTimer-=dt;if(gs.eventTimer<=0)gs.activeEvent=null;}
+
+  // Belt speed
+  gs.beltSpeed=gs.upgrades.speed3?3:gs.upgrades.speed2?2:1;
+
+  // Move robots
+  const speed=0.048*gs.beltSpeed;
+  gs.robots.forEach(r=>{
+    if(r.done){r.sellAnim=Math.max(0,r.sellAnim-dt*1.5);return;}
+    r.bx+=speed*dt;
+    gs.stations.forEach((slot,i)=>{
+      const stX01=getStationX(i)/(W-56);
+      if(Math.abs(r.bx-stX01)<0.05){
+        if(slot.id==='finish'){
+          if(!r._sold){
+            r._sold=true;
+            const complete=r.parts.legs&&r.parts.body&&r.parts.arms&&r.parts.head;
+            if(complete){
+              // Check buyers
+              let price=ROBOT_TYPES[r.type].price;
+              let repBonus=1;
+              const buyer=gs.buyers.find(b=>b.wants===r.type);
+              if(buyer){
+                price=Math.floor(price*buyer.bonus);
+                repBonus=buyer.repBonus;
+                gs.buyers=gs.buyers.filter(b=>b!==buyer);
+              }
+              if(gs.activeEvent?.effect==='price2') price*=2;
+              if(gs.activeEvent?.effect==='vip') price*=3;
+              if(gs.upgrades.doubleScrap) price=Math.floor(price*1.1);
+              gs.credits+=price; gs.reputation+=repBonus;
+              gs.sold++; gs.totalEarned+=price;
+              gs.earnedThisSession=(gs.earnedThisSession||0)+price;
+              r.done=true; r.sellAnim=1;
+              updateQuestProgress('sell',r.type,1);
+              updateQuestProgress('earn',null,price);
+              // Walker
+              const H2=canvas.height,th=H2*0.40;
+              gs.walkers.push({x:40+Math.random()*(W-80),y:th*0.63,vx:(Math.random()<.5?1:-1)*(0.25+Math.random()*0.3),vy:0,phase:Math.random()*Math.PI*2,type:r.type});
+              if(gs.walkers.length>10)gs.walkers.shift();
+              spawnFloat(W*0.65,getBeltY()-40,'💰+'+price,gs.activeEvent?.effect==='vip'?'#ffdd00':'#44ff88');
+              updateHUD();
+            } else {
+              r.done=true;
+            }
+          }
+        } else if(slot.machine&&!slot.broken){
+          const mdef=MACHINE_DEFS.find(m=>m.id===slot.machine);
+          if(mdef?.station&&!r.parts[mdef.station]){
+            r.parts[mdef.station]=true;
+            // Random break
+            const lv=gs.machineLevels[slot.id]||1;
+            const bc=mdef.breakChance*(gs.activeEvent?.effect==='moreBreak'?3:1)/lv;
+            if(Math.random()<bc&&!gs.upgrades.autoFix){
+              slot.broken=true;
+              showNotif('💥 '+mdef.name+' сломана! Нажми чтобы починить!');
+            }
+          }
+        }
+      }
+    });
+    if(r.bx>1.05)r.done=true;
+  });
+  gs.robots=gs.robots.filter(r=>!r.done||r.sellAnim>0);
+
+  // Auto-fix
+  if(gs.upgrades.autoFix){
+    gs.stations.forEach(s=>{if(s.broken&&Math.random()<0.005)s.broken=false;});
+  }
+
+  // Walkers
+  gs.walkers.forEach(w=>{
+    w.x+=w.vx*dt*55;
+    const W2=canvas.width;
+    if(w.x<20||w.x>W2-20)w.vx*=-1;
+  });
+
+  draw();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// ═══════════════════════════════════════════════
+// QUESTS
+// ═══════════════════════════════════════════════
+function updateQuestProgress(type,rtype,amount){
+  gs.quests.forEach(q=>{
+    if(q.done) return;
+    if(q.type==='sell'&&type==='sell'&&q.rtype===rtype) q.progress+=amount;
+    if(q.type==='fix'&&type==='fix') q.progress+=amount;
+    if(q.type==='earn'&&type==='earn') q.progress+=amount;
+    if(q.progress>=q.count&&!q.done){
+      q.done=true;
+      gs.credits+=q.reward.cred; gs.scrap+=q.reward.scrap; gs.reputation+=q.repReward;
+      showNotif('📋 КВЕСТ ВЫПОЛНЕН! +'+q.reward.cred+'💰 +'+q.reward.scrap+'⚙️');
+      updateHUD();
+      // Replace quest
+      setTimeout(()=>{
+        gs.quests=gs.quests.filter(a=>!a.done);
+        initQuests();
+        if(currentTab==='quests')renderCards();
+      },3000);
+    }
+  });
+  if(currentTab==='quests')renderCards();
+}
+
+// ═══════════════════════════════════════════════
+// UI
+// ═══════════════════════════════════════════════
+let currentTab='factory';
+function setTab(t){
+  currentTab=t;
+  ['factory','shop','upgrade','quests'].forEach(n=>document.getElementById('t-'+n).classList.toggle('on',n===t));
+  renderCards();
+}
+
+function renderCards(){
+  const cont=document.getElementById('cards');
+  cont.innerHTML='';
+
+  if(currentTab==='factory'){
+    // Robot type selector
+    Object.entries(ROBOT_TYPES).forEach(([key,rt])=>{
+      const locked=gs.reputation<rt.repReq;
+      const c=document.createElement('div');
+      c.className='card'+(gs.currentRobotType===key?' sel':'')+(locked?' locked':'');
+      c.innerHTML=`<div class="card-e">${rt.emoji}</div><div class="card-n">${rt.name}</div><div class="card-c" style="color:${locked?'#aa4422':'#44ff88'}">${locked?'⭐'+rt.repReq:'✓ ВЫБРАТЬ'}</div>`;
+      c.onclick=()=>{if(!locked){gs.currentRobotType=key;showNotif('🤖 Тип: '+rt.name);renderCards();}};
+      cont.appendChild(c);
+    });
+    // Spacer
+    const sp=document.createElement('div');sp.style.cssText='flex-shrink:0;width:2px;background:#1e3a6e;border-radius:2px;margin:4px 2px;';cont.appendChild(sp);
+    // Machines to buy
+    MACHINE_DEFS.forEach(m=>{
+      const cnt=gs.owned[m.id]||0;
+      const stationSlot=gs.stations.find(s=>s.id===m.station);
+      const installed=stationSlot&&stationSlot.machine===m.id;
+      const broken=stationSlot&&stationSlot.broken;
+      const c=document.createElement('div');
+      c.className='card'+(broken?' broken':'')+(installed?' sel':'');
+      if(cnt)c.innerHTML+=`<div class="card-cnt">x${cnt}</div>`;
+      c.innerHTML+=`<div class="card-e">${broken?'💥':m.emoji}</div><div class="card-n">${m.name}</div><div class="card-c">${broken?'🔧 ПОЧИНИТЬ':installed?'✅ СТОИТ':m.baseCost+'⚙️'}</div>`;
+      c.onclick=()=>{
+        if(broken){fixMachine(stationSlot,m);return;}
+        if(installed){showNotif('✅ Уже установлена');return;}
+        buyAndInstall(m);
+      };
+      cont.appendChild(c);
+    });
+  }
+
+  if(currentTab==='shop'){
+    // Active buyers
+    if(gs.buyers.length===0){
+      const e=document.createElement('div');
+      e.style.cssText='color:#2a4a6a;font-size:10px;padding:12px 8px;';
+      e.textContent='Ждём покупателей... (появляются каждые 12 сек)';
+      cont.appendChild(e);
+    }
+    gs.buyers.forEach(buyer=>{
+      const rt=ROBOT_TYPES[buyer.wants];
+      const c=document.createElement('div');
+      c.className='card sel';
+      const timeBar=Math.round((buyer.timeLeft/25)*100);
+      c.innerHTML=`<div class="card-e">${buyer.emoji}</div>
+        <div class="card-n">${buyer.name}</div>
+        <div style="font-size:7px;color:#88aacc;margin:2px 0">Хочет: ${rt.name} ${rt.emoji}</div>
+        <div class="card-c" style="color:#44ff88">x${buyer.bonus} 💰</div>
+        <div style="margin-top:3px;height:3px;background:#1e3050;border-radius:2px;overflow:hidden;"><div style="width:${timeBar}%;height:100%;background:#44aaff;transition:width .5s;"></div></div>`;
+      c.onclick=()=>showNotif('ℹ️ Производи '+rt.name+' — покупатель купит автоматически!');
+      cont.appendChild(c);
+    });
+    // Separator
+    const sp2=document.createElement('div');sp2.style.cssText='flex-shrink:0;width:2px;background:#1e3a6e;border-radius:2px;margin:4px 2px;';cont.appendChild(sp2);
+    // Walkers info
+    Object.entries(ROBOT_TYPES).forEach(([key,rt])=>{
+      const cnt=gs.walkers.filter(w=>w.type===key).length;
+      if(cnt===0)return;
+      const c=document.createElement('div');
+      c.className='card';
+      c.innerHTML=`<div class="card-e">${rt.emoji}</div><div class="card-n">${rt.name}</div><div class="card-cnt">${cnt}</div><div class="card-c" style="color:#5a8a5a">гуляет</div>`;
+      cont.appendChild(c);
+    });
+  }
+
+  if(currentTab==='upgrade'){
+    // Machine level upgrades
+    gs.stations.filter(s=>s.machine&&s.id!=='finish').forEach(slot=>{
+      const mdef=MACHINE_DEFS.find(m=>m.id===slot.machine);
+      if(!mdef)return;
+      const lv=gs.machineLevels[slot.id]||1;
+      if(lv>=5)return;
+      const cost=lv*40;
+      const c=document.createElement('div');
+      c.className='card';
+      c.innerHTML=`<div class="card-lv">Ур${lv}</div><div class="card-e">${mdef.emoji}</div><div class="card-n">${mdef.name}</div>
+        <div style="font-size:7px;color:#5a8a9a;margin:2px 0">Меньше поломок</div>
+        <div class="card-c">→Ур${lv+1}: ${cost}💰</div>`;
+      c.onclick=()=>{
+        if(gs.credits<cost){showNotif('❌ Нужно '+cost+'💰');return;}
+        gs.credits-=cost;gs.machineLevels[slot.id]=(lv+1);
+        showNotif('⬆️ '+mdef.name+' → Уровень '+(lv+1)+'!');
+        updateHUD();renderCards();
+      };
+      cont.appendChild(c);
+    });
+    // Global upgrades
+    const upgs=[
+      {id:'speed2',name:'Скорость x2',e:'⚡',cost:100,type:'cred',desc:'Лента быстрее'},
+      {id:'speed3',name:'Скорость x3',e:'🚀',cost:250,type:'cred',desc:'Ещё быстрее!',req:'speed2'},
+      {id:'doubleScrap',name:'Х2 Лом',e:'⚙️',cost:80,type:'cred',desc:'Двойной лом'},
+      {id:'autoFix',name:'Авторемонт',e:'🔩',cost:300,type:'cred',desc:'Сам чинит машины'},
+      {id:'scrap2',name:'+Генератор',e:'⚙️',cost:30,type:'scrap',desc:'Ещё генератор лома'},
+    ];
+    upgs.forEach(u=>{
+      const bought=gs.upgrades[u.id];
+      const locked=u.req&&!gs.upgrades[u.req];
+      const c=document.createElement('div');
+      c.className='card'+(bought?' sel':'')+(locked?' locked':'');
+      c.innerHTML=`<div class="card-e">${u.e}</div><div class="card-n">${u.name}</div>
+        <div style="font-size:7px;color:#5a8a9a;margin:2px 0">${u.desc}</div>
+        <div class="card-c">${bought?'✅':u.cost+(u.type==='cred'?'💰':'⚙️')}</div>`;
+      c.onclick=()=>{
+        if(bought||locked)return;
+        const curr=u.type==='cred'?gs.credits:gs.scrap;
+        if(curr<u.cost){showNotif('❌ Нужно '+u.cost+(u.type==='cred'?'💰':'⚙️'));return;}
+        if(u.type==='cred')gs.credits-=u.cost; else gs.scrap-=u.cost;
+        if(u.id==='scrap2'){gs.owned['scrap']=(gs.owned['scrap']||0)+1;}
+        else gs.upgrades[u.id]=true;
+        showNotif('✅ '+u.name+' куплено!');
+        updateHUD();renderCards();
+      };
+      cont.appendChild(c);
+    });
+  }
+
+  if(currentTab==='quests'){
+    if(gs.quests.length===0){
+      const e=document.createElement('div');e.style.cssText='color:#2a4a6a;font-size:10px;padding:12px 8px;';
+      e.textContent='Все квесты выполнены! Новые появятся скоро...';
+      cont.appendChild(e);
+    }
+    gs.quests.forEach(q=>{
+      const pct=Math.min(1,q.progress/q.count);
+      const c=document.createElement('div');
+      c.className='card'+(q.done?' sel':'');
+      c.style.minWidth='140px';
+      c.innerHTML=`<div style="font-size:9px;color:${q.done?'#44ff88':'#88aacc'};text-align:left;margin-bottom:4px;font-weight:bold">${q.done?'✅ ':''} ${q.text}</div>
+        <div style="height:4px;background:#1e3050;border-radius:2px;overflow:hidden;margin-bottom:4px;"><div style="width:${pct*100}%;height:100%;background:${q.done?'#44ff44':'#44aaff'};"></div></div>
+        <div style="font-size:8px;color:#5a8a6a;text-align:left">${q.progress}/${q.count} &nbsp; 🏆 +${q.reward.cred}💰 +${q.reward.scrap}⚙️ +${q.repReward}⭐</div>`;
+      cont.appendChild(c);
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════
+function buyAndInstall(mdef){
+  if(mdef.station===null){
+    // Scrap generator
+    if(gs.scrap<mdef.baseCost){showNotif('❌ Нужно '+mdef.baseCost+'⚙️ лома');return;}
+    gs.scrap-=mdef.baseCost;
+    gs.owned[mdef.id]=(gs.owned[mdef.id]||0)+1;
+    showNotif('✅ '+mdef.name+' добавлен!');
+    updateHUD();renderCards();return;
+  }
+  if(gs.scrap<mdef.baseCost){showNotif('❌ Нужно '+mdef.baseCost+'⚙️ лома');return;}
+  const slot=gs.stations.find(s=>s.id===mdef.station);
+  if(!slot){showNotif('❌ Нет слота');return;}
+  if(slot.machine){showNotif('❌ Слот занят машиной');return;}
+  gs.scrap-=mdef.baseCost;
+  slot.machine=mdef.id;
+  gs.machineLevels[slot.id]=1;
+  showNotif('✅ '+mdef.name+' установлена!');
+  updateHUD();renderCards();
+}
+
+function fixMachine(slot,mdef){
+  if(gs.scrap<8){showNotif('❌ Нужно 8⚙️ для ремонта');return;}
+  gs.scrap-=8;slot.broken=false;gs.fixCount++;
+  updateQuestProgress('fix',null,1);
+  showNotif('🔧 Починено!');
+  updateHUD();renderCards();
+}
+
+function updateHUD(){
+  document.getElementById('h-scrap').textContent=Math.floor(gs.scrap);
+  document.getElementById('h-cred').textContent=Math.floor(gs.credits);
+  document.getElementById('h-sold').textContent=gs.sold;
+  document.getElementById('h-rep').textContent=Math.floor(gs.reputation);
+}
+
+function showNotif(msg){
+  const el=document.getElementById('notif');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+function spawnFloat(x,y,text,color='#44ff88'){
+  const el=document.createElement('div');
+  el.className='floaty';el.textContent=text;
+  el.style.left=x+'px';el.style.top=y+'px';el.style.color=color;
+  el.style.textShadow=`0 0 8px ${color}`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+setTimeout(spawnRobot,600);
+setTimeout(spawnBuyer,3000);
+updateHUD();renderCards();
+showNotif('⚙️ Покупай машины во вкладке ЗАВОД!');
+</script>
+</body>
+</html>
