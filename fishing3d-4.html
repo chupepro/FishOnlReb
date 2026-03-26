@@ -1,0 +1,3982 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎣 3D Рыбалка</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+  body { background: #0a1628; overflow: hidden; font-family: 'Georgia', serif; touch-action: none; -webkit-touch-callout: none; }
+  #canvas { display: block; width: 100vw; height: 100vh; }
+
+  #ui {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none; z-index: 10;
+  }
+
+  #topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+  }
+
+  .stat-box {
+    background: rgba(0,20,60,0.75);
+    border: 1px solid rgba(100,200,255,0.3);
+    border-radius: 12px;
+    padding: 6px 14px;
+    color: #7dd8ff;
+    font-size: 13px;
+    text-shadow: 0 0 8px rgba(100,200,255,0.6);
+  }
+
+  .stat-box span { color: #fff; font-size: 16px; font-weight: bold; }
+
+  #message {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
+  #message h2 {
+    color: #fff;
+    font-size: 22px;
+    text-shadow: 0 0 20px rgba(100,220,255,0.8), 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 1px;
+  }
+
+  #message p {
+    color: #7dd8ff;
+    font-size: 14px;
+    margin-top: 6px;
+    text-shadow: 0 0 10px rgba(100,200,255,0.5);
+  }
+
+  #catch-popup {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(160deg, rgba(0,15,50,0.97), rgba(0,40,100,0.97));
+    border: 2px solid rgba(100,220,255,0.5);
+    border-radius: 24px;
+    padding: 16px 22px 20px;
+    text-align: center;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none;
+    min-width: 240px;
+    box-shadow: 0 0 40px rgba(0,100,255,0.3), inset 0 0 30px rgba(0,50,150,0.2);
+  }
+  #catch-popup.show { transform: translate(-50%, -50%) scale(1); }
+  #catch-popup h3 { color: #fff; font-size: 20px; margin-bottom: 3px; font-weight: bold; }
+  #catch-popup .fish-weight { color: #7dd8ff; font-size: 13px; }
+  #catch-popup .coins { color: #ffd700; font-size: 17px; margin-top: 6px; text-shadow: 0 0 8px rgba(255,200,0,0.5); }
+  #catch-popup .rarity-bar { display:flex; justify-content:center; gap:3px; margin: 6px 0 2px; }
+  #catch-popup .rarity-star { font-size:14px; }
+
+  #fish-preview-canvas {
+    width: 200px; height: 130px;
+    display: block; margin: 0 auto 6px;
+    border-radius: 14px;
+    background: radial-gradient(ellipse at center, rgba(0,60,120,0.6) 0%, rgba(0,10,40,0.8) 100%);
+  }
+
+  #bottombar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #cast-btn {
+    pointer-events: all;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 3px solid rgba(100,220,255,0.8);
+    background: radial-gradient(circle, rgba(0,80,180,0.9), rgba(0,30,80,0.9));
+    color: #fff;
+    font-size: 32px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(50,150,255,0.4), inset 0 0 15px rgba(100,200,255,0.1);
+    transition: transform 0.1s, box-shadow 0.1s;
+    -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  #cast-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 0 30px rgba(50,150,255,0.7), inset 0 0 20px rgba(100,200,255,0.2);
+  }
+
+  #btn-label {
+    color: rgba(150,210,255,0.8);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  #bobber-bar-wrap {
+    width: 200px; height: 10px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 5px;
+    border: 1px solid rgba(100,200,255,0.2);
+    overflow: hidden;
+    display: none;
+  }
+
+  #bobber-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00aaff, #00ffcc);
+    border-radius: 5px;
+    transition: width 0.1s;
+    box-shadow: 0 0 8px rgba(0,200,255,0.6);
+  }
+
+  #depth-indicator {
+    color: rgba(120,200,255,0.7);
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* Ripple animation */
+  @keyframes ripple {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+
+  #ripple {
+    position: absolute;
+    width: 40px; height: 40px;
+    border: 2px solid rgba(100,220,255,0.6);
+    border-radius: 50%;
+    pointer-events: none;
+    display: none;
+    transform-origin: center;
+  }
+
+  #fish-log {
+    position: absolute;
+    right: 12px; top: 70px;
+    width: 130px;
+    display: flex; flex-direction: column; gap: 6px;
+    pointer-events: none;
+  }
+
+  .log-entry {
+    background: rgba(0,20,60,0.8);
+    border: 1px solid rgba(100,200,255,0.2);
+    border-radius: 8px;
+    padding: 5px 10px;
+    color: #7dd8ff;
+    font-size: 11px;
+    animation: slideIn 0.3s ease;
+    border-left: 3px solid #00ccff;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  #reel-hint {
+    position: absolute;
+    bottom: 130px; left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,220,100,0.9);
+    font-size: 14px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(255,200,0,0.5);
+    display: none;
+    animation: pulse 0.6s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { opacity: 0.7; transform: translateX(-50%) scale(1); }
+    to { opacity: 1; transform: translateX(-50%) scale(1.05); }
+  }
+
+  #weather-badge {
+    position: absolute;
+    top: 70px; left: 12px;
+    background: rgba(0,20,60,0.7);
+    border: 1px solid rgba(100,200,255,0.2);
+    border-radius: 10px;
+    padding: 5px 10px;
+    color: rgba(150,220,255,0.8);
+    font-size: 11px;
+    pointer-events: none;
+  }
+
+  #shop-btn {
+    position: absolute;
+    bottom: 110px; right: 18px;
+    pointer-events: all;
+    width: 58px; height: 58px;
+    border-radius: 16px;
+    border: 2px solid rgba(255,200,50,0.9);
+    background: linear-gradient(135deg, rgba(200,40,0,0.95), rgba(255,130,0,0.95));
+    color: #fff; font-size: 28px; cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,100,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s;
+  }
+  #shop-btn:active { transform: scale(0.9); }
+
+  #shop-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 200;
+    display: flex; flex-direction: column; align-items: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    overflow-y: auto;
+  }
+  #shop-overlay.open { opacity: 1; pointer-events: all; }
+
+  #shop-header {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 18px 4px;
+  }
+  #shop-title { font-size: 22px; font-weight: bold; color: #ffd700; text-shadow: 0 0 12px rgba(255,200,0,0.5); letter-spacing: 1px; }
+  #shop-close {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; border-radius: 10px; padding: 7px 16px; font-size: 15px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #meal-canvas-wrap {
+    width: calc(100% - 36px); max-width: 340px;
+    height: 210px; position: relative; margin: 8px 0 2px;
+  }
+  #meal-canvas { width: 100%; height: 100%; border-radius: 18px; border: 2px solid rgba(255,170,0,0.35); display: block; }
+  #meal-spin-hint { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); color: rgba(255,210,100,0.65); font-size: 10px; pointer-events: none; white-space: nowrap; }
+
+  #rod-list {
+    display: flex; gap: 10px; padding: 6px 18px;
+    overflow-x: auto; width: 100%; max-width: 380px; scrollbar-width: none;
+  }
+  #rod-list::-webkit-scrollbar { display: none; }
+
+  .rod-card {
+    min-width: 76px; background: rgba(0,20,60,0.8);
+    border: 2px solid rgba(100,150,255,0.3); border-radius: 14px;
+    padding: 8px 5px; text-align: center; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rod-card.selected { border-color: rgba(255,200,0,0.9); background: rgba(60,40,0,0.5); }
+  .rod-card.owned { border-color: rgba(0,230,100,0.4); }
+  .rod-card .rod-icon { font-size: 26px; margin-bottom: 3px; display: block; }
+  .rod-card .rod-name { color: #7dd8ff; font-size: 10px; font-weight: bold; display: block; }
+  .rod-card .rod-price { color: #ffd700; font-size: 10px; margin-top: 2px; display: block; }
+  .rod-card.owned .rod-price { color: #44ff99; }
+
+  #open-meal-btn {
+    margin: 10px 0 4px;
+    padding: 13px 38px; border-radius: 50px;
+    border: 3px solid rgba(255,200,50,0.9);
+    background: linear-gradient(135deg, #cc2200, #ff8800);
+    color: #fff; font-size: 16px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 0 22px rgba(255,100,0,0.5);
+    -webkit-tap-highlight-color: transparent; transition: transform 0.1s; letter-spacing: 0.5px;
+  }
+  #open-meal-btn:active { transform: scale(0.95); }
+  #open-meal-btn:disabled { opacity: 0.42; pointer-events: none; }
+
+  #meal-price-tag { color: rgba(255,200,100,0.8); font-size: 12px; margin-bottom: 2px; }
+
+  #rod-result {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(0,5,18,0.94); border-radius: 18px;
+    opacity: 0; pointer-events: none; transition: opacity 0.4s; z-index: 5;
+  }
+  #rod-result.show { opacity: 1; pointer-events: all; }
+  #rod-result-emoji { font-size: 54px; }
+  #rod-result-name { color: #fff; font-size: 20px; margin: 8px 0 4px; font-weight: bold; }
+  #rod-result-stars { color: #ffd700; font-size: 18px; margin-bottom: 4px; }
+  #rod-result-desc { color: #7dd8ff; font-size: 12px; text-align: center; padding: 0 24px; }
+  #rod-result-close {
+    margin-top: 16px; padding: 9px 28px; border-radius: 28px;
+    border: 2px solid rgba(100,220,255,0.55); background: rgba(0,40,100,0.8);
+    color: #fff; font-size: 14px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+
+  #equipped-badge {
+    position: absolute; top: 70px; right: 12px;
+    background: rgba(0,20,60,0.75); border: 1px solid rgba(100,200,255,0.3);
+    border-radius: 10px; padding: 5px 10px;
+    color: #ffd700; font-size: 13px; pointer-events: none;
+  }
+
+  /* Camera toggle button */
+  #cam-btn {
+    position: absolute;
+    bottom: 110px; left: 18px;
+    pointer-events: all;
+    width: 58px; height: 58px;
+    border-radius: 16px;
+    border: 2px solid rgba(100,220,255,0.7);
+    background: linear-gradient(135deg, rgba(0,40,120,0.92), rgba(0,80,200,0.85));
+    color: #fff; font-size: 24px; cursor: pointer;
+    box-shadow: 0 0 18px rgba(0,150,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  #cam-btn:active { transform: scale(0.9); box-shadow: 0 0 30px rgba(0,200,255,0.7); }
+  #cam-btn.fps-mode {
+    border-color: rgba(255,200,50,0.9);
+    background: linear-gradient(135deg, rgba(80,40,0,0.92), rgba(180,100,0,0.85));
+    box-shadow: 0 0 18px rgba(255,150,0,0.5);
+  }
+
+  /* Camera mode label */
+  #cam-label {
+    position: absolute;
+    bottom: 175px; left: 18px;
+    color: rgba(150,210,255,0.8);
+    font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; pointer-events: none;
+    text-align: center; width: 58px;
+  }
+
+  /* Transition vignette flash */
+  #cam-flash {
+    position: fixed; inset: 0; z-index: 50;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.95) 100%);
+    pointer-events: none; opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  #cam-flash.show { opacity: 1; }
+
+  /* FPS crosshair */
+  #crosshair {
+    position: fixed; inset: 0; z-index: 15;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none; opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  #crosshair.show { opacity: 1; }
+  #crosshair::before, #crosshair::after {
+    content: ''; position: absolute;
+    background: rgba(255,255,255,0.55);
+    border-radius: 2px;
+  }
+  #crosshair::before { width: 18px; height: 2px; }
+  #crosshair::after  { width: 2px; height: 18px; }
+  .ch-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+  }
+
+  /* FPS bottom HUD bar */
+  #fps-hud {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 14;
+    padding: 10px 20px 24px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.65) 0%, transparent 100%);
+    display: flex; justify-content: space-between; align-items: flex-end;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  #fps-hud.show { opacity: 1; }
+  .fps-indicator {
+    color: rgba(200,230,255,0.7); font-size: 11px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  @keyframes boxShake {
+    0%,100% { transform: rotate(0deg); }
+    20% { transform: rotate(-8deg) scale(1.05); }
+    40% { transform: rotate(8deg) scale(1.08); }
+    60% { transform: rotate(-5deg) scale(1.05); }
+    80% { transform: rotate(5deg) scale(1.03); }
+  }
+  @keyframes lidOpen {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(-130deg); }
+  }
+
+  /* ============ LAUNCHER ============ */
+  @keyframes launchFloat {
+    0%,100% { transform: translateY(0px) rotate(-1deg); }
+    50%      { transform: translateY(-14px) rotate(1deg); }
+  }
+  @keyframes launchPulse {
+    0%,100% { opacity: 0.6; transform: scale(1); }
+    50%      { opacity: 1.0; transform: scale(1.04); }
+  }
+  @keyframes launchRipple {
+    0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
+    100% { transform: translate(-50%,-50%) scale(4); opacity: 0; }
+  }
+  @keyframes launchFadeIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes launchStarTwinkle {
+    0%,100% { opacity: 0.2; }
+    50%      { opacity: 1; }
+  }
+  @keyframes launchBarFill {
+    from { width: 0%; }
+    to   { width: 100%; }
+  }
+  @keyframes launchScanline {
+    0%   { top: -10%; }
+    100% { top: 110%; }
+  }
+  @keyframes launchExitUp {
+    0%   { opacity:1; transform: translateY(0) scale(1); }
+    30%  { opacity:1; transform: translateY(0) scale(1.03); }
+    100% { opacity:0; transform: translateY(-120vh) scale(0.9); }
+  }
+  @keyframes launchGameIn {
+    0%   { opacity:0; transform: scale(1.08); }
+    100% { opacity:1; transform: scale(1); }
+  }
+  @keyframes launchBubble {
+    0%   { transform: translateY(0) scale(1); opacity:0.7; }
+    100% { transform: translateY(-110vh) scale(0.5); opacity:0; }
+  }
+  @keyframes launchGlow {
+    0%,100% { box-shadow: 0 0 30px rgba(0,160,255,0.3), 0 0 60px rgba(0,100,200,0.15); }
+    50%      { box-shadow: 0 0 50px rgba(0,200,255,0.6), 0 0 100px rgba(0,150,255,0.3); }
+  }
+  @keyframes launchLogoReveal {
+    0%   { clip-path: inset(0 100% 0 0); opacity:0; }
+    60%  { clip-path: inset(0 0% 0 0);   opacity:1; }
+    100% { clip-path: inset(0 0% 0 0);   opacity:1; }
+  }
+  @keyframes launchTitleShine {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  #launcher {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden;
+    background: #000;
+    transition: none;
+  }
+  #launcher.exit {
+    animation: launchExitUp 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+
+  /* Deep space background */
+  #launcher-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 40%, #0a2060 0%, #020c2a 50%, #000510 100%);
+  }
+
+  /* Stars canvas */
+  #launcher-stars {
+    position: absolute; inset: 0;
+    pointer-events: none;
+  }
+
+  /* Scanline shimmer */
+  #launcher-scanline {
+    position: absolute; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(100,200,255,0.15), transparent);
+    animation: launchScanline 3s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Horizontal glow lines */
+  #launcher-hlines {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 3px,
+      rgba(0,80,180,0.04) 3px, rgba(0,80,180,0.04) 4px
+    );
+  }
+
+  /* Floating bubbles */
+  .l-bubble {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(150,220,255,0.6), rgba(0,100,255,0.1));
+    border: 1px solid rgba(100,200,255,0.3);
+    animation: launchBubble linear infinite;
+    pointer-events: none;
+  }
+
+  /* Main logo area */
+  #launcher-logo {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    animation: launchFloat 4s ease-in-out infinite;
+  }
+
+  #launcher-fish-icon {
+    font-size: 88px; line-height: 1;
+    filter: drop-shadow(0 0 20px rgba(0,180,255,0.8)) drop-shadow(0 0 40px rgba(0,100,255,0.4));
+    margin-bottom: 12px;
+  }
+
+  #launcher-title {
+    font-family: 'Georgia', serif;
+    font-size: 38px; font-weight: bold;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #4af, #fff 40%, #4af 60%, #fff 80%, #4af);
+    background-size: 200% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: launchTitleShine 3s linear infinite;
+    text-shadow: none;
+    white-space: nowrap;
+  }
+
+  #launcher-subtitle {
+    color: rgba(120,200,255,0.7);
+    font-size: 13px; letter-spacing: 5px;
+    text-transform: uppercase; margin-top: 6px;
+    animation: launchFadeIn 1s ease 0.5s both;
+  }
+
+  /* Glow ring around logo */
+  #launcher-ring {
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,180,255,0.2);
+    animation: launchGlow 2.5s ease-in-out infinite;
+    pointer-events: none;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+  }
+  #launcher-ring::after {
+    content: '';
+    position: absolute; inset: -15px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,120,200,0.12);
+  }
+
+  /* Stats preview */
+  #launcher-stats {
+    position: relative; z-index: 2;
+    display: flex; gap: 16px; margin-top: 28px;
+    animation: launchFadeIn 0.8s ease 0.8s both;
+  }
+  .l-stat {
+    background: rgba(0,20,60,0.7);
+    border: 1px solid rgba(0,150,255,0.25);
+    border-radius: 14px; padding: 8px 16px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+  }
+  .l-stat-val { color: #fff; font-size: 18px; font-weight: bold; display: block; }
+  .l-stat-lbl { color: rgba(100,180,255,0.7); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* Loading bar */
+  #launcher-bar-wrap {
+    position: relative; z-index: 2;
+    width: 240px; margin-top: 36px;
+    animation: launchFadeIn 0.8s ease 1s both;
+  }
+  #launcher-bar-track {
+    height: 3px; width: 100%;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px; overflow: hidden;
+    position: relative;
+  }
+  #launcher-bar-fill {
+    height: 100%; width: 0%; border-radius: 3px;
+    background: linear-gradient(90deg, #0af, #08f, #0af);
+    background-size: 200% 100%;
+    box-shadow: 0 0 8px rgba(0,180,255,0.8);
+    transition: width 0.1s linear;
+  }
+  #launcher-bar-glow {
+    position: absolute; top: -4px; bottom: -4px;
+    width: 20px; background: rgba(0,200,255,0.4);
+    filter: blur(4px); border-radius: 4px;
+    left: 0%; transition: left 0.1s linear;
+  }
+  #launcher-bar-label {
+    display: flex; justify-content: space-between;
+    margin-top: 8px;
+    color: rgba(100,180,255,0.55); font-size: 10px; letter-spacing: 1px;
+  }
+
+  /* Play button */
+  #launcher-btn {
+    position: relative; z-index: 2;
+    margin-top: 28px;
+    padding: 0 40px; height: 56px;
+    border-radius: 28px;
+    border: 2px solid rgba(0,180,255,0.7);
+    background: linear-gradient(135deg, rgba(0,60,180,0.8), rgba(0,120,255,0.5));
+    color: #fff; font-size: 17px; font-weight: bold;
+    letter-spacing: 2px; cursor: pointer;
+    box-shadow: 0 0 24px rgba(0,150,255,0.4), inset 0 0 20px rgba(0,100,255,0.1);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s, box-shadow 0.12s;
+    overflow: hidden;
+    animation: launchFadeIn 0.8s ease 1.4s both, launchPulse 2s ease 2.2s infinite;
+    display: none; /* shown after load */
+  }
+  #launcher-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+    border-radius: 28px;
+  }
+  #launcher-btn:active {
+    transform: scale(0.94);
+    box-shadow: 0 0 40px rgba(0,200,255,0.7), inset 0 0 30px rgba(0,150,255,0.2);
+  }
+
+  /* Ripple on button tap */
+  .l-ripple {
+    position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%,-50%) scale(0);
+    animation: launchRipple 0.6s ease-out forwards;
+    pointer-events: none;
+    width: 60px; height: 60px;
+  }
+
+  #launcher-version {
+    position: absolute; bottom: 24px;
+    color: rgba(80,140,200,0.4); font-size: 10px; letter-spacing: 2px;
+    z-index: 2; animation: launchFadeIn 1s ease 1.6s both;
+  }
+
+  /* Game canvas fade-in after launch */
+  #canvas, #ui {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  #canvas.visible, #ui.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ============ LAUNCHER SCREEN ============ -->
+<div id="launcher">
+  <div id="launcher-bg"></div>
+  <canvas id="launcher-stars"></canvas>
+  <div id="launcher-hlines"></div>
+  <div id="launcher-scanline"></div>
+
+  <div id="launcher-logo">
+    <div id="launcher-ring"></div>
+    <div id="launcher-fish-icon">🎣</div>
+    <div id="launcher-title">3D РЫБАЛКА</div>
+    <div id="launcher-subtitle">Ночная смена · Сезон 1</div>
+  </div>
+
+  <div id="launcher-stats">
+    <div class="l-stat">
+      <span class="l-stat-val" id="ls-coins">—</span>
+      <span class="l-stat-lbl">Монеты</span>
+    </div>
+    <div class="l-stat">
+      <span class="l-stat-val" id="ls-caught">—</span>
+      <span class="l-stat-lbl">Улов</span>
+    </div>
+    <div class="l-stat">
+      <span class="l-stat-val" id="ls-best">—</span>
+      <span class="l-stat-lbl">Рекорд</span>
+    </div>
+  </div>
+
+  <div id="launcher-bar-wrap">
+    <div id="launcher-bar-track">
+      <div id="launcher-bar-fill"></div>
+      <div id="launcher-bar-glow"></div>
+    </div>
+    <div id="launcher-bar-label">
+      <span id="launcher-bar-text">Загрузка сцены...</span>
+      <span id="launcher-bar-pct">0%</span>
+    </div>
+  </div>
+
+  <button id="launcher-btn">▶ ИГРАТЬ</button>
+  <div id="launcher-version">v1.0 · 3D ENGINE</div>
+</div>
+
+<!-- Floating bubbles (added by JS) -->
+
+<canvas id="canvas"></canvas>
+<div id="ui">
+  <div id="topbar">
+    <div class="stat-box">💰 <span id="coins-val">0</span></div>
+    <div class="stat-box">🐟 <span id="count-val">0</span> пойман.</div>
+    <div class="stat-box">🏆 <span id="best-val">—</span></div>
+  </div>
+
+  <div id="weather-badge" id="weather">🌤 Ветер 3 м/с</div>
+
+  <div id="message">
+    <h2>🎣 Забрось удочку!</h2>
+    <p>Нажми кнопку, чтобы начать</p>
+  </div>
+
+  <div id="ripple"></div>
+  <div id="catch-popup">
+    <canvas id="fish-preview-canvas" width="200" height="130"></canvas>
+    <h3 id="popup-name">Карась</h3>
+    <div class="rarity-bar" id="popup-stars"></div>
+    <div class="fish-weight" id="popup-weight">0.5 кг</div>
+    <div class="coins" id="popup-coins">+10 монет</div>
+  </div>
+
+  <div id="fish-log"></div>
+
+  <div id="reel-hint">⚡ КЛЮЁТ! Подсекай! ⚡</div>
+
+  <div id="bottombar">
+    <div id="bobber-bar-wrap"><div id="bobber-bar" style="width:100%"></div></div>
+    <div id="depth-indicator" id="depth-txt">Глубина: —</div>
+    <button id="cast-btn">🎣</button>
+    <div id="btn-label">Забросить</div>
+  </div>
+
+  <button id="shop-btn">🍟</button>
+  <div id="equipped-badge">🎣 Бамбук</div>
+
+  <!-- Camera controls -->
+  <div id="cam-label">3РД ВИД</div>
+  <button id="cam-btn" title="Сменить камеру">👁️</button>
+</div>
+
+<!-- Camera transition flash -->
+<div id="cam-flash"></div>
+
+<!-- FPS crosshair -->
+<div id="crosshair"><div class="ch-dot"></div></div>
+
+<!-- FPS bottom HUD -->
+<div id="fps-hud">
+  <div class="fps-indicator">⬅ Свайп для поворота</div>
+  <div class="fps-indicator" id="fps-depth-txt">Глубина: —</div>
+</div>
+
+<!-- SHOP OVERLAY -->
+<div id="shop-overlay">
+  <div id="shop-header">
+    <div id="shop-title">🍟 Happy Meal</div>
+    <button id="shop-close">✕ Закрыть</button>
+  </div>
+
+  <div id="meal-canvas-wrap">
+    <canvas id="meal-canvas"></canvas>
+    <div id="meal-spin-hint">👆 Потяни для вращения</div>
+    <div id="rod-result">
+      <div id="rod-result-emoji">🎣</div>
+      <div id="rod-result-name">Удочка</div>
+      <div id="rod-result-stars">⭐⭐⭐</div>
+      <div id="rod-result-desc">Описание</div>
+      <button id="rod-result-close">Отлично!</button>
+    </div>
+  </div>
+
+  <div id="meal-price-tag">💰 Цена: <span id="meal-price-display">150</span> монет</div>
+  <button id="open-meal-btn">🍔 Открыть Happy Meal!</button>
+
+  <div style="color:rgba(150,200,255,0.6);font-size:11px;margin:4px 0 8px;text-align:center;">
+    Выпадает случайная удочка · Редкие — лучше клюёт!
+  </div>
+
+  <div style="color:rgba(200,200,255,0.7);font-size:12px;padding:6px 18px 4px;">📦 Коллекция удочек:</div>
+  <div id="rod-list"></div>
+
+  <div style="height:20px;"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- ============ LAUNCHER JS ============ -->
+<script>
+(function() {
+  const launcher   = document.getElementById('launcher');
+  const lStars     = document.getElementById('launcher-stars');
+  const lBarFill   = document.getElementById('launcher-bar-fill');
+  const lBarGlow   = document.getElementById('launcher-bar-glow');
+  const lBarText   = document.getElementById('launcher-bar-text');
+  const lBarPct    = document.getElementById('launcher-bar-pct');
+  const lBtn       = document.getElementById('launcher-btn');
+  const lCoins     = document.getElementById('ls-coins');
+  const lCaught    = document.getElementById('ls-caught');
+  const lBest      = document.getElementById('ls-best');
+
+  // ── Stars canvas ──
+  const sc = lStars;
+  function resizeSC() { sc.width = window.innerWidth; sc.height = window.innerHeight; drawStars(); }
+  const stars = Array.from({length:260}, () => ({
+    x: Math.random(), y: Math.random(),
+    r: 0.4 + Math.random()*1.4,
+    t: Math.random()*Math.PI*2,
+    sp: 0.005 + Math.random()*0.02,
+    col: Math.random()>0.85 ? '#aaddff' : '#ffffff'
+  }));
+  function drawStars() {
+    const ctx = sc.getContext('2d');
+    ctx.clearRect(0,0,sc.width,sc.height);
+    stars.forEach(s => {
+      const a = 0.3 + Math.abs(Math.sin(s.t))*0.7;
+      ctx.beginPath();
+      ctx.arc(s.x*sc.width, s.y*sc.height, s.r, 0, Math.PI*2);
+      ctx.fillStyle = s.col;
+      ctx.globalAlpha = a;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+  let starsRAF;
+  function animateStars() {
+    starsRAF = requestAnimationFrame(animateStars);
+    stars.forEach(s => { s.t += s.sp; });
+    drawStars();
+  }
+  window.addEventListener('resize', resizeSC);
+  resizeSC(); animateStars();
+
+  // ── Floating bubbles ──
+  for(let i=0;i<14;i++){
+    const b = document.createElement('div');
+    b.className = 'l-bubble';
+    const sz = 8 + Math.random()*28;
+    const dur = 6 + Math.random()*10;
+    const delay = Math.random()*8;
+    b.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${5+Math.random()*90}%;
+      bottom:-${sz}px;
+      animation-duration:${dur}s;
+      animation-delay:-${delay}s;
+    `;
+    launcher.appendChild(b);
+  }
+
+  // ── Show saved stats preview ──
+  try {
+    const saved = JSON.parse(localStorage.getItem('fishing3d_save') || '{}');
+    lCoins.textContent  = saved.coins  ?? '0';
+    lCaught.textContent = saved.caught ?? '0';
+    lBest.textContent   = saved.bestFish ? saved.bestFish.weight.toFixed(1)+'кг' : '—';
+  } catch(e) {
+    lCoins.textContent = '0'; lCaught.textContent = '0'; lBest.textContent = '—';
+  }
+
+  // ── Fake loading bar with real milestones ──
+  const steps = [
+    { pct:8,  label:'Инициализация движка...' },
+    { pct:18, label:'Загрузка воды...' },
+    { pct:32, label:'Рендер берега...' },
+    { pct:47, label:'Деревья и камни...' },
+    { pct:58, label:'Рыбы и водоросли...' },
+    { pct:70, label:'Звёздное небо...' },
+    { pct:80, label:'Загрузка магазина...' },
+    { pct:90, label:'Сохранение загружено...' },
+    { pct:100,label:'Готово!' },
+  ];
+  let currentPct = 0;
+  let stepIdx = 0;
+  let loadDone = false;
+
+  function advanceBar() {
+    if(stepIdx >= steps.length) { onLoadComplete(); return; }
+    const target = steps[stepIdx].pct;
+    lBarText.textContent = steps[stepIdx].label;
+    stepIdx++;
+    const dur = 180 + Math.random()*320;
+    const startPct = currentPct;
+    const startTime = performance.now();
+    function tick(now) {
+      const t = Math.min((now-startTime)/dur, 1);
+      const ease = 1 - Math.pow(1-t,3);
+      currentPct = startPct + (target-startPct)*ease;
+      lBarFill.style.width = currentPct+'%';
+      lBarGlow.style.left  = (currentPct-2)+'%';
+      lBarPct.textContent  = Math.round(currentPct)+'%';
+      if(t < 1) requestAnimationFrame(tick);
+      else setTimeout(advanceBar, 80 + Math.random()*120);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function onLoadComplete() {
+    loadDone = true;
+    lBarText.textContent = '✓ Мир загружен';
+    lBarFill.style.background = 'linear-gradient(90deg,#0f8,#0af,#0f8)';
+    lBarFill.style.boxShadow  = '0 0 14px rgba(0,255,150,0.9)';
+    lBtn.style.display = 'flex';
+    lBtn.style.alignItems = 'center';
+    lBtn.style.justifyContent = 'center';
+  }
+
+  // Start bar after short delay
+  setTimeout(advanceBar, 400);
+
+  // ── Play button ──
+  lBtn.addEventListener('click', launchGame);
+  lBtn.addEventListener('touchstart', e => { e.preventDefault(); createRipple(e); launchGame(); });
+  lBtn.addEventListener('mousedown', e => createRipple(e));
+
+  function createRipple(e) {
+    const rect = lBtn.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    const rip = document.createElement('div');
+    rip.className = 'l-ripple';
+    rip.style.left = cx+'px'; rip.style.top = cy+'px';
+    lBtn.appendChild(rip);
+    setTimeout(() => rip.remove(), 620);
+  }
+
+  let launched = false;
+  function launchGame() {
+    if(launched || !loadDone) return;
+    launched = true;
+    cancelAnimationFrame(starsRAF);
+    launcher.classList.add('exit');
+    setTimeout(() => {
+      launcher.style.display = 'none';
+      document.getElementById('canvas').classList.add('visible');
+      document.getElementById('ui').classList.add('visible');
+    }, 860);
+  }
+})();
+</script>
+
+<script>
+// =================== THREE.JS SCENE ===================
+const canvas = document.getElementById('canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.9;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a1628, 0.012);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 500);
+camera.position.set(0, 8, 18);
+camera.lookAt(0, 0, 0);
+
+// Sky gradient background
+renderer.setClearColor(0x0a1628);
+
+// ---- LIGHTS ----
+const ambLight = new THREE.AmbientLight(0x223355, 0.8);
+scene.add(ambLight);
+
+const sunLight = new THREE.DirectionalLight(0xffddaa, 1.2);
+sunLight.position.set(30, 40, -20);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.set(1024, 1024);
+sunLight.shadow.camera.near = 1;
+sunLight.shadow.camera.far = 200;
+sunLight.shadow.camera.left = -50;
+sunLight.shadow.camera.right = 50;
+sunLight.shadow.camera.top = 50;
+sunLight.shadow.camera.bottom = -50;
+scene.add(sunLight);
+
+const moonLight = new THREE.PointLight(0x4488ff, 0.5, 60);
+moonLight.position.set(-20, 15, -10);
+scene.add(moonLight);
+
+const rimLight = new THREE.DirectionalLight(0x2244aa, 0.3);
+rimLight.position.set(-10, 5, 15);
+scene.add(rimLight);
+
+// =================== HYPER-DETAILED MAP ===================
+
+// ---- SKY GRADIENT (fake horizon via large sphere) ----
+const skyGeo = new THREE.SphereGeometry(280, 32, 16);
+const skyMat = new THREE.MeshBasicMaterial({ side: THREE.BackSide });
+// Canvas sky texture
+const skyCanv = document.createElement('canvas');
+skyCanv.width = 2; skyCanv.height = 256;
+const skyCtx = skyCanv.getContext('2d');
+const skyGrd = skyCtx.createLinearGradient(0, 0, 0, 256);
+skyGrd.addColorStop(0,    '#020818');
+skyGrd.addColorStop(0.35, '#061530');
+skyGrd.addColorStop(0.65, '#0a2060');
+skyGrd.addColorStop(0.85, '#1a3a7a');
+skyGrd.addColorStop(1,    '#2a5090');
+skyCtx.fillStyle = skyGrd;
+skyCtx.fillRect(0, 0, 2, 256);
+skyMat.map = new THREE.CanvasTexture(skyCanv);
+const skyDome = new THREE.Mesh(skyGeo, skyMat);
+scene.add(skyDome);
+
+// ---- MOON + GLOW ----
+const moonMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(4, 20, 20),
+  new THREE.MeshBasicMaterial({ color: 0xfffde8 })
+);
+moonMesh.position.set(-55, 65, -120);
+scene.add(moonMesh);
+// Halo rings
+[6, 8, 11].forEach((r, i) => {
+  const halo = new THREE.Mesh(
+    new THREE.SphereGeometry(r, 20, 20),
+    new THREE.MeshBasicMaterial({ color: 0xfff8cc, transparent: true, opacity: 0.06 - i*0.015, side: THREE.BackSide })
+  );
+  moonMesh.add(halo);
+});
+// Moon craters
+[[-1.2,0.8,3.5],[1.5,-1.0,3.4],[-0.4,-1.8,3.3],[2.0,1.5,3.2],[-2.2,-0.5,3.0]].forEach(([x,y,z])=>{
+  const cr = new THREE.Mesh(new THREE.SphereGeometry(0.4,8,8),
+    new THREE.MeshBasicMaterial({color:0xddcc99}));
+  cr.position.set(x,y,z);
+  moonMesh.add(cr);
+});
+
+// ---- STARS (dense field) ----
+const starGeo = new THREE.BufferGeometry();
+const starCount = 600;
+const starPos = new Float32Array(starCount * 3);
+const starSizes = new Float32Array(starCount);
+for(let i = 0; i < starCount; i++) {
+  const phi = Math.random() * Math.PI;
+  const theta = Math.random() * Math.PI * 2;
+  starPos[i*3]   = 260 * Math.sin(phi) * Math.cos(theta);
+  starPos[i*3+1] = 260 * Math.abs(Math.cos(phi)) + 10;
+  starPos[i*3+2] = 260 * Math.sin(phi) * Math.sin(theta);
+  starSizes[i] = 0.3 + Math.random() * 0.9;
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+scene.add(new THREE.Points(starGeo,
+  new THREE.PointsMaterial({ color: 0xffffff, size: 0.55, transparent: true, opacity: 0.85 })));
+
+// Milky Way band (faint point cloud)
+const mwGeo = new THREE.BufferGeometry();
+const mwPos = new Float32Array(800 * 3);
+for(let i=0;i<800;i++){
+  const angle = (i/800)*Math.PI*2;
+  const spread = (Math.random()-0.5)*30;
+  mwPos[i*3]   = Math.cos(angle)*200 + spread;
+  mwPos[i*3+1] = 80 + spread*0.5 + Math.sin(angle*3)*20;
+  mwPos[i*3+2] = Math.sin(angle)*200 - 80 + spread;
+}
+mwGeo.setAttribute('position', new THREE.BufferAttribute(mwPos,3));
+scene.add(new THREE.Points(mwGeo,
+  new THREE.PointsMaterial({color:0xaabbff, size:0.22, transparent:true, opacity:0.18})));
+
+// ---- WATER (layered for depth) ----
+const waterGeo = new THREE.PlaneGeometry(160, 160, 80, 80);
+const waterMat = new THREE.MeshStandardMaterial({
+  color: 0x003399, roughness: 0.05, metalness: 0.55,
+  transparent: true, opacity: 0.82,
+});
+const water = new THREE.Mesh(waterGeo, waterMat);
+water.rotation.x = -Math.PI/2;
+water.receiveShadow = true;
+scene.add(water);
+
+// Deep water layer (dark blue beneath)
+const deepMat = new THREE.MeshStandardMaterial({ color: 0x001133, roughness: 0.9 });
+const deepWater = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), deepMat);
+deepWater.rotation.x = -Math.PI/2;
+deepWater.position.y = -0.1;
+scene.add(deepWater);
+
+// Surface shimmer
+const shimmerGeo = new THREE.PlaneGeometry(160, 160, 48, 48);
+const shimmerMat = new THREE.MeshStandardMaterial({
+  color: 0x4488ff, roughness: 0.0, metalness: 1.0, transparent: true, opacity: 0.12
+});
+const shimmer = new THREE.Mesh(shimmerGeo, shimmerMat);
+shimmer.rotation.x = -Math.PI/2;
+shimmer.position.y = 0.03;
+scene.add(shimmer);
+
+// Moonlight reflection streak
+const reflGeo = new THREE.PlaneGeometry(1.5, 30);
+const reflMat = new THREE.MeshBasicMaterial({ color: 0xfff8cc, transparent: true, opacity: 0.10 });
+const refl = new THREE.Mesh(reflGeo, reflMat);
+refl.rotation.x = -Math.PI/2;
+refl.position.set(-8, 0.05, -15);
+scene.add(refl);
+
+// ---- UNDERWATER FLOOR (sandy, with rocks & seaweed) ----
+const floorGeo = new THREE.PlaneGeometry(160, 160, 32, 32);
+// Sandy floor texture via canvas
+const floorCanv = document.createElement('canvas');
+floorCanv.width = 512; floorCanv.height = 512;
+const floorCtx = floorCanv.getContext('2d');
+floorCtx.fillStyle = '#1a2a10';
+floorCtx.fillRect(0,0,512,512);
+for(let i=0;i<2000;i++){
+  const x=Math.random()*512, y=Math.random()*512;
+  floorCtx.fillStyle=`rgba(${30+Math.random()*30},${50+Math.random()*30},${10+Math.random()*20},0.6)`;
+  floorCtx.fillRect(x,y,2+Math.random()*3,2+Math.random()*3);
+}
+const floorMat = new THREE.MeshStandardMaterial({
+  map: new THREE.CanvasTexture(floorCanv), roughness: 0.95
+});
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI/2;
+floor.position.y = -9;
+scene.add(floor);
+
+// Underwater rocks (scattered)
+for(let i=0;i<18;i++){
+  const s = 0.3 + Math.random()*0.9;
+  const ur = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0),
+    new THREE.MeshStandardMaterial({ color: 0x334455+(Math.random()*0x111111|0), roughness: 0.9 }));
+  ur.position.set((Math.random()-0.5)*25, -8.4, (Math.random()-0.5)*25);
+  ur.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+  scene.add(ur);
+}
+
+// Seaweed
+function makeSeaweed(x, z) {
+  const g = new THREE.Group();
+  const segments = 5 + Math.floor(Math.random()*3);
+  let cy = -8.5;
+  for(let i=0;i<segments;i++){
+    const seg = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.03, 0.055, 0.55, 5),
+      new THREE.MeshStandardMaterial({ color: 0x226622+(Math.random()*0x113300|0), roughness: 0.9 })
+    );
+    seg.position.set(Math.sin(i*1.2)*0.15, cy + 0.27, Math.cos(i*0.9)*0.15);
+    seg.rotation.set(Math.sin(i)*0.25, 0, Math.cos(i)*0.2);
+    cy += 0.5;
+    g.add(seg);
+  }
+  g.position.set(x, 0, z);
+  g.userData.swayPhase = Math.random()*Math.PI*2;
+  scene.add(g);
+  return g;
+}
+const seaweeds = [];
+for(let i=0;i<20;i++){
+  seaweeds.push(makeSeaweed((Math.random()-0.5)*22, (Math.random()-0.5)*22));
+}
+
+// ---- SHORE (grassy bank) with terrain bumps ----
+// Shore uses canvas for grass texture
+const shoreCanv = document.createElement('canvas');
+shoreCanv.width = 512; shoreCanv.height = 256;
+const shoreCtx = shoreCanv.getContext('2d');
+const shoreGrd2 = shoreCtx.createLinearGradient(0,0,0,256);
+shoreGrd2.addColorStop(0,'#2d5a1b');
+shoreGrd2.addColorStop(0.4,'#3a6e22');
+shoreGrd2.addColorStop(1,'#1a3a0a');
+shoreCtx.fillStyle = shoreGrd2;
+shoreCtx.fillRect(0,0,512,256);
+// Grass blades
+for(let i=0;i<3000;i++){
+  shoreCtx.fillStyle=`rgba(${20+Math.random()*40},${80+Math.random()*60},${10+Math.random()*20},0.4)`;
+  const gx=Math.random()*512, gy=Math.random()*256;
+  shoreCtx.fillRect(gx, gy, 1, 3+Math.random()*5);
+}
+const shoreMat = new THREE.MeshStandardMaterial({
+  map: new THREE.CanvasTexture(shoreCanv), roughness: 1.0
+});
+
+// Shore plane with slight bump
+const shoreGeo = new THREE.PlaneGeometry(50, 22, 20, 10);
+const shorePos = shoreGeo.attributes.position;
+for(let i=0;i<shorePos.count;i++){
+  shorePos.setZ(i, (Math.random()-0.5)*0.22);
+}
+shoreGeo.computeVertexNormals();
+const shore = new THREE.Mesh(shoreGeo, shoreMat);
+shore.rotation.x = -Math.PI/2;
+shore.position.set(0, 0.05, 22);
+shore.receiveShadow = true;
+scene.add(shore);
+
+// Shore edge water-meet strip (sand/mud)
+const mudMat = new THREE.MeshStandardMaterial({ color: 0x3a2a10, roughness: 0.98 });
+const mudStrip = new THREE.Mesh(new THREE.PlaneGeometry(50, 3), mudMat);
+mudStrip.rotation.x = -Math.PI/2;
+mudStrip.position.set(0, 0.02, 11.5);
+scene.add(mudStrip);
+
+// Pebbles on shoreline
+for(let i=0;i<40;i++){
+  const ps = 0.08 + Math.random()*0.22;
+  const p = new THREE.Mesh(new THREE.SphereGeometry(ps, 6, 5),
+    new THREE.MeshStandardMaterial({ color: 0x778899+(Math.random()*0x111111|0), roughness: 0.7 }));
+  p.scale.y = 0.5;
+  p.position.set((Math.random()-0.5)*20, 0.04, 10.5 + Math.random()*2.5);
+  p.rotation.y = Math.random()*Math.PI;
+  scene.add(p);
+}
+
+// ---- DOCK (detailed wooden) ----
+const woodMat  = new THREE.MeshStandardMaterial({ color: 0x7a5530, roughness: 0.9 });
+const darkWood = new THREE.MeshStandardMaterial({ color: 0x4a3018, roughness: 0.95 });
+const metalBolt= new THREE.MeshStandardMaterial({ color: 0x889988, metalness: 0.7, roughness: 0.4 });
+
+// Dock frame base
+const dockBase = new THREE.Mesh(new THREE.BoxGeometry(7, 0.18, 11), darkWood);
+dockBase.position.set(0, 0.28, 14.5);
+dockBase.castShadow = true;
+dockBase.receiveShadow = true;
+scene.add(dockBase);
+
+// Individual planks (crosswise)
+for(let i=0;i<14;i++){
+  const plankW = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.12, 0.55),
+    new THREE.MeshStandardMaterial({ color: 0x8a6238+(Math.random()*0x111100|0), roughness: 0.95 }));
+  plankW.position.set(0, 0.40, 9.8 + i*0.76);
+  plankW.castShadow = true;
+  scene.add(plankW);
+  // Gap shadow
+  const gap = new THREE.Mesh(new THREE.BoxGeometry(6.8, 0.04, 0.12),
+    new THREE.MeshStandardMaterial({ color: 0x111111 }));
+  gap.position.set(0, 0.37, 9.8 + i*0.76 + 0.35);
+  scene.add(gap);
+}
+
+// Dock support beams (pilings)
+const pilingPositions = [
+  [-2.8,13],[-2.8,16],[-2.8,19],[2.8,13],[2.8,16],[2.8,19],[0,10.5]
+];
+pilingPositions.forEach(([px,pz])=>{
+  // Main piling
+  const piling = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 6, 8), darkWood);
+  piling.position.set(px, -2.5, pz);
+  piling.castShadow = true;
+  scene.add(piling);
+  // Waterline ring (algae)
+  const algae = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.21, 0.3, 8),
+    new THREE.MeshStandardMaterial({ color: 0x225522, roughness: 1.0 }));
+  algae.position.set(px, -0.15, pz);
+  scene.add(algae);
+  // Bolt
+  const bolt = new THREE.Mesh(new THREE.SphereGeometry(0.05,6,6), metalBolt);
+  bolt.position.set(px + 0.2, 0.28, pz);
+  scene.add(bolt);
+});
+
+// Dock side rails
+[-3.4, 3.4].forEach(side => {
+  // Top rail
+  const rail = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 11.5), woodMat);
+  rail.position.set(side, 0.95, 14.5);
+  scene.add(rail);
+  // Rail posts
+  for(let p=0;p<6;p++){
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.65,0.1), darkWood);
+    post.position.set(side, 0.65, 10.5 + p*2.0);
+    scene.add(post);
+  }
+});
+
+// Mooring cleats (metal hooks on dock edge)
+[-2, 2].forEach(cx => {
+  const cleat = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.12, 0.12), metalBolt);
+  cleat.position.set(cx, 0.5, 9.8);
+  scene.add(cleat);
+});
+
+// Fishing bucket on dock
+const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.14, 0.35, 10),
+  new THREE.MeshStandardMaterial({ color: 0x2244aa, roughness: 0.5, metalness: 0.3 }));
+bucket.position.set(1.8, 0.58, 12.5);
+scene.add(bucket);
+// Water in bucket
+const bucketWater = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.05, 10),
+  new THREE.MeshStandardMaterial({ color: 0x2255cc, transparent: true, opacity: 0.7 }));
+bucketWater.position.set(1.8, 0.79, 12.5);
+scene.add(bucketWater);
+
+// Tackle box
+const tackleBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.22, 0.32),
+  new THREE.MeshStandardMaterial({ color: 0x448844, roughness: 0.5 }));
+tackleBox.position.set(-2.0, 0.53, 11.5);
+scene.add(tackleBox);
+const tackleHandle = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.02, 5, 12, Math.PI),
+  new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.7 }));
+tackleHandle.position.set(-2.0, 0.68, 11.5);
+tackleHandle.rotation.x = Math.PI/2;
+scene.add(tackleHandle);
+
+// ---- FISHERMAN (detailed) ----
+const fishermanGroup = new THREE.Group();
+
+// Legs
+[-0.18, 0.18].forEach(lx => {
+  const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.11, 1.0, 8),
+    new THREE.MeshStandardMaterial({ color: 0x223366, roughness: 0.8 }));
+  leg.position.set(lx, 0.5, 0);
+  fishermanGroup.add(leg);
+  // Boot
+  const boot = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 6),
+    new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 }));
+  boot.scale.set(1.0, 0.6, 1.4);
+  boot.position.set(lx, 0.08, 0.08);
+  fishermanGroup.add(boot);
+});
+
+// Body (jacket)
+const jacket = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.30, 1.1, 10),
+  new THREE.MeshStandardMaterial({ color: 0x2a4a22, roughness: 0.85 }));
+jacket.position.y = 1.55;
+fishermanGroup.add(jacket);
+
+// Jacket pockets
+[-0.28, 0.28].forEach(px => {
+  const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.15, 0.05),
+    new THREE.MeshStandardMaterial({ color: 0x1a3a12, roughness: 0.9 }));
+  pocket.position.set(px, 1.4, 0.32);
+  fishermanGroup.add(pocket);
+});
+
+// Arms
+[[-0.42, 0.3], [0.42, -0.2]].forEach(([ax, rot]) => {
+  const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.85, 7),
+    new THREE.MeshStandardMaterial({ color: 0x2a4a22, roughness: 0.85 }));
+  arm.position.set(ax, 1.7, 0);
+  arm.rotation.z = rot;
+  fishermanGroup.add(arm);
+  // Hand
+  const hand = new THREE.Mesh(new THREE.SphereGeometry(0.1, 7, 6),
+    new THREE.MeshStandardMaterial({ color: 0xddaa88, roughness: 0.8 }));
+  hand.position.set(ax * 1.4, 1.35, 0);
+  fishermanGroup.add(hand);
+});
+
+// Neck
+const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.22, 7),
+  new THREE.MeshStandardMaterial({ color: 0xddaa88, roughness: 0.8 }));
+neck.position.y = 2.16;
+fishermanGroup.add(neck);
+
+// Head
+const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 10),
+  new THREE.MeshStandardMaterial({ color: 0xddaa88, roughness: 0.75 }));
+head.position.y = 2.55;
+fishermanGroup.add(head);
+
+// Eyes
+[-0.11, 0.11].forEach(ex => {
+  const eye = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6),
+    new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3 }));
+  eye.position.set(ex, 2.62, 0.29);
+  fishermanGroup.add(eye);
+});
+
+// Hat (fishing hat with brim)
+const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.06, 12),
+  new THREE.MeshStandardMaterial({ color: 0x4a3010, roughness: 0.9 }));
+hatBrim.position.y = 2.84;
+fishermanGroup.add(hatBrim);
+const hatTop2 = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.35, 0.32, 10),
+  new THREE.MeshStandardMaterial({ color: 0x5a3818, roughness: 0.9 }));
+hatTop2.position.y = 3.02;
+fishermanGroup.add(hatTop2);
+// Hat band
+const hatBand = new THREE.Mesh(new THREE.CylinderGeometry(0.305, 0.305, 0.07, 10),
+  new THREE.MeshStandardMaterial({ color: 0x888844, roughness: 0.8 }));
+hatBand.position.y = 2.88;
+fishermanGroup.add(hatBand);
+// Hat lure (tiny lure on hat)
+const lureHat = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 6),
+  new THREE.MeshStandardMaterial({ color: 0xff4400, roughness: 0.4 }));
+lureHat.position.set(0.28, 2.98, 0);
+fishermanGroup.add(lureHat);
+
+// Fishing vest details (buttons)
+[2.1, 1.7, 1.4].forEach(by => {
+  const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.04, 6),
+    new THREE.MeshStandardMaterial({ color: 0x886644, roughness: 0.6 }));
+  btn.rotation.x = Math.PI/2;
+  btn.position.set(0, by, 0.33);
+  fishermanGroup.add(btn);
+});
+
+fishermanGroup.position.set(0, 0.4, 13);
+scene.add(fishermanGroup);
+
+// ---- FISHING ROD (on the fisherman) ----
+const rodGroup = new THREE.Group();
+// Rod sections
+[{r0:0.04,r1:0.03,h:2.2,y:1.1},{r0:0.03,r1:0.015,h:1.4,y:2.9}].forEach(s=>{
+  const seg = new THREE.Mesh(new THREE.CylinderGeometry(s.r1,s.r0,s.h,8),
+    new THREE.MeshStandardMaterial({ color: 0x5a3a10, roughness: 0.5, metalness: 0.1 }));
+  seg.position.y = s.y;
+  rodGroup.add(seg);
+});
+// Rod guides (3 small rings)
+[1.5, 2.2, 3.2].forEach((gy,i)=>{
+  const gRing = new THREE.Mesh(new THREE.TorusGeometry(0.04-i*0.008, 0.008, 5, 10),
+    new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8 }));
+  gRing.position.y = gy;
+  gRing.rotation.x = Math.PI/2;
+  rodGroup.add(gRing);
+});
+// Cork handle
+const corkHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.42, 8),
+  new THREE.MeshStandardMaterial({ color: 0xbb8855, roughness: 0.98 }));
+corkHandle.position.y = 0.21;
+rodGroup.add(corkHandle);
+// Small reel
+const smallReel = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.025, 6, 12),
+  new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0.8, roughness: 0.2 }));
+smallReel.position.set(0.06, 0.6, 0);
+smallReel.rotation.y = Math.PI/2;
+rodGroup.add(smallReel);
+
+rodGroup.rotation.z = -0.28;
+rodGroup.position.set(0.5, 2.15, 13);
+scene.add(rodGroup);
+
+// Fishing line
+let linePoints = [
+  new THREE.Vector3(2.2, 4.2, 13),
+  new THREE.Vector3(1.5, 2.5, 8),
+  new THREE.Vector3(0, 0.2, 0),
+];
+const lineMat = new THREE.LineBasicMaterial({ color: 0xcccccc, transparent: true, opacity: 0.55 });
+let lineGeo = new THREE.BufferGeometry().setFromPoints(linePoints);
+let fishingLine = new THREE.Line(lineGeo, lineMat);
+scene.add(fishingLine);
+
+// ---- BOBBER ----
+const bobberGroup = new THREE.Group();
+const bobberTop = new THREE.Mesh(
+  new THREE.SphereGeometry(0.18, 12, 12, 0, Math.PI*2, 0, Math.PI/2),
+  new THREE.MeshStandardMaterial({ color: 0xff1111, roughness: 0.2, metalness: 0.1 })
+);
+const bobberBot = new THREE.Mesh(
+  new THREE.SphereGeometry(0.18, 12, 12, 0, Math.PI*2, Math.PI/2, Math.PI/2),
+  new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 })
+);
+bobberGroup.add(bobberTop);
+bobberGroup.add(bobberBot);
+// Bobber ring (equator stripe)
+const bobberRing = new THREE.Mesh(
+  new THREE.TorusGeometry(0.18, 0.012, 6, 20),
+  new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5 })
+);
+bobberGroup.add(bobberRing);
+const bobberStick = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.018, 0.018, 0.32, 6),
+  new THREE.MeshStandardMaterial({ color: 0xff8800, roughness: 0.5 })
+);
+bobberStick.position.y = 0.24;
+bobberGroup.add(bobberStick);
+bobberGroup.position.set(0, 0.2, 0);
+bobberGroup.visible = false;
+scene.add(bobberGroup);
+
+// ---- TREES (detailed, varied) ----
+function makeTree(x, z, type) {
+  const h = 4 + Math.random()*3;
+  const tr = 0.18 + Math.random()*0.12;
+  // Trunk with texture variation
+  const trunkColor = 0x4a2a0a + (Math.random()*0x221100|0);
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(tr*0.7, tr, h, 9),
+    new THREE.MeshStandardMaterial({ color: trunkColor, roughness: 0.95 }));
+  trunk.position.set(x, h/2, z);
+  trunk.castShadow = true;
+  scene.add(trunk);
+  // Trunk roots
+  for(let r=0;r<3;r++){
+    const ra = (r/3)*Math.PI*2 + Math.random();
+    const root = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.1, 0.5, 5),
+      new THREE.MeshStandardMaterial({ color: trunkColor, roughness: 0.95 }));
+    root.position.set(x + Math.cos(ra)*tr*1.5, 0.2, z + Math.sin(ra)*tr*1.5);
+    root.rotation.z = Math.cos(ra)*0.4;
+    root.rotation.x = Math.sin(ra)*0.4;
+    scene.add(root);
+  }
+  // Foliage layers
+  const leafColors = [0x1a5c1a, 0x226622, 0x174d17, 0x1e6b1e, 0x285a28];
+  const lc = leafColors[Math.floor(Math.random()*leafColors.length)];
+  const lc2 = leafColors[Math.floor(Math.random()*leafColors.length)];
+  [
+    { r: 2.2, hh: 3.2, y: h + 0.8 },
+    { r: 1.7, hh: 2.8, y: h + 2.2 },
+    { r: 1.2, hh: 2.2, y: h + 3.4 },
+    { r: 0.7, hh: 1.5, y: h + 4.4 },
+  ].forEach((l, i) => {
+    const leaves = new THREE.Mesh(new THREE.ConeGeometry(l.r, l.hh, 9),
+      new THREE.MeshStandardMaterial({ color: i%2===0?lc:lc2, roughness: 0.85 }));
+    leaves.position.set(x, l.y, z);
+    leaves.rotation.y = Math.random()*Math.PI;
+    leaves.castShadow = true;
+    scene.add(leaves);
+  });
+}
+
+// Tree placement
+const treePositions = [
+  [-14,19],[-18,22],[-11,24],[-20,17],[-8,26],
+  [14,19],[18,22],[11,24],[20,17],[8,26],
+  [-6,20],[6,20],[0,28],[-22,26],[22,26],
+  [-16,14],[16,14],[-13,30],[13,30]
+];
+treePositions.forEach(([x,z]) => makeTree(x + (Math.random()-0.5)*2, z + (Math.random()-0.5)*2));
+
+// ---- ROCKS (varied, detailed) ----
+function makeRock(x, y, z, s, color) {
+  const g = new THREE.Group();
+  const baseColor = color || (0x445566 + (Math.random()*0x223322|0));
+  // Main boulder
+  const main = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 1),
+    new THREE.MeshStandardMaterial({ color: baseColor, roughness: 0.85 }));
+  main.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+  g.add(main);
+  // Smaller chips
+  for(let i=0;i<3;i++){
+    const chip = new THREE.Mesh(new THREE.DodecahedronGeometry(s*0.3+Math.random()*s*0.2, 0),
+      new THREE.MeshStandardMaterial({ color: baseColor-0x111111, roughness: 0.9 }));
+    chip.position.set((Math.random()-0.5)*s*1.2, -s*0.3, (Math.random()-0.5)*s*1.2);
+    chip.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+    g.add(chip);
+  }
+  // Moss patch
+  const moss = new THREE.Mesh(new THREE.SphereGeometry(s*0.55, 7, 5),
+    new THREE.MeshStandardMaterial({ color: 0x336622, roughness: 1.0 }));
+  moss.scale.set(1.0, 0.3, 0.9);
+  moss.position.y = s*0.6;
+  g.add(moss);
+  g.position.set(x, y, z);
+  g.castShadow = true;
+  scene.add(g);
+  return g;
+}
+
+// Shore rocks
+makeRock(-8, 0.3, 12, 0.9); makeRock(-9.5, 0.2, 13.8, 0.55); makeRock(-7.2, 0.6, 11, 0.4);
+makeRock(9, 0.35, 11, 1.1); makeRock(10.8, 0.25, 12.8, 0.65); makeRock(8, 0.4, 13, 0.35);
+makeRock(-16, 0.2, 5, 1.4, 0x556644); makeRock(-14, 0.3, 7, 0.7, 0x556644);
+makeRock(15, 0.3, 4, 1.0, 0x445566); makeRock(17, 0.2, 6, 0.6, 0x445566);
+makeRock(-5, 0.15, 8, 0.5); makeRock(5, 0.15, 8, 0.45);
+// Water rocks (half-submerged)
+makeRock(-12, -0.2, 3, 1.1, 0x445566); makeRock(11, -0.3, 2, 0.9, 0x445566);
+makeRock(-3, -0.4, -5, 0.7, 0x334455); makeRock(6, -0.3, -8, 1.2, 0x334455);
+
+// ---- CATTAILS / REEDS (dense, varied) ----
+function makeCattail(x, z, tall) {
+  const h = tall ? 2.8 + Math.random()*0.8 : 1.6 + Math.random()*0.6;
+  const stalk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.04, h, 5),
+    new THREE.MeshStandardMaterial({ color: 0x6a8a3a, roughness: 0.95 }));
+  stalk.position.set(x, h/2, z);
+  stalk.rotation.z = (Math.random()-0.5)*0.15;
+  scene.add(stalk);
+  // Cattail head
+  const head = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 0.55, 7),
+    new THREE.MeshStandardMaterial({ color: 0x5a2a0a, roughness: 0.98 }));
+  head.position.set(x + (Math.random()-0.5)*0.1, h - 0.12, z + (Math.random()-0.5)*0.1);
+  head.rotation.z = (Math.random()-0.5)*0.1;
+  scene.add(head);
+  // Leaf blades
+  for(let l=0;l<2;l++){
+    const leaf = new THREE.Mesh(new THREE.BoxGeometry(0.04, h*0.7, 0.015),
+      new THREE.MeshStandardMaterial({ color: 0x5a7a2a, roughness: 0.95 }));
+    leaf.position.set(x + (Math.random()-0.5)*0.3, h*0.35, z + (Math.random()-0.5)*0.3);
+    leaf.rotation.z = (Math.random()-0.5)*0.4;
+    scene.add(leaf);
+  }
+}
+for(let i=0;i<22;i++){
+  makeCattail(-11 + (Math.random()-0.5)*5, 6 + (Math.random()-0.5)*7, Math.random()>0.4);
+  makeCattail( 11 + (Math.random()-0.5)*5, 6 + (Math.random()-0.5)*7, Math.random()>0.4);
+}
+// Shallow water reeds near dock
+for(let i=0;i<8;i++){
+  makeCattail(-4 + Math.random()*8, 8 + Math.random()*3, false);
+}
+
+// ---- LILY PADS on water surface ----
+for(let i=0;i<12;i++){
+  const lpx = (Math.random()-0.5)*18;
+  const lpz = (Math.random()-0.5)*14 - 3;
+  const lpr = 0.35 + Math.random()*0.5;
+  const lp = new THREE.Mesh(
+    new THREE.CircleGeometry(lpr, 10, 0.2, Math.PI*1.9),
+    new THREE.MeshStandardMaterial({ color: 0x2a7a22, roughness: 0.85, side: THREE.DoubleSide })
+  );
+  lp.rotation.x = -Math.PI/2;
+  lp.position.set(lpx, 0.04, lpz);
+  scene.add(lp);
+  // Lily flower (some)
+  if(Math.random()>0.5){
+    const flower = new THREE.Mesh(new THREE.SphereGeometry(lpr*0.3, 8, 6),
+      new THREE.MeshStandardMaterial({ color: Math.random()>0.5?0xffffff:0xffaacc, roughness: 0.5 }));
+    flower.scale.y = 0.5;
+    flower.position.set(lpx, 0.1, lpz);
+    scene.add(flower);
+    // Petals
+    for(let p=0;p<5;p++){
+      const pa = (p/5)*Math.PI*2;
+      const petal = new THREE.Mesh(new THREE.SphereGeometry(lpr*0.22, 6, 5),
+        new THREE.MeshStandardMaterial({ color: 0xffeeff, roughness: 0.5, side:THREE.DoubleSide }));
+      petal.scale.set(1.0, 0.25, 0.5);
+      petal.position.set(lpx + Math.cos(pa)*lpr*0.3, 0.09, lpz + Math.sin(pa)*lpr*0.3);
+      petal.rotation.y = pa;
+      scene.add(petal);
+    }
+  }
+}
+
+// ---- FIREFLIES (point lights that float) ----
+const fireflies = [];
+for(let i=0;i<8;i++){
+  const ff = new THREE.PointLight(0xaaffaa, 0.3, 4);
+  ff.position.set(
+    (Math.random()-0.5)*20, 1 + Math.random()*2, 14 + Math.random()*12
+  );
+  ff.userData.basePos = ff.position.clone();
+  ff.userData.phase = Math.random()*Math.PI*2;
+  scene.add(ff);
+  // Visual dot
+  const ffDot = new THREE.Mesh(new THREE.SphereGeometry(0.06,5,5),
+    new THREE.MeshBasicMaterial({ color: 0xaaffaa }));
+  ff.add(ffDot);
+  fireflies.push(ff);
+}
+
+// ---- FOG WISPS (low mist over water) ----
+const mistMat = new THREE.MeshBasicMaterial({ color: 0x88aacc, transparent: true, opacity: 0.04 });
+for(let i=0;i<6;i++){
+  const mist = new THREE.Mesh(new THREE.SphereGeometry(3+Math.random()*4, 8, 5), mistMat);
+  mist.scale.y = 0.15;
+  mist.position.set((Math.random()-0.5)*20, 0.3, (Math.random()-0.5)*12 - 2);
+  mist.userData.phase = Math.random()*Math.PI*2;
+  scene.add(mist);
+}
+
+// ---- UNDERWATER FISH (detailed 3D) ----
+function makeUnderwaterFish(color) {
+  const g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.3, metalness: 0.35 });
+  const matDark = new THREE.MeshStandardMaterial({ color: new THREE.Color(color).multiplyScalar(0.55), roughness: 0.4 });
+  const matLight = new THREE.MeshStandardMaterial({ color: new THREE.Color(color).addScalar(0.18), roughness: 0.3, metalness: 0.4 });
+  const white = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+  const black = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5 });
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 10), mat);
+  body.scale.set(1.9, 0.72, 0.62);
+  g.add(body);
+  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.95, 10, 8), matLight);
+  belly.scale.set(1.5, 0.38, 0.55);
+  belly.position.set(0.1, -0.28, 0);
+  g.add(belly);
+  const snout = new THREE.Mesh(new THREE.SphereGeometry(0.38, 8, 8), mat);
+  snout.scale.set(1.1, 0.8, 0.8);
+  snout.position.set(1.7, -0.04, 0);
+  g.add(snout);
+  const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.13, 6, 5), matDark);
+  mouth.scale.set(0.6, 0.4, 0.9);
+  mouth.position.set(2.08, -0.16, 0);
+  g.add(mouth);
+  [0.34, -0.34].forEach(ez => {
+    const ew = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), white);
+    ew.position.set(1.5, 0.2, ez);
+    g.add(ew);
+    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.09, 6, 6), black);
+    pupil.position.set(1.63, 0.2, ez * 1.1);
+    g.add(pupil);
+  });
+  const tailMat = new THREE.MeshStandardMaterial({ color, roughness: 0.5, transparent: true, opacity: 0.85 });
+  [[0.35,0.28],[-0.35,-0.25]].forEach(([ang,dy])=>{
+    const t = new THREE.Mesh(new THREE.ConeGeometry(0.30, 0.72, 6), tailMat);
+    t.rotation.z = -Math.PI/2 + ang;
+    t.position.set(-1.85, dy, 0);
+    g.add(t);
+  });
+  const dv = new Float32Array([-0.2,0.72,0, 0.6,0.72,0, 0.5,1.35,0, -0.1,1.25,0]);
+  const dGeo = new THREE.BufferGeometry();
+  dGeo.setAttribute('position', new THREE.BufferAttribute(dv,3));
+  dGeo.setIndex([0,1,2,0,2,3]); dGeo.computeVertexNormals();
+  g.add(new THREE.Mesh(dGeo, new THREE.MeshStandardMaterial({ color, roughness:0.5, side:THREE.DoubleSide, transparent:true, opacity:0.8 })));
+  g.scale.setScalar(0.38);
+  return g;
+}
+
+const underwaterFish = [];
+const fishColors = [0xff8844, 0xffcc00, 0x44aaff, 0xff4488, 0x88ff44, 0xcc44ff, 0xff6622, 0x44ccaa];
+for(let i = 0; i < 10; i++) {
+  const f = makeUnderwaterFish(fishColors[i % fishColors.length]);
+  f.position.set((Math.random()-0.5)*22, -2 - Math.random()*5, (Math.random()-0.5)*22);
+  f.userData.speed = 0.006 + Math.random()*0.012;
+  f.userData.angle = Math.random() * Math.PI*2;
+  f.userData.radius = 3 + Math.random()*7;
+  f.userData.cx = f.position.x;
+  f.userData.cz = f.position.z;
+  f.userData.depth = f.position.y;
+  scene.add(f);
+  underwaterFish.push(f);
+}
+
+// ---- BUBBLES ----
+const bubbleGeo = new THREE.BufferGeometry();
+const bubbleCount = 80;
+const bubblePos = new Float32Array(bubbleCount * 3);
+for(let i = 0; i < bubbleCount; i++) {
+  bubblePos[i*3]   = (Math.random()-0.5)*30;
+  bubblePos[i*3+1] = -8 + Math.random()*8;
+  bubblePos[i*3+2] = (Math.random()-0.5)*30;
+}
+bubbleGeo.setAttribute('position', new THREE.BufferAttribute(bubblePos, 3));
+const bubbleMat = new THREE.PointsMaterial({ color: 0x88ccff, size: 0.14, transparent: true, opacity: 0.45 });
+const bubbles = new THREE.Points(bubbleGeo, bubbleMat);
+scene.add(bubbles);
+
+// =================== GAME STATE ===================
+const FISH_TYPES = [
+  { name:'Карасик',      emoji:'🐟', weight:[0.1,0.5],   coins:[5,15],    rarity:0.30, stars:1,
+    body:0xffaa44, belly:0xffe8b0, fin:0xdd8822, tail:0xdd7700, eye:0x222200,
+    bodyScale:[1.7,0.8,0.7], fatness:1.0, hasWhiskers:false, isFlat:true, spots:false, glows:false },
+  { name:'Окунь',        emoji:'🐠', weight:[0.3,1.2],   coins:[15,35],   rarity:0.25, stars:2,
+    body:0x44aa66, belly:0xaaffcc, fin:0x227744, tail:0x115533, eye:0xff2200,
+    bodyScale:[1.9,0.75,0.65], fatness:0.9, hasWhiskers:false, isFlat:false, spots:true, glows:false,
+    stripes:true, stripeColor:0x1a6640 },
+  { name:'Щука',         emoji:'🦈', weight:[1.0,5.0],   coins:[40,100],  rarity:0.15, stars:3,
+    body:0x7a9966, belly:0xccddaa, fin:0x556644, tail:0x445533, eye:0xffdd00,
+    bodyScale:[2.6,0.55,0.55], fatness:0.7, hasWhiskers:false, isFlat:false, spots:true, glows:false, elongated:true },
+  { name:'Карп',         emoji:'🐡', weight:[0.5,3.0],   coins:[25,70],   rarity:0.15, stars:2,
+    body:0xff8833, belly:0xffddaa, fin:0xdd5500, tail:0xcc4400, eye:0x221100,
+    bodyScale:[1.8,0.9,0.75], fatness:1.2, hasWhiskers:true, isFlat:false, spots:false, glows:false },
+  { name:'Лещ',          emoji:'🐟', weight:[0.4,2.5],   coins:[20,60],   rarity:0.10, stars:2,
+    body:0x8899cc, belly:0xccddff, fin:0x5566aa, tail:0x445599, eye:0x000011,
+    bodyScale:[1.6,1.1,0.45], fatness:1.0, hasWhiskers:false, isFlat:true, spots:false, glows:false },
+  { name:'Сом',          emoji:'🐟', weight:[3.0,15.0],  coins:[80,200],  rarity:0.04, stars:4,
+    body:0x554433, belly:0x998866, fin:0x332211, tail:0x221100, eye:0xffaa00,
+    bodyScale:[2.4,0.7,0.7], fatness:1.1, hasWhiskers:true, isFlat:false, spots:false, glows:false, bigMouth:true },
+  { name:'Золотая рыбка',emoji:'✨', weight:[0.05,0.2],  coins:[100,300], rarity:0.01, stars:5,
+    body:0xffcc00, belly:0xffee88, fin:0xff8800, tail:0xff6600, eye:0x000000,
+    bodyScale:[1.6,0.85,0.7], fatness:1.0, hasWhiskers:false, isFlat:false, spots:false, glows:true, fancyTail:true },
+];
+
+// =================== 3D FISH PREVIEW IN CATCH POPUP ===================
+const fpCanvas = document.getElementById('fish-preview-canvas');
+const fpRenderer = new THREE.WebGLRenderer({ canvas: fpCanvas, antialias: true, alpha: true });
+fpRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+fpRenderer.setSize(200, 130);
+fpRenderer.setClearColor(0x000000, 0);
+
+const fpScene = new THREE.Scene();
+const fpCamera = new THREE.PerspectiveCamera(38, 200/130, 0.1, 50);
+fpCamera.position.set(0, 0.3, 5.5);
+fpCamera.lookAt(0, 0, 0);
+
+const fpAmb = new THREE.AmbientLight(0xffffff, 0.7);
+fpScene.add(fpAmb);
+const fpKey = new THREE.DirectionalLight(0xffffff, 1.8);
+fpKey.position.set(3, 4, 5);
+fpScene.add(fpKey);
+const fpRim = new THREE.DirectionalLight(0x88ccff, 0.6);
+fpRim.position.set(-3, 1, -2);
+fpScene.add(fpRim);
+const fpFill = new THREE.DirectionalLight(0xffeedd, 0.4);
+fpFill.position.set(0, -3, 3);
+fpScene.add(fpFill);
+
+// Underwater bg particles in preview
+const fpBubbleGeo = new THREE.BufferGeometry();
+const fpBubPts = new Float32Array(60*3);
+for(let i=0;i<60;i++){
+  fpBubPts[i*3]=(Math.random()-0.5)*8;
+  fpBubPts[i*3+1]=(Math.random()-0.5)*5;
+  fpBubPts[i*3+2]=(Math.random()-0.5)*4-1;
+}
+fpBubbleGeo.setAttribute('position',new THREE.BufferAttribute(fpBubPts,3));
+const fpBubbles = new THREE.Points(fpBubbleGeo,
+  new THREE.PointsMaterial({color:0x88ccff,size:0.08,transparent:true,opacity:0.5}));
+fpScene.add(fpBubbles);
+
+let fpFishGroup = null;
+let fpRotating = false;
+let fpTime = 0;
+
+function buildCatchFish(ft) {
+  if(fpFishGroup){ fpScene.remove(fpFishGroup); fpFishGroup=null; }
+  const g = new THREE.Group();
+
+  const bodyColor = ft.body;
+  const bellyColor = ft.belly;
+  const finColor = ft.fin;
+  const tailColor = ft.tail;
+  const eyeColor = ft.eye;
+  const [bsx, bsy, bsz] = ft.bodyScale;
+
+  const matBody = new THREE.MeshStandardMaterial({color:bodyColor, roughness:0.3, metalness:ft.glows?0.6:0.2});
+  const matBelly = new THREE.MeshStandardMaterial({color:bellyColor, roughness:0.35});
+  const matFin = new THREE.MeshStandardMaterial({color:finColor, roughness:0.5, transparent:true, opacity:0.82, side:THREE.DoubleSide});
+  const matTail = new THREE.MeshStandardMaterial({color:tailColor, roughness:0.45, transparent:true, opacity:0.88, side:THREE.DoubleSide});
+  const matWhite = new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.4});
+  const matEye = new THREE.MeshStandardMaterial({color:eyeColor, roughness:0.2, metalness:0.3});
+
+  // === BODY ===
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 14), matBody);
+  body.scale.set(bsx, bsy * ft.fatness, bsz);
+  g.add(body);
+
+  // Belly
+  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.88, 14, 10), matBelly);
+  belly.scale.set(bsx*0.82, bsy*ft.fatness*0.5, bsz*0.88);
+  belly.position.set(0.08, -bsy*ft.fatness*0.42, 0);
+  g.add(belly);
+
+  // === SNOUT ===
+  const snoutX = bsx * (ft.elongated ? 1.08 : 0.95);
+  const snout = new THREE.Mesh(new THREE.SphereGeometry(ft.bigMouth?0.46:0.32, 10, 8), matBody);
+  snout.scale.set(ft.elongated?1.3:1.0, 0.75, 0.78);
+  snout.position.set(snoutX, -0.04, 0);
+  g.add(snout);
+
+  // Mouth
+  const mouthMat = new THREE.MeshStandardMaterial({color:new THREE.Color(bodyColor).multiplyScalar(0.4), roughness:0.6});
+  const mouth = new THREE.Mesh(new THREE.SphereGeometry(ft.bigMouth?0.22:0.11, 8, 6), mouthMat);
+  mouth.scale.set(0.7, ft.bigMouth?0.55:0.35, 1.1);
+  mouth.position.set(snoutX + (ft.bigMouth?0.38:0.3), -(ft.bigMouth?0.22:0.14), 0);
+  g.add(mouth);
+
+  // Whiskers (сом, карп)
+  if(ft.hasWhiskers) {
+    const wMat = new THREE.MeshStandardMaterial({color:new THREE.Color(bodyColor).multiplyScalar(0.6), roughness:0.7});
+    [[-0.1,0.06],[-0.1,-0.06],[0.05,0.1],[0.05,-0.1]].forEach(([dy,dz])=>{
+      const w = new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.01,0.55,5), wMat);
+      w.position.set(snoutX+0.3, dy, dz*bsz*1.2);
+      w.rotation.z = Math.PI/2 + dy*1.5;
+      w.rotation.x = dz*2;
+      g.add(w);
+    });
+  }
+
+  // === EYES ===
+  [-1,1].forEach(side => {
+    const eyeZ = bsz * 0.72 * side;
+    const eyeX = bsx * 0.78;
+    // White sclera
+    const ew = new THREE.Mesh(new THREE.SphereGeometry(0.175, 10, 10), matWhite);
+    ew.position.set(eyeX, bsy*ft.fatness*0.28, eyeZ);
+    g.add(ew);
+    // Iris
+    const iris = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8),
+      new THREE.MeshStandardMaterial({color:ft.eye===0xffdd00?0xffcc00:0x664422, roughness:0.2}));
+    iris.position.set(eyeX+0.08, bsy*ft.fatness*0.28, eyeZ + 0.06*side);
+    g.add(iris);
+    // Pupil
+    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.08, 7, 7), matEye);
+    pupil.position.set(eyeX+0.13, bsy*ft.fatness*0.28, eyeZ + 0.1*side);
+    g.add(pupil);
+    // Eye shine
+    const shine = new THREE.Mesh(new THREE.SphereGeometry(0.04, 5, 5),
+      new THREE.MeshBasicMaterial({color:0xffffff}));
+    shine.position.set(eyeX+0.15, bsy*ft.fatness*0.32, eyeZ + 0.13*side);
+    g.add(shine);
+  });
+
+  // === TAIL FIN ===
+  if(ft.fancyTail) {
+    // Золотая рыбка — роскошный двойной хвост
+    [[0.45],[-0.45],[0.22],[-0.22]].forEach(([ang]) => {
+      const tf = new THREE.Mesh(new THREE.ConeGeometry(0.32,0.9,7), matTail);
+      tf.rotation.z = -Math.PI/2 + ang;
+      tf.position.set(-bsx - 0.3, Math.sin(ang)*0.5, 0);
+      g.add(tf);
+    });
+  } else {
+    // Обычный вилочный хвост
+    [[0.32],[-0.32]].forEach(([ang]) => {
+      const tf = new THREE.Mesh(new THREE.ConeGeometry(0.28, ft.elongated?1.0:0.75, 6), matTail);
+      tf.rotation.z = -Math.PI/2 + ang;
+      tf.position.set(-bsx - 0.15, Math.sin(ang)*0.35, 0);
+      g.add(tf);
+    });
+  }
+
+  // === DORSAL FIN (спинной) ===
+  function triMesh(pts, mat) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pts),3));
+    const n = pts.length/3;
+    const idx = [];
+    for(let i=1;i<n-1;i++) idx.push(0,i,i+1);
+    geo.setIndex(idx); geo.computeVertexNormals();
+    return new THREE.Mesh(geo, mat);
+  }
+
+  // Спинной плавник
+  const dorsalH = ft.isFlat ? 0.6 : (ft.elongated ? 0.7 : 0.85);
+  const df = triMesh([
+    -0.1, bsy*ft.fatness*0.9, 0,
+     0.6, bsy*ft.fatness*0.9, 0,
+     0.4, bsy*ft.fatness*0.9+dorsalH, 0,
+    -0.05,bsy*ft.fatness*0.9+dorsalH*0.6,0
+  ], matFin);
+  g.add(df);
+
+  // Грудные плавники
+  [-1,1].forEach(side => {
+    const pf = triMesh([
+      0.5, 0, bsz*0.62*side,
+      0.9, 0, bsz*0.62*side,
+      0.5,-0.55, bsz*1.15*side
+    ], matFin);
+    g.add(pf);
+  });
+
+  // Анальный плавник
+  const af = triMesh([
+    -0.2,-bsy*ft.fatness*0.88,0,
+     0.35,-bsy*ft.fatness*0.88,0,
+     0.1,-bsy*ft.fatness*0.88-0.5,0
+  ], matFin);
+  g.add(af);
+
+  // === STRIPES (Окунь) ===
+  if(ft.stripes) {
+    const stripeMat = new THREE.MeshStandardMaterial({
+      color:ft.stripeColor||0x224422, roughness:0.5, transparent:true, opacity:0.55
+    });
+    for(let i=0;i<5;i++){
+      const sv = new THREE.Mesh(new THREE.BoxGeometry(0.12, bsy*ft.fatness*1.8, bsz*1.4), stripeMat);
+      sv.position.set(-0.5+i*0.52, 0, 0);
+      g.add(sv);
+    }
+  }
+
+  // === SPOTS (Щука, Окунь) ===
+  if(ft.spots) {
+    const sptMat = new THREE.MeshStandardMaterial({
+      color:new THREE.Color(bodyColor).multiplyScalar(0.55), roughness:0.6
+    });
+    for(let i=0;i<8;i++){
+      const sp = new THREE.Mesh(new THREE.SphereGeometry(0.09,6,6), sptMat);
+      sp.position.set(
+        (Math.random()-0.5)*bsx*1.4,
+        (Math.random()-0.3)*bsy*ft.fatness*0.7,
+        (Math.random()-0.5)*bsz*0.9
+      );
+      sp.scale.set(1.0, 0.5, 0.9);
+      g.add(sp);
+    }
+  }
+
+  // === SCALES texture lines ===
+  const scaleMat = new THREE.MeshBasicMaterial({
+    color:new THREE.Color(bodyColor).multiplyScalar(0.72), transparent:true, opacity:0.4
+  });
+  for(let i=0;i<6;i++){
+    const sc = new THREE.Mesh(new THREE.TorusGeometry(0.18+i*0.06, 0.015, 4, 12, Math.PI), scaleMat);
+    sc.position.set(bsx*0.5 - i*0.32, 0, bsz*0.65);
+    sc.rotation.y = Math.PI/2;
+    g.add(sc);
+  }
+
+  // === GLOW for golden fish ===
+  if(ft.glows) {
+    const glowMat = new THREE.MeshBasicMaterial({
+      color:0xffdd44, transparent:true, opacity:0.15, side:THREE.BackSide
+    });
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(1.3, 14, 10), glowMat);
+    glow.scale.set(bsx*1.1, bsy*1.1, bsz*1.1);
+    g.add(glow);
+  }
+
+  // Scale whole fish to fit preview
+  const fitScale = ft.elongated ? 0.52 : (ft.fatness > 1 ? 0.58 : 0.6);
+  g.scale.setScalar(fitScale);
+  fpScene.add(g);
+  fpFishGroup = g;
+}
+
+// Animate fish preview
+function animateFishPreview() {
+  requestAnimationFrame(animateFishPreview);
+  if(!fpFishGroup) { fpRenderer.render(fpScene, fpCamera); return; }
+  fpTime += 0.016;
+  // Swim wiggle
+  fpFishGroup.rotation.y = Math.sin(fpTime*1.2)*0.18;
+  fpFishGroup.position.y = Math.sin(fpTime*1.8)*0.06;
+  fpFishGroup.rotation.z = Math.sin(fpTime*1.8)*0.04;
+  // Tail wag — rotate last children with tail-like shapes
+  fpFishGroup.children.forEach((c,i) => {
+    if(i > fpFishGroup.children.length - 5) {
+      c.rotation.y = Math.sin(fpTime*3+i)*0.12;
+    }
+  });
+  // Bubbles drift
+  const bp = fpBubbleGeo.attributes.position;
+  for(let i=0;i<60;i++){
+    let y = bp.getY(i) + 0.008;
+    if(y > 3) y = -3;
+    bp.setY(i, y);
+  }
+  bp.needsUpdate = true;
+  fpRenderer.render(fpScene, fpCamera);
+}
+animateFishPreview();
+
+let gs = {
+  coins: 0,
+  caught: 0,
+  bestFish: null,
+  state: 'idle',
+  bobberDepth: 0,
+  castTimer: 0,
+  biteTimer: 0,
+  biteWindow: 0,
+  currentFish: null,
+  lineProgress: 0,
+};
+
+// =================== UI REFS ===================
+const coinsVal = document.getElementById('coins-val');
+const countVal = document.getElementById('count-val');
+const bestVal = document.getElementById('best-val');
+const castBtn = document.getElementById('cast-btn');
+const msgDiv = document.getElementById('message');
+const msgH2 = msgDiv.querySelector('h2');
+const msgP = msgDiv.querySelector('p');
+const catchPopup = document.getElementById('catch-popup');
+const popupName = document.getElementById('popup-name');
+const popupWeight = document.getElementById('popup-weight');
+const popupCoins = document.getElementById('popup-coins');
+const bobberBarWrap = document.getElementById('bobber-bar-wrap');
+const bobberBar = document.getElementById('bobber-bar');
+const depthTxt = document.getElementById('depth-indicator');
+const reel = document.getElementById('reel-hint');
+const fishLog = document.getElementById('fish-log');
+
+// =================== GAME LOGIC ===================
+function pickFish() {
+  let r = Math.random();
+  let cumul = 0;
+  for(const f of FISH_TYPES) {
+    cumul += f.rarity;
+    if(r < cumul) return f;
+  }
+  return FISH_TYPES[0];
+}
+
+function randBetween(a, b) { return a + Math.random()*(b-a); }
+
+function setState(s) {
+  gs.state = s;
+  if(s === 'idle') {
+    castBtn.textContent = '🎣';
+    document.getElementById('btn-label').textContent = 'Забросить';
+    msgDiv.style.opacity = '1';
+    msgH2.textContent = '🎣 Забрось удочку!';
+    msgP.textContent = 'Нажми кнопку, чтобы начать';
+    bobberBarWrap.style.display = 'none';
+    reel.style.display = 'none';
+    bobberGroup.visible = false;
+    updateLine('idle');
+  } else if(s === 'casting') {
+    castBtn.textContent = '🌊';
+    msgDiv.style.opacity = '0';
+    bobberGroup.visible = true;
+    depthTxt.textContent = 'Заброс...';
+  } else if(s === 'waiting') {
+    castBtn.textContent = '⏳';
+    document.getElementById('btn-label').textContent = 'Ждём...';
+    msgDiv.style.opacity = '0';
+    bobberBarWrap.style.display = 'block';
+    depthTxt.textContent = `Глубина: ${gs.bobberDepth.toFixed(1)} м`;
+  } else if(s === 'biting') {
+    reel.style.display = 'block';
+    castBtn.textContent = '⚡';
+    document.getElementById('btn-label').textContent = 'ПОДСЕЧЬ!';
+    castBtn.style.borderColor = 'rgba(255,200,0,0.9)';
+    castBtn.style.boxShadow = '0 0 30px rgba(255,200,0,0.6)';
+  } else if(s === 'reeling') {
+    reel.style.display = 'none';
+    castBtn.textContent = '💨';
+    document.getElementById('btn-label').textContent = 'Тянем...';
+    castBtn.style.borderColor = 'rgba(100,220,255,0.8)';
+    castBtn.style.boxShadow = '0 0 20px rgba(50,150,255,0.4)';
+  }
+}
+
+function startCast() {
+  if(gs.state === 'idle') {
+    gs.state = 'casting';
+    gs.castTimer = 0;
+    gs.biteTimer = 1500 + Math.random()*4000;
+    gs.bobberDepth = 1 + Math.random()*6;
+    gs.currentFish = pickFish();
+    setState('casting');
+    // Animate bobber flying out
+    animateCast();
+  } else if(gs.state === 'biting') {
+    // Caught it!
+    gs.biteWindow = 0;
+    setState('reeling');
+    setTimeout(showCatch, 800);
+  } else if(gs.state === 'waiting') {
+    // Pull out early
+    setState('idle');
+  }
+}
+
+let castStartTime = 0;
+function animateCast() {
+  castStartTime = performance.now();
+}
+
+function showCatch() {
+  const fish = gs.currentFish;
+  const weight = randBetween(...fish.weight);
+  const coins = Math.round(randBetween(...fish.coins));
+
+  gs.coins += coins;
+  gs.caught++;
+  if(!gs.bestFish || weight > gs.bestFish.weight) {
+    gs.bestFish = { name: fish.name, weight };
+    bestVal.textContent = `${fish.emoji} ${weight.toFixed(2)}кг`;
+  }
+
+  coinsVal.textContent = gs.coins;
+  countVal.textContent = gs.caught;
+
+  popupEmoji.textContent = fish.emoji;
+  popupName.textContent = fish.name;
+  popupWeight.textContent = `⚖️ ${weight.toFixed(2)} кг`;
+  popupCoins.textContent = `+${coins} монет`;
+  catchPopup.classList.add('show');
+
+  addLog(fish.emoji, fish.name, weight);
+
+  setTimeout(() => {
+    catchPopup.classList.remove('show');
+    setState('idle');
+  }, 2200);
+}
+
+function addLog(emoji, name, weight) {
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.textContent = `${emoji} ${name} ${weight.toFixed(1)}кг`;
+  fishLog.prepend(entry);
+  if(fishLog.children.length > 5) fishLog.lastChild.remove();
+}
+
+castBtn.addEventListener('click', startCast);
+castBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startCast(); });
+
+// =================== ANIMATION ===================
+let time = 0;
+let castProgress = 0;
+let frameNum = 0;
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// ── CAMERA STATE ──
+let cameraMode = 'third';        // 'third' | 'fps'
+let camTransitioning = false;
+const camLookCur = { x:0, y:0, z:0 };  // current look-at (lerped)
+let fpsTouchDeltaX = 0;         // horizontal look offset in FPS
+
+function updateLine(state) {
+  const tipX = 2, tipY = 3.5, tipZ = 13;
+  let bx = bobberGroup.position.x;
+  let by = bobberGroup.position.y;
+  let bz = bobberGroup.position.z;
+
+  const pts = [
+    new THREE.Vector3(tipX, tipY, tipZ),
+    new THREE.Vector3((tipX+bx)*0.5, (tipY+by)*0.5+1, (tipZ+bz)*0.5),
+    new THREE.Vector3(bx, by+0.3, bz),
+  ];
+  scene.remove(fishingLine);
+  lineGeo.dispose();
+  lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+  fishingLine = new THREE.Line(lineGeo, lineMat);
+  scene.add(fishingLine);
+}
+
+// =================== PERFORMANCE ADAPTIVE ===================
+// Detect mobile / weak GPU and reduce quality automatically
+let frameCount = 0, fpsAccum = 0, lastFpsCheck = performance.now();
+let qualityLevel = 2; // 0=low 1=mid 2=high
+
+function checkPerformance() {
+  const now = performance.now();
+  const elapsed = now - lastFpsCheck;
+  frameCount++;
+  if(elapsed >= 2000) {
+    const fps = frameCount / (elapsed / 1000);
+    frameCount = 0; lastFpsCheck = now;
+    if(fps < 28 && qualityLevel > 0) {
+      qualityLevel--;
+      applyQuality(qualityLevel);
+    }
+  }
+}
+
+function applyQuality(level) {
+  if(level === 0) {
+    // LOW — minimal everything
+    renderer.setPixelRatio(1);
+    waterGeo.dispose();
+    // Replace water with low-res version
+    const lwg = new THREE.PlaneGeometry(160, 160, 16, 16);
+    water.geometry = lwg;
+    shimmer.visible = false;
+    refl.visible = false;
+    seaweeds.forEach(sw => { sw.visible = false; });
+    fireflies.forEach(ff => { ff.visible = false; });
+    scene.fog.density = 0.018;
+    // Hide distant fish
+    underwaterFish.slice(5).forEach(f => { f.visible = false; });
+    showToast('⚡ Графика снижена для скорости');
+  } else if(level === 1) {
+    // MID
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    shimmer.visible = true;
+    refl.visible = false;
+    seaweeds.forEach((sw,i) => { sw.visible = i%2===0; });
+    fireflies.forEach((ff,i) => { ff.visible = i%2===0; });
+    underwaterFish.forEach(f => { f.visible = true; });
+  }
+}
+
+// Auto-detect mobile
+if(isMobile) {
+  // Start at mid quality on mobile
+  qualityLevel = 1;
+  applyQuality(1);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  renderer.shadowMap.enabled = false;
+}
+
+// Toast notification helper
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.style.cssText = `
+    position:fixed;bottom:160px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,0,0.8);color:#fff;padding:8px 18px;border-radius:20px;
+    font-size:12px;z-index:999;pointer-events:none;transition:opacity 0.5s;
+  `;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),500); }, 2500);
+}
+
+// Hook into animate for FPS check
+const _origAnimate = animate;
+// Performance check integrated into FPS render patch
+
+
+const origRender = renderer.render.bind(renderer);
+renderer.render = function(sc, cam) {
+  checkPerformance();
+  origRender(sc, cam);
+};
+
+
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.016;
+  frameNum++;
+
+  // Water wave — update every other frame on mobile, every frame on desktop
+  if(frameNum % (isMobile ? 2 : 1) === 0) {
+    const wpos = waterGeo.attributes.position;
+    for(let i = 0; i < wpos.count; i++) {
+      const x = wpos.getX(i);
+      const z = wpos.getZ(i);
+      wpos.setZ(i,
+        Math.sin(x*0.25 + time*0.9)*0.18 +
+        Math.cos(z*0.20 + time*0.7)*0.14 +
+        Math.sin((x+z)*0.15 + time*0.5)*0.08
+      );
+    }
+    wpos.needsUpdate = true;
+  }
+
+  // Shimmer flicker
+  shimmerMat.opacity = 0.08 + Math.sin(time*3.1)*0.06;
+
+  // Moon reflection streak
+  refl.material.opacity = 0.07 + Math.sin(time*2.2)*0.04;
+  refl.rotation.z = Math.sin(time*0.4)*0.12;
+
+  // ── CAMERA SMOOTH TRANSITION ──
+  const camT3 = { px:0, py:8, pz:18, lx:0, ly:0, lz:0 };   // third-person target
+  const camT1 = { px:0, py:3.2, pz:13.2, lx:0, ly:1.5, lz:4 }; // first-person target
+
+  const camTgt = cameraMode === 'fps' ? camT1 : camT3;
+
+  // Add sway to target
+  let swayX, swayY, lookX, lookY, lookZ;
+  if(cameraMode === 'fps') {
+    swayX = camT1.px + Math.sin(time*0.5)*0.04 + fpsTouchDeltaX * 0.018;
+    swayY = camT1.py + Math.sin(time*0.7)*0.018;
+    lookX = fpsTouchDeltaX * 0.022;
+    lookY = camT1.ly;
+    lookZ = camT1.lz + fpsTouchDeltaX * 0.08;
+  } else {
+    swayX = camT3.px + Math.sin(time*0.08)*0.5;
+    swayY = camT3.py + Math.sin(time*0.13)*0.2;
+    lookX = 0; lookY = 0; lookZ = 0;
+  }
+
+  // Lerp current camera toward target (smooth)
+  const lerpF = camTransitioning ? 0.032 : (cameraMode==='fps' ? 0.12 : 0.06);
+  camera.position.x += (swayX - camera.position.x) * lerpF;
+  camera.position.y += (swayY - camera.position.y) * lerpF;
+  camera.position.z += (camTgt.pz - camera.position.z) * lerpF;
+  camLookCur.x += (lookX - camLookCur.x) * lerpF;
+  camLookCur.y += (lookY - camLookCur.y) * lerpF;
+  camLookCur.z += (lookZ - camLookCur.z) * lerpF;
+  camera.lookAt(camLookCur.x, camLookCur.y, camLookCur.z);
+
+  // Check if transition finished
+  if(camTransitioning) {
+    const dx = camera.position.x - swayX;
+    const dy = camera.position.y - swayY;
+    const dz = camera.position.z - camTgt.pz;
+    if(dx*dx + dy*dy + dz*dz < 0.04) camTransitioning = false;
+  }
+
+  // FPS fisherman hide
+  fishermanGroup.visible = (cameraMode !== 'fps');
+  rodGroup.visible = (cameraMode !== 'fps');
+
+  // Underwater fish movement
+  for(const f of underwaterFish) {
+    if(!f.visible) continue;
+    f.userData.angle += f.userData.speed;
+    const a = f.userData.angle;
+    f.position.x = f.userData.cx + Math.cos(a) * f.userData.radius;
+    f.position.z = f.userData.cz + Math.sin(a) * f.userData.radius * 0.6;
+    f.position.y = f.userData.depth + Math.sin(a*2.2)*0.5;
+    f.rotation.y = -a + Math.PI/2;
+    f.rotation.z = Math.sin(time*4 + f.userData.angle*3)*0.12;
+  }
+
+  // Seaweed sway — every 3rd frame only
+  if(frameNum % 3 === 0) {
+    seaweeds.forEach(sw => {
+      if(!sw.visible) return;
+      sw.children.forEach((seg, i) => {
+        seg.rotation.z = Math.sin(time*1.5 + sw.userData.swayPhase + i*0.4)*0.18;
+        seg.rotation.x = Math.cos(time*1.2 + sw.userData.swayPhase + i*0.3)*0.1;
+      });
+    });
+  }
+
+  // Fireflies float — every 2nd frame
+  if(frameNum % 2 === 0) {
+    fireflies.forEach(ff => {
+      if(!ff.visible) return;
+      ff.userData.phase += 0.036;
+      const p = ff.userData.phase;
+      ff.position.x = ff.userData.basePos.x + Math.sin(p*0.7)*1.2;
+      ff.position.y = ff.userData.basePos.y + Math.sin(p*1.3)*0.5;
+      ff.position.z = ff.userData.basePos.z + Math.cos(p*0.5)*0.8;
+      ff.intensity = 0.15 + Math.abs(Math.sin(p*2.5))*0.4;
+    });
+  }
+
+  // Bubbles rise
+  const bpos = bubbleGeo.attributes.position;
+  for(let i = 0; i < bubbleCount; i++) {
+    let y = bpos.getY(i) + 0.022;
+    if(y > 0.3) y = -7.5 - Math.random();
+    bpos.setY(i, y);
+  }
+  bpos.needsUpdate = true;
+
+  // ---- STATE MACHINE ----
+  if(gs.state === 'casting') {
+    castProgress = Math.min(castProgress + 0.04, 1);
+    // Bobber arcs from rod tip to target
+    const targetX = (Math.random()-0.5)*2;
+    const targetZ = -5 - Math.random()*8;
+    const t = castProgress;
+    bobberGroup.position.x = THREE.MathUtils.lerp(2, 0, t);
+    bobberGroup.position.z = THREE.MathUtils.lerp(13, -8, t);
+    bobberGroup.position.y = Math.sin(t*Math.PI)*4 + 0.2;
+    if(castProgress >= 1) {
+      gs.state = 'waiting_start';
+      castProgress = 0;
+    }
+    updateLine('casting');
+  }
+
+  if(gs.state === 'waiting_start') {
+    bobberGroup.position.y = 0.12 + Math.sin(time*2)*0.04;
+    setState('waiting');
+  }
+
+  if(gs.state === 'waiting') {
+    // Bobber bobs gently
+    bobberGroup.position.y = 0.12 + Math.sin(time*2)*0.04;
+
+    // Countdown to bite
+    gs.biteTimer -= 16;
+    const pct = Math.max(0, gs.biteTimer / 5500);
+    bobberBar.style.width = (pct*100)+'%';
+    bobberBar.style.background = pct > 0.3
+      ? 'linear-gradient(90deg, #00aaff, #00ffcc)'
+      : 'linear-gradient(90deg, #ff4400, #ffaa00)';
+
+    depthTxt.textContent = `Глубина: ${gs.bobberDepth.toFixed(1)} м`;
+    updateLine('waiting');
+
+    if(gs.biteTimer <= 0) {
+      // BITE!
+      setState('biting');
+      gs.biteWindow = 1500;
+    }
+  }
+
+  if(gs.state === 'biting') {
+    // Bobber dunks
+    bobberGroup.position.y = -0.15 + Math.sin(time*8)*0.12;
+    gs.biteWindow -= 16;
+    updateLine('biting');
+    if(gs.biteWindow <= 0) {
+      // Missed
+      reel.style.display = 'none';
+      setState('idle');
+      castBtn.style.borderColor = 'rgba(100,220,255,0.8)';
+      castBtn.style.boxShadow = '0 0 20px rgba(50,150,255,0.4)';
+      msgH2.textContent = '😔 Ушла...';
+      msgP.textContent = 'Попробуй ещё раз!';
+      msgDiv.style.opacity = '1';
+    }
+  }
+
+  if(gs.state === 'reeling') {
+    bobberGroup.position.z = THREE.MathUtils.lerp(bobberGroup.position.z, 13, 0.05);
+    bobberGroup.position.y = THREE.MathUtils.lerp(bobberGroup.position.y, 3, 0.06);
+    updateLine('reeling');
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// =================== CAMERA SWITCH ===================
+const camBtn    = document.getElementById('cam-btn');
+const camLabel  = document.getElementById('cam-label');
+const camFlash  = document.getElementById('cam-flash');
+const crosshair = document.getElementById('crosshair');
+const fpsHud    = document.getElementById('fps-hud');
+
+function switchCamera() {
+  // Flash vignette
+  camFlash.classList.add('show');
+  setTimeout(() => camFlash.classList.remove('show'), 280);
+
+  cameraMode = cameraMode === 'third' ? 'fps' : 'third';
+  camTransitioning = true;
+  fpsTouchDeltaX = 0;
+
+  if(cameraMode === 'fps') {
+    camBtn.textContent = '🎥';
+    camBtn.classList.add('fps-mode');
+    camLabel.textContent = '1ЫЙ ВИД';
+    crosshair.classList.add('show');
+    fpsHud.classList.add('show');
+    camera.fov = 75;
+  } else {
+    camBtn.textContent = '👁️';
+    camBtn.classList.remove('fps-mode');
+    camLabel.textContent = '3РД ВИД';
+    crosshair.classList.remove('show');
+    fpsHud.classList.remove('show');
+    camera.fov = 60;
+  }
+  camera.updateProjectionMatrix();
+}
+
+camBtn.addEventListener('click', switchCamera);
+camBtn.addEventListener('touchstart', e => { e.preventDefault(); switchCamera(); });
+
+// FPS look — swipe horizontally on canvas
+let fpsSwipeStartX = 0, fpsSwipeDragging = false;
+document.getElementById('canvas').addEventListener('touchstart', e => {
+  if(cameraMode !== 'fps') return;
+  fpsSwipeDragging = true;
+  fpsSwipeStartX = e.touches[0].clientX;
+}, { passive: true });
+document.getElementById('canvas').addEventListener('touchmove', e => {
+  if(cameraMode !== 'fps' || !fpsSwipeDragging) return;
+  const dx = e.touches[0].clientX - fpsSwipeStartX;
+  fpsTouchDeltaX = Math.max(-8, Math.min(8, fpsTouchDeltaX + dx * 0.04));
+  fpsSwipeStartX = e.touches[0].clientX;
+}, { passive: true });
+document.getElementById('canvas').addEventListener('touchend', () => {
+  fpsSwipeDragging = false;
+  // Slowly return look center
+  const returnInterval = setInterval(() => {
+    fpsTouchDeltaX *= 0.88;
+    if(Math.abs(fpsTouchDeltaX) < 0.01) { fpsTouchDeltaX = 0; clearInterval(returnInterval); }
+  }, 16);
+});
+// Mouse drag for desktop
+let fpsMouseDragging = false, fpsMouseStartX = 0;
+document.getElementById('canvas').addEventListener('mousedown', e => {
+  if(cameraMode !== 'fps') return;
+  fpsMouseDragging = true; fpsMouseStartX = e.clientX;
+});
+document.addEventListener('mousemove', e => {
+  if(cameraMode !== 'fps' || !fpsMouseDragging) return;
+  fpsTouchDeltaX = Math.max(-8, Math.min(8, fpsTouchDeltaX + (e.clientX - fpsMouseStartX)*0.03));
+  fpsMouseStartX = e.clientX;
+});
+document.addEventListener('mouseup', () => { fpsMouseDragging = false; });
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Weather flavour
+const weathers = ['🌙 Ночь, тихо', '⭐ Звёздное небо', '🌊 Лёгкая зыбь', '🌿 Ветерок 2 м/с'];
+document.getElementById('weather-badge').textContent = weathers[Math.floor(Math.random()*weathers.length)];
+
+
+const SAVE_KEY = 'fishing3d_save';
+
+function saveGame() {
+  const data = {
+    coins: gs.coins,
+    caught: gs.caught,
+    bestFish: gs.bestFish,
+    equippedRodId,
+    rods: RODS.map(r => ({ id: r.id, owned: r.owned })),
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    if(typeof data.coins === 'number')  gs.coins  = data.coins;
+    if(typeof data.caught === 'number') gs.caught = data.caught;
+    if(data.bestFish) gs.bestFish = data.bestFish;
+    if(data.equippedRodId) equippedRodId = data.equippedRodId;
+    if(Array.isArray(data.rods)) {
+      data.rods.forEach(sr => {
+        const rod = RODS.find(r => r.id === sr.id);
+        if(rod) rod.owned = sr.owned;
+      });
+    }
+    // Update UI
+    coinsVal.textContent = gs.coins;
+    countVal.textContent = gs.caught;
+    if(gs.bestFish) bestVal.textContent = `🐟 ${gs.bestFish.weight.toFixed(2)}кг`;
+    const eq = RODS.find(r=>r.id===equippedRodId);
+    if(eq) equippedBadge.textContent = `${eq.emoji} ${eq.name}`;
+    showToast('💾 Прогресс загружен!');
+  } catch(e) {}
+}
+
+// Autosave every 30s + on state change
+setInterval(saveGame, 30000);
+window.addEventListener('beforeunload', saveGame);
+window.addEventListener('pagehide', saveGame);
+
+// =================== RODS DATA ===================
+const RODS = [
+  { id:'bamboo',   name:'Бамбуковая',  emoji:'🎋', stars:1, price:0,   color:0x88cc44, desc:'Простая бамбуковая удочка. Клюёт медленно, но верно.', owned:true, multiplier:1.0, rarity:0 },
+  { id:'wooden',   name:'Деревянная',  emoji:'🪵', stars:1, price:150,  color:0xaa6633, desc:'Надёжная деревяшка. Чуть быстрее стандартной.', owned:false, multiplier:1.2, rarity:0.30 },
+  { id:'carbon',   name:'Карбоновая',  emoji:'🔩', stars:2, price:150,  color:0x445566, desc:'Лёгкий карбон. Рыба клюёт заметно активнее!', owned:false, multiplier:1.5, rarity:0.25 },
+  { id:'golden',   name:'Золотая',     emoji:'✨', stars:3, price:150,  color:0xffcc00, desc:'Легендарная золотая удочка. Рыба сама прыгает!', owned:false, multiplier:2.0, rarity:0.20 },
+  { id:'magic',    name:'Волшебная',   emoji:'🪄', stars:3, price:150,  color:0xcc44ff, desc:'Магическая удочка. Притягивает редких рыб.', owned:false, multiplier:2.5, rarity:0.15 },
+  { id:'neon',     name:'Неоновая',    emoji:'💡', stars:4, price:150,  color:0x00ffcc, desc:'Светится под водой. Рыба не может устоять!', owned:false, multiplier:3.0, rarity:0.07 },
+  { id:'cosmic',   name:'Космическая', emoji:'🚀', stars:5, price:150,  color:0x4488ff, desc:'УЛЬТРА РЕДКАЯ. Из другой галактики. Монеты x4!', owned:false, multiplier:4.0, rarity:0.03 },
+];
+
+let equippedRodId = 'bamboo';
+const equippedBadge = document.getElementById('equipped-badge');
+
+function getEquippedRod() { return RODS.find(r=>r.id===equippedRodId); }
+
+// =================== HAPPY MEAL 3D SCENE ===================
+const mealCanvas = document.getElementById('meal-canvas');
+const mealRenderer = new THREE.WebGLRenderer({ canvas: mealCanvas, antialias: true, alpha: true });
+mealRenderer.setClearColor(0x000000, 0);
+mealRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+mealRenderer.shadowMap.enabled = true;
+
+const mealScene = new THREE.Scene();
+const mealCamera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+mealCamera.position.set(0, 2.8, 8.5);
+mealCamera.lookAt(0, 1.4, 0);
+
+// Lights
+const mealAmb = new THREE.AmbientLight(0xfff5e0, 0.9);
+mealScene.add(mealAmb);
+const mealKey = new THREE.DirectionalLight(0xffffff, 2.0);
+mealKey.position.set(4, 8, 6);
+mealKey.castShadow = true;
+mealScene.add(mealKey);
+const mealRim = new THREE.DirectionalLight(0xff8800, 0.6);
+mealRim.position.set(-5, 3, -4);
+mealScene.add(mealRim);
+const mealFill = new THREE.DirectionalLight(0xffeedd, 0.5);
+mealFill.position.set(0, -2, 8);
+mealScene.add(mealFill);
+
+// ---- HELPER: make a canvas texture with text/drawing ----
+function makeCanvasTex(w, h, drawFn) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  drawFn(ctx, w, h);
+  return new THREE.CanvasTexture(c);
+}
+
+// Front face texture: red bg + yellow smile face
+const frontTex = makeCanvasTex(512, 512, (ctx, w, h) => {
+  // Red background
+  ctx.fillStyle = '#dd1800';
+  ctx.fillRect(0, 0, w, h);
+  // Yellow gradient strip across middle
+  const grd = ctx.createLinearGradient(0, h*0.3, 0, h*0.72);
+  grd.addColorStop(0, '#ffdd00');
+  grd.addColorStop(1, '#ffaa00');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, h*0.33, w, h*0.38);
+  // Red overlay back on strip edges
+  ctx.fillStyle = '#dd1800';
+  ctx.fillRect(0, h*0.33, w, h*0.055);
+  ctx.fillRect(0, h*0.665, w, h*0.055);
+  // Smile arc
+  ctx.beginPath();
+  ctx.arc(w/2, h*0.55, w*0.28, 0.18*Math.PI, 0.82*Math.PI);
+  ctx.strokeStyle = '#dd1800';
+  ctx.lineWidth = 22;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  // Eyes
+  ctx.fillStyle = '#dd1800';
+  ctx.beginPath(); ctx.arc(w*0.34, h*0.38, 16, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(w*0.66, h*0.38, 16, 0, Math.PI*2); ctx.fill();
+  // White shine
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.fillRect(0, 0, w*0.5, h);
+});
+
+// Side texture: red with darker stripe
+const sideTex = makeCanvasTex(256, 512, (ctx, w, h) => {
+  ctx.fillStyle = '#cc1500';
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#bb1200';
+  ctx.fillRect(0, h*0.33, w, h*0.38);
+  ctx.fillStyle = 'rgba(255,255,255,0.05)';
+  ctx.fillRect(0, 0, w*0.4, h);
+});
+
+// Back texture
+const backTex = makeCanvasTex(512, 512, (ctx, w, h) => {
+  ctx.fillStyle = '#cc1500';
+  ctx.fillRect(0, 0, w, h);
+  // nutritional info lines
+  ctx.fillStyle = 'rgba(255,200,0,0.25)';
+  for(let i=0; i<8; i++) {
+    ctx.fillRect(w*0.1, h*(0.15+i*0.09), w*0.8, 5);
+  }
+});
+
+// Roof texture: red with yellow top edge
+const roofTex = makeCanvasTex(512, 256, (ctx, w, h) => {
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, '#ee2200');
+  g.addColorStop(1, '#cc1000');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#ffcc00';
+  ctx.fillRect(0, 0, w, 12);
+});
+
+// ---- BUILD BOX ----
+const boxGroup = new THREE.Group();
+
+const BW = 2.8, BH = 2.2, BD = 2.2; // box dims
+
+// Multi-material for box body faces: +x, -x, +y, -y, +z(front), -z(back)
+const bodyMats = [
+  new THREE.MeshStandardMaterial({ map: sideTex, roughness: 0.45 }),   // right
+  new THREE.MeshStandardMaterial({ map: sideTex, roughness: 0.45 }),   // left
+  new THREE.MeshStandardMaterial({ color: 0xcc1200, roughness: 0.5 }), // top
+  new THREE.MeshStandardMaterial({ color: 0xaa1000, roughness: 0.6 }), // bottom
+  new THREE.MeshStandardMaterial({ map: frontTex, roughness: 0.35 }),  // front
+  new THREE.MeshStandardMaterial({ map: backTex, roughness: 0.5 }),    // back
+];
+const boxBody = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD), bodyMats);
+boxBody.position.y = BH/2;
+boxBody.castShadow = true;
+boxGroup.add(boxBody);
+
+// ---- ROOF (house-shaped pyramid top) ----
+// Build as a frustum (truncated pyramid) — 4 trapezoidal panels
+const rH = 1.0; // roof height
+const rIn = 0.3; // inset at top
+const rY = BH;
+
+function addRoofPanel(ax,ay,az, bx,by,bz, cx,cy,cz, dx,dy,dz, mat) {
+  const geo = new THREE.BufferGeometry();
+  const verts = new Float32Array([ax,ay,az, bx,by,bz, cx,cy,cz, dx,dy,dz]);
+  geo.setAttribute('position', new THREE.BufferAttribute(verts,3));
+  geo.setIndex([0,1,2, 0,2,3]);
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  boxGroup.add(mesh);
+  return mesh;
+}
+
+const roofRed  = new THREE.MeshStandardMaterial({ map: roofTex, roughness: 0.4, side: THREE.DoubleSide });
+const roofDark = new THREE.MeshStandardMaterial({ color: 0xbb1000, roughness: 0.5, side: THREE.DoubleSide });
+
+const hw=BW/2, hd=BD/2;
+const tw=BW/2-rIn, td=BD/2-rIn;
+
+// Front face
+addRoofPanel(-hw,rY, hd,  hw,rY, hd,  tw,rY+rH, td, -tw,rY+rH, td, roofRed);
+// Back face
+addRoofPanel( hw,rY,-hd, -hw,rY,-hd, -tw,rY+rH,-td,  tw,rY+rH,-td, roofDark);
+// Left face
+addRoofPanel(-hw,rY,-hd, -hw,rY, hd, -tw,rY+rH, td, -tw,rY+rH,-td, roofDark);
+// Right face
+addRoofPanel( hw,rY, hd,  hw,rY,-hd,  tw,rY+rH,-td,  tw,rY+rH, td, roofRed);
+// Roof top flat cap
+const capMat = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.3, metalness: 0.15 });
+const cap = new THREE.Mesh(new THREE.BoxGeometry(tw*2, 0.1, td*2), capMat);
+cap.position.y = rY + rH + 0.05;
+boxGroup.add(cap);
+
+// ---- M ARCHES (proper golden M shape on top) ----
+const goldMat = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.2, metalness: 0.4 });
+
+function buildMArch() {
+  const mg = new THREE.Group();
+  // Two bumps of the M: left arch and right arch
+  // Left arch
+  const lArc = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.085, 12, 24, Math.PI), goldMat);
+  lArc.rotation.z = Math.PI;
+  lArc.position.x = -0.38;
+  mg.add(lArc);
+  // Right arch
+  const rArc = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.085, 12, 24, Math.PI), goldMat);
+  rArc.rotation.z = Math.PI;
+  rArc.position.x = 0.38;
+  mg.add(rArc);
+  // 3 legs at bottom of M
+  const legGeo = new THREE.CylinderGeometry(0.075, 0.075, 0.55, 8);
+  [-0.68, 0, 0.68].forEach(lx => {
+    const leg = new THREE.Mesh(legGeo, goldMat);
+    leg.position.set(lx, -0.27, 0);
+    mg.add(leg);
+  });
+  // Connecting base bar
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(1.46, 0.16, 0.17), goldMat);
+  bar.position.y = -0.47;
+  mg.add(bar);
+  return mg;
+}
+
+const mArches = buildMArch();
+mArches.position.set(0, rY + rH + 0.72, 0);
+boxGroup.add(mArches);
+
+// ---- LID (opens from the flat cap) ----
+const lidGroup = new THREE.Group();
+const lidPivotY = rY + rH + 0.1;
+const lidPivotZ = -td; // back edge of cap
+lidGroup.position.set(0, lidPivotY, lidPivotZ);
+
+// Main lid panel
+const lidMesh = new THREE.Mesh(
+  new THREE.BoxGeometry(tw*2, 0.12, td*2),
+  new THREE.MeshStandardMaterial({ color: 0xee2000, roughness: 0.35, metalness: 0.05 })
+);
+lidMesh.position.set(0, 0.01, td); // offset forward from pivot
+lidGroup.add(lidMesh);
+
+// Yellow edge trim on lid
+const lidEdge = new THREE.Mesh(
+  new THREE.BoxGeometry(tw*2+0.05, 0.15, 0.1),
+  new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.3, metalness: 0.2 })
+);
+lidEdge.position.set(0, 0.01, td*2 + 0.02);
+lidGroup.add(lidEdge);
+
+boxGroup.add(lidGroup);
+
+// Ground shadow disc
+const shadowDisc = new THREE.Mesh(
+  new THREE.CircleGeometry(2.2, 40),
+  new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28 })
+);
+shadowDisc.rotation.x = -Math.PI/2;
+shadowDisc.position.y = 0.01;
+mealScene.add(shadowDisc);
+
+// Glow disc
+const glowDisc = new THREE.Mesh(
+  new THREE.CircleGeometry(3.0, 40),
+  new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.1 })
+);
+glowDisc.rotation.x = -Math.PI/2;
+glowDisc.position.y = 0.005;
+mealScene.add(glowDisc);
+
+boxGroup.position.y = -0.2;
+mealScene.add(boxGroup);
+
+// Preview rod inside box (shown after opening)
+let previewRodGroup = null;
+
+function buildPreviewRod(rod) {
+  if(previewRodGroup) { mealScene.remove(previewRodGroup); previewRodGroup = null; }
+  const g = new THREE.Group();
+
+  const rodMat   = new THREE.MeshStandardMaterial({ color: rod.color, roughness: 0.3, metalness: 0.25 });
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, metalness: 0.92, roughness: 0.1 });
+  const darkMat  = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.85 });
+  const corkMat  = new THREE.MeshStandardMaterial({ color: 0xbb8855, roughness: 0.98 });
+  const goldMat  = new THREE.MeshStandardMaterial({ color: rod.stars >= 4 ? rod.color : 0xddaa33, metalness: 0.88, roughness: 0.1 });
+  const lineMat  = new THREE.LineBasicMaterial({ color: 0xdddddd, transparent: true, opacity: 0.65 });
+  const threadColor = rod.stars >= 4 ? rod.color : (rod.stars >= 2 ? 0xdd2200 : 0x333333);
+  const threadMat = new THREE.MeshStandardMaterial({ color: threadColor, roughness: 0.8 });
+
+  // All geometry built on local Y axis, group tilted ~36°
+  const rodRoot = new THREE.Group();
+  rodRoot.rotation.z = -Math.PI / 5;
+
+  // ── BLANK — 3 tapered sections ──
+  [
+    { r0:0.072, r1:0.055, h:1.1, y:0.55 },
+    { r0:0.055, r1:0.030, h:1.1, y:1.65 },
+    { r0:0.030, r1:0.009, h:0.9, y:2.65 },
+  ].forEach(s => {
+    const seg = new THREE.Mesh(new THREE.CylinderGeometry(s.r1, s.r0, s.h, 12), rodMat);
+    seg.position.y = s.y;
+    rodRoot.add(seg);
+  });
+
+  // Tip cap
+  const tipCap = new THREE.Mesh(new THREE.SphereGeometry(0.016, 8, 8), metalMat);
+  tipCap.position.y = 3.12;
+  rodRoot.add(tipCap);
+
+  // ── CORK GRIP ──
+  [
+    { r:0.093, h:0.18, y:0.09 },
+    { r:0.103, h:0.18, y:0.27 },
+    { r:0.110, h:0.18, y:0.45 },
+    { r:0.106, h:0.18, y:0.63 },
+    { r:0.096, h:0.18, y:0.81 },
+  ].forEach(s => {
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(s.r, s.r, s.h, 12), corkMat);
+    c.position.y = s.y;
+    rodRoot.add(c);
+  });
+  // Cork separators
+  [0.18, 0.36, 0.54, 0.72].forEach(y => {
+    const sep = new THREE.Mesh(new THREE.CylinderGeometry(0.114, 0.114, 0.020, 12), darkMat);
+    sep.position.y = y;
+    rodRoot.add(sep);
+  });
+
+  // ── REEL SEAT ──
+  const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.098, 0.098, 0.55, 14),
+    new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.35, metalness: 0.65 }));
+  seat.position.y = 1.17;
+  rodRoot.add(seat);
+  [1.00, 1.36].forEach(y => {
+    const hood = new THREE.Mesh(new THREE.CylinderGeometry(0.112, 0.112, 0.12, 14), metalMat);
+    hood.position.y = y;
+    rodRoot.add(hood);
+  });
+
+  // ── SPINNING REEL ──
+  const reelG = new THREE.Group();
+  reelG.position.set(0, 1.17, 0.14);
+
+  // Body housing
+  const rbody = new THREE.Mesh(new THREE.CylinderGeometry(0.155, 0.125, 0.21, 16),
+    new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.25, metalness: 0.75 }));
+  rbody.rotation.x = Math.PI/2;
+  reelG.add(rbody);
+
+  // Spool cylinder
+  const spool = new THREE.Mesh(new THREE.CylinderGeometry(0.135, 0.135, 0.09, 16),
+    new THREE.MeshStandardMaterial({ color: 0x777777, metalness: 0.82, roughness: 0.18 }));
+  spool.rotation.x = Math.PI/2;
+  spool.position.z = 0.145;
+  reelG.add(spool);
+
+  // Spool front lip
+  const spoolLip = new THREE.Mesh(new THREE.TorusGeometry(0.135, 0.016, 8, 20), metalMat);
+  spoolLip.position.z = 0.19;
+  reelG.add(spoolLip);
+
+  // Line on spool (wound thread look)
+  const lineWound = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.115, 0.07, 16),
+    new THREE.MeshStandardMaterial({ color: 0xddcc88, roughness: 0.6 }));
+  lineWound.rotation.x = Math.PI/2;
+  lineWound.position.z = 0.145;
+  reelG.add(lineWound);
+
+  // Bail wire
+  const bail = new THREE.Mesh(new THREE.TorusGeometry(0.125, 0.011, 6, 22, Math.PI), metalMat);
+  bail.position.z = 0.16;
+  bail.rotation.z = Math.PI/2;
+  reelG.add(bail);
+
+  // Bail roller
+  const roller = new THREE.Mesh(new THREE.SphereGeometry(0.020, 7, 7), goldMat);
+  roller.position.set(0.125, 0, 0.16);
+  reelG.add(roller);
+
+  // Handle arm
+  const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.30, 8),
+    new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.78 }));
+  arm.rotation.z = Math.PI/2;
+  arm.position.set(0.23, 0, -0.04);
+  reelG.add(arm);
+
+  // Handle knob
+  const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.042, 0.038, 0.10, 10), darkMat);
+  knob.position.set(0.38, 0, -0.04);
+  reelG.add(knob);
+
+  // Knob cap (chrome)
+  const knobCap = new THREE.Mesh(new THREE.SphereGeometry(0.042, 8, 8), metalMat);
+  knobCap.position.set(0.38, 0.05, -0.04);
+  reelG.add(knobCap);
+
+  // Counter-balance
+  const bal = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.026, 0.08, 8), darkMat);
+  bal.position.set(-0.24, 0, -0.04);
+  reelG.add(bal);
+
+  // Drag knob (front)
+  const drag = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.038, 12), goldMat);
+  drag.rotation.x = Math.PI/2;
+  drag.position.set(0, 0, 0.265);
+  reelG.add(drag);
+  // Drag knob ribs
+  for(let i=0;i<6;i++){
+    const rib = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.008, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0xaa8800, metalness: 0.7 }));
+    const a = (i/6)*Math.PI*2;
+    rib.position.set(Math.cos(a)*0.038, Math.sin(a)*0.038, 0.265);
+    reelG.add(rib);
+  }
+
+  // Reel foot
+  const foot = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.26, 0.035),
+    new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.6 }));
+  foot.position.set(0, 0, -0.11);
+  reelG.add(foot);
+
+  rodRoot.add(reelG);
+
+  // ── LINE GUIDES (7 guides + tip) ──
+  const guideYs = [1.42, 1.68, 1.92, 2.13, 2.32, 2.50, 2.66, 2.80];
+  const guideRs = [0.082,0.068,0.056,0.046,0.037,0.029,0.022,0.016];
+
+  guideYs.forEach((y, i) => {
+    const r = guideRs[i];
+    // Ring
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.010, 7, 16), metalMat);
+    ring.position.y = y;
+    ring.rotation.y = Math.PI/2;
+    rodRoot.add(ring);
+    // Two frame legs
+    [-1, 1].forEach(side => {
+      const legH = r * 1.6 + 0.015;
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, legH, 5), goldMat);
+      leg.position.set(side * r * 0.68, y - legH * 0.4, 0);
+      leg.rotation.z = side * 0.32;
+      rodRoot.add(leg);
+    });
+    // Thread wraps around each guide
+    [-0.048, -0.024, 0.024, 0.048].forEach(dy => {
+      const tw = new THREE.Mesh(new THREE.CylinderGeometry(0.076, 0.076, 0.013, 10), threadMat);
+      tw.position.y = y + dy;
+      rodRoot.add(tw);
+    });
+  });
+
+  // Tip guide
+  const tipRing = new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.007, 6, 12), metalMat);
+  tipRing.position.y = 3.05;
+  tipRing.rotation.y = Math.PI/2;
+  rodRoot.add(tipRing);
+
+  // ── FISHING LINE from tip ──
+  const lpts = [];
+  for(let i=0;i<=10;i++){
+    const t = i/10;
+    lpts.push(new THREE.Vector3(0, 3.05 - t*0.5, t*0.2));
+  }
+  rodRoot.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(lpts), lineMat));
+
+  // ── STAR PARTICLES for rare rods ──
+  if(rod.stars >= 3) {
+    const pMat = new THREE.MeshBasicMaterial({ color: rod.color });
+    for(let i=0;i<8;i++){
+      const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.055), pMat);
+      const a = (i/8)*Math.PI*2;
+      star.position.set(Math.cos(a)*0.9, 1.5 + Math.sin(a*2)*0.3, Math.sin(a)*0.9);
+      star.userData.orbitAngle = a;
+      star.userData.orbitSpeed = 0.024 + Math.random()*0.018;
+      g.add(star);
+    }
+  }
+
+  g.add(rodRoot);
+  g.position.set(0, 3.0, 0);
+  g.visible = false;
+  mealScene.add(g);
+  previewRodGroup = g;
+}
+
+// Build initial preview
+buildPreviewRod(RODS[1]);
+
+// ---- MEAL CANVAS RESIZE ----
+function resizeMealCanvas() {
+  const wrap = document.getElementById('meal-canvas-wrap');
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  mealRenderer.setSize(w, h);
+  mealCamera.aspect = w / h;
+  mealCamera.updateProjectionMatrix();
+}
+
+// ---- TOUCH DRAG to rotate box ----
+let mealDrag = false, mealLastX = 0, mealRotY = 0;
+mealCanvas.addEventListener('touchstart', e => { mealDrag=true; mealLastX=e.touches[0].clientX; });
+mealCanvas.addEventListener('touchmove', e => {
+  if(!mealDrag) return;
+  const dx = e.touches[0].clientX - mealLastX;
+  mealRotY += dx * 0.015;
+  mealLastX = e.touches[0].clientX;
+  e.preventDefault();
+}, { passive: false });
+mealCanvas.addEventListener('touchend', () => mealDrag=false);
+mealCanvas.addEventListener('mousedown', e => { mealDrag=true; mealLastX=e.clientX; });
+mealCanvas.addEventListener('mousemove', e => {
+  if(!mealDrag) return;
+  mealRotY += (e.clientX-mealLastX)*0.012;
+  mealLastX = e.clientX;
+});
+mealCanvas.addEventListener('mouseup', () => mealDrag=false);
+
+// ---- ANIMATION STATE ----
+let mealState = 'idle'; // idle | shaking | opening | revealing | done
+let mealAnimT = 0;
+let lidAngle = 0;
+let revealedRod = null;
+
+function mealAnimate() {
+  requestAnimationFrame(mealAnimate);
+
+  // Auto-rotate box when idle
+  if(mealState === 'idle' || mealState === 'done') {
+    if(!mealDrag) mealRotY += 0.008;
+  }
+  boxGroup.rotation.y = mealRotY;
+
+  if(mealState === 'shaking') {
+    mealAnimT += 0.05;
+    boxGroup.position.y = -0.2 + Math.abs(Math.sin(mealAnimT*8)) * 0.18;
+    boxGroup.rotation.z = Math.sin(mealAnimT*10) * 0.12;
+    if(mealAnimT > 1.8) {
+      mealState = 'opening';
+      mealAnimT = 0;
+      boxGroup.position.y = -0.2;
+      boxGroup.rotation.z = 0;
+    }
+  }
+
+  if(mealState === 'opening') {
+    mealAnimT += 0.022;
+    lidAngle = Math.min(mealAnimT * 2.0, Math.PI * 0.82);
+    lidGroup.rotation.x = -lidAngle; // opens backwards/upward
+    if(mealAnimT > 1.5) {
+      mealState = 'revealing';
+      mealAnimT = 0;
+      if(previewRodGroup) previewRodGroup.visible = true;
+    }
+  }
+
+  if(mealState === 'revealing') {
+    mealAnimT += 0.04;
+    if(previewRodGroup) {
+      previewRodGroup.position.y = 3.0 + Math.min(mealAnimT * 2.5, 1.5);
+      previewRodGroup.rotation.y += 0.06;
+      // Animate star particles
+      previewRodGroup.children.forEach(c => {
+        if(c.userData.orbitAngle !== undefined) {
+          c.userData.orbitAngle += c.userData.orbitSpeed;
+          c.position.x = Math.cos(c.userData.orbitAngle) * 0.7;
+          c.position.y = Math.sin(c.userData.orbitAngle) * 0.7;
+        }
+      });
+    }
+    if(mealAnimT > 1.2) {
+      mealState = 'done';
+      // Show result popup
+      setTimeout(() => {
+        document.getElementById('rod-result-emoji').textContent = revealedRod.emoji;
+        document.getElementById('rod-result-name').textContent = revealedRod.name;
+        document.getElementById('rod-result-stars').textContent = '⭐'.repeat(revealedRod.stars);
+        document.getElementById('rod-result-desc').textContent = revealedRod.desc;
+        document.getElementById('rod-result').classList.add('show');
+      }, 300);
+    }
+  }
+
+  if(mealState === 'done' && previewRodGroup) {
+    previewRodGroup.rotation.y += 0.02;
+    previewRodGroup.children.forEach(c => {
+      if(c.userData.orbitAngle !== undefined) {
+        c.userData.orbitAngle += c.userData.orbitSpeed;
+        c.position.x = Math.cos(c.userData.orbitAngle)*0.7;
+        c.position.y = Math.sin(c.userData.orbitAngle)*0.7;
+      }
+    });
+  }
+
+  // Glow pulse
+  glowDisc.material.opacity = 0.08 + Math.sin(Date.now()*0.003)*0.06;
+
+  mealRenderer.render(mealScene, mealCamera);
+}
+mealAnimate();
+
+// =================== SHOP UI ===================
+const shopBtn = document.getElementById('shop-btn');
+const shopOverlay = document.getElementById('shop-overlay');
+const shopClose = document.getElementById('shop-close');
+const openMealBtn = document.getElementById('open-meal-btn');
+const rodList = document.getElementById('rod-list');
+const rodResult = document.getElementById('rod-result');
+const rodResultClose = document.getElementById('rod-result-close');
+const MEAL_COST = 150;
+
+function openShop() {
+  shopOverlay.classList.add('open');
+  resizeMealCanvas();
+  renderRodList();
+  // Reset box
+  resetMealBox();
+}
+function closeShop() { shopOverlay.classList.remove('open'); }
+
+function resetMealBox() {
+  mealState = 'idle';
+  mealAnimT = 0;
+  lidAngle = 0;
+  lidGroup.rotation.x = 0;
+  boxGroup.position.y = -0.2;
+  boxGroup.rotation.z = 0;
+  if(previewRodGroup) previewRodGroup.visible = false;
+  rodResult.classList.remove('show');
+  openMealBtn.disabled = gs.coins < MEAL_COST;
+  document.getElementById('meal-price-display').textContent = MEAL_COST;
+}
+
+function renderRodList() {
+  rodList.innerHTML = '';
+  RODS.forEach(rod => {
+    const card = document.createElement('div');
+    card.className = 'rod-card' + (rod.owned?' owned':'') + (rod.id===equippedRodId?' selected':'');
+    card.innerHTML = `<span class="rod-icon">${rod.emoji}</span><span class="rod-name">${rod.name}</span><span class="rod-price">${rod.owned ? (rod.id===equippedRodId?'✓ Надета':'Надеть') : '🎁 Меал'}</span>`;
+    card.addEventListener('click', () => {
+      if(rod.owned) {
+        equippedRodId = rod.id;
+        equippedBadge.textContent = `${rod.emoji} ${rod.name}`;
+        renderRodList();
+        // Preview this rod
+        buildPreviewRod(rod);
+        resetMealBox();
+      }
+    });
+    rodList.appendChild(card);
+  });
+}
+
+function pickRodFromMeal() {
+  // Weighted random by rarity (higher rarity = rarer = lower chance)
+  const unowned = RODS.filter(r=>!r.owned && r.rarity>0);
+  if(unowned.length === 0) return RODS[Math.floor(Math.random()*RODS.length)];
+  const weights = unowned.map(r=>r.rarity);
+  const total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for(let i=0;i<unowned.length;i++){
+    r -= unowned[i].rarity;
+    if(r<=0) return unowned[i];
+  }
+  return unowned[unowned.length-1];
+}
+
+openMealBtn.addEventListener('click', () => {
+  if(gs.coins < MEAL_COST || mealState !== 'idle') return;
+  gs.coins -= MEAL_COST;
+  coinsVal.textContent = gs.coins;
+  openMealBtn.disabled = true;
+
+  revealedRod = pickRodFromMeal();
+  revealedRod.owned = true;
+  buildPreviewRod(revealedRod);
+
+  mealState = 'shaking';
+  mealAnimT = 0;
+});
+
+rodResultClose.addEventListener('click', () => {
+  rodResult.classList.remove('show');
+  renderRodList();
+  openMealBtn.disabled = gs.coins < MEAL_COST;
+  mealState = 'idle';
+  mealAnimT = 0;
+});
+
+shopBtn.addEventListener('click', openShop);
+shopBtn.addEventListener('touchstart', e=>{ e.preventDefault(); openShop(); });
+shopClose.addEventListener('click', closeShop);
+shopClose.addEventListener('touchstart', e=>{ e.preventDefault(); closeShop(); });
+
+// Apply rod multiplier to coin gains + show 3D fish in popup
+const _origShowCatch = showCatch;
+showCatch = function() {
+  const rod = getEquippedRod();
+  const fish = gs.currentFish;
+  const weight = randBetween(...fish.weight);
+  const baseCoins = Math.round(randBetween(...fish.coins));
+  const coins = Math.round(baseCoins * (rod ? rod.multiplier : 1));
+
+  gs.coins += coins;
+  gs.caught++;
+  if(!gs.bestFish || weight > gs.bestFish.weight) {
+    gs.bestFish = { name: fish.name, weight };
+    bestVal.textContent = `${fish.emoji} ${weight.toFixed(2)}кг`;
+  }
+  coinsVal.textContent = gs.coins;
+  countVal.textContent = gs.caught;
+
+  // Build unique 3D fish
+  buildCatchFish(fish);
+
+  // Stars
+  const starsEl = document.getElementById('popup-stars');
+  starsEl.innerHTML = '';
+  for(let i=0;i<5;i++){
+    const s = document.createElement('span');
+    s.className = 'rarity-star';
+    s.textContent = i < fish.stars ? '⭐' : '☆';
+    s.style.opacity = i < fish.stars ? '1' : '0.25';
+    starsEl.appendChild(s);
+  }
+
+  // Border color by rarity
+  const rarityColors = ['rgba(100,200,100,0.7)','rgba(100,200,100,0.7)','rgba(50,150,255,0.7)','rgba(180,80,255,0.7)','rgba(255,200,0,0.9)'];
+  catchPopup.style.borderColor = rarityColors[Math.min(fish.stars-1, 4)];
+
+  popupName.textContent = fish.name;
+  popupWeight.textContent = `⚖️ ${weight.toFixed(2)} кг`;
+  popupCoins.textContent = `+${coins} монет ${rod&&rod.multiplier>1?'(x'+rod.multiplier+')':''}`;
+  catchPopup.classList.add('show');
+  addLog(fish.emoji, fish.name, weight);
+  saveGame(); // save on every catch
+  setTimeout(() => {
+    catchPopup.classList.remove('show');
+    setState('idle');
+  }, 3000);
+};
+
+// Save when buying rod
+const _origRodResultClose = rodResultClose.onclick;
+rodResultClose.addEventListener('click', () => { saveGame(); });
+openMealBtn.addEventListener('click', () => { setTimeout(saveGame, 100); });
+
+// Load game on start (after all RODS are defined)
+loadGame();
+</script>
+
+<!-- ============ ГАЛЬЯЖ МИНИ-ЧАТ ============ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+/* ── Кнопка чата ── */
+#galyazh-btn {
+  position: fixed;
+  bottom: 178px; right: 18px;
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00c853, #00897b);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 20px rgba(0,200,83,0.45);
+  z-index: 300;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .14s, box-shadow .14s;
+  user-select: none;
+}
+#galyazh-btn:active { transform: scale(.88); }
+
+/* Бейдж непрочитанных */
+#galyazh-badge {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  background: #ff5252; border-radius: 9px;
+  font-size: 10px; font-weight: 800; color: #fff;
+  display: none; align-items: center; justify-content: center;
+  border: 2px solid #000;
+}
+#galyazh-badge.show { display: flex; }
+
+/* ── Основная панель ── */
+#galyazh-panel {
+  position: fixed;
+  bottom: 240px; right: 12px;
+  width: calc(100vw - 24px); max-width: 300px;
+  height: 360px;
+  border-radius: 22px;
+  background: #0a1512;
+  border: 1px solid rgba(0,230,118,0.2);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,200,83,0.1);
+  z-index: 400;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.85) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .28s cubic-bezier(.34,1.56,.64,1), opacity .22s ease;
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+#galyazh-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Хедер ── */
+#g-header {
+  background: linear-gradient(135deg, #00897b, #00c853);
+  padding: 12px 14px 10px;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+#g-header-logo {
+  width: 34px; height: 34px; border-radius: 11px;
+  background: rgba(255,255,255,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+#g-header-info { flex: 1; }
+#g-header-title {
+  color: #fff; font-size: 15px; font-weight: 900;
+  letter-spacing: -.3px;
+}
+#g-header-sub { color: rgba(255,255,255,.7); font-size: 10px; font-weight: 600; }
+#g-close {
+  width: 30px; height: 30px; border-radius: 10px;
+  background: rgba(255,255,255,.15);
+  border: none; color: #fff; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+#g-close:active { background: rgba(255,255,255,.3); }
+
+/* ── Auth экран ── */
+#g-auth {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 14px; gap: 7px; overflow-y: auto;
+}
+#g-auth p { color: rgba(255,255,255,.5); font-size: 11px; text-align: center; margin-bottom: 2px; }
+.g-inp {
+  width: 100%; padding: 8px 11px;
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(0,230,118,.2);
+  border-radius: 11px; color: #fff;
+  font-size: 12px; outline: none;
+  font-family: inherit;
+  transition: border-color .2s;
+}
+.g-inp:focus { border-color: #00e676; }
+.g-inp::placeholder { color: rgba(255,255,255,.28); }
+.g-btn {
+  width: 100%; padding: 9px;
+  background: linear-gradient(135deg, #00c853, #00897b);
+  border: none; border-radius: 11px;
+  color: #fff; font-size: 12px; font-weight: 800;
+  cursor: pointer; font-family: inherit;
+  transition: transform .12s;
+}
+.g-btn:active { transform: scale(.96); }
+#g-auth-err { color: #ff6b6b; font-size: 11px; min-height: 14px; text-align: center; }
+.g-tabs { display: flex; background: rgba(0,0,0,.3); border-radius: 12px; padding: 3px; width: 100%; }
+.g-tab {
+  flex: 1; padding: 7px; text-align: center;
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,.4);
+  border-radius: 10px; cursor: pointer; transition: .2s;
+}
+.g-tab.on {
+  background: linear-gradient(135deg, #00c853, #00897b);
+  color: #fff;
+}
+
+/* ── Чат экран ── */
+#g-chat { flex: 1; display: none; flex-direction: column; }
+#g-chat.show { display: flex; }
+
+/* Список чатов */
+#g-rooms {
+  flex: 1; overflow-y: auto; scrollbar-width: none;
+  display: flex; flex-direction: column;
+}
+#g-rooms::-webkit-scrollbar { display: none; }
+
+.g-room-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0,230,118,.07);
+  cursor: pointer; transition: background .15s;
+}
+.g-room-row:active { background: rgba(0,200,83,.08); }
+.g-av {
+  width: 38px; height: 38px; border-radius: 13px;
+  background: linear-gradient(135deg, #00c853, #00897b);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0; font-weight: 800; color: #fff;
+}
+.g-room-name { color: #e0f5e4; font-size: 13px; font-weight: 800; }
+.g-room-last { color: rgba(255,255,255,.35); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g-unread {
+  min-width: 18px; height: 18px; padding: 0 4px;
+  background: #00c853; border-radius: 9px;
+  font-size: 10px; font-weight: 800; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: auto; flex-shrink: 0;
+}
+
+/* Кнопка нового чата */
+#g-new-chat {
+  padding: 8px 14px; border-bottom: 1px solid rgba(0,230,118,.1);
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; flex-shrink: 0;
+}
+#g-new-chat:active { background: rgba(0,200,83,.08); }
+#g-new-chat span { color: #00e676; font-size: 12px; font-weight: 800; }
+
+/* ── Диалог ── */
+#g-dialog { flex: 1; display: none; flex-direction: column; }
+#g-dialog.show { display: flex; }
+
+#g-dialog-header {
+  background: rgba(0,137,123,.3);
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0; border-bottom: 1px solid rgba(0,230,118,.1);
+}
+#g-back {
+  width: 28px; height: 28px; border-radius: 9px;
+  background: rgba(255,255,255,.1); border: none;
+  color: #fff; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+#g-back:active { background: rgba(255,255,255,.2); }
+#g-dialog-name { color: #fff; font-size: 13px; font-weight: 800; flex: 1; }
+#g-dialog-online { color: rgba(255,255,255,.5); font-size: 10px; }
+
+/* Сообщения */
+#g-msgs {
+  flex: 1; overflow-y: auto; padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 4px;
+  scrollbar-width: none;
+  background: radial-gradient(circle at 20% 80%, rgba(0,200,83,.05) 0%, transparent 60%);
+}
+#g-msgs::-webkit-scrollbar { display: none; }
+
+.g-bbl {
+  max-width: 80%; padding: 7px 10px;
+  border-radius: 14px; font-size: 13px;
+  line-height: 1.4; word-break: break-word;
+  animation: gPop .2s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes gPop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.g-bbl.out {
+  background: #1a4028; color: #c8f7d0;
+  align-self: flex-end; border-bottom-right-radius: 4px;
+}
+.g-bbl.in {
+  background: #172a1e; color: #e0f5e4;
+  align-self: flex-start; border-bottom-left-radius: 4px;
+}
+.g-bbl-sender { font-size: 10px; font-weight: 800; color: #00e676; margin-bottom: 2px; }
+.g-bbl-time { font-size: 9px; color: rgba(255,255,255,.3); float: right; margin-left: 8px; margin-top: 2px; }
+
+/* Ввод сообщения */
+#g-input-area {
+  display: flex; gap: 7px; padding: 8px 10px;
+  background: rgba(0,0,0,.3);
+  border-top: 1px solid rgba(0,230,118,.1);
+  flex-shrink: 0;
+}
+#g-msg-input {
+  flex: 1; padding: 9px 12px;
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(0,230,118,.18);
+  border-radius: 14px; color: #fff;
+  font-size: 13px; outline: none; font-family: inherit;
+  transition: border-color .2s;
+}
+#g-msg-input:focus { border-color: #00e676; }
+#g-msg-input::placeholder { color: rgba(255,255,255,.25); }
+#g-send {
+  width: 38px; height: 38px; border-radius: 13px;
+  background: linear-gradient(135deg, #00c853, #00897b);
+  border: none; color: #fff; font-size: 17px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: transform .12s;
+}
+#g-send:active { transform: scale(.88); }
+
+/* Поиск пользователя */
+#g-find-user {
+  padding: 10px 14px; display: none; flex-direction: column; gap: 8px;
+  border-bottom: 1px solid rgba(0,230,118,.1); flex-shrink: 0;
+}
+#g-find-user.show { display: flex; }
+#g-find-inp {
+  width: 100%; padding: 8px 11px;
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(0,230,118,.2);
+  border-radius: 11px; color: #fff;
+  font-size: 12px; outline: none; font-family: inherit;
+}
+#g-find-inp::placeholder { color: rgba(255,255,255,.28); }
+#g-find-results { display: flex; flex-direction: column; gap: 4px; max-height: 100px; overflow-y: auto; }
+.g-find-row {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+  background: rgba(255,255,255,.05); border-radius: 10px; cursor: pointer;
+}
+.g-find-row:active { background: rgba(0,200,83,.1); }
+.g-find-name { color: #e0f5e4; font-size: 12px; font-weight: 700; }
+
+/* Нет чатов плейсхолдер */
+#g-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,.25); font-size: 12px; gap: 8px;
+  padding: 20px;
+}
+#g-empty-icon { font-size: 36px; opacity: 0.5; }
+
+/* Загрузка */
+#g-loading {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.35); font-size: 12px; gap: 8px;
+}
+.g-spin {
+  width: 16px; height: 16px; border: 2px solid rgba(0,230,118,.3);
+  border-top-color: #00e676; border-radius: 50%;
+  animation: gSpin .7s linear infinite;
+}
+@keyframes gSpin { to { transform: rotate(360deg); } }
+</style>
+
+<!-- Кнопка чата -->
+<button id="galyazh-btn" onclick="toggleGalyazh()">
+  💬
+  <div id="galyazh-badge"></div>
+</button>
+
+<!-- Панель чата -->
+<div id="galyazh-panel">
+  <!-- Хедер -->
+  <div id="g-header">
+    <div id="g-header-logo">🌿</div>
+    <div id="g-header-info">
+      <div id="g-header-title">Грильяж</div>
+      <div id="g-header-sub" id="g-online-sub">мессенджер</div>
+    </div>
+    <button id="g-close" onclick="toggleGalyazh()">✕</button>
+  </div>
+
+  <!-- Auth экран -->
+  <div id="g-auth">
+    <p>Войди чтобы писать<br>с другими игроками</p>
+    <div class="g-tabs">
+      <div class="g-tab on" onclick="gSwitchTab('login')">Вход</div>
+      <div class="g-tab" onclick="gSwitchTab('reg')">Регистрация</div>
+    </div>
+    <input class="g-inp" id="g-email" type="email" placeholder="Email">
+    <input class="g-inp" id="g-pass" type="password" placeholder="Пароль">
+    <input class="g-inp" id="g-name" type="text" placeholder="Имя (для регистрации)" style="display:none">
+    <button class="g-btn" id="g-auth-btn" onclick="gDoAuth()">Войти</button>
+    <div id="g-auth-err"></div>
+  </div>
+
+  <!-- Чат (список комнат) -->
+  <div id="g-chat">
+    <div id="g-new-chat" onclick="gShowFind()">
+      <div class="g-av" style="width:30px;height:30px;font-size:14px;border-radius:10px">➕</div>
+      <span>Новый чат</span>
+    </div>
+    <div id="g-find-user">
+      <input id="g-find-inp" placeholder="Поиск по нику или email..." oninput="gFindUser(this.value)">
+      <div id="g-find-results"></div>
+    </div>
+    <div id="g-loading"><div class="g-spin"></div>Загрузка...</div>
+    <div id="g-rooms"></div>
+    <div id="g-empty" style="display:none">
+      <div id="g-empty-icon">💬</div>
+      <div>Пока нет чатов</div>
+      <div style="font-size:10px;opacity:.6">Нажми ➕ чтобы начать</div>
+    </div>
+  </div>
+
+  <!-- Диалог -->
+  <div id="g-dialog">
+    <div id="g-dialog-header">
+      <button id="g-back" onclick="gBackToRooms()">←</button>
+      <div>
+        <div id="g-dialog-name">—</div>
+        <div id="g-dialog-online">оффлайн</div>
+      </div>
+    </div>
+    <div id="g-msgs"></div>
+    <div id="g-input-area">
+      <input id="g-msg-input" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')gSendMsg()">
+      <button id="g-send" onclick="gSendMsg()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =================== ГАЛЬЯЖ МИНИ-ЧАТ ===================
+let gAuth, gDb, gMe = null;
+let gCurrentCid = null, gMsgsListener = null, gRoomsListener = null;
+let gAuthTab = 'login';
+let gUnreadTotal = 0;
+let gPanelOpen = false;
+
+// Firebase init (отдельный app чтобы не конфликтовать)
+try {
+  const gApp = firebase.initializeApp({
+    apiKey: "AIzaSyCUETatARBNyQt4B5REqzTkDniiKq7LOJg",
+    authDomain: "grilyash-1fe86.firebaseapp.com",
+    databaseURL: "https://grilyash-1fe86-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "grilyash-1fe86",
+    storageBucket: "grilyash-1fe86.firebasestorage.app",
+    messagingSenderId: "139165261793",
+    appId: "1:139165261793:web:b03bfb166a8c09b0bc3ca0"
+  }, 'grilyazh-mini');
+  gAuth = gApp.auth();
+  gDb   = gApp.database();
+} catch(e) { console.warn('[Galyazh]', e); }
+
+// Панель открыть/закрыть
+function toggleGalyazh() {
+  gPanelOpen = !gPanelOpen;
+  document.getElementById('galyazh-panel').classList.toggle('open', gPanelOpen);
+  if(gPanelOpen && gMe) gLoadRooms();
+}
+
+// Переключение таба auth
+function gSwitchTab(tab) {
+  gAuthTab = tab;
+  document.querySelectorAll('.g-tab').forEach((t,i) => t.classList.toggle('on', (tab==='login'?i===0:i===1)));
+  document.getElementById('g-name').style.display = tab==='reg' ? 'block' : 'none';
+  document.getElementById('g-auth-btn').textContent = tab==='login' ? 'Войти' : 'Зарегистрироваться';
+  document.getElementById('g-auth-err').textContent = '';
+}
+
+// Auth
+async function gDoAuth() {
+  const email = document.getElementById('g-email').value.trim();
+  const pass  = document.getElementById('g-pass').value;
+  const name  = document.getElementById('g-name').value.trim();
+  const errEl = document.getElementById('g-auth-err');
+  errEl.textContent = '';
+  if(!email || !pass) { errEl.textContent = 'Заполни поля'; return; }
+  try {
+    let cred;
+    if(gAuthTab === 'login') {
+      cred = await gAuth.signInWithEmailAndPassword(email, pass);
+    } else {
+      if(!name) { errEl.textContent = 'Введи имя'; return; }
+      cred = await gAuth.createUserWithEmailAndPassword(email, pass);
+      await gDb.ref('users/'+cred.user.uid).set({
+        name, email, avatar:'', createdAt: Date.now()
+      });
+    }
+    gOnLogin(cred.user);
+  } catch(e) {
+    const msgs = {
+      'auth/user-not-found':     '❌ Пользователь не найден — сначала зарегистрируйся',
+      'auth/wrong-password':     '❌ Неверный пароль',
+      'auth/invalid-credential': '❌ Неверный email или пароль',
+      'auth/email-already-in-use':'❌ Email уже занят',
+      'auth/weak-password':      '❌ Пароль минимум 6 символов',
+      'auth/invalid-email':      '❌ Неверный формат email',
+      'auth/too-many-requests':  '❌ Слишком много попыток — подожди',
+      'auth/network-request-failed': '❌ Нет сети',
+    };
+    errEl.textContent = msgs[e.code] || ('❌ ' + e.message);
+  }
+}
+
+async function gGuestLogin() {
+  try {
+    const cred = await gAuth.signInAnonymously();
+    const guestName = 'Рыбак' + Math.floor(Math.random()*9000+1000);
+    await gDb.ref('users/'+cred.user.uid).set({
+      name: guestName, email: '', avatar: '🎣',
+      guest: true, createdAt: Date.now()
+    });
+    gOnLogin(cred.user);
+  } catch(e) { console.warn(e); }
+}
+
+async function gOnLogin(user) {
+  gMe = user;
+  const snap = await gDb.ref('users/'+user.uid).once('value');
+  const profile = snap.val() || {};
+  gMe._name = profile.name || user.displayName || 'Рыбак';
+  gMe._avatar = profile.avatar || '';
+
+  // Обновить online статус
+  gDb.ref('users/'+user.uid+'/online').set(true);
+  gDb.ref('users/'+user.uid+'/online').onDisconnect().set(false);
+
+  document.getElementById('g-auth').style.display = 'none';
+  document.getElementById('g-chat').classList.add('show');
+  document.getElementById('g-header-sub').textContent = gMe._name;
+  gLoadRooms();
+}
+
+// Загрузка комнат
+function gLoadRooms() {
+  if(!gMe) return;
+  document.getElementById('g-loading').style.display = 'flex';
+  document.getElementById('g-rooms').innerHTML = '';
+  document.getElementById('g-empty').style.display = 'none';
+
+  if(gRoomsListener) gDb.ref('chats').off('value', gRoomsListener);
+
+  // Получаем чаты где участвует текущий пользователь
+  gRoomsListener = gDb.ref('chats').on('value', snap => {
+      document.getElementById('g-loading').style.display = 'none';
+      const roomsEl = document.getElementById('g-rooms');
+      roomsEl.innerHTML = '';
+      const chats = [];
+      snap.forEach(c => {
+        const d = c.val();
+        if(d && d.members && d.members[gMe.uid]) chats.push({id: c.key, ...d});
+      });
+
+      if(chats.length === 0) {
+        document.getElementById('g-empty').style.display = 'flex';
+        return;
+      }
+      document.getElementById('g-empty').style.display = 'none';
+
+      // Сортировка по времени последнего сообщения
+      chats.sort((a,b) => (b.lastTime||0)-(a.lastTime||0));
+
+      let totalUnread = 0;
+      chats.forEach(chat => {
+        const otherUid = Object.keys(chat.members||{}).find(u=>u!==gMe.uid);
+        const otherName = chat.names?.[otherUid] || 'Пользователь';
+        const otherAvatar = chat.avatars?.[otherUid] || '👤';
+        const unread = chat.unread?.[gMe.uid] || 0;
+        totalUnread += unread;
+
+        const row = document.createElement('div');
+        row.className = 'g-room-row';
+        const lastMsg = chat.lastMsg || '';
+        const t = chat.lastTime ? gFmtTime(chat.lastTime) : '';
+        row.innerHTML = `
+          <div class="g-av">${typeof otherAvatar==='string'&&otherAvatar.length<4?otherAvatar:otherName[0]?.toUpperCase()||'?'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="g-room-name">${gEsc(otherName)}</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.3)">${t}</div>
+            </div>
+            <div class="g-room-last">${gEsc(lastMsg)}</div>
+          </div>
+          ${unread>0?`<div class="g-unread">${unread}</div>`:''}
+        `;
+        row.onclick = () => gOpenDialog(chat.id, otherName, otherUid);
+        roomsEl.appendChild(row);
+      });
+
+      // Бейдж непрочитанных
+      gUnreadTotal = totalUnread;
+      const badge = document.getElementById('galyazh-badge');
+      badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+      badge.classList.toggle('show', totalUnread > 0);
+    });
+}
+
+// Найти пользователя
+async function gFindUser(query) {
+  const res = document.getElementById('g-find-results');
+  if(!query || query.length < 2) { res.innerHTML = ''; return; }
+  res.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:11px;padding:4px">Поиск...</div>';
+  try {
+    const snap = await gDb.ref('users').orderByChild('name').startAt(query).endAt(query+'\uf8ff').limitToFirst(8).once('value');
+    res.innerHTML = '';
+    let found = 0;
+    snap.forEach(s => {
+      if(s.key === gMe.uid) return;
+      found++;
+      const u = s.val();
+      const row = document.createElement('div');
+      row.className = 'g-find-row';
+      row.innerHTML = `
+        <div class="g-av" style="width:26px;height:26px;font-size:12px;border-radius:9px">${u.avatar||u.name?.[0]?.toUpperCase()||'?'}</div>
+        <div class="g-find-name">${gEsc(u.name)}</div>
+      `;
+      row.onclick = () => gStartChat(s.key, u);
+      res.appendChild(row);
+    });
+    if(!found) res.innerHTML = '<div style="color:rgba(255,255,255,.3);font-size:11px;padding:4px">Не найдено</div>';
+  } catch(e) { res.innerHTML = ''; }
+}
+
+// Начать чат с пользователем
+async function gStartChat(uid, profile) {
+  // Создаём или находим существующий чат
+  const cid = [gMe.uid, uid].sort().join('_');
+  await gDb.ref('chats/'+cid).set({
+    members: { [gMe.uid]: true, [uid]: true },
+    names: { [gMe.uid]: gMe._name, [uid]: profile.name },
+    avatars: { [gMe.uid]: gMe._avatar, [uid]: profile.avatar||'' },
+    lastMsg: '', lastTime: Date.now(), createdAt: Date.now()
+  });
+  gHideFind();
+  gOpenDialog(cid, profile.name, uid);
+}
+
+function gShowFind() {
+  document.getElementById('g-find-user').classList.add('show');
+  setTimeout(() => document.getElementById('g-find-inp').focus(), 100);
+}
+function gHideFind() {
+  document.getElementById('g-find-user').classList.remove('show');
+  document.getElementById('g-find-inp').value = '';
+  document.getElementById('g-find-results').innerHTML = '';
+}
+
+// Открыть диалог
+function gOpenDialog(cid, name, otherUid) {
+  gCurrentCid = cid;
+  document.getElementById('g-chat').classList.remove('show');
+  document.getElementById('g-dialog').classList.add('show');
+  document.getElementById('g-dialog-name').textContent = name;
+
+  // Онлайн статус собеседника
+  gDb.ref('users/'+otherUid+'/online').on('value', s => {
+    document.getElementById('g-dialog-online').textContent = s.val() ? '🟢 онлайн' : 'оффлайн';
+  });
+
+  // Сброс непрочитанных
+  gDb.ref('chats/'+cid+'/unread/'+gMe.uid).set(0);
+
+  // Загрузка сообщений
+  gLoadMsgs(cid);
+}
+
+function gLoadMsgs(cid) {
+  const msgsEl = document.getElementById('g-msgs');
+  msgsEl.innerHTML = '';
+  if(gMsgsListener) gDb.ref('messages/'+gCurrentCid).off('child_added', gMsgsListener);
+
+  gMsgsListener = gDb.ref('messages/'+cid).orderByChild('ts').limitToLast(60)
+    .on('child_added', snap => {
+      const m = snap.val();
+      const isOut = m.uid === gMe.uid;
+      const bbl = document.createElement('div');
+      bbl.className = 'g-bbl ' + (isOut ? 'out' : 'in');
+      bbl.innerHTML = `
+        ${!isOut ? `<div class="g-bbl-sender">${gEsc(m.name||'?')}</div>` : ''}
+        ${gEsc(m.text)}
+        <div class="g-bbl-time">${gFmtTime(m.ts)}</div>
+      `;
+      msgsEl.appendChild(bbl);
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    });
+}
+
+// Отправить сообщение
+async function gSendMsg() {
+  if(!gMe || !gCurrentCid) return;
+  const inp = document.getElementById('g-msg-input');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  const ts = Date.now();
+  const msg = { uid: gMe.uid, name: gMe._name, text, ts };
+  await gDb.ref('messages/'+gCurrentCid).push(msg);
+  // Обновить последнее сообщение + счётчик непрочитанных
+  await gDb.ref('chats/'+gCurrentCid).update({
+    lastMsg: text.length>40 ? text.slice(0,40)+'…' : text,
+    lastTime: ts
+  });
+  // Инкрементировать непрочитанные для всех участников кроме себя
+  const chatSnap = await gDb.ref('chats/'+gCurrentCid+'/members').once('value');
+  chatSnap.forEach(m => {
+    if(m.key !== gMe.uid) {
+      gDb.ref('chats/'+gCurrentCid+'/unread/'+m.key).transaction(v => (v||0)+1);
+    }
+  });
+}
+
+// Назад к списку
+function gBackToRooms() {
+  if(gMsgsListener) { gDb.ref('messages/'+gCurrentCid).off('child_added', gMsgsListener); gMsgsListener=null; }
+  gCurrentCid = null;
+  document.getElementById('g-dialog').classList.remove('show');
+  document.getElementById('g-chat').classList.add('show');
+  gLoadRooms();
+}
+
+// Утилиты
+function gFmtTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  if(d.toDateString()===now.toDateString()) return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+  return d.getDate()+'.'+(d.getMonth()+1);
+}
+function gEsc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Авто-логин при старте
+if(gAuth) {
+  gAuth.onAuthStateChanged(user => {
+    if(user) gOnLogin(user);
+  });
+}
+</script>
+</body>
+</html>

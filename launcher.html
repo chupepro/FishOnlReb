@@ -213,8 +213,17 @@ header {
   height:130px; display:flex; align-items:center; justify-content:center;
   position:relative; overflow:hidden; font-size:52px;
 }
-.banner-fishing1 { background:linear-gradient(160deg,#0a1e35 0%,#0c3b6e 60%,#1460a0 100%); }
-.banner-fishing2 { background:linear-gradient(160deg,#0a1e15 0%,#0c4e28 60%,#148040 100%); }
+.banner-fishing1  { background:linear-gradient(160deg,#0a1e35 0%,#0c3b6e 60%,#1460a0 100%); }
+.banner-fishing2  { background:linear-gradient(160deg,#0a1e15 0%,#0c4e28 60%,#148040 100%); }
+.banner-fishing3d { background:#040d1a; position:relative; overflow:hidden; }
+.banner-fishing3d canvas { position:absolute; inset:0; width:100%; height:100%; }
+.banner-fishing3d .fish3d-label {
+  position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+  font-family:'IM Fell English',serif; font-style:italic;
+  font-size:10px; color:rgba(100,220,255,0.7); letter-spacing:0.15em;
+  text-shadow:0 0 8px rgba(100,200,255,0.5); white-space:nowrap; z-index:3;
+  pointer-events:none;
+}
 .banner-klevoe   { background:linear-gradient(160deg,#2a1a08 0%,#5a3a10 60%,#8a6020 100%); }
 .banner-graffiti { background:linear-gradient(160deg,#0a0a0a 0%,#1a0a2a 50%,#2a0a1a 100%); position:relative; }
 .banner-graffiti::before {
@@ -471,7 +480,7 @@ footer {
   </div>
 
   <footer>
-    <span>© Chupepp Games · Все пять игр в одном месте</span>
+    <span>© Chupepp Games · Все шесть игр в одном месте</span>
     <div class="footer-seal">v1.0.0</div>
   </footer>
 </div>
@@ -494,6 +503,14 @@ const GAMES = [
     tags:['Idle','Роботы','Строительство','Заводы'],
     url:'РоботноеМесто-4.html',
     active:true, banner:'banner-robot'
+  },
+  {
+    id:5, name:'3D Рыбалка', icon:'🎣',
+    sub:'3D Рыбалка · Активна',
+    desc:'Реалистичная 3D рыбалка на Three.js: забрасывай удочку, лови рыбу, прокачивай снасти и исследуй подводный мир!',
+    tags:['3D','Three.js','Рыбалка','Экшн'],
+    url:'https://chupepro.github.io/FishOnlReb/fishing3d-4.html',
+    active:true, banner:'banner-fishing3d'
   },
   {
     id:3, name:'Graffiti Pro', icon:'🎨',
@@ -523,6 +540,7 @@ const ARCHIVED = [
   }
 ];
 const NEWS = [
+  {game:'3D Рыбалка',         knot:'knot-fishing',  title:'3D Рыбалка добавлена!',       body:'Three.js рыбалка с реалистичной физикой, подводным миром и прокачкой удилищ.', date:'Сегодня'},
   {game:'Роботное Место',    knot:'knot-robot',   title:'Роботное Место запущено!',   body:'Строй завод, апгрейди роботов, защищайся от вторжений — новая игра в лаунчере.', date:'Сегодня'},
   {game:'Graffiti Pro',        knot:'knot-graffiti',title:'Graffiti Pro запущена!',        body:'Баллончик, шаблоны, лутбоксы с редкими красками — рисуй прямо в лаунчере.',date:'Сегодня'},
   {game:'Клёвое Место',     knot:'knot-klevoe',  title:'Рыбный дом — новая цепочка',  body:'Рыбаки → Коптильня → Рынок. Полная производственная цепочка.',  date:'18 мар'},
@@ -540,9 +558,12 @@ function cardHTML(g, isArchive) {
   const bt = isArchive ? '📜 Открыть Архив' : '▶ Играть';
   const nc = isArchive ? 'nail-archive' : 'nail-active';
   const nt = isArchive ? '📦 Архив' : '✅ Активна';
+  const bannerInner = g.banner === 'banner-fishing3d'
+    ? `<canvas id="fish3d-banner-canvas"></canvas><div class="fish3d-label">~ Three.js · 3D Рыбалка ~</div>`
+    : g.icon;
   return `
     <div class="game-card" onclick="launchGame(${g.id})">
-      <div class="card-banner ${g.banner}">${g.icon}
+      <div class="card-banner ${g.banner}">${bannerInner}
         <div class="status-nail ${nc}">${nt}</div>
       </div>
       <div class="card-body">
@@ -584,6 +605,7 @@ function showHome() {
   renderNews(document.getElementById('news-home'), 4);
   setNav('nav-home');
   window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(initFishingBanner, 60);
 }
 
 function showArchive() {
@@ -642,8 +664,147 @@ function spawnLeaves(){
   }
 }
 
+// ======== АНИМАЦИЯ БАННЕРА 3D РЫБАЛКИ =========
+let _fishBannerRAF = null;
+function initFishingBanner() {
+  if (_fishBannerRAF) { cancelAnimationFrame(_fishBannerRAF); _fishBannerRAF = null; }
+  const canvas = document.getElementById('fish3d-banner-canvas');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 280, H = canvas.offsetHeight || 130;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  let t = 0;
+
+  const fishes = [
+    {x:W*0.2, y:H*0.72, spd:0.6, size:1.1, col:'#00e5ff', dir:1,  wobble:0},
+    {x:W*0.7, y:H*0.82, spd:0.4, size:0.8, col:'#ff9800', dir:-1, wobble:1.5},
+    {x:W*0.5, y:H*0.92, spd:0.9, size:0.65,col:'#69f0ae', dir:1,  wobble:3},
+  ];
+  const bubbles = Array.from({length:12},()=>({
+    x:Math.random()*W, y:H*0.6+Math.random()*H*0.4,
+    r:1+Math.random()*2, spd:0.2+Math.random()*0.4, alpha:0.3+Math.random()*0.4
+  }));
+  let catchTimer = 0;
+
+  function drawFrame() {
+    t += 0.016; catchTimer += 0.016;
+    if (catchTimer > 5) catchTimer = 0;
+    const biting = catchTimer > 3.5 && catchTimer < 5;
+    const bobY = biting ? Math.sin((catchTimer-3.5)*18)*5 : Math.sin(t*1.2)*2.5;
+    const linePull = biting ? Math.sin((catchTimer-3.5)*12)*3 : 0;
+
+    // Небо
+    const skyGrad = ctx.createLinearGradient(0,0,0,H*0.45);
+    skyGrad.addColorStop(0,'#060e1c'); skyGrad.addColorStop(1,'#0a2040');
+    ctx.fillStyle=skyGrad; ctx.fillRect(0,0,W,H*0.45);
+
+    // Звёзды
+    for(let s=0;s<18;s++){
+      const sx=((s*73+11)%W), sy=((s*47+7)%(H*0.38));
+      ctx.fillStyle=`rgba(255,255,255,${0.4+0.3*Math.sin(t*1.5+s)})`;
+      ctx.beginPath(); ctx.arc(sx,sy,0.8,0,Math.PI*2); ctx.fill();
+    }
+
+    // Луна
+    const mx=W*0.85, my=H*0.15;
+    const mg=ctx.createRadialGradient(mx,my,2,mx,my,18);
+    mg.addColorStop(0,'rgba(255,240,180,0.25)'); mg.addColorStop(1,'transparent');
+    ctx.fillStyle=mg; ctx.fillRect(mx-20,my-20,40,40);
+    ctx.fillStyle='#fff8d0'; ctx.beginPath(); ctx.arc(mx,my,7,0,Math.PI*2); ctx.fill();
+
+    // Вода
+    const wg=ctx.createLinearGradient(0,H*0.42,0,H);
+    wg.addColorStop(0,'#0a2a50'); wg.addColorStop(0.5,'#062040'); wg.addColorStop(1,'#040d1a');
+    ctx.fillStyle=wg; ctx.fillRect(0,H*0.42,W,H);
+
+    // Блик луны на воде
+    ctx.save(); ctx.globalAlpha=0.08; ctx.fillStyle='#4de8ff';
+    ctx.fillRect(mx-25,H*0.42,50,H); ctx.restore();
+
+    // Волны
+    ctx.beginPath();
+    ctx.moveTo(0,H*0.44);
+    for(let x=0;x<=W;x+=4){
+      ctx.lineTo(x, H*0.44+Math.sin(x*0.04+t*1.8)*2.5+Math.sin(x*0.09+t*1.1)*1.2);
+    }
+    ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+    const wvg=ctx.createLinearGradient(0,H*0.44,0,H*0.44+6);
+    wvg.addColorStop(0,'rgba(100,220,255,0.55)'); wvg.addColorStop(1,'transparent');
+    ctx.fillStyle=wvg; ctx.fill();
+    ctx.strokeStyle='rgba(100,220,255,0.3)'; ctx.lineWidth=1.5; ctx.stroke();
+
+    // Удочка
+    const rx=W*0.12, ry=H*0.38, tx=W*0.52, ty=H*0.22;
+    ctx.strokeStyle='#8b6914'; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(rx,ry); ctx.lineTo(tx,ty); ctx.stroke();
+
+    // Леска
+    const fx=W*0.65, fy=H*0.455+bobY;
+    ctx.strokeStyle='rgba(220,220,220,0.55)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(tx,ty);
+    ctx.bezierCurveTo(tx+(fx-tx)*0.4, ty+10+linePull*2, fx-20, fy-15+linePull, fx, fy-4);
+    ctx.stroke();
+
+    // Поплавок
+    ctx.fillStyle='rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.ellipse(fx+2,fy+3,5,2,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=biting?'#ff3030':'#e53935';
+    ctx.beginPath(); ctx.ellipse(fx,fy-3,4,6,0,Math.PI,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#f0f0f0';
+    ctx.beginPath(); ctx.ellipse(fx,fy+1,3.5,5,0,0,Math.PI); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.beginPath(); ctx.ellipse(fx-1.5,fy-2,1,2.5,-0.3,0,Math.PI*2); ctx.fill();
+
+    // Рябь
+    const rr=6+Math.sin(t*3)*1.5;
+    ctx.strokeStyle='rgba(100,220,255,0.18)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.ellipse(fx,fy+4,rr,rr*0.3,0,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(fx,fy+4,rr*1.6,rr*0.5,0,0,Math.PI*2); ctx.stroke();
+
+    // Пузырьки
+    bubbles.forEach(b=>{
+      b.y-=b.spd*0.4; if(b.y<H*0.44){b.y=H*0.95;b.x=Math.random()*W;}
+      ctx.strokeStyle=`rgba(100,220,255,${b.alpha})`; ctx.lineWidth=0.8;
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.stroke();
+    });
+
+    // Рыбы
+    fishes.forEach(f=>{
+      f.x+=f.spd*f.dir*0.5;
+      if(f.x>W+30)f.x=-30; if(f.x<-30)f.x=W+30;
+      const wy=f.y+Math.sin(t*1.3+f.wobble)*3;
+      ctx.save(); ctx.translate(f.x,wy);
+      if(f.dir<0)ctx.scale(-1,1); ctx.scale(f.size,f.size);
+      ctx.fillStyle=f.col; ctx.globalAlpha=0.85;
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.bezierCurveTo(-4,-5,12,-5,16,0); ctx.bezierCurveTo(12,5,-4,5,0,0); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-1,0);
+      ctx.lineTo(-7+Math.sin(t*4+f.wobble)*2,-5); ctx.lineTo(-7+Math.sin(t*4+f.wobble)*2,5);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#000'; ctx.globalAlpha=1;
+      ctx.beginPath(); ctx.arc(13,0,1.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(13.5,-0.5,0.6,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+
+    // «КЛЮЁТ!»
+    if(biting){
+      const a=Math.min(1,(catchTimer-3.5)*3);
+      ctx.save(); ctx.globalAlpha=a; ctx.font='bold 11px Georgia';
+      ctx.fillStyle='#ffeb3b'; ctx.textAlign='center';
+      ctx.shadowColor='#ff6f00'; ctx.shadowBlur=8;
+      ctx.fillText('КЛЮЁТ! 🎣',W*0.65,H*0.32);
+      ctx.restore();
+    }
+
+    _fishBannerRAF = requestAnimationFrame(drawFrame);
+  }
+  drawFrame();
+}
+
 spawnLeaves();
 showHome();
+setTimeout(initFishingBanner, 60);
 </script>
 </body>
 </html>
