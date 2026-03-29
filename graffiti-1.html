@@ -222,7 +222,7 @@
 <div id="spray-cursor"></div>
 
 <div id="hud-top">
-    <div><div class="title">VANDAL ENGINE</div><div class="subtitle">v5.2 · PRO EDITION</div></div>
+    <div><div class="title">VANDAL ENGINE</div><div class="subtitle">v6.0 · AQUAPRINT UPDATE</div></div>
     <div style="display:flex;gap:8px;align-items:center;pointer-events:all;">
         <button id="mode-btn" onclick="toggleMode()" style="font-family:'Black Ops One',cursive;font-size:10px;letter-spacing:1px;background:rgba(0,200,255,.15);color:#00ccff;border:1px solid rgba(0,200,255,.35);padding:6px 12px;border-radius:16px;cursor:pointer;white-space:nowrap;">🎨 АКВАПРИНТ 3D</button>
         <div id="coin-badge" onclick="openShop()">
@@ -262,7 +262,7 @@
     <div id="aq-topbar" style="position:absolute;top:0;left:0;right:0;z-index:62;padding:12px 16px 8px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.92) 70%,transparent);pointer-events:none;">
         <div>
             <div style="font-family:'Black Ops One',cursive;font-size:clamp(13px,3vw,18px);letter-spacing:2px;color:#00d4ff;text-shadow:0 0 20px #00d4ff66;">АКВАПРИНТ 3D</div>
-            <div id="aq-stage-lbl" style="font-size:9px;color:#0099bb;letter-spacing:3px;">ГИДРОПЕЧАТЬ СТУДИЯ</div>
+            <div id="aq-stage-lbl" style="font-size:9px;color:#0099bb;letter-spacing:3px;">v2.0 · 15 УЗОРОВ · 11 ОБЪЕКТОВ</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;pointer-events:all;">
             <div style="display:flex;align-items:center;gap:5px;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:5px 12px;">
@@ -280,6 +280,15 @@
         <div style="font-size:8px;color:#446;letter-spacing:2px;margin-bottom:4px;">НУЖНЫЕ ЦВЕТА:</div>
         <div id="aq-color-req" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:7px;"></div>
         <div id="aq-reward-row" style="font-family:'Black Ops One',cursive;font-size:13px;color:#ffd700;">🪙 —</div>
+        <!-- Таймер заказа -->
+        <div id="aq-timer-wrap" style="margin-top:7px;">
+          <div style="display:flex;justify-content:space-between;font-size:8px;color:#444;letter-spacing:1px;margin-bottom:3px;">
+            <span>⏱ ВРЕМЯ</span><span id="aq-timer-text" style="color:#00d4ff;">—</span>
+          </div>
+          <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;">
+            <div id="aq-timer-fill" style="height:100%;width:100%;background:linear-gradient(90deg,#00ff88,#00d4ff);border-radius:3px;transition:width .5s linear;"></div>
+          </div>
+        </div>
     </div>
 
     <!-- STEP INDICATORS -->
@@ -299,7 +308,7 @@
 
         <!-- Этап 1: палитра узоров + цвета кисти -->
         <div id="aq-bar-1" style="display:none;flex-direction:column;gap:8px;align-items:center;">
-            <div id="aq-pattern-palette" style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;"></div>
+            <div id="aq-pattern-palette" style="display:flex;gap:6px;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;padding:2px 4px 4px;width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:none;"></div>
             <!-- Палитра цветов кисти -->
             <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center;">
                 <span style="font-size:8px;letter-spacing:2px;color:#444;flex-shrink:0;">ЦВЕТ:</span>
@@ -356,10 +365,12 @@
 
         <!-- Этап 4: результат -->
         <div id="aq-bar-4" style="display:none;flex-direction:column;gap:10px;align-items:center;">
+            <div id="aq-stars-row" style="font-size:28px;letter-spacing:4px;text-shadow:0 0 14px #ffd700;"></div>
             <div id="aq-result-lbl" style="font-family:'Black Ops One',cursive;font-size:14px;color:#ffd700;letter-spacing:2px;"></div>
             <div style="display:flex;gap:10px;">
                 <button onclick="aqNewOrder()" style="font-family:'Black Ops One',cursive;font-size:10px;letter-spacing:1px;background:rgba(0,200,255,.15);color:#00ccff;border:1px solid rgba(0,200,255,.3);padding:10px 18px;border-radius:18px;cursor:pointer;">НОВЫЙ ЗАКАЗ</button>
                 <button onclick="aqRotateView()" style="font-family:'Black Ops One',cursive;font-size:10px;letter-spacing:1px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);padding:10px 18px;border-radius:18px;cursor:pointer;">🔄 КРУТИТЬ</button>
+                <button onclick="aqSaveResult()" style="font-family:'Black Ops One',cursive;font-size:10px;letter-spacing:1px;background:rgba(255,150,0,.15);color:#ffa500;border:1px solid rgba(255,150,0,.3);padding:10px 18px;border-radius:18px;cursor:pointer;">📸 ФОТО</button>
             </div>
         </div>
 
@@ -1069,6 +1080,12 @@ let aqDipPhase='dipping', aqTextureApplied=false;
 let aqBrushColor='#ff1e00', aqBrushSize=22;
 let aqFilmPainted=false, aqOrder=null;
 const DIP_START_Y=4.0, DIP_END_Y=-2.2;
+// Таймер заказа
+let aqTimerStart=0, aqTimerInterval=null, aqTimeLimit=90;
+// Система звёзд
+let aqStarRating=0;
+// Водный меш для анимации
+let aqWaterMesh=null, aqWaterT=0;
 
 // ── ПАТТЕРНЫ ──────────────────────────────────────
 const AQ_PATTERNS=[
@@ -1110,6 +1127,79 @@ const AQ_PATTERNS=[
     const cl=['#ff1e00','#0095ff','#00ff44','#cc00ff','#ffd700','#ff6a00','#111'];
     for(let i=0;i<70;i++){c.fillStyle=cl[i%cl.length];const x=Math.random()*w,y=Math.random()*h,r=4+Math.random()*55;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();for(let j=0;j<7;j++){const a=Math.random()*Math.PI*2,len=r*.5+Math.random()*r*2.2;c.beginPath();c.arc(x+Math.cos(a)*len,y+Math.sin(a)*len,r*.15+Math.random()*r*.4,0,Math.PI*2);c.fill();}}
   }},
+  {id:'neon_grid', name:'Неон Сетка', icon:'🔵', draw(c,w,h){
+    c.fillStyle='#050010';c.fillRect(0,0,w,h);
+    const sz=60;
+    // Горизонтальные линии
+    for(let y=0;y<h;y+=sz){const g=c.createLinearGradient(0,y,w,y);g.addColorStop(0,'rgba(0,255,255,0)');g.addColorStop(.5,'rgba(0,255,255,0.7)');g.addColorStop(1,'rgba(0,255,255,0)');c.strokeStyle=g;c.lineWidth=1.5;c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();}
+    // Вертикальные линии
+    for(let x=0;x<w;x+=sz){const g=c.createLinearGradient(x,0,x,h);g.addColorStop(0,'rgba(255,0,255,0)');g.addColorStop(.5,'rgba(255,0,255,0.7)');g.addColorStop(1,'rgba(255,0,255,0)');c.strokeStyle=g;c.lineWidth=1.5;c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke();}
+    // Точки на пересечениях
+    for(let y=0;y<h;y+=sz)for(let x=0;x<w;x+=sz){const g2=c.createRadialGradient(x,y,0,x,y,18);g2.addColorStop(0,'rgba(255,255,255,0.9)');g2.addColorStop(1,'rgba(0,255,255,0)');c.fillStyle=g2;c.beginPath();c.arc(x,y,18,0,Math.PI*2);c.fill();}
+  }},
+  {id:'tiedye', name:'Тай-Дай', icon:'🌈', draw(c,w,h){
+    const cx=w/2,cy=h/2;
+    const rings=['#ff0080','#ff6600','#ffff00','#00ff44','#0088ff','#8800ff','#ff0080'];
+    for(let i=rings.length-1;i>=0;i--){const r=(i+1)*Math.max(w,h)*.1;const g=c.createRadialGradient(cx,cy,r*.6,cx,cy,r);g.addColorStop(0,rings[i]);g.addColorStop(1,rings[(i+1)%rings.length]);c.fillStyle=g;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();}
+    // Завихрения
+    for(let arm=0;arm<6;arm++){c.save();c.translate(cx,cy);c.rotate(arm*Math.PI/3);for(let i=0;i<w;i+=4){const angle=i*.04,r2=i*.28;c.fillStyle=`rgba(255,255,255,${0.04*(1-i/w)})`;c.beginPath();c.arc(Math.cos(angle)*r2,Math.sin(angle)*r2,3,0,Math.PI*2);c.fill();}c.restore();}
+  }},
+  {id:'japan_wave', name:'Японские Волны', icon:'🌊', draw(c,w,h){
+    c.fillStyle='#ffffff';c.fillRect(0,0,w,h);
+    const rows=Math.ceil(h/80);
+    for(let row=0;row<rows;row++){
+      const y0=row*80,y1=y0+80;
+      c.fillStyle=row%2===0?'#1a3a6e':'#c0392b';
+      c.beginPath();c.moveTo(0,y0);
+      for(let x=0;x<=w;x+=4){const wave=Math.sin(x*.025+row*.8)*18+Math.sin(x*.05+row*.4)*8;c.lineTo(x,y0+wave);}
+      c.lineTo(w,y1);c.lineTo(0,y1);c.closePath();c.fill();
+      // Гребни волн
+      c.strokeStyle='rgba(255,255,255,0.6)';c.lineWidth=2;c.beginPath();
+      for(let x=0;x<=w;x+=4){const wave=Math.sin(x*.025+row*.8)*18+Math.sin(x*.05+row*.4)*8;x===0?c.moveTo(x,y0+wave):c.lineTo(x,y0+wave);}
+      c.stroke();
+    }
+  }},
+  {id:'pixels', name:'Пиксели', icon:'🎮', draw(c,w,h){
+    const sz=32;
+    const pals=[['#ff0000','#ff8800','#ffff00'],['#00ff00','#00ffff','#0000ff'],['#ff00ff','#ffffff','#111111'],['#ffd700','#ff6600','#cc0000']];
+    for(let row=0;row<=h/sz;row++)for(let col=0;col<=w/sz;col++){
+      const pal=pals[(row+col)%pals.length];
+      const shade=Math.random()<.15?'#000000':Math.random()<.1?'#ffffff':pal[Math.floor(Math.random()*pal.length)];
+      c.fillStyle=shade;c.fillRect(col*sz,row*sz,sz,sz);
+      c.fillStyle='rgba(0,0,0,0.3)';c.fillRect(col*sz,row*sz,sz,1);c.fillRect(col*sz,row*sz,1,sz);
+    }
+  }},
+  {id:'zebra', name:'Зебра', icon:'🦓', draw(c,w,h){
+    c.fillStyle='#f0ede0';c.fillRect(0,0,w,h);
+    const stripes=18;
+    for(let i=0;i<stripes;i++){
+      const x=i*(w/stripes);const ww=w/stripes*.55+Math.random()*(w/stripes*.3);
+      c.fillStyle='#1a1a1a';c.save();c.translate(x+ww/2,h/2);c.rotate(-0.12+Math.random()*.06-0.03);
+      const hw=ww/2+Math.random()*8-4;
+      c.beginPath();c.moveTo(-hw,-h*.6);c.bezierCurveTo(-hw*.6,-h*.3,-hw*.8,0,-hw*.5,h*.6);
+      c.lineTo(hw*.5,h*.6);c.bezierCurveTo(hw*.8,0,hw*.6,-h*.3,hw,-h*.6);c.closePath();c.fill();c.restore();
+    }
+    // Глянцевый блик
+    const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'rgba(255,255,255,0.15)');g.addColorStop(.5,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(255,255,255,0.1)');c.fillStyle=g;c.fillRect(0,0,w,h);
+  }},
+  {id:'holo', name:'Голограмма', icon:'✨', draw(c,w,h){
+    // Радужный градиент основа
+    const g=c.createLinearGradient(0,0,w,h);
+    ['#ff0080','#ff8800','#ffff00','#00ff80','#0088ff','#8800ff'].forEach((col,i,a)=>g.addColorStop(i/(a.length-1),col));
+    c.fillStyle=g;c.fillRect(0,0,w,h);
+    // Диагональные полосы-блики
+    for(let i=-h;i<w+h;i+=28){
+      c.fillStyle='rgba(255,255,255,0.12)';
+      c.beginPath();c.moveTo(i,0);c.lineTo(i+14,0);c.lineTo(i+14+h,h);c.lineTo(i+h,h);c.closePath();c.fill();
+    }
+    // Концентрические кольца с тиснением
+    const cx=w*.4,cy=h*.4;
+    for(let r=20;r<Math.max(w,h);r+=40){
+      const a=c.createRadialGradient(cx,cy,r-2,cx,cy,r+2);
+      a.addColorStop(0,'rgba(255,255,255,0)');a.addColorStop(.5,'rgba(255,255,255,0.25)');a.addColorStop(1,'rgba(255,255,255,0)');
+      c.strokeStyle=a;c.lineWidth=2;c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.stroke();
+    }
+  }},
 ];
 
 // ── КЛИЕНТЫ — с узором И цветами ──────────────────
@@ -1124,6 +1214,14 @@ const AQ_CLIENTS=[
   {name:'SQUAD INK',    icon:'💥', wants:'splatter',  obj:'barrel',      reward:90,  colors:['#ff1e00','#0095ff','#00ff44'], colorNames:['Красный','Синий','Зелёный']},
   {name:'MOTO LEGENDS', icon:'🏆', wants:'flames',   obj:'helmet_moto', reward:200, colors:['#ffd700','#ff4400','#111'],    colorNames:['Золото','Оранжевый','Чёрный']},
   {name:'RETRO VIBES',  icon:'🎮', wants:'geo',      obj:'boombox',     reward:170, colors:['#ff00aa','#00ffee','#fffb00'], colorNames:['Неон Розовый','Неон Циан','Жёлтый']},
+  {name:'SPORT KING',   icon:'⚽', wants:'camo',     obj:'soccer',      reward:125, colors:['#ffffff','#111111','#00ff44'], colorNames:['Белый','Чёрный','Зелёный']},
+  {name:'GALAXY MUSIC', icon:'🎸', wants:'holo',     obj:'guitar',      reward:220, colors:['#ff0080','#0088ff','#ffff00'], colorNames:['Розовый','Синий','Жёлтый']},
+  {name:'STREET STYLE', icon:'🎒', wants:'tiedye',   obj:'backpack',    reward:145, colors:['#ff6600','#cc00ff','#00ccff'], colorNames:['Оранжевый','Фиолет','Циан']},
+  {name:'WAVE RIDER',   icon:'🏄', wants:'japan_wave',obj:'cap',        reward:135, colors:['#1a3a6e','#c0392b','#ffffff'], colorNames:['Синий','Красный','Белый']},
+  {name:'CYBER HOLO',   icon:'🤖', wants:'neon_grid',obj:'boombox',    reward:185, colors:['#00ffff','#ff00ff','#111111'], colorNames:['Циан','Маджента','Чёрный']},
+  {name:'PIXEL GANG',   icon:'👾', wants:'pixels',   obj:'sneaker2',    reward:155, colors:['#ff0000','#00ff00','#0000ff'], colorNames:['Красный','Зелёный','Синий']},
+  {name:'JUNGLE INK',   icon:'🌿', wants:'skulls',   obj:'backpack',    reward:115, colors:['#111111','#aaff00','#8b0000'], colorNames:['Чёрный','Токсик','Кровь']},
+  {name:'ZEBRA LUXURY', icon:'🦓', wants:'zebra',    obj:'cap',         reward:160, colors:['#1a1a1a','#f0ede0','#888888'], colorNames:['Чёрный','Кремовый','Серый']},
 ];
 
 // ── ОБЪЕКТЫ — гиперчёткие ─────────────────────────
@@ -1385,6 +1483,150 @@ const AQ_OBJECTS=[
     return g;
   }},
 
+  // ФУТБОЛЬНЫЙ МЯЧ — узнаваемый, с чёрными пятиугольниками
+  {id:'soccer',name:'Футбольный Мяч',build(tex){
+    const g=new THREE.Group();
+    const S=()=>new THREE.MeshStandardMaterial({map:tex,roughness:.45,metalness:.05});
+    const Sc=(col,r=.5,m=.05)=>new THREE.MeshStandardMaterial({color:col,roughness:r,metalness:m});
+    const M=(geo,mat)=>{const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=true;return mesh;};
+    // Основной шар — большой, хорошо виден
+    const ball=M(new THREE.SphereGeometry(1.4,48,48),S());g.add(ball);
+    // Швы мяча — 3 окружности как у настоящего
+    [0,Math.PI/3,Math.PI*2/3].forEach(a=>{
+      const seam=M(new THREE.TorusGeometry(1.41,.025,8,60),Sc(0x111111,.8));
+      seam.rotation.x=Math.PI/2;seam.rotation.y=a;g.add(seam);
+    });
+    // Чёрные пятиугольные заплатки в правильных позициях
+    const patchDirs=[
+      [0,1,0],[0,-1,0],[1,0,0],[-1,0,0],[0,0,1],[0,0,-1],
+      [.7,.7,0],[-.7,.7,0],[.7,-.7,0],[-.7,-.7,0],[0,.7,.7],[0,.7,-.7]
+    ];
+    patchDirs.forEach(([x,y,z])=>{
+      const len=Math.hypot(x,y,z)||1;
+      const patch=M(new THREE.CircleGeometry(.38,5),Sc(0x111111,.7));
+      patch.position.set(x/len*1.42,y/len*1.42,z/len*1.42);
+      patch.lookAt(0,0,0);
+      g.add(patch);
+    });
+    return g;
+  }},
+
+  // ЭЛЕКТРОГИТАРА — узнаваемый силуэт Stratocaster
+  {id:'guitar',name:'Электрогитара',build(tex){
+    const g=new THREE.Group();
+    const S=()=>new THREE.MeshStandardMaterial({map:tex,roughness:.3,metalness:.08});
+    const Sc=(col,r=.4,m=.2)=>new THREE.MeshStandardMaterial({color:col,roughness:r,metalness:m});
+    const M=(geo,mat)=>{const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=true;return mesh;};
+    // Дека — нижняя широкая часть (бас-бут)
+    const lower=M(new THREE.CylinderGeometry(1.0,.85,.16,28),S());lower.rotation.x=Math.PI*.5;lower.position.y=-.7;g.add(lower);
+    // Дека — верхняя часть (талия)
+    const upper=M(new THREE.CylinderGeometry(.75,.65,.16,24),S());upper.rotation.x=Math.PI*.5;upper.position.y=.3;g.add(upper);
+    // Соединение верх-низ (талия)
+    const waist=M(new THREE.CylinderGeometry(.5,.5,.16,16),S());waist.rotation.x=Math.PI*.5;waist.position.y=-.2;g.add(waist);
+    // Рог верхний (длинный, как у Страта)
+    const horn1=M(new THREE.CylinderGeometry(.28,.12,.15,14),S());horn1.rotation.x=Math.PI*.5;horn1.position.set(.5,1.0,0);horn1.rotation.z=-.6;g.add(horn1);
+    const hornTip1=M(new THREE.SphereGeometry(.12,10,8),S());hornTip1.position.set(.82,1.32,0);g.add(hornTip1);
+    // Рог нижний (короткий)
+    const horn2=M(new THREE.CylinderGeometry(.22,.1,.15,12),S());horn2.rotation.x=Math.PI*.5;horn2.position.set(.42,-1.2,0);horn2.rotation.z=.5;g.add(horn2);
+    const hornTip2=M(new THREE.SphereGeometry(.1,10,8),S());hornTip2.position.set(.65,-1.4,0);g.add(hornTip2);
+    // Гриф длинный и узкий
+    const neck=M(new THREE.BoxGeometry(.3,2.6,.1),S(.5));neck.position.set(0,2.1,0);g.add(neck);
+    // Лады на грифе
+    for(let i=0;i<12;i++){const fret=M(new THREE.BoxGeometry(.3,.015,.11),Sc(0xaaaaaa,.2,.9));fret.position.set(0,.7+i*.16,0);g.add(fret);}
+    // Головка грифа (характерная лопатка)
+    const head=M(new THREE.BoxGeometry(.52,.65,.1),S());head.position.set(0,3.4,0);g.add(head);
+    // 6 колков на головке (3+3)
+    for(let i=0;i<3;i++){
+      const t1=M(new THREE.CylinderGeometry(.055,.055,.2,10),Sc(0xdddddd,.2,.9));t1.rotation.z=Math.PI*.5;t1.position.set(.3,3.2+i*.18,0);g.add(t1);
+      const t2=M(new THREE.CylinderGeometry(.055,.055,.2,10),Sc(0xdddddd,.2,.9));t2.rotation.z=Math.PI*.5;t2.position.set(-.3,3.2+i*.18,0);g.add(t2);
+    }
+    // 3 звукоснимателя (характерно для Страта)
+    [.6,.15,-.3].forEach(y=>{
+      const pu=M(new THREE.BoxGeometry(.8,.14,.07),Sc(0x111111,.8));pu.position.set(0,y,.1);g.add(pu);
+    });
+    // Бридж (тремоло)
+    const bridge=M(new THREE.BoxGeometry(.75,.18,.12),Sc(0xbbbbbb,.3,.85));bridge.position.set(0,-.95,.1);g.add(bridge);
+    // 6 струн
+    for(let i=0;i<6;i++){
+      const str=M(new THREE.CylinderGeometry(.007,.007,5.2,4),Sc(0xcccccc,.1,.95));
+      str.position.set(-.25+i*.1,.95,0.06);g.add(str);
+    }
+    // Ручки громкости
+    [0.35,0.62].forEach(y=>{const k=M(new THREE.CylinderGeometry(.09,.07,.14,14),Sc(0x222222,.5));k.position.set(-.55,y-1.3,.1);g.add(k);});
+    g.rotation.z=.15;
+    return g;
+  }},
+
+  // РЮКЗАК — узнаваемый, с лямками, карманом и молниями
+  {id:'backpack',name:'Рюкзак',build(tex){
+    const g=new THREE.Group();
+    const S=()=>new THREE.MeshStandardMaterial({map:tex,roughness:.75,metalness:.02});
+    const Sc=(col,r=.6,m=.05)=>new THREE.MeshStandardMaterial({color:col,roughness:r,metalness:m});
+    const M=(geo,mat)=>{const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=true;return mesh;};
+    // Основное тело рюкзака — прямоугольное, скруглённое
+    const body=M(new THREE.BoxGeometry(1.6,2.1,.9),S());g.add(body);
+    // Скруглённые верхние углы
+    [-1,1].forEach(s=>{
+      const round=M(new THREE.CylinderGeometry(.8,.8,.9,24),S());round.rotation.z=Math.PI*.5;round.position.set(s*.4,1.05,0);g.add(round);
+    });
+    // Дно закруглённое
+    const bottom=M(new THREE.CylinderGeometry(.8,.8,.9,24),S());bottom.rotation.z=Math.PI*.5;bottom.position.set(0,-1.05,0);g.add(bottom);
+    // Передний карман большой (характерный признак рюкзака)
+    const pocket=M(new THREE.BoxGeometry(1.3,1.1,.18),S());pocket.position.set(0,-.35,.55);g.add(pocket);
+    const pocketRound=M(new THREE.CylinderGeometry(.55,.55,.18,20),S());pocketRound.rotation.z=Math.PI*.5;pocketRound.position.set(0,-.9,.55);g.add(pocketRound);
+    // Молния главного отдела (горизонтальная U-образная)
+    const zipTop=M(new THREE.BoxGeometry(1.5,.04,.95),Sc(0xbbbbbb,.3,.8));zipTop.position.set(0,1.08,0);g.add(zipTop);
+    // Молния кармана
+    const zipPocket=M(new THREE.BoxGeometry(1.2,.04,.19),Sc(0xbbbbbb,.3,.8));zipPocket.position.set(0,.2,.65);g.add(zipPocket);
+    // Бегунок молнии
+    const pull=M(new THREE.BoxGeometry(.1,.22,.14),Sc(0x999999,.3,.7));pull.position.set(0,.2,.68);g.add(pull);
+    // ЛЯМКИ — главный признак рюкзака! Широкие, мягкие
+    [-1,1].forEach(s=>{
+      // Верхняя часть лямки
+      const strap=M(new THREE.BoxGeometry(.28,1.8,.1),S());strap.position.set(s*.42,.0,-.5);g.add(strap);
+      // Низ лямки расширяется
+      const strapBot=M(new THREE.BoxGeometry(.32,.4,.1),S());strapBot.position.set(s*.42,-1.05,-.5);g.add(strapBot);
+      // Пряжка
+      const buckle=M(new THREE.BoxGeometry(.3,.16,.12),Sc(0xaaaaaa,.3,.8));buckle.position.set(s*.42,-.5,-.46);g.add(buckle);
+    });
+    // Верхняя ручка для переноски
+    const handle=M(new THREE.BoxGeometry(.6,.14,.12),S());handle.position.set(0,1.12,.02);g.add(handle);
+    return g;
+  }},
+
+  // КЕПКА — узнаваемый силуэт: купол + длинный козырёк
+  {id:'cap',name:'Кепка',build(tex){
+    const g=new THREE.Group();
+    const S=()=>new THREE.MeshStandardMaterial({map:tex,roughness:.55,metalness:.02});
+    const Sc=(col,r=.5,m=.05)=>new THREE.MeshStandardMaterial({color:col,roughness:r,metalness:m});
+    const M=(geo,mat)=>{const mesh=new THREE.Mesh(geo,mat);mesh.castShadow=true;return mesh;};
+    // Купол — приплюснутый полушар (характерная форма кепки)
+    const dome=M(new THREE.SphereGeometry(1.1,48,24,0,Math.PI*2,0,Math.PI*.58),S());
+    dome.scale.set(1.0,.72,1.08);g.add(dome);
+    // Нижний ободок
+    const band=M(new THREE.CylinderGeometry(1.08,1.08,.14,48),Sc(0x1a1a1a,.6));band.position.y=-.6;g.add(band);
+    // КОЗЫРЁК — длинный и плоский, самый узнаваемый элемент кепки
+    const brimGeo=new THREE.CylinderGeometry(0.001,1.9,.1,40,1,false,-0.02,2.0);
+    const brim=M(brimGeo,S());brim.position.set(0,-.64,.18);brim.rotation.x=.2;g.add(brim);
+    // Козырёк — нижняя сторона (другой цвет, как в реальности)
+    const brimUnder=M(new THREE.CylinderGeometry(0.001,1.88,.08,40,1,false,-0.02,2.0),Sc(0x111111,.8));
+    brimUnder.position.set(0,-.72,.18);brimUnder.rotation.x=.2;g.add(brimUnder);
+    // Пуговка сверху (характерная деталь)
+    const btn=M(new THREE.CylinderGeometry(.1,.1,.12,12),Sc(0x888888,.4,.4));btn.position.y=.77;g.add(btn);
+    const btnTop=M(new THREE.SphereGeometry(.1,10,8,0,Math.PI*2,0,Math.PI*.5),Sc(0x888888,.4,.4));btnTop.position.y=.84;g.add(btnTop);
+    // Логотип-нашивка спереди (плоский квадрат)
+    const logo=M(new THREE.BoxGeometry(.48,.42,.05),S());logo.position.set(0,-.08,1.06);logo.rotation.x=-.28;g.add(logo);
+    // Швы панелей (6 панелей — типичная кепка)
+    for(let i=0;i<6;i++){
+      const a=i/6*Math.PI*2;
+      const seam=M(new THREE.BoxGeometry(.025,1.05,.025),Sc(0x1a1a1a,.9));
+      seam.position.set(Math.cos(a)*.9,0,Math.sin(a)*.9);seam.rotation.y=-a;g.add(seam);
+    }
+    // Задняя застёжка
+    const clasp=M(new THREE.BoxGeometry(.55,.24,.08),Sc(0xaaaaaa,.3,.7));clasp.position.set(0,-.52,-1.0);g.add(clasp);
+    return g;
+  }},
+
   // ХАЙ-ТОП
   {id:'sneaker2',name:'Хай-Топ',build(tex){
     const g=new THREE.Group();
@@ -1425,6 +1667,7 @@ const AQ_OBJECTS=[
 // ── TOGGLE ────────────────────────────────────────
 function toggleMode(){
   aqMode=!aqMode;
+  if(!aqMode&&aqTimerInterval){clearInterval(aqTimerInterval);aqTimerInterval=null;}
   document.getElementById('aq-screen').style.display=aqMode?'block':'none';
   document.getElementById('ui-bottom').style.display=aqMode?'none':'';
   document.getElementById('tpl-hud').classList.add('hidden');
@@ -1464,10 +1707,11 @@ function aqInit(){
   [[7,4,.2,0,-1.5,-3.6],[7,4,.2,0,-1.5,3.6],[.2,4,7,-3.6,-1.5,0],[.2,4,7,3.6,-1.5,0]].forEach(([w,h,d,x,y,z])=>{
     const wall=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),tankMat);wall.position.set(x,y,z);aqScene.add(wall);
   });
-  // вода
-  const waterMat=new THREE.MeshStandardMaterial({color:0x0a2a4a,roughness:.02,metalness:.15,transparent:true,opacity:.55});
-  const waterMesh=new THREE.Mesh(new THREE.PlaneGeometry(7,7),waterMat);
-  waterMesh.rotation.x=-Math.PI/2;waterMesh.position.y=-.08;aqScene.add(waterMesh);
+  // вода — анимированная, с PlaneGeometry высокого разрешения
+  const waterGeo=new THREE.PlaneGeometry(7,7,32,32);
+  const waterMat=new THREE.MeshStandardMaterial({color:0x0a3a6a,roughness:.02,metalness:.25,transparent:true,opacity:.62,envMapIntensity:.8});
+  aqWaterMesh=new THREE.Mesh(waterGeo,waterMat);
+  aqWaterMesh.rotation.x=-Math.PI/2;aqWaterMesh.position.y=-.06;aqScene.add(aqWaterMesh);
 
   // ── Плёнка ──
   aqFilmCanvas=document.createElement('canvas');
@@ -1560,6 +1804,9 @@ function aqFilmUV(cx,cy){
 function aqNewOrder(){
   aqDipLevel=0;aqActivLevel=0;aqDipping=false;aqActivating=false;aqDrawing=false;
   aqFilmPainted=false;aqDrawLast=null;aqTextureApplied=false;aqDipPhase='dipping';
+  aqStarRating=0;
+  // Остановить таймер если был
+  if(aqTimerInterval){clearInterval(aqTimerInterval);aqTimerInterval=null;}
 
   const cli=AQ_CLIENTS[Math.floor(Math.random()*AQ_CLIENTS.length)];
   const objDef=AQ_OBJECTS.find(o=>o.id===cli.obj)||AQ_OBJECTS[0];
@@ -1634,6 +1881,21 @@ function aqGoStage(n){
 
   if(n===1){
     buildPatternPalette();
+    // Запускаем таймер
+    aqTimerStart=Date.now();aqTimeLimit=90;
+    document.getElementById('aq-timer-fill').style.width='100%';
+    document.getElementById('aq-timer-fill').style.background='linear-gradient(90deg,#00ff88,#00d4ff)';
+    if(aqTimerInterval) clearInterval(aqTimerInterval);
+    aqTimerInterval=setInterval(()=>{
+      const elapsed=(Date.now()-aqTimerStart)/1000;
+      const left=Math.max(0,aqTimeLimit-elapsed);
+      const pct=(left/aqTimeLimit)*100;
+      document.getElementById('aq-timer-text').textContent=Math.ceil(left)+'с';
+      document.getElementById('aq-timer-fill').style.width=pct+'%';
+      const col=pct>50?'linear-gradient(90deg,#00ff88,#00d4ff)':pct>25?'linear-gradient(90deg,#ffd700,#ff8800)':'linear-gradient(90deg,#ff4400,#ff0000)';
+      document.getElementById('aq-timer-fill').style.background=col;
+      if(left<=0){clearInterval(aqTimerInterval);aqTimerInterval=null;showToast('⏱ Время вышло! Продолжай — меньше бонус');}
+    },500);
     // Камера — сбоку-сверху, хорошо видно и ванну и плёнку
     aqAnimCamera(2,5,7, 0,0,0, 700);
   }
@@ -1648,15 +1910,30 @@ function aqGoStage(n){
     aqFilmMesh.material.opacity=.95;
   }
   if(n===4){
-    // Близко → потом отъезжаем, lookAt на y=2 где висит объект
-    aqAnimCamera(1.5, 6, 6, 0, 3.5, 0, 400);
-    setTimeout(()=>aqAnimCamera(2.5, 7, 10, 0, 3.5, 0, 1100), 450);
-    const bonus=aqActivLevel>=70?1.3:1;
-    const earned=Math.round(aqOrder.reward*bonus);
+    // Останавливаем таймер
+    if(aqTimerInterval){clearInterval(aqTimerInterval);aqTimerInterval=null;}
+    document.getElementById('aq-timer-text').textContent='—';
+    document.getElementById('aq-timer-fill').style.width='100%';
+    // Считаем звёзды: по времени + активации
+    const elapsed=(Date.now()-aqTimerStart)/1000;
+    const timeBonus=elapsed<aqTimeLimit*0.5?1.5:elapsed<aqTimeLimit*0.8?1.2:elapsed<aqTimeLimit?1.0:0.7;
+    const activBonus=aqActivLevel>=90?1:aqActivLevel>=70?0.9:0.75;
+    const combined=timeBonus*activBonus;
+    aqStarRating=combined>=1.4?3:combined>=1.0?2:1;
+    const starStr=['⭐','⭐⭐','⭐⭐⭐'][aqStarRating-1];
+    document.getElementById('aq-stars-row').textContent=starStr;
+    // Бонус к монетам от звёзд
+    const starMult=[0.7,1.0,1.4][aqStarRating-1];
+    const activQual=aqActivLevel>=70?1.3:1;
+    const earned=Math.round(aqOrder.reward*starMult*activQual);
     coins+=earned;save();updateCoins();
     document.getElementById('aq-coins').textContent=coins;
     spawnCoin(earned);
-    document.getElementById('aq-result-lbl').textContent='🎉 +'+earned+' 🪙 ЗАКАЗ ВЫПОЛНЕН!';
+    const msgs=['⭐ ХОРОШАЯ РАБОТА!','⭐⭐ ОТЛИЧНАЯ РАБОТА!','⭐⭐⭐ МАСТЕР ГИДРОПЕЧАТИ!'];
+    document.getElementById('aq-result-lbl').textContent=msgs[aqStarRating-1]+' +'+earned+' 🪙';
+    // Камера — близко → потом отъезжаем, lookAt на y=2 где висит объект
+    aqAnimCamera(1.5, 6, 6, 0, 3.5, 0, 400);
+    setTimeout(()=>aqAnimCamera(2.5, 7, 10, 0, 3.5, 0, 1100), 450);
     if(aqFilmMesh) aqFilmMesh.material.opacity=0;
     setTimeout(()=>{ if(aqCamera) aqCamDist=aqCamera.position.length(); }, 1600);
   }
@@ -1686,21 +1963,35 @@ function buildStepIndicators(cur){
   });
 }
 
+function aqSaveResult(){
+  if(!aqRenderer) return;
+  try{
+    const dataURL=aqRenderer.domElement.toDataURL('image/png');
+    const a=document.createElement('a');a.href=dataURL;a.download='aquaprint_result.png';a.click();
+    showToast('📸 Скриншот сохранён!');
+  }catch(e){showToast('📸 Снимок: долгое нажатие на экран');}
+}
+
 function buildPatternPalette(){
   const pal=document.getElementById('aq-pattern-palette');pal.innerHTML='';
   AQ_PATTERNS.forEach(p=>{
+    // Превью узора — маленький canvas
+    const previewCvs=document.createElement('canvas');previewCvs.width=40;previewCvs.height=40;
+    const pCtx=previewCvs.getContext('2d');
+    try{p.draw(pCtx,40,40);}catch(e){pCtx.fillStyle='#333';pCtx.fillRect(0,0,40,40);}
     const btn=document.createElement('button');
-    btn.style.cssText='font-family:\'Black Ops One\',cursive;font-size:9px;letter-spacing:1px;background:rgba(255,255,255,.07);color:#ccc;border:1px solid rgba(255,255,255,.15);padding:6px 11px;border-radius:12px;cursor:pointer;transition:all .15s;white-space:nowrap;';
-    btn.textContent=p.icon+' '+p.name;
+    btn.style.cssText='position:relative;background:rgba(255,255,255,.07);color:#ccc;border:1px solid rgba(255,255,255,.15);padding:0;border-radius:10px;cursor:pointer;transition:all .15s;overflow:hidden;display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;';
+    const img=document.createElement('img');img.src=previewCvs.toDataURL();img.style.cssText='width:100%;height:40px;object-fit:cover;border-radius:8px 8px 0 0;display:block;';
+    const lbl=document.createElement('div');lbl.style.cssText='font-family:\'Black Ops One\',cursive;font-size:7px;letter-spacing:.3px;padding:2px 3px 3px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;';lbl.textContent=p.name;
+    btn.appendChild(img);btn.appendChild(lbl);
     btn.onclick=()=>{
-      // Рисуем паттерн на плёнке
       aqFilmCtx.clearRect(0,0,1024,1024);
       p.draw(aqFilmCtx,1024,1024);
       aqFilmTex.needsUpdate=true;
       aqFilmPainted=true;
       document.getElementById('aq-btn-1').style.opacity='1';
-      pal.querySelectorAll('button').forEach(b=>b.style.borderColor='rgba(255,255,255,.15)');
-      btn.style.borderColor='#00d4ff';btn.style.color='#00d4ff';
+      pal.querySelectorAll('button').forEach(b=>{b.style.borderColor='rgba(255,255,255,.15)';b.style.boxShadow='none';});
+      btn.style.borderColor='#00d4ff';btn.style.boxShadow='0 0 12px rgba(0,212,255,0.4)';btn.style.color='#00d4ff';
       showToast('🎨 '+p.icon+' '+p.name+' нанесён на плёнку!');
     };
     pal.appendChild(btn);
