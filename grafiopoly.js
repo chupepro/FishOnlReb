@@ -1,4 +1,4 @@
-const wasmUrl = "https://github.com/chupepro/FishOnlReb/raw/refs/heads/main/grafiopoly.wasm";
+const wasmUrl = "https://cdn.jsdelivr.net/gh/chupepro/FishOnlReb@main/grafiopoly.wasm";
 var Godot = (() => {
   var _scriptName = typeof document != 'undefined' ? document.currentScript?.src : undefined;
   return (
