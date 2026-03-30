@@ -411,18 +411,69 @@ const NEWS = [
 function getA(){try{return JSON.parse(localStorage.getItem('cg_anl')||'{}');}catch(e){return {};}}
 function saveA(a){try{localStorage.setItem('cg_anl',JSON.stringify(a));}catch(e){}}
 
+// ---- ТРЕКИНГ ВРЕМЕНИ ЛАУНЧЕРА ----
+let _launcherTickInterval=null;
+let _launcherSecStart=null; // когда начали тикать (для живого счётчика)
+
+function initLauncherTimer(){
+  const a=getA();
+  if(!a.firstSeen){a.firstSeen=Date.now();saveA(a);}
+  if(!a.launcherSecs)a.launcherSecs=0;
+  saveA(a);
+  _launcherSecStart=Date.now();
+  // Каждую секунду: +1 сек в localStorage + обновляем UI если открыт
+  _launcherTickInterval=setInterval(()=>{
+    if(document.hidden)return;
+    const a=getA();
+    a.launcherSecs=(a.launcherSecs||0)+1;
+    saveA(a);
+    // реалтайм обновление если страница ивента открыта
+    if(document.getElementById('event-view').style.display!=='none') updateEventRealtime();
+  },1000);
+}
+
+function fmtTime(secs){
+  const h=Math.floor(secs/3600);
+  const m=Math.floor((secs%3600)/60);
+  const s=Math.floor(secs%60);
+  if(h>0) return h+'ч '+String(m).padStart(2,'0')+'м '+String(s).padStart(2,'0')+'с';
+  return m+'м '+String(s).padStart(2,'0')+'с';
+}
+
 function recordSession(id){
   const a=getA();
   if(!a.sessions)a.sessions={};
   if(!a.hours)a.hours={};
   if(!a.firstSeen)a.firstSeen=Date.now();
   a.lastPlayed=id;a.sessions[id]=(a.sessions[id]||0)+1;
-  a.totalSessions=(a.totalSessions||0)+1;a._ss=Date.now();saveA(a);
+  a.totalSessions=(a.totalSessions||0)+1;
+  a._ss=Date.now();
+  saveA(a);
 }
 function closeSession(id){
   const a=getA();
-  if(a._ss){const m=(Date.now()-a._ss)/60000;if(!a.hours)a.hours={};a.hours[id]=(a.hours[id]||0)+m;a._ss=null;saveA(a);}
+  if(a._ss){
+    const m=(Date.now()-a._ss)/60000;
+    if(!a.hours)a.hours={};
+    a.hours[id]=(a.hours[id]||0)+m;
+    a._ss=null;
+    saveA(a);
+  }
 }
+// Сохраняем при закрытии вкладки
+window.addEventListener('beforeunload',()=>{
+  if(_curGame!==null)closeSession(_curGame);
+});
+// Пауза таймера когда вкладка скрыта
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    if(_curGame!==null)closeSession(_curGame);
+  } else {
+    if(_curGame!==null){
+      const a=getA();a._ss=Date.now();saveA(a);
+    }
+  }
+});
 function getFavGame(a){
   if(!a.sessions)return null;
   let best=null,bestN=0;
@@ -433,10 +484,12 @@ function renderAnalytics(){
   const a=getA();
   const days=Math.floor((Date.now()-(a.firstSeen||Date.now()))/86400000)||1;
   const totalMins=Object.values(a.hours||{}).reduce((s,v)=>s+v,0);
+  const launcherH=(a.launcherSecs||0)/3600;
   document.getElementById('analytics-grid').innerHTML=[
     {icon:'🗓️',val:days,label:'дней с нами'},
     {icon:'🎮',val:a.totalSessions||0,label:'запусков игр'},
     {icon:'⏱️',val:(totalMins/60).toFixed(1)+'ч',label:'в играх'},
+    {icon:'🕐',val:fmtTime(a.launcherSecs||0),label:'в лаунчере'},
     {icon:'🏆',val:GAMES.length+ARCHIVED.length,label:'игр в коллекции'},
   ].map(s=>`<div class="stat-card"><div class="stat-icon">${s.icon}</div><div class="stat-val">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
   const fav=getFavGame(a);
@@ -519,55 +572,94 @@ function showEvent(){
   renderEvent();
   window.scrollTo({top:0,behavior:'smooth'});
 }
+const EVENT_REWARDS=[
+  {h:1,icon:'🐟',title:'Начало разработки',desc:'Рыбалка Онлайн: Переборн начинает разрабатываться'},
+  {h:2,icon:'🔑',title:'Начало разработки + Админка',desc:'Доступ к админ-панели в новой игре'},
+  {h:3,icon:'🎣',title:'Админка + Удочка в честь тебя',desc:'Именная удочка с твоим именем навсегда в игре'},
+  {h:4,icon:'👑',title:'Удочка + Группа переходит на игру',desc:'Все ресурсы студии переключаются на Переборн'},
+];
+
 function renderEvent(){
   const a=getA();
-  const totalMins=Object.values(a.hours||{}).reduce((s,v)=>s+v,0);
-  const totalHours=totalMins/60;
+  const secs=a.launcherSecs||0;
+  const totalHours=secs/3600;
+  const gameMins=Object.values(a.hours||{}).reduce((s,v)=>s+v,0);
   const days=Math.floor((Date.now()-(a.firstSeen||Date.now()))/86400000)||1;
-
-  // stats
   const fav=getFavGame(a);
-  document.getElementById('event-stats-grid').innerHTML=[
-    {icon:'⏱️',val:totalHours.toFixed(1)+'ч',label:'в лаунчере'},
-    {icon:'🗓️',val:days,label:'дней с нами'},
-    {icon:'🎮',val:a.totalSessions||0,label:'запусков'},
-    {icon:'🏆',val:GAMES.length+ARCHIVED.length,label:'игр открыто'},
-  ].map(s=>`<div class="stat-card"><div class="stat-icon">${s.icon}</div><div class="stat-val">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
+
+  // stats — строим один раз с id для live-обновлений
+  document.getElementById('event-stats-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val" id="ev-launcher-time">${fmtTime(secs)}</div><div class="stat-label">в лаунчере</div></div>
+    <div class="stat-card"><div class="stat-icon">🎮</div><div class="stat-val" id="ev-game-time">${fmtTime(gameMins*60)}</div><div class="stat-label">в играх</div></div>
+    <div class="stat-card"><div class="stat-icon">🗓️</div><div class="stat-val">${days}</div><div class="stat-label">дней с нами</div></div>
+    <div class="stat-card"><div class="stat-icon">🚀</div><div class="stat-val">${a.totalSessions||0}</div><div class="stat-label">запусков</div></div>`;
+
   const fr=document.getElementById('event-fav-row');
   if(fav){
     const fh=((a.hours||{})[fav.id]||0);
-    fr.innerHTML=`<div class="fav-label">❤️ Любимая игра:</div><div class="fav-name">${fav.icon} ${fav.name}</div><div class="fav-bar-wrap"><div class="fav-bar" style="width:${Math.min(100,Math.round((a.sessions[fav.id]||0)/Math.max(a.totalSessions||1,1)*100))}%"></div></div><div class="stat-label">${fh>0.1?(fh/60).toFixed(1)+'ч':(a.sessions[fav.id]||0)+' запусков'}</div>`;
+    fr.innerHTML=`<div class="fav-label">❤️ Любимая игра:</div><div class="fav-name">${fav.icon} ${fav.name}</div><div class="fav-bar-wrap"><div class="fav-bar" style="width:${Math.min(100,Math.round((a.sessions[fav.id]||0)/Math.max(a.totalSessions||1,1)*100))}%"></div></div><div class="stat-label">${fh>0.1?fmtTime(fh*60):(a.sessions[fav.id]||0)+' запусков'}</div>`;
   } else {
     fr.innerHTML=`<div class="fav-label" style="opacity:.45">❤️ Сыграй в игры — узнаем любимую!</div>`;
   }
 
   // rewards
-  const REWARDS=[
-    {h:1,icon:'🐟',title:'Начало разработки',desc:'Рыбалка Онлайн: Переборн начинает разрабатываться'},
-    {h:2,icon:'🔑',title:'Начало разработки + Админка',desc:'Доступ к админ-панели в новой игре'},
-    {h:3,icon:'🎣',title:'Админка + Удочка в честь тебя',desc:'Именная удочка с твоим именем навсегда в игре'},
-    {h:4,icon:'👑',title:'Удочка + Группа переходит на игру',desc:'Все ресурсы студии переключаются на Переборн'},
-  ];
   const el=document.getElementById('event-rewards');
-  el.innerHTML=REWARDS.map((r,i)=>{
+  el.innerHTML=EVENT_REWARDS.map((r,i)=>{
     const done=totalHours>=r.h;
-    const isCur=!done&&(i===0||totalHours>=(REWARDS[i-1]?.h||0));
+    const isCur=!done&&(i===0||totalHours>=(EVENT_REWARDS[i-1]?.h||0));
     const cls=done?'unlocked':isCur?'current':'locked';
-    const pct=done?100:isCur?Math.min(100,Math.round((totalHours-(REWARDS[i-1]?.h||0))/(r.h-(REWARDS[i-1]?.h||0))*100)):0;
+    const prevH=EVENT_REWARDS[i-1]?.h||0;
+    const pct=done?100:isCur?Math.min(100,Math.round((totalHours-prevH)/(r.h-prevH)*100)):0;
     const check=done?'✅':isCur?'🔓':'🔒';
-    const barHTML=isCur?`<div class="reward-bar-wrap"><div class="reward-bar" style="width:${pct}%"></div></div>`:'';
+    const secsLeft=done?0:Math.ceil((r.h*3600)-secs);
+    const leftStr=isCur&&secsLeft>0?`<div class="stat-label" id="ev-left-${i}" style="margin-top:4px;color:var(--jub-rose)">⏳ осталось: ${fmtTime(secsLeft)}</div>`:'';
+    const barHTML=isCur?`<div class="reward-bar-wrap"><div class="reward-bar" id="ev-bar-${i}" style="width:${pct}%"></div></div>`:'';
     return`<div class="reward-card ${cls}" style="animation-delay:${i*.1}s">
       <div class="reward-icon">${r.icon}</div>
       <div class="reward-body">
         <div class="reward-hours">${r.h} час${r.h===1?'':'а'} в лаунчере</div>
         <div class="reward-title">${r.title}</div>
         <div class="reward-desc">${r.desc}</div>
-        ${barHTML}
+        ${barHTML}${leftStr}
       </div>
       <div class="reward-check">${check}</div>
     </div>`;
   }).join('');
-  el.innerHTML+=`<div class="event-hint">Время считается с момента первого запуска лаунчера.<br>Оставляй лаунчер открытым — каждая минута идёт в зачёт!</div>`;
+  el.innerHTML+=`<div class="event-hint">Каждая секунда в лаунчере идёт в зачёт!<br>Оставляй открытым — и награды придут сами.</div>`;
+}
+
+function updateEventRealtime(){
+  const a=getA();
+  const secs=a.launcherSecs||0;
+  const totalHours=secs/3600;
+  const gameSecs=Object.values(a.hours||{}).reduce((s,v)=>s+v*60,0);
+
+  // обновляем только цифры — без перерисовки всего DOM
+  const lt=document.getElementById('ev-launcher-time');
+  const gt=document.getElementById('ev-game-time');
+  if(lt)lt.textContent=fmtTime(secs);
+  if(gt)gt.textContent=fmtTime(gameSecs);
+
+  // прогресс-бар и оставшееся время текущей награды
+  EVENT_REWARDS.forEach((r,i)=>{
+    const done=totalHours>=r.h;
+    const prevH=EVENT_REWARDS[i-1]?.h||0;
+    const isCur=!done&&totalHours>=prevH;
+    const bar=document.getElementById('ev-bar-'+i);
+    const left=document.getElementById('ev-left-'+i);
+    if(bar&&isCur){
+      const pct=Math.min(100,Math.round((totalHours-prevH)/(r.h-prevH)*100));
+      bar.style.width=pct+'%';
+    }
+    if(left&&isCur){
+      const secsLeft=Math.max(0,Math.ceil(r.h*3600-secs));
+      left.textContent='⏳ осталось: '+fmtTime(secsLeft);
+    }
+    // если награда только что выполнилась — перерисовать всю карточку
+    if(done&&document.querySelector(`.reward-card.current`)){
+      renderEvent();
+    }
+  });
 }
 function launchGame(id){
   const g=[...GAMES,...ARCHIVED].find(x=>x.id===id);if(!g)return;
@@ -1046,7 +1138,7 @@ function bannerGrafiopoly(id,canvas){
   const iv=setInterval(()=>{
     p+=100/msgs.length;bar.style.width=Math.min(100,p)+'%';
     st.textContent=msgs[Math.min(Math.floor(p/(100/msgs.length)),msgs.length-1)];
-    if(p>=100){clearInterval(iv);setTimeout(()=>{const pre=document.getElementById('preloader');pre.style.transition='opacity .8s';pre.style.opacity='0';setTimeout(()=>{pre.style.display='none';spawnLeaves();showHome();},800);},400);}
+    if(p>=100){clearInterval(iv);setTimeout(()=>{const pre=document.getElementById('preloader');pre.style.transition='opacity .8s';pre.style.opacity='0';setTimeout(()=>{pre.style.display='none';spawnLeaves();showHome();initLauncherTimer();},800);},400);}
   },260);
 })();
 
@@ -1087,6 +1179,7 @@ requestAnimationFrame(_tickFPS);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) stopAllBanners();
   else setTimeout(initAllBanners, 80);
+  // (время лаунчера управляется выше в initLauncherTimer)
 });
 
 // Пауза фонового canvas когда скрыта вкладка
