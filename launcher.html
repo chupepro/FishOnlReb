@@ -220,6 +220,24 @@ header::after{content:'';position:absolute;inset:2px;border:1px solid rgba(255,2
 /* FOOTER */
 footer{background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 38px,var(--wood-dark) 38px,var(--wood-dark) 40px);border-top:3px solid var(--jub-crimson);padding:0 32px;height:44px;display:flex;align-items:center;justify-content:space-between;font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:var(--muted);box-shadow:0 -4px 20px rgba(192,21,42,0.12);}
 .footer-seal{padding:3px 12px;background:var(--jub-crimson);border:1px solid var(--jub-gold);border-radius:3px;font-family:'Rye',cursive;font-size:9px;color:var(--jub-gold);letter-spacing:.1em;box-shadow:0 0 10px rgba(192,21,42,0.4);animation:bPulse 3s ease-in-out infinite;}
+
+/* ИВЕНТ */
+.reward-card{display:flex;align-items:center;gap:16px;padding:14px 18px;margin-bottom:12px;border-radius:8px;border:2px solid;position:relative;overflow:hidden;animation:appear .5s ease both;}
+.reward-card.unlocked{background:linear-gradient(135deg,rgba(74,107,42,0.25),rgba(40,80,20,0.15));border-color:var(--moss-light);box-shadow:0 0 18px rgba(107,158,58,0.2);}
+.reward-card.locked{background:rgba(0,0,0,0.2);border-color:rgba(100,60,20,0.35);}
+.reward-card.current{border-color:var(--jub-gold);box-shadow:0 0 20px rgba(255,215,0,0.25);animation:appear .5s ease both,bPulse 2.5s ease-in-out infinite;}
+.reward-icon{font-size:32px;flex-shrink:0;width:44px;text-align:center;}
+.reward-body{flex:1;min-width:0;}
+.reward-hours{font-family:'Rye',cursive;font-size:11px;color:var(--jub-gold);letter-spacing:.1em;margin-bottom:4px;}
+.reward-title{font-family:'Philosopher',serif;font-weight:700;font-size:14px;line-height:1.3;margin-bottom:3px;}
+.reward-card.unlocked .reward-title{color:var(--parchment);}
+.reward-card.locked .reward-title{color:var(--muted);}
+.reward-card.current .reward-title{color:var(--jub-gold);}
+.reward-desc{font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:var(--parchment2);opacity:.75;}
+.reward-check{font-size:20px;flex-shrink:0;}
+.reward-bar-wrap{margin-top:8px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.reward-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--moss),var(--jub-gold));transition:width .6s ease;}
+.event-hint{font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:var(--muted);text-align:center;padding:12px;opacity:.6;}
 </style>
 </head>
 <body>
@@ -254,6 +272,7 @@ footer{background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 38p
       <div class="lantern-item" id="nav-news" onclick="showNews()">
         <div class="lantern-body">📰</div><div class="lantern-label">Новости</div>
       </div>
+
     </div>
   </header>
 
@@ -265,6 +284,10 @@ footer{background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 38p
         <p>Выбери игру — сыграй прямо здесь, в лаунчере</p>
         <div class="jubilee-badge">🏆 &nbsp;Юбилейное Издание · Живые Баннеры&nbsp; 🏆</div>
       </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:8px;">
+      <button onclick="showEvent()" style="font-family:'Rye',cursive;font-size:13px;letter-spacing:.08em;padding:12px 32px;border:2px solid var(--jub-gold);border-radius:6px;background:linear-gradient(135deg,#1a0a3a,#2a1060);color:var(--jub-gold);cursor:pointer;box-shadow:0 0 20px rgba(180,120,255,0.3),0 4px 0 #0a0520;transition:all .2s;animation:bPulse 2.5s ease-in-out infinite;">🎣 &nbsp;Ивент: Рыбалка Онлайн Переборн&nbsp; 🎣</button>
     </div>
 
     <div class="analytics-panel" id="analytics-panel" style="display:none">
@@ -297,6 +320,29 @@ footer{background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 38p
       <div class="scroll-wrap">
         <div class="news-list" id="news-home"></div>
       </div>
+    </div>
+  </div>
+
+  <div id="event-view" class="home-view" style="display:none">
+    <div class="hero">
+      <div class="hero-board">
+        <div class="jub-corners"><span>✦</span><span>✦</span><span>✦</span><span>✦</span></div>
+        <h1>🎣 Ивент: Реборн</h1>
+        <p>Новая игра начнёт разрабатываться благодаря тебе</p>
+        <div class="jubilee-badge">🐟 &nbsp;Рыбалка Онлайн: Переборн&nbsp; 🐟</div>
+      </div>
+    </div>
+    <div class="analytics-panel" id="event-progress-panel" style="display:block">
+      <div class="analytics-title">⏱ Твой Прогресс в Лаунчере</div>
+      <div class="analytics-grid" id="event-stats-grid"></div>
+      <div class="fav-game-row" id="event-fav-row"></div>
+    </div>
+    <div>
+      <div class="section-plank">
+        <div class="plank-title jub">🏆 Награды за Часы</div>
+        <div class="plank-line jub"></div>
+      </div>
+      <div id="event-rewards"></div>
     </div>
   </div>
 
@@ -450,6 +496,7 @@ function setNav(id){document.querySelectorAll('.lantern-item').forEach(el=>el.cl
 function showHome(){
   if(_curGame!==null){closeSession(_curGame);_curGame=null;}
   document.getElementById('home-view').style.display='flex';
+  document.getElementById('event-view').style.display='none';
   document.getElementById('game-view').classList.remove('visible');
   document.querySelector('footer').style.display='';
   document.getElementById('active-grid').innerHTML=GAMES.map(g=>cardHTML(g,false)).join('');
@@ -461,6 +508,67 @@ function showHome(){
 }
 function showArchive(){showHome();setNav('nav-archive');setTimeout(()=>document.getElementById('archive-grid').scrollIntoView({behavior:'smooth',block:'start'}),120);}
 function showNews(){showHome();setNav('nav-news');renderNews(document.getElementById('news-home'),NEWS.length);setTimeout(()=>document.getElementById('news-home').scrollIntoView({behavior:'smooth',block:'start'}),120);}
+function showEvent(){
+  if(_curGame!==null){closeSession(_curGame);_curGame=null;}
+  stopAllBanners();
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('event-view').style.display='flex';
+  document.getElementById('game-view').classList.remove('visible');
+  document.querySelector('footer').style.display='';
+  document.querySelectorAll('.lantern-item').forEach(el=>el.classList.remove('active'));
+  renderEvent();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderEvent(){
+  const a=getA();
+  const totalMins=Object.values(a.hours||{}).reduce((s,v)=>s+v,0);
+  const totalHours=totalMins/60;
+  const days=Math.floor((Date.now()-(a.firstSeen||Date.now()))/86400000)||1;
+
+  // stats
+  const fav=getFavGame(a);
+  document.getElementById('event-stats-grid').innerHTML=[
+    {icon:'⏱️',val:totalHours.toFixed(1)+'ч',label:'в лаунчере'},
+    {icon:'🗓️',val:days,label:'дней с нами'},
+    {icon:'🎮',val:a.totalSessions||0,label:'запусков'},
+    {icon:'🏆',val:GAMES.length+ARCHIVED.length,label:'игр открыто'},
+  ].map(s=>`<div class="stat-card"><div class="stat-icon">${s.icon}</div><div class="stat-val">${s.val}</div><div class="stat-label">${s.label}</div></div>`).join('');
+  const fr=document.getElementById('event-fav-row');
+  if(fav){
+    const fh=((a.hours||{})[fav.id]||0);
+    fr.innerHTML=`<div class="fav-label">❤️ Любимая игра:</div><div class="fav-name">${fav.icon} ${fav.name}</div><div class="fav-bar-wrap"><div class="fav-bar" style="width:${Math.min(100,Math.round((a.sessions[fav.id]||0)/Math.max(a.totalSessions||1,1)*100))}%"></div></div><div class="stat-label">${fh>0.1?(fh/60).toFixed(1)+'ч':(a.sessions[fav.id]||0)+' запусков'}</div>`;
+  } else {
+    fr.innerHTML=`<div class="fav-label" style="opacity:.45">❤️ Сыграй в игры — узнаем любимую!</div>`;
+  }
+
+  // rewards
+  const REWARDS=[
+    {h:1,icon:'🐟',title:'Начало разработки',desc:'Рыбалка Онлайн: Переборн начинает разрабатываться'},
+    {h:2,icon:'🔑',title:'Начало разработки + Админка',desc:'Доступ к админ-панели в новой игре'},
+    {h:3,icon:'🎣',title:'Админка + Удочка в честь тебя',desc:'Именная удочка с твоим именем навсегда в игре'},
+    {h:4,icon:'👑',title:'Удочка + Группа переходит на игру',desc:'Все ресурсы студии переключаются на Переборн'},
+  ];
+  const el=document.getElementById('event-rewards');
+  el.innerHTML=REWARDS.map((r,i)=>{
+    const done=totalHours>=r.h;
+    const isCur=!done&&(i===0||totalHours>=(REWARDS[i-1]?.h||0));
+    const cls=done?'unlocked':isCur?'current':'locked';
+    const pct=done?100:isCur?Math.min(100,Math.round((totalHours-(REWARDS[i-1]?.h||0))/(r.h-(REWARDS[i-1]?.h||0))*100)):0;
+    const check=done?'✅':isCur?'🔓':'🔒';
+    const barHTML=isCur?`<div class="reward-bar-wrap"><div class="reward-bar" style="width:${pct}%"></div></div>`:'';
+    return`<div class="reward-card ${cls}" style="animation-delay:${i*.1}s">
+      <div class="reward-icon">${r.icon}</div>
+      <div class="reward-body">
+        <div class="reward-hours">${r.h} час${r.h===1?'':'а'} в лаунчере</div>
+        <div class="reward-title">${r.title}</div>
+        <div class="reward-desc">${r.desc}</div>
+        ${barHTML}
+      </div>
+      <div class="reward-check">${check}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML+=`<div class="event-hint">Время считается с момента первого запуска лаунчера.<br>Оставляй лаунчер открытым — каждая минута идёт в зачёт!</div>`;
+}
 function launchGame(id){
   const g=[...GAMES,...ARCHIVED].find(x=>x.id===id);if(!g)return;
   _curGame=id;recordSession(id);stopAllBanners();
