@@ -1,0 +1,3883 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Рыбалка Онлайн: Переборн!</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Neucha&family=Lobster&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --panel: #111827;
+  --panel2: #1a2235;
+  --border: #2a3a55;
+  --gold: #f0c040;
+  --gold2: #e0a020;
+  --green: #3adb76;
+  --blue: #4a90d9;
+  --red: #e05050;
+  --text: #dce8ff;
+  --text2: #8090b0;
+  --coin: #f0c040;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;position:fixed;top:0;left:0;}
+body{display:flex;justify-content:center;align-items:center;}
+
+#scale-wrap{transform-origin:center center;}
+#game{
+  width:360px;height:700px;position:relative;overflow:hidden;
+  background:var(--bg);border-radius:16px;
+  border:3px solid #1e3050;
+  box-shadow:0 0 60px rgba(0,80,180,.4),0 0 120px rgba(0,40,100,.3);
+  display:flex;flex-direction:column;
+}
+
+/* ── SCREENS ── */
+.screen-with-nav{position:absolute;inset:0;top:48px;display:none;flex-direction:row;overflow:hidden;}
+.screen-with-nav.active{display:flex;}
+
+/* ── TOPBAR ── */
+#topbar{
+  height:48px;flex-shrink:0;
+  background:linear-gradient(to bottom,#1a2a45,#0f1a30);
+  border-bottom:2px solid #2a4060;
+  display:flex;align-items:center;padding:0 10px;gap:8px;position:relative;z-index:100;
+}
+#topbar .tb-loc{font-family:'Neucha',cursive;font-size:13px;color:#8ab0e0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#topbar .tb-coins{display:flex;align-items:center;gap:4px;font-family:'Neucha',cursive;font-size:14px;color:var(--gold);background:rgba(0,0,0,.3);border:1px solid #5a4010;border-radius:8px;padding:3px 8px;}
+#topbar .tb-energy{display:flex;align-items:center;gap:4px;font-family:'Neucha',cursive;font-size:12px;color:#60d080;}
+#topbar .tb-day{font-family:'Neucha',cursive;font-size:11px;color:#5070a0;background:rgba(0,0,0,.3);border-radius:6px;padding:2px 6px;}
+
+/* ── NAVTABS (vertical left sidebar) ── */
+.nav-sidebar{
+  width:62px;flex-shrink:0;
+  background:linear-gradient(to right,#060e1c,#0c1830);
+  border-right:2px solid #1a2e50;
+  display:flex;flex-direction:column;align-items:center;
+  padding:6px 0;gap:2px;overflow:hidden;
+}
+.nav-btn{
+  width:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;border:none;background:none;
+  font-family:'Neucha',cursive;font-size:9px;color:#4060a0;
+  transition:all .2s;position:relative;border-radius:10px;
+  padding:7px 4px;
+}
+.nav-btn .nav-ico{font-size:22px;transition:transform .2s;}
+.nav-btn.active{color:var(--gold);background:rgba(240,192,64,.1);}
+.nav-btn.active .nav-ico{transform:scale(1.15);}
+.nav-btn.active::before{content:'';position:absolute;top:8px;bottom:8px;left:0;width:3px;background:var(--gold);border-radius:0 3px 3px 0;}
+.nav-btn:active .nav-ico{transform:scale(.88);}
+
+/* ── SCREEN LAYOUT with sidebar ── */
+.screen-with-nav{display:none;flex-direction:row;flex:1;overflow:hidden;}
+.screen-with-nav.active{display:flex;}
+.screen-content{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+
+/* ── SCROLLABLE BODY ── */
+.scr-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px;scrollbar-width:thin;scrollbar-color:#1e3050 transparent;}
+.scr-body::-webkit-scrollbar{width:4px;}
+.scr-body::-webkit-scrollbar-thumb{background:#1e3050;border-radius:2px;}
+
+/* ── SECTION TITLE ── */
+.sec-title{
+  font-family:'UnifrakturMaguntia',cursive;font-size:22px;color:var(--gold);
+  text-shadow:0 0 20px rgba(240,192,64,.4);
+  padding:8px 0 6px;margin-bottom:8px;
+  border-bottom:1px solid #1e3050;
+}
+
+/* ══════════════════════════════════
+   🌍 MAP SCREEN
+══════════════════════════════════ */
+#map-screen{background:radial-gradient(ellipse at 50% 30%,#0d1e3a,#060c18);}
+.map-subtitle{font-family:'Neucha',cursive;font-size:12px;color:#4060a0;padding:0 10px 8px;margin-top:-4px;}
+.country-card{
+  background:linear-gradient(135deg,var(--panel2),var(--panel));
+  border:2px solid var(--border);border-radius:14px;
+  padding:12px 14px;margin-bottom:10px;
+  display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.country-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.03),transparent);pointer-events:none;}
+.country-card:active{transform:scale(.97);}
+.country-card.current{border-color:var(--gold);box-shadow:0 0 18px rgba(240,192,64,.25);}
+.cc-flag{font-size:36px;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));}
+.cc-info{flex:1;min-width:0;}
+.cc-name{font-family:'Neucha',cursive;font-size:16px;color:var(--text);margin-bottom:2px;}
+.cc-desc{font-family:'Neucha',cursive;font-size:11px;color:var(--text2);line-height:1.4;}
+.cc-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;}
+.cc-tag{font-family:'Neucha',cursive;font-size:10px;padding:2px 6px;border-radius:8px;background:rgba(255,255,255,.07);color:#6080b0;border:1px solid #1e3050;}
+.cc-cost{font-family:'Neucha',cursive;font-size:12px;color:var(--gold);text-align:right;flex-shrink:0;}
+.cc-cost span{display:block;font-size:10px;color:#5a4010;}
+.cc-here{background:var(--gold);color:#1a1000;border-radius:8px;padding:2px 8px;font-size:11px;}
+.travel-info{background:rgba(74,144,217,.1);border:1px solid rgba(74,144,217,.3);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-family:'Neucha',cursive;font-size:12px;color:#7090c0;text-align:center;}
+
+/* ══════════════════════════════════
+   🏪 SHOP SCREEN - SHELVES
+══════════════════════════════════ */
+#shop-screen{background:linear-gradient(to bottom,#0f1a20,#080e14);}
+.shop-signboard{
+  flex-shrink:0;padding:0 10px 6px;
+  display:flex;flex-direction:column;align-items:center;position:relative;
+}
+.shop-sign{
+  width:100%;border-radius:10px;
+  padding:8px 12px;display:flex;align-items:center;gap:10px;
+  border:2px solid;position:relative;overflow:hidden;
+}
+.shop-sign::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent);pointer-events:none;}
+.sign-neon{font-family:'Lobster',cursive;font-size:20px;flex:1;text-align:center;letter-spacing:1px;}
+.sign-flag{font-size:30px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5));}
+.sign-sub{font-family:'Neucha',cursive;font-size:10px;opacity:.7;text-align:center;margin-top:3px;}
+
+.shop-shelf-area{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 8px;scrollbar-width:thin;scrollbar-color:#1e3050 transparent;}
+.shop-shelf-area::-webkit-scrollbar{width:4px;}
+.shop-shelf-area::-webkit-scrollbar-thumb{background:#1e3050;}
+
+.shelf-row{
+  background:linear-gradient(to bottom,#1a1008,#110a04);
+  border-radius:10px;border:1.5px solid #2a1a08;
+  margin-bottom:10px;overflow:hidden;
+}
+.shelf-label{
+  font-family:'Neucha',cursive;font-size:11px;
+  padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:6px;
+}
+.shelf-items-row{display:flex;gap:6px;padding:8px 8px;overflow-x:auto;scrollbar-width:none;}
+.shelf-items-row::-webkit-scrollbar{display:none;}
+.shelf-product{
+  flex-shrink:0;width:70px;
+  background:linear-gradient(to bottom,#1e1410,#140e08);
+  border:1.5px solid #2a1c10;border-radius:10px;
+  padding:7px 4px;text-align:center;cursor:pointer;
+  transition:all .15s;position:relative;
+}
+.shelf-product:active{transform:scale(.93);}
+.shelf-product.in-cart{border-color:#5a8020;box-shadow:0 0 8px rgba(80,180,20,.25);}
+.shelf-product.owned-item{border-color:#406020;opacity:.7;}
+.sp-icon{font-size:26px;display:block;margin-bottom:3px;}
+.sp-name{font-family:'Neucha',cursive;font-size:9px;color:var(--text);line-height:1.2;min-height:22px;display:flex;align-items:center;justify-content:center;}
+.sp-price{font-family:'Neucha',cursive;font-size:10px;color:var(--gold);margin-top:2px;}
+.sp-effect{font-family:'Neucha',cursive;font-size:8px;color:#60c080;margin-top:1px;}
+.sp-badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#1a1000;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;}
+
+.shop-cart-bar{
+  background:linear-gradient(to top,#0a1020,#0d1830);
+  border-top:2px solid #1e3050;
+  padding:6px 10px;display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.cart-info{flex:1;font-family:'Neucha',cursive;font-size:12px;color:var(--text2);}
+.cart-count{color:var(--gold);font-size:14px;}
+.cart-btn{font-family:'Neucha',cursive;font-size:13px;padding:6px 14px;border-radius:10px;background:linear-gradient(to bottom,#3a6010,#204008);border:2px solid #4a8020;color:#b0e050;cursor:pointer;transition:all .15s;}
+.cart-btn:active{transform:scale(.96);}
+
+/* ══════════════════════════════════
+   🍳 COOKING SCREEN - CAULDRON
+══════════════════════════════════ */
+#cook-screen{background:linear-gradient(to bottom,#1a0d05,#0a0602);}
+.cook-kitchen-banner{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  padding:8px 10px 4px;
+  gap:2px;
+}
+.ckb-title{font-family:'Lobster',cursive;font-size:22px;text-shadow:0 0 15px rgba(255,140,20,.5);}
+.ckb-sub{font-family:'Neucha',cursive;font-size:11px;color:#80603a;}
+
+.cauldron-area{
+  flex-shrink:0;height:100px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  margin:0 10px 4px;
+}
+.cauldron-svg-wrap{position:relative;width:120px;height:100px;}
+.cauldron-steam{position:absolute;top:0;left:50%;transform:translateX(-50%);}
+.steam-puff{
+  position:absolute;width:18px;height:18px;border-radius:50%;
+  background:rgba(200,160,80,.25);animation:steamRise 2s ease-out infinite;
+}
+@keyframes steamRise{
+  0%{opacity:.7;transform:translateY(0) scale(.8);}
+  100%{opacity:0;transform:translateY(-40px) scale(1.6);}
+}
+.cauldron-fire{position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);font-size:28px;animation:fireDance .4s ease-in-out infinite alternate;}
+@keyframes fireDance{0%{transform:translateX(-50%) scaleX(1)}100%{transform:translateX(-50%) scaleX(1.15)}}
+.cauldron-country-label{
+  font-family:'Neucha',cursive;font-size:11px;
+  background:rgba(0,0,0,.4);border-radius:8px;padding:3px 10px;
+  color:#c09060;margin-left:10px;
+}
+
+.cook-recipes-list{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 8px;scrollbar-width:thin;scrollbar-color:#2a1808 transparent;}
+.cook-recipes-list::-webkit-scrollbar{width:4px;}
+.cook-recipes-list::-webkit-scrollbar-thumb{background:#2a1808;}
+
+.recipe-card{
+  background:linear-gradient(135deg,#1c1008,#120a04);
+  border:1.5px solid #2a1808;border-radius:14px;
+  padding:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;
+}
+.recipe-card:active{transform:scale(.97);}
+.rc-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.rc-icon{font-size:32px;}
+.rc-title-block{flex:1;}
+.rc-name{font-family:'Neucha',cursive;font-size:15px;color:#e0b080;}
+.rc-origin{font-family:'Neucha',cursive;font-size:10px;color:#806040;}
+.rc-time{font-family:'Neucha',cursive;font-size:11px;color:#c08050;}
+.rc-ingredients{display:flex;gap:4px;flex-wrap:wrap;}
+.rc-ing{font-family:'Neucha',cursive;font-size:10px;padding:2px 6px;border-radius:6px;border:1px solid #3a2010;}
+.rc-ing.have{color:#80c060;background:rgba(80,160,40,.1);}
+.rc-ing.missing{color:#c06060;background:rgba(160,40,40,.1);border-color:#4a2010;}
+.rc-btn-row{display:flex;justify-content:flex-end;margin-top:8px;}
+.cook-btn{font-family:'Neucha',cursive;font-size:12px;padding:5px 14px;border-radius:10px;background:linear-gradient(to bottom,#5a3010,#302010);border:1.5px solid #7a5020;color:#e0b060;cursor:pointer;transition:all .15s;}
+.cook-btn:active{transform:scale(.95);}
+.cook-btn:disabled{opacity:.35;cursor:default;}
+#home-screen{background:linear-gradient(to bottom,#0d1a10,#080d08);}
+.home-preview{
+  margin:10px;border-radius:14px;overflow:hidden;
+  background:linear-gradient(135deg,#0d2010,#050e08);
+  border:2px solid #1e4020;height:180px;position:relative;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.home-preview-svg{width:100%;height:100%;}
+.build-phase-badge{
+  position:absolute;bottom:8px;left:8px;right:8px;
+  background:rgba(0,0,0,.7);border-radius:8px;padding:4px 8px;
+  font-family:'Neucha',cursive;font-size:11px;color:#80c060;text-align:center;
+}
+.build-progress{margin:0 10px 10px;flex-shrink:0;}
+.bp-label{font-family:'Neucha',cursive;font-size:12px;color:var(--text2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.bp-bar{height:8px;background:rgba(0,0,0,.4);border-radius:4px;overflow:hidden;border:1px solid #1e4020;}
+.bp-fill{height:100%;background:linear-gradient(to right,#204010,#50c030);transition:width .5s;border-radius:4px;}
+.build-steps{display:flex;gap:6px;padding:0 10px 10px;flex-shrink:0;}
+.build-step{
+  flex:1;background:var(--panel2);border:1.5px solid var(--border);
+  border-radius:10px;padding:6px;text-align:center;
+  font-family:'Neucha',cursive;font-size:10px;color:var(--text2);
+  transition:all .2s;
+}
+.build-step.done{border-color:#3a7020;color:#60b040;background:rgba(60,120,30,.15);}
+.build-step.active{border-color:var(--gold);color:var(--gold);animation:stepGlow 1.5s ease-in-out infinite alternate;}
+.build-step .bs-ico{font-size:18px;display:block;margin-bottom:2px;}
+@keyframes stepGlow{0%{box-shadow:none}100%{box-shadow:0 0 10px rgba(240,192,64,.3)}}
+.build-action{
+  margin:0 10px 10px;padding:12px;
+  background:linear-gradient(135deg,#0d2010,#050e08);
+  border:2px solid #1e4020;border-radius:14px;flex-shrink:0;
+}
+.ba-title{font-family:'Neucha',cursive;font-size:14px;color:#80c060;margin-bottom:8px;}
+.ba-need{font-family:'Neucha',cursive;font-size:11px;color:var(--text2);margin-bottom:8px;line-height:1.6;}
+.ba-btn{
+  width:100%;padding:10px;border-radius:10px;
+  background:linear-gradient(to bottom,#3a7010,#204008);
+  border:2px solid #4a9020;font-family:'Neucha',cursive;
+  font-size:14px;color:#c0f060;cursor:pointer;transition:all .15s;
+}
+.ba-btn:active{transform:scale(.97);}
+.ba-btn:disabled{opacity:.4;cursor:default;}
+
+.home-tabs{display:flex;gap:6px;padding:0 10px 8px;flex-shrink:0;}
+.home-tab{font-family:'Neucha',cursive;font-size:12px;padding:5px 12px;border-radius:12px;border:1.5px solid var(--border);color:var(--text2);background:rgba(0,0,0,.3);cursor:pointer;transition:all .2s;}
+.home-tab.active{border-color:#4a9020;color:#80c060;background:rgba(60,120,20,.1);}
+
+.furniture-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.furn-card{
+  background:linear-gradient(135deg,#0d2010,#050e08);
+  border:1.5px solid var(--border);border-radius:12px;padding:10px;
+  text-align:center;cursor:pointer;transition:all .2s;
+}
+.furn-card:active{transform:scale(.96);}
+.furn-card.owned{border-color:#3a7020;}
+.furn-card.placed{border-color:#60a030;background:rgba(60,100,20,.2);}
+.furn-ico{font-size:28px;margin-bottom:4px;}
+.furn-name{font-family:'Neucha',cursive;font-size:12px;color:var(--text);}
+.furn-price{font-family:'Neucha',cursive;font-size:11px;color:var(--gold);margin-top:2px;}
+.furn-status{font-family:'Neucha',cursive;font-size:10px;color:#60a030;margin-top:2px;}
+
+/* ══════════════════════════════════
+   🎣 FISHING SCREEN — BEAUTIFUL
+══════════════════════════════════ */
+#fish-screen{background:#020810;}
+.fish-scene{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+
+/* === SKY CANVAS LAYER === */
+#fish-sky-canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* === WATER SURFACE === */
+.fish-water-surface{
+  position:absolute;bottom:0;left:0;right:0;height:52%;
+  overflow:hidden;
+}
+.fish-water-body{
+  position:absolute;inset:0;
+}
+/* animated wave SVG overlay */
+.fish-wave{
+  position:absolute;top:0;left:-10%;width:120%;
+}
+.fish-wave-path{
+  animation:waveMove var(--ws,4s) ease-in-out infinite alternate;
+}
+@keyframes waveMove{0%{d:path("M0,15 Q80,0 160,15 Q240,30 320,15 Q400,0 480,15 L480,0 L0,0Z")}
+100%{d:path("M0,5 Q80,20 160,5 Q240,-8 320,5 Q400,20 480,5 L480,0 L0,0Z")}}
+
+/* water shimmer */
+.fish-water-shimmer{
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    105deg,
+    transparent 0px, transparent 18px,
+    rgba(255,255,255,.03) 18px, rgba(255,255,255,.03) 20px
+  );
+  animation:shimmerDrift 8s linear infinite;
+}
+@keyframes shimmerDrift{from{transform:translateX(0) translateY(0)}to{transform:translateX(-20px) translateY(6px)}}
+
+/* water sparkles */
+.w-sparkle{
+  position:absolute;width:3px;height:3px;border-radius:50%;
+  background:#fff;opacity:0;
+  animation:sparkle var(--sd,3s) ease-in-out infinite;
+  animation-delay:var(--sdl,0s);
+}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:.9;transform:scale(1.5)}}
+
+/* underwater fish shadows */
+.shadow-fish{
+  position:absolute;opacity:.18;font-size:16px;
+  animation:swimFish var(--sd,14s) linear infinite;
+  animation-delay:var(--sdl,0s);
+  filter:blur(1px);
+}
+@keyframes swimFish{0%{transform:translateX(-40px) scaleX(1)}49%{transform:translateX(340px) scaleX(1)}50%{transform:translateX(340px) scaleX(-1)}100%{transform:translateX(-40px) scaleX(-1)}}
+
+/* === DOCK / PIER === */
+.fish-pier{
+  position:absolute;
+  bottom:51%;left:0;right:0;height:22px;
+  background:linear-gradient(to bottom,#7a5828,#4a3010);
+  border-top:3px solid #a07838;
+  box-shadow:0 4px 12px rgba(0,0,0,.6);
+}
+.fish-pier::before{
+  content:'';position:absolute;top:-6px;left:0;right:0;height:6px;
+  background:repeating-linear-gradient(90deg,#8a6030 0,#8a6030 22px,#6a4820 22px,#6a4820 26px);
+}
+/* pier posts */
+.pier-post{
+  position:absolute;bottom:0;width:8px;
+  background:linear-gradient(to bottom,#6a4820,#3a2010);
+  border-radius:2px 2px 0 0;
+}
+
+/* === ROD === */
+#rod-wrap{
+  position:absolute;
+  bottom:calc(51% + 10px);
+  left:24px;
+  transform-origin:bottom left;
+  z-index:10;
+}
+#rod-svg{width:130px;height:130px;overflow:visible;}
+
+/* === BOBBER === */
+#bobber{
+  position:absolute;
+  width:16px;height:20px;
+  transform:translate(-50%,-50%);
+  transition:top .5s cubic-bezier(.25,.46,.45,.94),left .5s cubic-bezier(.25,.46,.45,.94);
+  z-index:12;
+}
+#bobber.biting{animation:bobberBite .25s ease-in-out infinite alternate;}
+@keyframes bobberBite{0%{transform:translate(-50%,-50%) translateY(0)}100%{transform:translate(-50%,-50%) translateY(9px)}}
+
+/* fishing line */
+#fish-line-canvas{position:absolute;inset:0;pointer-events:none;z-index:11;}
+
+/* ── SPLASH RINGS when bobber lands ── */
+.splash-ring{position:absolute;border-radius:50%;border:2px solid rgba(150,220,255,.6);transform:translate(-50%,-50%) scale(0);pointer-events:none;z-index:13;animation:splashExpand .8s ease-out forwards;}
+@keyframes splashExpand{0%{transform:translate(-50%,-50%) scale(0);opacity:.8}100%{transform:translate(-50%,-50%) scale(3);opacity:0}}
+.splash-drop{position:absolute;font-size:8px;color:rgba(150,220,255,.9);pointer-events:none;z-index:13;animation:dropFly .6s ease-out forwards;}
+@keyframes dropFly{0%{transform:translate(-50%,-50%) translateY(0);opacity:1}100%{transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,-20px)));opacity:0}}
+
+/* ── BOBBER idle bob ── */
+#bobber.in-water{animation:bobberFloat 2.2s ease-in-out infinite;}
+@keyframes bobberFloat{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(4px)}}
+
+/* ── FISH JUMP out of water on catch ── */
+.fish-jump{position:absolute;font-size:28px;pointer-events:none;z-index:20;animation:fishJump 1s cubic-bezier(.25,.46,.45,.94) forwards;}
+@keyframes fishJump{0%{transform:translate(-50%,0) rotate(0deg);opacity:1}40%{transform:translate(-50%,-80px) rotate(-30deg);opacity:1}100%{transform:translate(-50%,20px) rotate(90deg);opacity:0}}
+
+/* ── ROD CAST animation ── */
+#rod-wrap{transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+#rod-wrap.casting{animation:rodCast .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes rodCast{0%{transform:rotate(0deg)}35%{transform:rotate(-30deg)}100%{transform:rotate(0deg)}}
+#rod-wrap.biting-tug{animation:rodTug .18s ease-in-out 4;}
+@keyframes rodTug{0%,100%{transform:rotate(0deg)}50%{transform:rotate(9deg)}}
+
+/* ── WATER RIPPLE ambient ── */
+.water-ripple{position:absolute;border-radius:50%;border:1px solid rgba(150,210,255,.25);pointer-events:none;animation:waterRipple var(--wr,5s) ease-out infinite;animation-delay:var(--wrl,0s);}
+@keyframes waterRipple{0%{width:8px;height:4px;opacity:.5;transform:translate(-50%,-50%)}100%{width:70px;height:35px;opacity:0;transform:translate(-50%,-50%)}}
+
+/* ── CATCH RIPPLE ── */
+.catch-ripple{position:absolute;border-radius:50%;border:3px solid rgba(255,220,50,.6);pointer-events:none;z-index:13;animation:catchRipple 1s ease-out forwards;}
+@keyframes catchRipple{0%{width:20px;height:10px;opacity:1;transform:translate(-50%,-50%)}100%{width:90px;height:45px;opacity:0;transform:translate(-50%,-50%)}}
+
+/* ── NAV BADGE ── */
+.nav-badge{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%;background:#ff4060;border:1.5px solid #0a0e1a;animation:badgePulse 1.5s ease-in-out infinite;}
+@keyframes badgePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+
+/* ── COUNTRY CARD entrance ── */
+.country-card{animation:cardSlideIn .3s ease-out both;}
+.country-card:nth-child(1){animation-delay:.04s}.country-card:nth-child(2){animation-delay:.09s}.country-card:nth-child(3){animation-delay:.14s}.country-card:nth-child(4){animation-delay:.19s}.country-card:nth-child(5){animation-delay:.24s}.country-card:nth-child(6){animation-delay:.29s}
+@keyframes cardSlideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── CATCH POPUP legendary ── */
+.catch-box.legendary{animation:catchPop .4s cubic-bezier(.34,1.56,.64,1),legendaryFlash 1s ease-in-out 0.5s 3;}
+@keyframes legendaryFlash{0%,100%{box-shadow:0 0 40px rgba(240,192,64,.3)}50%{box-shadow:0 0 80px rgba(240,192,64,.9),0 0 140px rgba(240,192,64,.5)}}
+
+/* ── SHELF PRODUCT hover ── */
+.shelf-product:not(.owned-item):hover{transform:translateY(-3px) scale(1.05);border-color:rgba(240,192,64,.5);}
+
+/* ── RECIPE CARD hover ── */
+.recipe-card{transition:all .2s;}
+.recipe-card:hover{border-color:#4a2818;transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.5);}
+
+/* ── BUILD BTN pulse ── */
+.ba-btn:not([disabled]){animation:buildPulse 2s ease-in-out infinite;}
+@keyframes buildPulse{0%,100%{box-shadow:0 0 0 rgba(80,160,30,.2)}60%{box-shadow:0 0 20px rgba(80,160,30,.6)}}
+
+/* ── SCREEN TRANSITION ── */
+.screen-with-nav.fade-in{animation:screenFadeIn .22s ease-out;}
+@keyframes screenFadeIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── FISH STATUS SHEEN ── */
+.fish-status{transition:color .4s;position:relative;overflow:hidden;}
+.fish-status::after{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);animation:statusSheen 3s ease-in-out infinite;}
+@keyframes statusSheen{from{left:-100%}to{left:220%}}
+
+/* ── WAIT DOTS ── */
+@keyframes dotDot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.wait-dot{display:inline-block;animation:dotDot 1.2s ease-in-out infinite;}
+.wait-dot:nth-child(2){animation-delay:.2s}.wait-dot:nth-child(3){animation-delay:.4s}
+
+/* ── ENERGY WARN ── */
+@keyframes energyWarn{0%,100%{color:#60d080}50%{color:#ff5050;text-shadow:0 0 8px #ff4040}}
+.energy-warn{animation:energyWarn .9s ease-in-out infinite;}
+
+/* ── COINS GAIN ── */
+@keyframes coinsGain{0%{transform:scale(1)}35%{transform:scale(1.25)}100%{transform:scale(1)}}
+.coins-gain{animation:coinsGain .4s ease-out;}
+
+/* ── DAY POP ── */
+@keyframes dayPop{0%{transform:scale(1.5);color:#f0c040}100%{transform:scale(1);color:#5070a0}}
+.day-pop{animation:dayPop .5s ease-out;}
+
+/* ── INVENTORY SLOT entrance ── */
+.inv-slot{animation:slotIn .2s ease-out both;}
+
+/* ── COOK BTN alive ── */
+.cook-btn:not([disabled]){animation:cookBtnGlow 1.8s ease-in-out infinite alternate;}
+@keyframes cookBtnGlow{from{box-shadow:none}to{box-shadow:0 0 12px rgba(220,140,40,.4)}}
+
+/* ── TOPBAR energy heartbeat when fishing ── */
+@keyframes energyBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.energy-beat{animation:energyBeat .6s ease-in-out infinite;}
+
+/* ── GENERAL FADE IN ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ══════════════════════════════════
+   💼 WORK SCREEN
+══════════════════════════════════ */
+.job-card{
+  background:linear-gradient(135deg,var(--panel2),var(--panel));
+  border:2px solid var(--border);border-radius:14px;
+  padding:14px;margin-bottom:10px;
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+  animation:cardSlideIn .3s ease-out both;
+}
+.job-card:nth-child(1){animation-delay:.05s}.job-card:nth-child(2){animation-delay:.1s}
+.job-card:nth-child(3){animation-delay:.15s}.job-card:nth-child(4){animation-delay:.2s}
+.job-card:nth-child(5){animation-delay:.25s}
+.job-card:active{transform:scale(.97);}
+.job-card.current-job{border-color:var(--gold);box-shadow:0 0 18px rgba(240,192,64,.25);}
+.job-card.locked{opacity:.45;cursor:default;}
+.job-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);pointer-events:none;}
+.jc-top{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.jc-icon{font-size:38px;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5));}
+.jc-info{flex:1;}
+.jc-name{font-family:'Neucha',cursive;font-size:16px;color:var(--text);margin-bottom:2px;}
+.jc-desc{font-family:'Neucha',cursive;font-size:11px;color:var(--text2);line-height:1.4;}
+.jc-pay{font-family:'Neucha',cursive;font-size:13px;color:var(--gold);text-align:right;flex-shrink:0;}
+.jc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.jc-tag{font-family:'Neucha',cursive;font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.06);color:#6080b0;border:1px solid #1e3050;}
+.jc-lvl-bar{height:6px;background:rgba(0,0,0,.4);border-radius:3px;overflow:hidden;border:1px solid #1e3050;margin-top:7px;}
+.jc-lvl-fill{height:100%;background:linear-gradient(to right,#1a5080,#50b0f0);border-radius:3px;transition:width .5s;}
+.jc-lvl-label{font-family:'Neucha',cursive;font-size:10px;color:#4060a0;margin-top:3px;display:flex;justify-content:space-between;}
+
+/* work mini-game */
+#work-minigame{flex-direction:column;}
+
+/* tap target */
+.wmg-tap{
+  width:70px;height:70px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;cursor:pointer;border:3px solid;
+  transition:transform .08s,box-shadow .08s;
+  position:absolute;
+  animation:wmgTargetIn .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes wmgTargetIn{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+.wmg-tap:active{transform:scale(.87)!important;}
+
+/* sort item */
+.wmg-sort-item{
+  padding:8px 14px;border-radius:10px;font-family:'Neucha',cursive;font-size:14px;
+  cursor:pointer;border:2px solid;transition:all .15s;
+  animation:wmgTargetIn .2s ease-out;
+}
+.wmg-sort-item:active{transform:scale(.93);}
+
+/* type box */
+.wmg-type-display{
+  font-family:'Neucha',cursive;font-size:22px;color:#f0c040;
+  text-align:center;margin-bottom:10px;letter-spacing:3px;
+  min-height:34px;
+}
+.wmg-keys{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;}
+.wmg-key{
+  width:38px;height:38px;border-radius:8px;
+  background:linear-gradient(to bottom,#1a2a40,#0e1828);
+  border:2px solid #2a4060;font-family:'Neucha',cursive;font-size:16px;
+  color:#80b0e0;cursor:pointer;transition:all .1s;
+  display:flex;align-items:center;justify-content:center;
+}
+.wmg-key:active{transform:scale(.88);background:linear-gradient(to bottom,#2a4060,#1a2840);}
+
+/* combo flash */
+@keyframes comboFlash{0%{transform:scale(1.4);color:#f0c040;opacity:1}100%{transform:scale(1);opacity:0}}
+.combo-flash{position:absolute;font-family:'Neucha',cursive;font-size:20px;pointer-events:none;animation:comboFlash .6s ease-out forwards;top:10px;left:50%;transform:translateX(-50%);}
+
+/* miss flash */
+@keyframes missShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.miss-shake{animation:missShake .3s ease-in-out;}
+
+/* work stat bar */
+.work-stat-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;}
+.wsr-ico{font-size:20px;}
+.wsr-label{font-family:'Neucha',cursive;font-size:12px;color:var(--text2);flex:1;}
+.wsr-val{font-family:'Neucha',cursive;font-size:14px;color:var(--text);}
+
+/* quit work confirm */
+@keyframes workEndPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* === AMBIENT PARTICLES (snow/sakura/etc) === */
+.ambient-particle{
+  position:absolute;
+  pointer-events:none;
+  animation:particleFall var(--pd,6s) linear infinite;
+  animation-delay:var(--pdl,0s);
+  opacity:0;
+  font-size:var(--pfs,12px);
+  z-index:5;
+}
+@keyframes particleFall{
+  0%{transform:translateY(-20px) rotate(0deg) translateX(0);opacity:0;}
+  10%{opacity:.8;}
+  90%{opacity:.6;}
+  100%{transform:translateY(640px) rotate(360deg) translateX(var(--px,20px));opacity:0;}
+}
+
+/* === FISH UI PANEL === */
+.fish-ui{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:8px 10px 10px;
+  background:linear-gradient(to top,rgba(0,0,0,.92) 60%,transparent);
+}
+.fish-status{
+  font-family:'Neucha',cursive;font-size:13px;
+  color:var(--fish-ui-color,#6090c0);
+  text-align:center;margin-bottom:6px;min-height:20px;
+  text-shadow:0 0 10px var(--fish-ui-color,#6090c0);
+}
+.fish-btn-row{display:flex;gap:8px;}
+.fish-btn{
+  flex:1;padding:10px;border-radius:12px;
+  font-family:'Neucha',cursive;font-size:14px;cursor:pointer;
+  border:2px solid;transition:all .15s;
+}
+.fish-btn:active{transform:scale(.96);}
+.fb-cast{background:linear-gradient(to bottom,#1a4060,#0c2040);border-color:#2a6090;color:#80c0f0;}
+.fb-reel{background:linear-gradient(to bottom,#402010,#200e08);border-color:#604020;color:#c08050;}
+.fb-catch{background:linear-gradient(to bottom,#204010,#0c2008);border-color:#409020;color:#80e040;animation:catchPulse .5s ease-in-out infinite alternate;}
+@keyframes catchPulse{0%{box-shadow:none}100%{box-shadow:0 0 16px rgba(80,220,40,.5)}}
+
+.fish-rod-select{display:flex;gap:6px;padding:0 10px 6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+.fish-rod-select::-webkit-scrollbar{display:none;}
+.frs-card{
+  flex-shrink:0;background:var(--panel2);border:1.5px solid var(--border);
+  border-radius:10px;padding:6px 10px;cursor:pointer;transition:all .2s;
+  font-family:'Neucha',cursive;font-size:11px;color:var(--text2);text-align:center;
+}
+.frs-card.active-rod{border-color:var(--gold);color:var(--gold);background:rgba(240,192,64,.08);}
+.frs-icon{font-size:18px;display:block;margin-bottom:2px;}
+
+/* catch popup */
+#catch-popup{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:100;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(4px);
+}
+#catch-popup.show{display:flex;}
+.catch-box{
+  background:linear-gradient(135deg,#0d1e30,#060e18);
+  border:2px solid var(--gold);border-radius:18px;
+  padding:20px;width:240px;text-align:center;
+  animation:catchPop .4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 40px rgba(240,192,64,.3);
+}
+@keyframes catchPop{0%{transform:scale(.4) rotate(-5deg);opacity:0}100%{transform:scale(1) rotate(0deg);opacity:1}}
+.catch-fish-icon{font-size:60px;margin-bottom:8px;display:block;animation:fishBounce .8s ease-in-out infinite alternate;}
+@keyframes fishBounce{0%{transform:rotate(-8deg) scale(.95)}100%{transform:rotate(8deg) scale(1.05)}}
+.catch-name{font-family:'UnifrakturMaguntia',cursive;font-size:20px;color:var(--gold);}
+.catch-rarity{font-family:'Neucha',cursive;font-size:12px;margin:4px 0;}
+.catch-weight{font-family:'Neucha',cursive;font-size:13px;color:var(--text2);margin-bottom:12px;}
+.catch-actions{display:flex;gap:8px;}
+.catch-keep{flex:1;padding:8px;border-radius:10px;background:linear-gradient(to bottom,#204010,#0c2008);border:2px solid #409020;color:#80e040;font-family:'Neucha',cursive;font-size:13px;cursor:pointer;}
+.catch-release{flex:1;padding:8px;border-radius:10px;background:linear-gradient(to bottom,#1a3040,#0c1820);border:2px solid #2a4060;color:#6090c0;font-family:'Neucha',cursive;font-size:13px;cursor:pointer;}
+
+@keyframes twinkleS{0%{opacity:.1}100%{opacity:.9}}
+/* ══════════════════════════════════
+   🌍 COUNTRY THEME SYSTEM
+══════════════════════════════════ */
+/* topbar themed glow */
+#topbar{transition:border-color .6s,box-shadow .6s;}
+/* nav sidebar themed */
+.nav-sidebar{transition:background .6s;}
+
+/* ══════════════════════════════════
+   🍳 COOKING SCREEN
+══════════════════════════════════ */
+#cook-screen{background:linear-gradient(to bottom,#1a0d05,#0a0602);}
+.cook-country-bar{
+  background:linear-gradient(to right,#2a1008,#1a0805);
+  border-bottom:2px solid #3a1808;padding:8px 14px;
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.ccb-flag{font-size:22px;}
+.ccb-label{font-family:'Neucha',cursive;font-size:13px;color:#c08060;}
+.recipe-card{
+  background:linear-gradient(135deg,#1a0e08,#0e0804);
+  border:1.5px solid #2a1808;border-radius:14px;
+  padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;
+}
+.recipe-card:active{transform:scale(.97);}
+.rc-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.rc-icon{font-size:32px;}
+.rc-title-block{flex:1;}
+.rc-name{font-family:'Neucha',cursive;font-size:15px;color:#e0b080;}
+.rc-origin{font-family:'Neucha',cursive;font-size:10px;color:#806040;}
+.rc-time{font-family:'Neucha',cursive;font-size:11px;color:#c08050;}
+.rc-ingredients{display:flex;gap:4px;flex-wrap:wrap;}
+.rc-ing{
+  font-family:'Neucha',cursive;font-size:10px;padding:2px 6px;border-radius:6px;
+  border:1px solid #3a2010;
+}
+.rc-ing.have{color:#80c060;background:rgba(80,160,40,.1);}
+.rc-ing.missing{color:#c06060;background:rgba(160,40,40,.1);border-color:#4a2010;}
+.rc-btn-row{display:flex;justify-content:flex-end;margin-top:8px;}
+.cook-btn{font-family:'Neucha',cursive;font-size:12px;padding:5px 14px;border-radius:10px;background:linear-gradient(to bottom,#5a3010,#302010);border:1.5px solid #7a5020;color:#e0b060;cursor:pointer;transition:all .15s;}
+.cook-btn:active{transform:scale(.95);}
+.cook-btn:disabled{opacity:.35;cursor:default;}
+
+/* cooking popup */
+#cooking-popup{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:100;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);}
+#cooking-popup.show{display:flex;}
+.cooking-box{background:linear-gradient(135deg,#1a0d05,#080502);border:2px solid #6a4020;border-radius:18px;padding:20px;width:260px;text-align:center;}
+.cooking-fire{font-size:48px;animation:fireWave .5s ease-in-out infinite alternate;display:block;margin-bottom:8px;}
+@keyframes fireWave{0%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1.1) rotate(3deg)}}
+.cooking-progress-wrap{margin:10px 0;}
+.cooking-prog-bar{height:12px;background:rgba(0,0,0,.4);border-radius:6px;overflow:hidden;border:1px solid #3a2010;}
+.cooking-prog-fill{height:100%;background:linear-gradient(to right,#803010,#e06020,#f0a040);border-radius:6px;transition:width .1s;}
+.cooking-name{font-family:'Neucha',cursive;font-size:16px;color:#e0b060;margin-bottom:4px;}
+.cooking-timer{font-family:'Neucha',cursive;font-size:13px;color:#a07040;}
+
+/* ══════════════════════════════════
+   🎒 INVENTORY SCREEN
+══════════════════════════════════ */
+#inv-screen{background:linear-gradient(to bottom,#0d1218,#080c10);}
+.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.inv-slot{
+  background:var(--panel2);border:1.5px solid var(--border);
+  border-radius:10px;padding:8px;text-align:center;
+  min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;cursor:pointer;transition:all .15s;
+}
+.inv-slot:active{transform:scale(.95);}
+.inv-slot.empty{opacity:.3;cursor:default;}
+.is-icon{font-size:24px;margin-bottom:4px;}
+.is-name{font-family:'Neucha',cursive;font-size:10px;color:var(--text);line-height:1.2;text-align:center;}
+.is-sub{font-family:'Neucha',cursive;font-size:9px;color:var(--text2);}
+.is-qty{position:absolute;top:4px;right:4px;background:var(--gold);color:#1a1000;border-radius:4px;font-family:'Neucha',cursive;font-size:9px;padding:1px 4px;}
+.inv-tabs{display:flex;gap:6px;padding:0 10px 8px;flex-shrink:0;}
+.inv-tab{font-family:'Neucha',cursive;font-size:12px;padding:5px 12px;border-radius:12px;border:1.5px solid var(--border);color:var(--text2);background:rgba(0,0,0,.3);cursor:pointer;transition:all .2s;}
+.inv-tab.active{border-color:var(--blue);color:var(--blue);background:rgba(74,144,217,.1);}
+.inv-sell-bar{padding:8px 10px;display:flex;gap:8px;flex-shrink:0;border-top:1px solid var(--border);}
+.sell-btn{flex:1;padding:8px;border-radius:10px;background:linear-gradient(to bottom,#4a2008,#2a1004);border:1.5px solid #7a4020;color:#e08050;font-family:'Neucha',cursive;font-size:13px;cursor:pointer;transition:all .15s;}
+.sell-btn:active{transform:scale(.96);}
+
+/* ══════════════════════════════════
+   TOASTS & COMMON
+══════════════════════════════════ */
+#toast{
+  position:absolute;bottom:70px;left:50%;transform:translateX(-50%);
+  background:rgba(10,20,40,.95);border:1.5px solid #2a4060;border-radius:12px;
+  padding:8px 16px;font-family:'Neucha',cursive;font-size:13px;color:var(--text);
+  white-space:nowrap;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;
+  max-width:300px;text-align:center;white-space:normal;
+}
+#toast.show{opacity:1;}
+
+.empty-state{text-align:center;padding:30px 20px;font-family:'Neucha',cursive;font-size:14px;color:#3050a0;}
+.empty-state .es-ico{font-size:40px;display:block;margin-bottom:10px;opacity:.4;}
+
+/* rarity colors */
+.rar-common{color:#a0b0c0;}
+.rar-uncommon{color:#60d060;}
+.rar-rare{color:#6090ff;}
+.rar-epic{color:#c060f0;}
+.rar-legend{color:#f0c040;}
+
+/* ── coin burst ── */
+.coin-particle{position:absolute;pointer-events:none;font-size:14px;animation:coinFly .8s ease-out forwards;}
+@keyframes coinFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--cx,0),var(--cy,-60px)) scale(.5)}}
+
+/* ══════════════════════════════════
+   ✈️ TRAVEL CUTSCENE
+══════════════════════════════════ */
+#travel-cutscene{
+  position:absolute;inset:0;z-index:9999;
+  background:#000;
+  display:none;overflow:hidden;
+  flex-direction:column;align-items:center;justify-content:center;
+}
+#travel-cutscene.show{display:flex;}
+
+/* Sky layers */
+#tc-sky{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,#040818 0%,#0a1a40 40%,#1a3060 70%,#2a5080 100%);
+  transition:background 1.5s;
+}
+/* Stars */
+.tc-star{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:tcStarTwinkle var(--sd,2s) ease-in-out infinite alternate;
+  animation-delay:var(--sdl,0s);
+}
+@keyframes tcStarTwinkle{0%{opacity:.2}100%{opacity:.9}}
+
+/* Clouds */
+.tc-cloud{
+  position:absolute;
+  animation:tcCloudMove var(--cd,8s) linear forwards;
+  animation-delay:var(--cdl,0s);
+  opacity:0;
+}
+@keyframes tcCloudMove{
+  0%{transform:translateX(420px);opacity:0}
+  10%{opacity:.7}
+  90%{opacity:.5}
+  100%{transform:translateX(-120px);opacity:0}
+}
+.tc-cloud-body{
+  position:relative;width:var(--cw,80px);
+}
+.tc-cloud-puff{
+  position:absolute;border-radius:50%;
+  background:rgba(200,220,255,.15);
+  border:1px solid rgba(200,220,255,.08);
+  backdrop-filter:blur(2px);
+}
+
+/* Airplane */
+#tc-plane-wrap{
+  position:absolute;
+  left:-80px;
+  animation:tcFly 3.5s cubic-bezier(.25,.1,.25,1) forwards;
+}
+@keyframes tcFly{
+  0%{left:-80px;top:var(--py,45%)}
+  15%{top:calc(var(--py,45%) - 20px)}
+  50%{left:50%;top:calc(var(--py,45%) - 10px)}
+  85%{top:calc(var(--py,45%) + 15px)}
+  100%{left:calc(100% + 80px);top:var(--py,45%)}
+}
+#tc-plane{
+  font-size:38px;
+  filter:drop-shadow(0 4px 12px rgba(100,160,255,.5));
+  animation:tcPlaneTilt 3.5s ease-in-out forwards;
+  transform-origin:center center;
+}
+@keyframes tcPlaneTilt{
+  0%{transform:rotate(-5deg) scaleX(-1)}
+  30%{transform:rotate(-12deg) scaleX(-1)}
+  60%{transform:rotate(-5deg) scaleX(-1)}
+  85%{transform:rotate(8deg) scaleX(-1)}
+  100%{transform:rotate(5deg) scaleX(-1)}
+}
+
+/* Contrail */
+.tc-contrail{
+  position:absolute;height:2px;
+  background:linear-gradient(to left,rgba(255,255,255,.5),transparent);
+  border-radius:1px;
+  animation:tcContrail 3.5s ease-out forwards;
+  transform-origin:right center;
+}
+@keyframes tcContrail{
+  0%{width:0;opacity:0;right:36px;top:19px}
+  20%{opacity:.6}
+  80%{opacity:.3}
+  100%{width:140px;opacity:0;right:36px;top:19px}
+}
+
+/* Flag banners */
+#tc-from-flag,#tc-to-flag{
+  position:absolute;top:50%;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-family:'Neucha',cursive;
+  transform:translateY(-50%);
+  transition:opacity .8s;
+}
+#tc-from-flag{left:18px;}
+#tc-to-flag{right:18px;}
+.tc-flag-emoji{font-size:42px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.6));}
+.tc-flag-name{font-size:12px;color:rgba(180,210,255,.8);text-align:center;max-width:70px;line-height:1.3;}
+
+/* Arrow line */
+#tc-arrow-line{
+  position:absolute;top:50%;left:80px;right:80px;height:1px;
+  background:linear-gradient(to right,transparent,rgba(100,160,255,.3),transparent);
+  transform:translateY(-50%);
+}
+#tc-arrow-line::before,#tc-arrow-line::after{
+  content:'·';position:absolute;top:-4px;
+  color:rgba(100,160,255,.5);font-size:10px;
+  animation:dotPulse 1s ease-in-out infinite alternate;
+}
+#tc-arrow-line::before{left:33%;}
+#tc-arrow-line::after{left:66%;animation-delay:.5s;}
+@keyframes dotPulse{0%{opacity:.2}100%{opacity:.8}}
+
+/* Bottom text */
+#tc-text{
+  position:absolute;bottom:60px;left:0;right:0;
+  text-align:center;
+  font-family:'Neucha',cursive;font-size:15px;
+  color:rgba(160,200,255,.9);
+  animation:tcTextFade 3.5s ease-in-out forwards;
+}
+@keyframes tcTextFade{
+  0%{opacity:0;transform:translateY(10px)}
+  20%{opacity:1;transform:translateY(0)}
+  80%{opacity:1}
+  100%{opacity:0}
+}
+#tc-cost-text{
+  position:absolute;bottom:38px;left:0;right:0;
+  text-align:center;font-family:'Neucha',cursive;font-size:12px;
+  color:rgba(240,192,64,.7);
+  animation:tcTextFade 3.5s ease-in-out forwards;
+  animation-delay:.2s;
+  opacity:0;
+}
+/* Flash overlay */
+#tc-flash{
+  position:absolute;inset:0;background:#fff;
+  opacity:0;pointer-events:none;
+  transition:opacity .15s;
+}
+#tc-flash.pop{opacity:.25;}
+</style>
+</head>
+<body>
+<div id="scale-wrap">
+<div id="game">
+
+<!-- ══ TRAVEL CUTSCENE OVERLAY ══ -->
+  <div id="travel-cutscene">
+    <div id="tc-sky"></div>
+    <div id="tc-stars-wrap"></div>
+    <div id="tc-clouds-wrap"></div>
+    <div id="tc-from-flag">
+      <div class="tc-flag-emoji" id="tc-from-emoji">🇷🇺</div>
+      <div class="tc-flag-name" id="tc-from-name">Россия</div>
+    </div>
+    <div id="tc-to-flag">
+      <div class="tc-flag-emoji" id="tc-to-emoji">🇯🇵</div>
+      <div class="tc-flag-name" id="tc-to-name">Япония</div>
+    </div>
+    <div id="tc-arrow-line"></div>
+    <div id="tc-plane-wrap" style="--py:46%">
+      <div class="tc-contrail"></div>
+      <div id="tc-plane">✈️</div>
+    </div>
+    <div id="tc-text">✈️ Летим!</div>
+    <div id="tc-cost-text"></div>
+    <div id="tc-flash"></div>
+  </div>
+
+  <!-- ══ TOPBAR ══ -->
+  <div id="topbar">
+    <span class="tb-loc" id="tb-location">📍 Россия</span>
+    <span class="tb-day" id="tb-day">День 1</span>
+    <span class="tb-energy" id="tb-energy">⚡65</span>
+    <span class="tb-coins"><span>🪙</span><span id="tb-coins">1200</span></span>
+  </div>
+
+  <!-- ══ MAP SCREEN ══ -->
+  <div id="map-screen" class="screen-with-nav active">
+    <div class="nav-sidebar" id="navtabs"></div>
+    <div class="screen-content" style="background:radial-gradient(ellipse at 50% 30%,#0d1e3a,#060c18);">
+      <div class="scr-body" style="padding-top:6px;">
+        <div class="sec-title" style="padding:0 4px;">🌍 Карта Мира</div>
+        <div class="map-subtitle">Выбери страну для путешествия</div>
+        <div class="travel-info" id="travel-info">🏠 Ты сейчас дома в <b id="home-country-name">России</b>. Путешествие стоит монеты.</div>
+        <div id="countries-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SHOP SCREEN ══ -->
+  <div id="shop-screen" class="screen-with-nav">
+    <div class="nav-sidebar" id="navtabs2"></div>
+    <div class="screen-content">
+      <div class="shop-signboard" id="shop-signboard">
+        <div class="shop-sign" id="shop-sign-el">
+          <span class="sign-flag" id="shop-flag">🇷🇺</span>
+          <div style="flex:1">
+            <div class="sign-neon" id="shop-store-name">Пятёрочка</div>
+            <div class="sign-sub" id="shop-store-sub">Россия · Продуктовый гипермаркет</div>
+          </div>
+        </div>
+      </div>
+      <div class="shop-shelf-area" id="shop-body"></div>
+      <div class="shop-cart-bar">
+        <div class="cart-info">Корзина: <span class="cart-count" id="cart-count">0</span> товар(ов)</div>
+        <button class="cart-btn" onclick="checkoutCart()">🛒 Купить всё</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HOME SCREEN ══ -->
+  <div id="home-screen" class="screen-with-nav">
+    <div class="nav-sidebar" id="navtabs3"></div>
+    <div class="screen-content" style="background:linear-gradient(to bottom,#0d1a10,#080d08);">
+      <div class="home-preview">
+        <svg id="house-svg" class="home-preview-svg" viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="build-phase-badge" id="build-phase-badge">🏗️ Начни строительство!</div>
+      </div>
+      <div class="build-progress">
+        <div class="bp-label"><span>Строительство</span><span id="build-pct">0%</span></div>
+        <div class="bp-bar"><div class="bp-fill" id="build-fill" style="width:0%"></div></div>
+      </div>
+      <div class="build-steps" id="build-steps"></div>
+      <div class="home-tabs">
+        <button class="home-tab active" onclick="switchHomeTab('build',this)">🏗️ Стройка</button>
+        <button class="home-tab" onclick="switchHomeTab('furniture',this)">🛋️ Мебель</button>
+        <button class="home-tab" onclick="switchHomeTab('info',this)">📊 Статистика</button>
+      </div>
+      <div class="scr-body" id="home-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ FISHING SCREEN ══ -->
+  <div id="fish-screen" class="screen-with-nav">
+    <div class="nav-sidebar" id="navtabs4"></div>
+    <div class="screen-content">
+      <div class="fish-scene" id="fish-scene">
+        <!-- Sky drawn on canvas -->
+        <canvas id="fish-sky-canvas"></canvas>
+
+        <!-- Water -->
+        <div class="fish-water-surface" id="fish-water-surface">
+          <div class="fish-water-body" id="fish-water-body">
+            <!-- Wave SVG -->
+            <svg id="fish-wave-svg" style="position:absolute;top:-1px;left:-10%;width:120%;height:30px;" viewBox="0 0 480 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <path id="wave1-path" fill="rgba(255,255,255,0.12)"/>
+              <path id="wave2-path" fill="rgba(255,255,255,0.07)"/>
+            </svg>
+            <div class="fish-water-shimmer"></div>
+            <div id="sparkle-wrap"></div>
+            <div id="shadow-fish-wrap"></div>
+          </div>
+        </div>
+
+        <!-- Pier -->
+        <div class="fish-pier" id="fish-pier">
+          <div class="pier-post" style="left:20px;height:30px;"></div>
+          <div class="pier-post" style="left:60px;height:36px;"></div>
+          <div class="pier-post" style="left:110px;height:28px;"></div>
+        </div>
+
+        <!-- Ambient particles (snow/sakura/leaves etc) -->
+        <div id="ambient-wrap"></div>
+
+        <!-- Rod -->
+        <div id="rod-wrap">
+          <svg id="rod-svg" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+            <!-- Reel seat -->
+            <ellipse cx="22" cy="116" rx="12" ry="9" fill="#4a2a08"/>
+            <ellipse cx="22" cy="116" rx="9" ry="6" fill="#3a2008" stroke="#7a5020" stroke-width="1"/>
+            <!-- Rod blank -->
+            <line x1="22" y1="112" x2="110" y2="12" stroke="#6a4010" stroke-width="6" stroke-linecap="round"/>
+            <line x1="22" y1="110" x2="110" y2="10" stroke="#c08840" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Guide rings -->
+            <circle cx="80" cy="40" r="3.5" fill="none" stroke="#a07030" stroke-width="1.5"/>
+            <circle cx="60" cy="62" r="3" fill="none" stroke="#a07030" stroke-width="1.5"/>
+            <circle cx="44" cy="82" r="2.5" fill="none" stroke="#a07030" stroke-width="1.5"/>
+            <!-- Tip -->
+            <circle cx="110" cy="12" r="2" fill="#d0a040"/>
+          </svg>
+        </div>
+
+        <!-- Fishing line canvas -->
+        <canvas id="fish-line-canvas"></canvas>
+
+        <!-- Bobber SVG -->
+        <div id="bobber">
+          <svg viewBox="0 0 16 20" width="16" height="20" xmlns="http://www.w3.org/2000/svg">
+            <!-- top half red -->
+            <path d="M2,8 Q2,2 8,2 Q14,2 14,8 L2,8Z" fill="#dd2020"/>
+            <path d="M3,5 Q5,3 8,3 Q7,5 5,6Z" fill="rgba(255,255,255,.35)"/>
+            <!-- bottom half white -->
+            <path d="M2,8 Q2,14 8,14 Q14,14 14,8 Z" fill="#f0f0f0"/>
+            <!-- center band -->
+            <rect x="1.5" y="7.5" width="13" height="1" fill="#222"/>
+            <!-- top stick -->
+            <line x1="8" y1="1" x2="8" y2="-2" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- bottom tail -->
+            <line x1="8" y1="14" x2="8" y2="20" stroke="#aaa" stroke-width="1" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- Catch popup -->
+        <div id="catch-popup">
+          <div class="catch-box">
+            <span class="catch-fish-icon" id="cp-icon">🐟</span>
+            <div class="catch-name" id="cp-name">Карась</div>
+            <div class="catch-rarity" id="cp-rarity">Обычный</div>
+            <div class="catch-weight" id="cp-weight">0.5 кг · 💰 15</div>
+            <div class="catch-actions">
+              <button class="catch-keep" onclick="keepFish()">🎒 Взять</button>
+              <button class="catch-release" onclick="releaseFish()">🌊 Отпустить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fish-rod-select" id="fish-rod-select"></div>
+      <div class="fish-ui">
+        <div class="fish-status" id="fish-status">Выбери удочку и забрось!</div>
+        <div class="fish-btn-row">
+          <button class="fish-btn fb-cast" id="btn-cast" onclick="castLine()">🎣 Забросить</button>
+          <button class="fish-btn fb-reel" id="btn-reel" onclick="reelIn()" style="display:none">⬆️ Вытащить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ COOKING SCREEN ══ -->
+  <div id="cook-screen" class="screen-with-nav">
+    <div class="nav-sidebar" id="navtabs5"></div>
+    <div class="screen-content" style="background:linear-gradient(to bottom,#1a0d05,#0a0602);">
+      <div class="cook-kitchen-banner">
+        <div class="ckb-title" id="cook-kitchen-title">🍲 Русская Кухня</div>
+        <div class="ckb-sub" id="cook-label">Россия · домашние рецепты</div>
+      </div>
+      <div class="cauldron-area">
+        <div class="cauldron-svg-wrap">
+          <svg viewBox="0 0 120 100" width="120" height="100" xmlns="http://www.w3.org/2000/svg">
+            <!-- cauldron body -->
+            <ellipse cx="60" cy="65" rx="42" ry="12" fill="#1a1008" opacity=".6"/>
+            <path d="M22 55 Q18 80 60 85 Q102 80 98 55 Q80 60 60 62 Q40 60 22 55Z" fill="#3a2010" stroke="#5a3018" stroke-width="2"/>
+            <!-- cauldron top rim -->
+            <ellipse cx="60" cy="55" rx="38" ry="10" fill="#4a2a12" stroke="#7a4a20" stroke-width="2"/>
+            <!-- bubbling soup -->
+            <ellipse cx="60" cy="55" rx="34" ry="8" fill="#6a3a14" id="soup-surface"/>
+            <!-- bubble animations -->
+            <circle cx="45" cy="54" r="3" fill="rgba(200,120,40,.5)" opacity="0"><animate attributeName="cy" values="54;48;54" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.6;0" dur="1.4s" repeatCount="indefinite"/></circle>
+            <circle cx="68" cy="56" r="2" fill="rgba(200,120,40,.4)" opacity="0"><animate attributeName="cy" values="56;50;56" dur="1.8s" repeatCount="indefinite" begin=".5s"/><animate attributeName="opacity" values="0;.5;0" dur="1.8s" repeatCount="indefinite" begin=".5s"/></circle>
+            <circle cx="55" cy="53" r="2.5" fill="rgba(200,120,40,.4)" opacity="0"><animate attributeName="cy" values="53;47;53" dur="2.1s" repeatCount="indefinite" begin="1s"/><animate attributeName="opacity" values="0;.5;0" dur="2.1s" repeatCount="indefinite" begin="1s"/></circle>
+            <!-- handles -->
+            <rect x="14" y="50" width="10" height="6" rx="3" fill="#5a3018" stroke="#7a4a20" stroke-width="1.5"/>
+            <rect x="96" y="50" width="10" height="6" rx="3" fill="#5a3018" stroke="#7a4a20" stroke-width="1.5"/>
+            <!-- legs -->
+            <rect x="30" y="83" width="7" height="12" rx="3" fill="#3a2010"/>
+            <rect x="83" y="83" width="7" height="12" rx="3" fill="#3a2010"/>
+            <rect x="56" y="84" width="7" height="11" rx="3" fill="#3a2010"/>
+          </svg>
+          <div class="cauldron-fire">🔥</div>
+          <div class="cauldron-steam">
+            <div class="steam-puff" style="left:10px;top:20px;animation-delay:0s;"></div>
+            <div class="steam-puff" style="left:30px;top:15px;animation-delay:.6s;"></div>
+            <div class="steam-puff" style="left:50px;top:22px;animation-delay:1.2s;"></div>
+          </div>
+        </div>
+        <div>
+          <span class="ccb-flag" id="cook-flag" style="font-size:28px;display:block;margin-bottom:4px;">🇷🇺</span>
+          <div class="cauldron-country-label" id="cook-country-name">Россия</div>
+        </div>
+      </div>
+      <div class="cook-recipes-list" id="cook-body"></div>
+      <div id="cooking-popup">
+        <div class="cooking-box">
+          <span class="cooking-fire">🔥</span>
+          <div class="cooking-name" id="cp-dish-name">Уха</div>
+          <div class="cooking-progress-wrap">
+            <div class="cooking-prog-bar"><div class="cooking-prog-fill" id="cook-prog" style="width:0%"></div></div>
+          </div>
+          <div class="cooking-timer" id="cook-timer">Готовим...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INVENTORY SCREEN ══ -->
+  <div id="inv-screen" class="screen-with-nav">
+    <div class="nav-sidebar" id="navtabs6"></div>
+    <div class="screen-content" style="background:linear-gradient(to bottom,#0d1218,#080c10);">
+      <div class="inv-tabs">
+        <button class="inv-tab active" onclick="switchInvTab('all',this)">🎒 Всё</button>
+        <button class="inv-tab" onclick="switchInvTab('food',this)">🍎 Еда</button>
+        <button class="inv-tab" onclick="switchInvTab('fish',this)">🐟 Рыба</button>
+        <button class="inv-tab" onclick="switchInvTab('material',this)">🪵 Матер.</button>
+        <button class="inv-tab" onclick="switchInvTab('cooked',this)">🍲 Блюда</button>
+      </div>
+      <div class="scr-body" id="inv-body" style="padding-top:4px;"></div>
+      <div class="inv-sell-bar">
+        <button class="sell-btn" onclick="sellAll()">💰 Продать рыбу</button>
+        <button class="sell-btn" style="background:linear-gradient(to bottom,#1a3060,#0c1840);border-color:#2a5090;color:#80a0e0;" onclick="eatBest()">🍽️ Съесть лучшее</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WORK SCREEN ══ -->
+  <div id="work-screen" class="screen-with-nav">
+    <div class="nav-sidebar" id="navtabs7"></div>
+    <div class="screen-content" style="background:linear-gradient(to bottom,#0a0e1a,#050810);">
+      <div class="scr-body" id="work-body"></div>
+    </div>
+  </div>
+
+  <!-- Work mini-game overlay -->
+  <div id="work-minigame" style="display:none;position:absolute;inset:0;z-index:200;background:linear-gradient(to bottom,#060c18,#020408);flex-direction:column;align-items:center;justify-content:flex-start;padding-top:20px;">
+    <div id="wmg-header" style="text-align:center;margin-bottom:12px;">
+      <div id="wmg-job-icon" style="font-size:44px;margin-bottom:4px;">🏗️</div>
+      <div id="wmg-job-title" style="font-family:'Neucha',cursive;font-size:18px;color:#f0c040;">Строитель</div>
+      <div id="wmg-shift-info" style="font-family:'Neucha',cursive;font-size:12px;color:#5070a0;margin-top:2px;"></div>
+    </div>
+    <!-- Progress bar -->
+    <div style="width:280px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-family:'Neucha',cursive;font-size:11px;color:#5070a0;margin-bottom:4px;">
+        <span>Прогресс смены</span><span id="wmg-pct">0%</span>
+      </div>
+      <div style="height:14px;background:rgba(0,0,0,.5);border-radius:7px;overflow:hidden;border:1px solid #1a3050;">
+        <div id="wmg-prog-fill" style="height:100%;width:0%;background:linear-gradient(to right,#1a4060,#50b0f0);border-radius:7px;transition:width .15s;"></div>
+      </div>
+    </div>
+    <!-- Mini-game area -->
+    <div id="wmg-area" style="width:280px;min-height:220px;background:rgba(0,0,0,.3);border:2px solid #1a3050;border-radius:16px;padding:14px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;"></div>
+    <!-- Stats row -->
+    <div style="display:flex;gap:16px;margin-top:12px;font-family:'Neucha',cursive;font-size:13px;">
+      <span style="color:#f0c040;">🪙 <span id="wmg-earned">0</span></span>
+      <span style="color:#60d080;">⚡ <span id="wmg-energy-left">65</span></span>
+      <span style="color:#e05050;">💔 <span id="wmg-misses">0</span>/3</span>
+    </div>
+    <button onclick="quitWork()" style="margin-top:14px;padding:8px 22px;border-radius:10px;background:rgba(100,20,20,.4);border:1.5px solid #5a2020;color:#e06060;font-family:'Neucha',cursive;font-size:13px;cursor:pointer;">🚪 Бросить работу</button>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="toast"></div>
+
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// SCALE
+// ═══════════════════════════════════════
+(function scaleGame(){
+  function resize(){
+    const sw=window.innerWidth, sh=window.innerHeight;
+    const s=Math.min(sw/360, sh/700);
+    document.getElementById('scale-wrap').style.transform=`scale(${s})`;
+    document.getElementById('scale-wrap').style.width='360px';
+    document.getElementById('scale-wrap').style.height='700px';
+  }
+  resize(); window.addEventListener('resize',resize);
+})();
+
+// ═══════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════
+const SAVE_KEY = 'fish_reborn_world_v1';
+
+const gs = {
+  coins: 1200,
+  day: 1,
+  energy: 65,
+  maxEnergy: 100,
+  currentCountry: 'russia',
+  homeCountry: 'russia',
+  visitedCountries: ['russia'],
+  cart: [],
+  inventory: [],
+  maxInv: 36,
+
+  // home build
+  buildPhase: 0, // 0=nothing,1=foundation,2=walls,3=roof,4=done
+  furniturePlaced: {},
+
+  // fishing
+  fishPhase: 'idle', // idle,casting,waiting,biting,reeling
+  currentRod: 'bamboo',
+  ownedRods: ['bamboo'],
+  fishCount: 0,
+  totalCaught: 0,
+
+  // cooking
+  cookedDishes: 0,
+  happiness: 50,
+
+  // work
+  currentJob: null,
+  jobLevel: 1,
+  jobExp: 0,
+  jobShiftsWorked: 0,
+  jobTotalEarned: 0,
+};
+
+// ═══════════════════════════════════════
+// DATA — COUNTRIES
+// ═══════════════════════════════════════
+const COUNTRIES = {
+  russia: {
+    id:'russia', name:'Россия', flag:'🇷🇺',
+    desc:'Родина медведей, балалаек и рыбалки на Байкале',
+    tags:['🐟 Рыбалка','🌲 Тайга','❄️ Зима'],
+    travelCost:0,
+    store:{name:'Пятёрочка', sub:'Продуктовый гипермаркет', theme:'#c8102e'},
+    fishSpot:{name:'Река Волга', icon:'🏞️', fish:['Карась','Щука','Окунь','Лещ','Судак']},
+    kitchen:'Русская кухня',
+  },
+  japan: {
+    id:'japan', name:'Япония', flag:'🇯🇵',
+    desc:'Страна восходящего солнца, суши и рыбных рынков',
+    tags:['🍣 Суши','🌸 Сакура','🗻 Фудзи'],
+    travelCost:500,
+    store:{name:'7-Eleven', sub:'Удобный магазин 24/7', theme:'#e8612c'},
+    fishSpot:{name:'Залив Токио', icon:'🌊', fish:['Тунец','Лосось','Морской окунь','Угорь','Осьминог']},
+    kitchen:'Японская кухня',
+  },
+  italy: {
+    id:'italy', name:'Италия', flag:'🇮🇹',
+    desc:'Паста, пицца, рыбное рагу и море Средиземное',
+    tags:['🍕 Пицца','🍝 Паста','☀️ Солнце'],
+    travelCost:700,
+    store:{name:'Coop', sub:'Итальянский супермаркет', theme:'#009246'},
+    fishSpot:{name:'Средиземное море', icon:'🌅', fish:['Дорада', 'Морской волк','Кальмар','Сардина','Скумбрия']},
+    kitchen:'Итальянская кухня',
+  },
+  usa: {
+    id:'usa', name:'США', flag:'🇺🇸',
+    desc:'Бургеры, стейки и рыбалка на реке Миссисипи',
+    tags:['🍔 Бургеры','🦅 Свобода','🎸 Рок'],
+    travelCost:800,
+    store:{name:'Walmart', sub:'Всё в одном месте', theme:'#0071dc'},
+    fishSpot:{name:'Река Миссисипи', icon:'🚢', fish:['Канальный сом','Большеротый окунь','Радужная форель','Щука','Карп']},
+    kitchen:'Американская кухня',
+  },
+  azerbaijan: {
+    id:'azerbaijan', name:'Азербайджан', flag:'🇦🇿',
+    desc:'Баку, Каспий, долма, шашлык и восточный базар',
+    tags:['🔥 Шашлык','🫙 Долма','🐠 Каспий'],
+    travelCost:400,
+    store:{name:'Bazarstore', sub:'Восточный базар', theme:'#0092bc'},
+    fishSpot:{name:'Каспийское море', icon:'⚓', fish:['Осётр','Белуга','Кутум','Кефаль','Сельдь']},
+    kitchen:'Азербайджанская кухня',
+  },
+  france: {
+    id:'france', name:'Франция', flag:'🇫🇷',
+    desc:'Круассаны, вино, устрицы и побережье Нормандии',
+    tags:['🥐 Круассан','🍷 Вино','🗼 Эйфель'],
+    travelCost:750,
+    store:{name:'Carrefour', sub:'Французский гипермаркет', theme:'#003399'},
+    fishSpot:{name:'Нормандское побережье', icon:'⛵', fish:['Устрица','Камбала','Треска','Луфарь','Морской петух']},
+    kitchen:'Французская кухня',
+  },
+};
+
+// ═══════════════════════════════════════
+// DATA — SHOP ITEMS
+// ═══════════════════════════════════════
+const SHOP_ITEMS = {
+  russia: {
+    food:[
+      {id:'bread_ru',name:'Чёрный хлеб',icon:'🍞',price:15,effect:'+5 энергии',type:'food',energy:5,desc:'Классический ржаной'},
+      {id:'buckwheat',name:'Гречка',icon:'🌾',price:40,effect:'+15 энергии',type:'food',energy:15,desc:'Основа русской кухни'},
+      {id:'beet',name:'Свёкла',icon:'🫚',price:20,effect:'Для борща',type:'food',energy:3,desc:'Красная и вкусная',ingredient:true},
+      {id:'cabbage',name:'Капуста',icon:'🥬',price:18,effect:'Для щей',type:'food',energy:3,desc:'Хрустящая свежая',ingredient:true},
+      {id:'potato',name:'Картофель',icon:'🥔',price:25,effect:'Универсальный',type:'food',energy:5,desc:'Второй хлеб',ingredient:true},
+      {id:'milk',name:'Молоко',icon:'🥛',price:50,effect:'+8 энергии',type:'food',energy:8,desc:'Деревенское'},
+    ],
+    material:[
+      {id:'plank',name:'Доска',icon:'🪵',price:80,type:'material',desc:'Сосновая доска 6м',qty:5},
+      {id:'nail',name:'Гвозди (пачка)',icon:'🔩',price:30,type:'material',desc:'Строительные гвозди'},
+      {id:'brick',name:'Кирпич',icon:'🧱',price:50,type:'material',desc:'Красный кирпич',qty:10},
+      {id:'cement',name:'Цемент (мешок)',icon:'⬜',price:120,type:'material',desc:'М500, 50кг'},
+    ],
+    tool:[
+      {id:'rod_bamboo',name:'Бамбуковая удочка',icon:'🎋',price:0,type:'tool',rodId:'bamboo',desc:'Базовая удочка рыбака',owned_check:'bamboo'},
+      {id:'rod_carbon',name:'Карбоновая удочка',icon:'🎣',price:350,type:'tool',rodId:'carbon',desc:'Дальний заброс +редкие'},
+      {id:'rod_gold',name:'Золотая удочка',icon:'✨',price:1200,type:'tool',rodId:'gold',desc:'Легендарный улов!'},
+    ],
+  },
+  japan: {
+    food:[
+      {id:'rice',name:'Рис',icon:'🍚',price:60,effect:'Для суши',type:'food',energy:10,desc:'Японский короткозерный',ingredient:true},
+      {id:'nori',name:'Нори',icon:'🌿',price:45,effect:'Для роллов',type:'food',energy:2,desc:'Сушёные водоросли',ingredient:true},
+      {id:'soy',name:'Соевый соус',icon:'🫙',price:80,effect:'Приправа',type:'food',energy:1,desc:'Кикоман',ingredient:true},
+      {id:'miso',name:'Мисо паста',icon:'🍜',price:90,effect:'+12 энергии',type:'food',energy:12,desc:'Для мисо-супа'},
+      {id:'wasabi',name:'Васаби',icon:'🌶️',price:50,effect:'+3 счастья',type:'food',energy:1,desc:'Острый пробуждатель',ingredient:true},
+    ],
+    material:[
+      {id:'bamboo_stick',name:'Бамбук',icon:'🎍',price:60,type:'material',desc:'Японский бамбук',qty:5},
+      {id:'paper_wall',name:'Рисовая бумага',icon:'📜',price:100,type:'material',desc:'Для сёдзи'},
+    ],
+    tool:[
+      {id:'rod_carbon',name:'Карбоновая удочка',icon:'🎣',price:350,type:'tool',rodId:'carbon',desc:'Дальний заброс',owned_check:'carbon'},
+    ],
+  },
+  italy: {
+    food:[
+      {id:'pasta',name:'Паста',icon:'🍝',price:55,effect:'+12 энергии',type:'food',energy:12,desc:'Твёрдые сорта пшеницы',ingredient:true},
+      {id:'tomato',name:'Томаты',icon:'🍅',price:35,effect:'Для соуса',type:'food',energy:3,desc:'Сан-Марцано',ingredient:true},
+      {id:'olive_oil',name:'Оливковое масло',icon:'🫒',price:120,effect:'+5 счастья',type:'food',energy:2,desc:'Extra Virgin',ingredient:true},
+      {id:'parmez',name:'Пармезан',icon:'🧀',price:150,effect:'+8 счастья',type:'food',energy:4,desc:'Выдержан 24 мес.',ingredient:true},
+      {id:'basil',name:'Базилик',icon:'🌿',price:30,effect:'Аромат',type:'food',energy:1,desc:'Свежий лигурийский',ingredient:true},
+    ],
+    material:[
+      {id:'marble',name:'Мрамор',icon:'⬛',price:300,type:'material',desc:'Каррарский мрамор',qty:5},
+      {id:'terracotta',name:'Терракота',icon:'🟫',price:80,type:'material',desc:'Итальянская плитка',qty:10},
+    ],
+    tool:[
+      {id:'rod_sea',name:'Морская удочка',icon:'🌊',price:450,type:'tool',rodId:'sea',desc:'Для морской рыбалки',owned_check:'sea'},
+    ],
+  },
+  usa: {
+    food:[
+      {id:'beef',name:'Говядина',icon:'🥩',price:200,effect:'+20 энергии',type:'food',energy:20,desc:'Мраморная говядина',ingredient:true},
+      {id:'corn',name:'Кукуруза',icon:'🌽',price:30,effect:'+6 энергии',type:'food',energy:6,desc:'Свежая початок',ingredient:true},
+      {id:'bbq_sauce',name:'BBQ соус',icon:'🫙',price:70,effect:'Для барбекю',type:'food',energy:1,desc:'Original Texas',ingredient:true},
+      {id:'cheese',name:'Чеддер',icon:'🧀',price:90,effect:'+6 счастья',type:'food',energy:4,desc:'Выдержанный',ingredient:true},
+    ],
+    material:[
+      {id:'drywall',name:'Гипсокартон',icon:'⬜',price:90,type:'material',desc:'Лист 1200x2400мм'},
+      {id:'oak_plank',name:'Дуб (доска)',icon:'🪵',price:150,type:'material',desc:'Американский белый дуб',qty:5},
+    ],
+    tool:[
+      {id:'rod_gold',name:'Золотая удочка',icon:'✨',price:1200,type:'tool',rodId:'gold',desc:'Легендарный улов!',owned_check:'gold'},
+    ],
+  },
+  azerbaijan: {
+    food:[
+      {id:'lamb',name:'Баранина',icon:'🍖',price:180,effect:'+18 энергии',type:'food',energy:18,desc:'Молодой барашек',ingredient:true},
+      {id:'grape_leaf',name:'Виноградный лист',icon:'🍃',price:40,effect:'Для долмы',type:'food',energy:1,desc:'Свежие листья',ingredient:true},
+      {id:'pomegranate',name:'Гранат',icon:'🫐',price:60,effect:'+5 счастья',type:'food',energy:5,desc:'Азербайджанский'},
+      {id:'saffron',name:'Шафран',icon:'🌼',price:200,effect:'+10 счастья',type:'food',energy:1,desc:'Настоящий Баку-шафран',ingredient:true},
+      {id:'lavash',name:'Лаваш',icon:'🫓',price:20,effect:'+6 энергии',type:'food',energy:6,desc:'Тонкий кавказский'},
+    ],
+    material:[
+      {id:'stone',name:'Булыжник',icon:'🪨',price:60,type:'material',desc:'Горный камень',qty:10},
+      {id:'cedar',name:'Кедр (брус)',icon:'🌳',price:200,type:'material',desc:'Кавказский кедр',qty:5},
+    ],
+    tool:[
+      {id:'rod_bamboo',name:'Бамбуковая удочка',icon:'🎋',price:0,type:'tool',rodId:'bamboo',desc:'Базовая',owned_check:'bamboo'},
+    ],
+  },
+  france: {
+    food:[
+      {id:'croissant',name:'Круассан',icon:'🥐',price:80,effect:'+8 счастья',type:'food',energy:8,desc:'Свежая выпечка'},
+      {id:'wine',name:'Бордо',icon:'🍷',price:250,effect:'+15 счастья',type:'food',energy:2,desc:'Grand Cru 2018',ingredient:true},
+      {id:'butter_fr',name:'Французское масло',icon:'🧈',price:100,effect:'Для готовки',type:'food',energy:2,desc:'84% жирности',ingredient:true},
+      {id:'oyster',name:'Устрица',icon:'🦪',price:120,effect:'+10 счастья',type:'food',energy:6,desc:'Нормандская',ingredient:true},
+      {id:'baguette',name:'Багет',icon:'🥖',price:60,effect:'+7 энергии',type:'food',energy:7,desc:'Только что из печи'},
+    ],
+    material:[
+      {id:'stone_fr',name:'Известняк',icon:'🧱',price:110,type:'material',desc:'Французский камень',qty:10},
+    ],
+    tool:[
+      {id:'rod_sea',name:'Морская удочка',icon:'🌊',price:450,type:'tool',rodId:'sea',desc:'Для морской рыбалки',owned_check:'sea'},
+    ],
+  },
+};
+
+// ═══════════════════════════════════════
+// DATA — FISH
+// ═══════════════════════════════════════
+const FISH_POOLS = {
+  russia: [
+    {name:'Карась',icon:'🐟',w:[0.2,1.5],coins:20,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Лещ',icon:'🐠',w:[0.5,2.5],coins:35,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Окунь',icon:'🐡',w:[0.3,1.8],coins:30,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Щука',icon:'🦈',w:[1.5,6.0],coins:80,rar:'rare',rarLabel:'Редкий',col:'#6090ff'},
+    {name:'Судак',icon:'🐟',w:[1.0,4.0],coins:65,rar:'rare',rarLabel:'Редкий',col:'#6090ff'},
+    {name:'Сом',icon:'🐋',w:[5.0,25.0],coins:200,rar:'epic',rarLabel:'Эпик',col:'#c060f0'},
+    {name:'Стерлядь',icon:'⭐',w:[2.0,8.0],coins:350,rar:'legend',rarLabel:'Легенда',col:'#f0c040'},
+  ],
+  japan: [
+    {name:'Тунец',icon:'🐟',w:[5,40],coins:150,rar:'rare',rarLabel:'Редкий',col:'#6090ff'},
+    {name:'Лосось',icon:'🐠',w:[2,8],coins:100,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Морской окунь',icon:'🐡',w:[0.5,2],coins:60,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Угорь',icon:'🐍',w:[0.3,1.5],coins:80,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Осьминог',icon:'🐙',w:[1,5],coins:120,rar:'rare',rarLabel:'Редкий',col:'#6090ff'},
+    {name:'Фугу',icon:'🐡',w:[0.3,0.8],coins:500,rar:'legend',rarLabel:'Легенда ⚠️',col:'#f0c040'},
+  ],
+  italy: [
+    {name:'Дорада',icon:'🐟',w:[0.5,2],coins:70,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Морской волк',icon:'🦈',w:[1,4],coins:90,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Кальмар',icon:'🦑',w:[0.2,1],coins:50,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Сардина',icon:'🐟',w:[0.05,0.2],coins:25,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Скумбрия',icon:'🐠',w:[0.3,0.8],coins:45,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Меч-рыба',icon:'⚔️',w:[30,80],coins:800,rar:'legend',rarLabel:'Легенда',col:'#f0c040'},
+  ],
+  usa: [
+    {name:'Канальный сом',icon:'🐟',w:[1,8],coins:55,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Большеротый окунь',icon:'🐠',w:[0.5,3],coins:65,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Форель',icon:'🐡',w:[0.3,2],coins:80,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Щука',icon:'🦈',w:[1.5,6],coins:100,rar:'rare',rarLabel:'Редкий',col:'#6090ff'},
+    {name:'Аллигаторовый панцирник',icon:'🐊',w:[30,100],coins:1000,rar:'legend',rarLabel:'ЛЕГЕНДА',col:'#f0c040'},
+  ],
+  azerbaijan: [
+    {name:'Кефаль',icon:'🐟',w:[0.3,1.5],coins:40,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Сельдь',icon:'🐠',w:[0.1,0.4],coins:30,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Кутум',icon:'🐡',w:[0.5,2],coins:60,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Осётр',icon:'⭐',w:[5,50],coins:400,rar:'epic',rarLabel:'Эпик',col:'#c060f0'},
+    {name:'Белуга',icon:'🐋',w:[50,300],coins:2000,rar:'legend',rarLabel:'ЛЕГЕНДА',col:'#f0c040'},
+  ],
+  france: [
+    {name:'Камбала',icon:'🐟',w:[0.3,2],coins:55,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Треска',icon:'🐠',w:[1,8],coins:75,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Луфарь',icon:'🦈',w:[0.5,3],coins:65,rar:'common',rarLabel:'Обычный',col:'#a0b0c0'},
+    {name:'Морской петух',icon:'🐡',w:[0.3,1],coins:80,rar:'uncommon',rarLabel:'Необычный',col:'#60d060'},
+    {name:'Устрица',icon:'🦪',w:[0.05,0.15],coins:150,rar:'rare',rarLabel:'Редкий',col:'#6090ff'},
+    {name:'Атлантический тунец',icon:'⭐',w:[50,250],coins:1500,rar:'legend',rarLabel:'ЛЕГЕНДА',col:'#f0c040'},
+  ],
+};
+
+// ═══════════════════════════════════════
+// DATA — RODS
+// ═══════════════════════════════════════
+const RODS = {
+  bamboo:{id:'bamboo',name:'Бамбуковая',icon:'🎋',biteChance:0.5,rarBonus:0,desc:'Обычный клёв'},
+  carbon:{id:'carbon',name:'Карбоновая',icon:'🎣',biteChance:0.7,rarBonus:0.1,desc:'+10% к редким'},
+  gold:{id:'gold',name:'Золотая',icon:'✨',biteChance:0.9,rarBonus:0.25,desc:'+25% к легендам'},
+  sea:{id:'sea',name:'Морская',icon:'🌊',biteChance:0.65,rarBonus:0.15,desc:'Для морской рыбы'},
+};
+
+// ═══════════════════════════════════════
+// DATA — RECIPES
+// ═══════════════════════════════════════
+const RECIPES_BY_COUNTRY = {
+  russia:[
+    {id:'solyanka',name:'Солянка',icon:'🍲',country:'russia',time:8,ingredients:['Щука','potato','cabbage','beet'],energy:25,happiness:15,desc:'Наваристый рыбный суп'},
+    {id:'ukha',name:'Уха',icon:'🥣',country:'russia',time:5,ingredients:['Карась','potato'],energy:20,happiness:10,desc:'Классическая рыбная уха'},
+    {id:'ryba_v_smetane',name:'Рыба в сметане',icon:'🐟',country:'russia',time:6,ingredients:['Окунь','milk'],energy:18,happiness:12,desc:'Запечённая рыба'},
+    {id:'borsch',name:'Борщ',icon:'🍜',country:'russia',time:10,ingredients:['beet','cabbage','potato'],energy:22,happiness:18,desc:'Красный борщ'},
+  ],
+  japan:[
+    {id:'sushi',name:'Суши сет',icon:'🍣',country:'japan',time:7,ingredients:['Тунец','rice','nori'],energy:20,happiness:25,desc:'Классические суши'},
+    {id:'miso_soup',name:'Мисо суп',icon:'🍜',country:'japan',time:4,ingredients:['miso'],energy:15,happiness:12,desc:'Традиционный суп'},
+    {id:'unagi',name:'Угорь на рису',icon:'🍱',country:'japan',time:8,ingredients:['Угорь','rice','soy'],energy:22,happiness:20,desc:'Кабаяки'},
+  ],
+  italy:[
+    {id:'pasta_pom',name:'Паста Маринара',icon:'🍝',country:'italy',time:8,ingredients:['pasta','tomato','basil','olive_oil'],energy:22,happiness:20,desc:'Классика Неаполя'},
+    {id:'branzino',name:'Бранцино al forno',icon:'🐟',country:'italy',time:10,ingredients:['Морской волк','olive_oil','basil'],energy:25,happiness:22,desc:'Запечённая рыба'},
+  ],
+  usa:[
+    {id:'burger',name:'Чизбургер',icon:'🍔',country:'usa',time:5,ingredients:['beef','cheese','corn'],energy:28,happiness:20,desc:'Классика США'},
+    {id:'bbq_fish',name:'Барбекю форель',icon:'🔥',country:'usa',time:8,ingredients:['Форель','bbq_sauce','corn'],energy:24,happiness:22,desc:'American BBQ'},
+  ],
+  azerbaijan:[
+    {id:'dolma',name:'Долма',icon:'🥙',country:'azerbaijan',time:12,ingredients:['Кутум','grape_leaf','rice','saffron'],energy:28,happiness:25,desc:'Традиционное блюдо'},
+    {id:'shashlik',name:'Шашлык',icon:'🍢',country:'azerbaijan',time:8,ingredients:['lamb','saffron'],energy:30,happiness:28,desc:'На мангале'},
+    {id:'sturgeon_grill',name:'Осётр на гриле',icon:'⭐',country:'azerbaijan',time:10,ingredients:['Осётр','saffron','olive_oil'],energy:35,happiness:35,desc:'Роскошное блюдо'},
+  ],
+  france:[
+    {id:'bouillabaisse',name:'Буйабес',icon:'🥘',country:'france',time:15,ingredients:['Треска','oyster','butter_fr','wine'],energy:30,happiness:30,desc:'Прованский суп'},
+    {id:'oysters_wine',name:'Устрицы с вином',icon:'🦪',country:'france',time:3,ingredients:['Устрица','wine'],energy:10,happiness:35,desc:'Элегантно'},
+    {id:'croissant_breakfast',name:'Французский завтрак',icon:'🥐',country:'france',time:4,ingredients:['croissant','butter_fr'],energy:15,happiness:20,desc:'Утро в Париже'},
+  ],
+};
+
+// ═══════════════════════════════════════
+// DATA — FURNITURE
+// ═══════════════════════════════════════
+const FURNITURE = [
+  {id:'bed',name:'Кровать',icon:'🛏️',price:300,desc:'Для восстановления +30 энергии',req:3},
+  {id:'table',name:'Стол обеденный',icon:'🍽️',price:200,desc:'+5 к кулинарии',req:4},
+  {id:'sofa',name:'Диван',icon:'🛋️',price:250,desc:'+10 счастья',req:4},
+  {id:'kitchen',name:'Кухонный гарнитур',icon:'🍳',price:500,desc:'Открывает готовку дома',req:4},
+  {id:'bookshelf',name:'Книжная полка',icon:'📚',price:150,desc:'+5 опыта в день',req:4},
+  {id:'fireplace',name:'Камин',icon:'🔥',price:400,desc:'+15 счастья зимой',req:4},
+  {id:'aquarium',name:'Аквариум',icon:'🐠',price:350,desc:'Показывает пойманных рыб',req:4},
+  {id:'fishing_stand',name:'Стойка для удочек',icon:'🎣',price:180,desc:'Хранит все удочки',req:3},
+];
+
+// ═══════════════════════════════════════
+// DATA — BUILD PHASES
+// ═══════════════════════════════════════
+const BUILD_PHASES = [
+  {id:0,label:'Пустой участок',icon:'🏕️'},
+  {id:1,label:'Фундамент',icon:'⬜',needs:[{id:'cement',qty:3,name:'Цемент'},{id:'brick',qty:10,name:'Кирпич'}],cost:200},
+  {id:2,label:'Стены',icon:'🧱',needs:[{id:'plank',qty:8,name:'Доска'},{id:'brick',qty:20,name:'Кирпич'},{id:'nail',qty:3,name:'Гвозди'}],cost:350},
+  {id:3,label:'Крыша',icon:'🏚️',needs:[{id:'plank',qty:12,name:'Доска'},{id:'nail',qty:5,name:'Гвозди'}],cost:400},
+  {id:4,label:'Готовый дом',icon:'🏠'},
+];
+
+// ═══════════════════════════════════════
+// SAVE / LOAD
+// ═══════════════════════════════════════
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(gs));}catch(e){}}
+function loadGame(){
+  try{
+    const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}');
+    if(!d.coins)return;
+    Object.assign(gs,d);
+  }catch(e){}
+}
+loadGame();
+
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+const NAV_ITEMS=[
+  {id:'map',ico:'🌍',label:'Карта',screen:'map-screen'},
+  {id:'shop',ico:'🛒',label:'Магазин',screen:'shop-screen'},
+  {id:'home',ico:'🏠',label:'Дом',screen:'home-screen'},
+  {id:'fish',ico:'🎣',label:'Рыбалка',screen:'fish-screen'},
+  {id:'cook',ico:'🍳',label:'Готовка',screen:'cook-screen'},
+  {id:'work',ico:'💼',label:'Работа',screen:'work-screen'},
+  {id:'inv',ico:'🎒',label:'Рюкзак',screen:'inv-screen'},
+];
+let currentScreen='map-screen';
+
+function buildNavs(){
+  ['navtabs','navtabs2','navtabs3','navtabs4','navtabs5','navtabs6','navtabs7'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML='';
+    NAV_ITEMS.forEach(n=>{
+      const b=document.createElement('button');
+      b.className='nav-btn'+(currentScreen===n.screen?' active':'');
+      b.innerHTML=`<span class="nav-ico">${n.ico}</span><span>${n.label}</span>`;
+      b.onclick=()=>switchScreen(n.screen);
+      el.appendChild(b);
+    });
+  });
+}
+
+function switchScreen(id){
+  document.querySelectorAll('.screen-with-nav').forEach(s=>s.classList.remove('active'));
+  const next=document.getElementById(id);
+  next.classList.add('active');
+  // Trigger fade-in
+  next.classList.remove('fade-in');
+  void next.offsetWidth;
+  next.classList.add('fade-in');
+  currentScreen=id;
+  buildNavs();
+  if(id==='map-screen')renderMap();
+  else if(id==='shop-screen')renderShop();
+  else if(id==='home-screen')renderHome();
+  else if(id==='fish-screen')renderFishing();
+  else if(id==='cook-screen')renderCook();
+  else if(id==='work-screen')renderWork();
+  else if(id==='inv-screen')renderInventory();
+}
+
+let _prevCoins=null, _prevEnergy=null;
+function updateTopbar(){
+  const c=COUNTRIES[gs.currentCountry];
+  setEl('tb-location','textContent',`${c.flag} ${c.name} • ${c.fishSpot.name}`);
+
+  // Animated coins
+  const coinsEl=document.getElementById('tb-coins');
+  if(coinsEl){
+    if(_prevCoins!==null && gs.coins!==_prevCoins){
+      coinsEl.classList.remove('coins-gain');void coinsEl.offsetWidth;
+      coinsEl.classList.add('coins-gain');
+      setTimeout(()=>coinsEl.classList.remove('coins-gain'),500);
+    }
+    coinsEl.textContent=gs.coins.toLocaleString('ru');
+    _prevCoins=gs.coins;
+  }
+
+  // Animated energy
+  const energyEl=document.getElementById('tb-energy');
+  if(energyEl){
+    energyEl.textContent=`⚡${gs.energy}`;
+    if(gs.energy<=15){
+      energyEl.classList.add('energy-warn');
+    } else {
+      energyEl.classList.remove('energy-warn');
+    }
+    if(gs.fishPhase!=='idle'){
+      energyEl.classList.add('energy-beat');
+    } else {
+      energyEl.classList.remove('energy-beat');
+    }
+    _prevEnergy=gs.energy;
+  }
+
+  // Day pop
+  const dayEl=document.getElementById('tb-day');
+  if(dayEl){
+    const newDay=`День ${gs.day}`;
+    if(dayEl.textContent!==newDay){
+      dayEl.textContent=newDay;
+      dayEl.classList.remove('day-pop');void dayEl.offsetWidth;
+      dayEl.classList.add('day-pop');
+      setTimeout(()=>dayEl.classList.remove('day-pop'),600);
+    }
+  }
+}
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+let _toastTimer=null;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  if(_toastTimer)clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════
+// COIN BURST
+// ═══════════════════════════════════════
+function coinBurst(x,y){
+  const g=document.getElementById('game');
+  for(let i=0;i<5;i++){
+    const p=document.createElement('div');
+    p.className='coin-particle';
+    p.textContent='🪙';
+    const angle=Math.random()*2*Math.PI;
+    const dist=30+Math.random()*40;
+    p.style.cssText=`left:${x}px;top:${y}px;--cx:${Math.cos(angle)*dist}px;--cy:${Math.sin(angle)*dist-50}px;animation-delay:${Math.random()*.2}s`;
+    g.appendChild(p);
+    setTimeout(()=>p.remove(),1000);
+  }
+}
+
+// ═══════════════════════════════════════
+// MAP SCREEN
+// ═══════════════════════════════════════
+function renderMap(){
+  const list=document.getElementById('countries-list');
+  if(!list)return;
+  setEl('home-country-name','textContent',COUNTRIES[gs.homeCountry].name);
+  setEl('travel-info','innerHTML',`📍 Ты сейчас в <b>${COUNTRIES[gs.currentCountry].name}</b>. Нажми на страну чтобы переехать.`);
+  list.innerHTML='';
+  Object.values(COUNTRIES).forEach(c=>{
+    const isCurrent=c.id===gs.currentCountry;
+    const isHome=c.id===gs.homeCountry;
+    const div=document.createElement('div');
+    div.className='country-card'+(isCurrent?' current':'');
+    div.innerHTML=`
+      <div class="cc-flag">${c.flag}</div>
+      <div class="cc-info">
+        <div class="cc-name">${c.name}${isHome?' 🏠':''}</div>
+        <div class="cc-desc">${c.desc}</div>
+        <div class="cc-tags">${c.tags.map(t=>`<span class="cc-tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="cc-cost">
+        ${isCurrent
+          ? `<span class="cc-here">📍 Здесь</span>`
+          : `<span>✈️ ${c.travelCost}🪙</span><span>Перелёт</span>`}
+      </div>`;
+    if(!isCurrent)div.onclick=()=>travelTo(c.id);
+    list.appendChild(div);
+  });
+}
+
+function travelTo(id){
+  const c=COUNTRIES[id];
+  if(gs.coins<c.travelCost){toast(`❌ Нужно ${c.travelCost}🪙 для перелёта!`);return;}
+  // Show cutscene BEFORE applying changes
+  showTravelCutscene(gs.currentCountry, id, ()=>{
+    gs.coins-=c.travelCost;
+    gs.currentCountry=id;
+    gs.energy=Math.max(gs.energy-15,5);
+    gs.day++;
+    if(!gs.visitedCountries.includes(id))gs.visitedCountries.push(id);
+    updateTopbar();saveGame();
+    toast(`✈️ Добро пожаловать в ${c.name}! ${c.flag} (-15⚡)`);
+    const ct=COUNTRY_THEMES[id]||COUNTRY_THEMES.russia;
+    applyCountryTheme(ct);
+    renderMap();
+  });
+}
+
+function showTravelCutscene(fromId, toId, onDone){
+  const fromC=COUNTRIES[fromId];
+  const toC=COUNTRIES[toId];
+  const fromTheme=COUNTRY_THEMES[fromId]||COUNTRY_THEMES.russia;
+  const toTheme=COUNTRY_THEMES[toId]||COUNTRY_THEMES.russia;
+
+  const cs=document.getElementById('travel-cutscene');
+  const sky=document.getElementById('tc-sky');
+
+  // Set flags
+  document.getElementById('tc-from-emoji').textContent=fromC.flag;
+  document.getElementById('tc-from-name').textContent=fromC.name;
+  document.getElementById('tc-to-emoji').textContent=toC.flag;
+  document.getElementById('tc-to-name').textContent=toC.name;
+
+  // Text
+  const textEl=document.getElementById('tc-text');
+  textEl.textContent=`✈️ Летим в ${toC.name}!`;
+  const costEl=document.getElementById('tc-cost-text');
+  costEl.textContent=`🪙 −${toC.travelCost} · ⚡ −15`;
+
+  // Sky gradient — blend from→to theme
+  sky.style.background=`linear-gradient(to bottom,${fromTheme.skyTop} 0%,${fromTheme.skyBot} 50%,${toTheme.skyTop} 80%,${toTheme.skyBot} 100%)`;
+
+  // Generate stars
+  const starsWrap=document.getElementById('tc-stars-wrap');
+  starsWrap.innerHTML='';
+  for(let i=0;i<45;i++){
+    const s=document.createElement('div');
+    s.className='tc-star';
+    const sz=0.8+Math.random()*1.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*75}%;--sd:${1.5+Math.random()*3}s;--sdl:${Math.random()*3}s;opacity:${.2+Math.random()*.6}`;
+    starsWrap.appendChild(s);
+  }
+
+  // Generate clouds
+  const cloudsWrap=document.getElementById('tc-clouds-wrap');
+  cloudsWrap.innerHTML='';
+  const cloudData=[
+    {top:'28%',delay:0,   dur:7,  w:100,h:40},
+    {top:'55%',delay:0.8, dur:9,  w:70, h:30},
+    {top:'20%',delay:2.0, dur:8,  w:120,h:50},
+    {top:'65%',delay:1.4, dur:6,  w:80, h:35},
+    {top:'38%',delay:3.0, dur:10, w:90, h:38},
+    {top:'72%',delay:0.4, dur:7.5,w:60, h:25},
+  ];
+  cloudData.forEach(cd=>{
+    const cloud=document.createElement('div');
+    cloud.className='tc-cloud';
+    cloud.style.cssText=`top:${cd.top};--cd:${cd.dur}s;--cdl:${cd.delay}s;`;
+    // Build cloud puffs
+    const puffs=[
+      {l:0,   t:cd.h*.4, w:cd.w*.5, h:cd.h*.6},
+      {l:cd.w*.3, t:0, w:cd.w*.45, h:cd.h*.9},
+      {l:cd.w*.6, t:cd.h*.3, w:cd.w*.4, h:cd.h*.65},
+      {l:cd.w*.15,t:cd.h*.5,w:cd.w*.35,h:cd.h*.5},
+    ];
+    cloud.style.width=cd.w+'px';
+    cloud.style.height=(cd.h+10)+'px';
+    puffs.forEach(p=>{
+      const puff=document.createElement('div');
+      puff.className='tc-cloud-puff';
+      puff.style.cssText=`left:${p.l}px;top:${p.t}px;width:${p.w}px;height:${p.h}px;`;
+      cloud.appendChild(puff);
+    });
+    cloudsWrap.appendChild(cloud);
+  });
+
+  // Plane vertical position — vary slightly
+  const planeWrap=document.getElementById('tc-plane-wrap');
+  const py=42+Math.random()*12;
+  planeWrap.style.setProperty('--py',py+'%');
+
+  // Re-trigger plane animation by cloning
+  const newPlane=planeWrap.cloneNode(true);
+  planeWrap.parentNode.replaceChild(newPlane,planeWrap);
+
+  // Re-trigger text animations
+  textEl.style.animation='none';
+  costEl.style.animation='none';
+  void textEl.offsetWidth;
+  void costEl.offsetWidth;
+  textEl.style.animation='';
+  costEl.style.animation='';
+
+  // Show
+  cs.classList.add('show');
+
+  // Flash effect halfway
+  setTimeout(()=>{
+    const flash=document.getElementById('tc-flash');
+    flash.classList.add('pop');
+    setTimeout(()=>flash.classList.remove('pop'),200);
+  },1750);
+
+  // Done — hide after 3.8s
+  setTimeout(()=>{
+    cs.classList.remove('show');
+    if(onDone)onDone();
+  },3800);
+}
+
+// ═══════════════════════════════════════
+// SHOP SCREEN
+// ═══════════════════════════════════════
+// Country store themes
+const STORE_THEMES = {
+  russia:  {bg:'#c8102e', text:'#fff', glow:'rgba(200,16,46,.5)', emoji:'🏪'},
+  japan:   {bg:'#e8612c', text:'#fff', glow:'rgba(232,97,44,.5)', emoji:'🏮'},
+  italy:   {bg:'#009246', text:'#fff', glow:'rgba(0,146,70,.5)',  emoji:'🫒'},
+  usa:     {bg:'#0071dc', text:'#fff', glow:'rgba(0,113,220,.5)', emoji:'🛒'},
+  azerbaijan:{bg:'#0092bc',text:'#fff',glow:'rgba(0,146,188,.5)',emoji:'🧺'},
+  france:  {bg:'#003399', text:'#fff', glow:'rgba(0,51,153,.5)',  emoji:'🥐'},
+};
+
+let shopTab='food';
+function renderShop(){
+  const c=COUNTRIES[gs.currentCountry];
+  const st=c.store;
+  const theme=STORE_THEMES[gs.currentCountry]||STORE_THEMES.russia;
+
+  // Update sign
+  setEl('shop-flag','textContent',c.flag);
+  setEl('shop-store-name','textContent',st.name);
+  setEl('shop-store-sub','textContent',`${c.name} · ${st.sub}`);
+  const signEl=document.getElementById('shop-sign-el');
+  if(signEl){
+    signEl.style.background=`linear-gradient(135deg,${theme.bg}22,${theme.bg}11)`;
+    signEl.style.borderColor=`${theme.bg}66`;
+  }
+  const neon=document.getElementById('shop-store-name');
+  if(neon){neon.style.color=theme.bg;neon.style.textShadow=`0 0 20px ${theme.glow}`;}
+
+  const items=SHOP_ITEMS[gs.currentCountry]||SHOP_ITEMS.russia;
+  const body=document.getElementById('shop-body');
+  body.innerHTML='';
+
+  const shelfDefs=[
+    {key:'food',   icon:'🍎', label:'Продукты питания'},
+    {key:'material',icon:'🪵',label:'Строительные материалы'},
+    {key:'tool',   icon:'🎣', label:'Инструменты & снаряжение'},
+  ];
+
+  shelfDefs.forEach(shelf=>{
+    const arr=items[shelf.key];
+    if(!arr||!arr.length)return;
+    const shelfEl=document.createElement('div');
+    shelfEl.className='shelf-row';
+    const label=document.createElement('div');
+    label.className='shelf-label';
+    label.style.color=theme.bg;
+    label.innerHTML=`<span>${shelf.icon}</span><span>${shelf.label}</span>`;
+    shelfEl.appendChild(label);
+    const row=document.createElement('div');
+    row.className='shelf-items-row';
+    arr.forEach(item=>{
+      const isOwned=item.owned_check&&gs.ownedRods.includes(item.owned_check);
+      const inCartQty=gs.cart.filter(x=>x.id===item.id).length;
+      const canBuy=gs.coins>=item.price&&!isOwned;
+      const prod=document.createElement('div');
+      prod.className='shelf-product'+(inCartQty?' in-cart':isOwned?' owned-item':'');
+      prod.innerHTML=`
+        <span class="sp-icon">${item.icon}</span>
+        <div class="sp-name">${item.name}</div>
+        <div class="sp-price">${item.price===0?'🎁 Бесплатно':'🪙 '+item.price}</div>
+        ${item.effect?`<div class="sp-effect">${item.effect}</div>`:''}
+        ${inCartQty?`<div class="sp-badge">${inCartQty}</div>`:''}
+        ${isOwned?`<div style="font-size:9px;color:#60a040;margin-top:2px">✓ Куплено</div>`:''}
+      `;
+      if(isOwned){prod.style.opacity='.6';}
+      else if(item.price===0){prod.onclick=()=>buyDirect(item.id);}
+      else if(canBuy){prod.onclick=()=>addToCart(item.id);}
+      else{prod.style.opacity='.4';}
+      row.appendChild(prod);
+    });
+    shelfEl.appendChild(row);
+    body.appendChild(shelfEl);
+  });
+  updateCartBar();
+}
+
+function getShopItem(id){
+  const all=Object.values(SHOP_ITEMS).flat().concat(Object.values(SHOP_ITEMS).map(c=>Object.values(c)).flat());
+  for(const cat of Object.values(SHOP_ITEMS)){
+    for(const cat2 of Object.values(cat)){
+      if(Array.isArray(cat2)){const f=cat2.find(x=>x.id===id);if(f)return f;}
+      else if(cat2.id===id)return cat2;
+    }
+  }
+  // flat search all countries
+  for(const cItems of Object.values(SHOP_ITEMS)){
+    for(const arr of Object.values(cItems)){
+      if(!Array.isArray(arr))continue;
+      const f=arr.find(x=>x.id===id);if(f)return f;
+    }
+  }
+  return null;
+}
+
+function addToCart(id){
+  const item=getShopItem(id);
+  if(!item)return;
+  if(gs.coins<item.price){toast('❌ Недостаточно монет!');return;}
+  gs.cart.push({...item});
+  updateCartBar();
+  renderShop();
+  toast(`+🛒 ${item.name}`);
+}
+
+function buyDirect(id){
+  const item=getShopItem(id);
+  if(!item)return;
+  applyPurchase(item);
+  renderShop();
+}
+
+function updateCartBar(){
+  document.getElementById('cart-count').textContent=gs.cart.length;
+}
+
+function checkoutCart(){
+  if(!gs.cart.length){toast('🛒 Корзина пуста!');return;}
+  const total=gs.cart.reduce((s,i)=>s+i.price,0);
+  if(gs.coins<total){toast(`❌ Нужно ${total}🪙, у тебя ${gs.coins}🪙`);return;}
+  gs.coins-=total;
+  gs.cart.forEach(item=>applyPurchase(item));
+  toast(`✅ Куплено ${gs.cart.length} товар(ов) за ${total}🪙!`);
+  gs.cart=[];
+  coinBurst(180,600);
+  updateTopbar();saveGame();renderShop();
+}
+
+function applyPurchase(item){
+  if(item.type==='tool'&&item.rodId){
+    if(!gs.ownedRods.includes(item.rodId))gs.ownedRods.push(item.rodId);
+    toast(`🎣 Удочка ${item.name} куплена!`);
+    return;
+  }
+  // add to inventory
+  const inv=gs.inventory;
+  const existing=inv.find(x=>x.id===item.id&&item.type!=='fish');
+  if(existing&&item.type!=='fish'){existing.qty=(existing.qty||1)+(item.qty||1);}
+  else{inv.push({...item,qty:item.qty||1});}
+}
+
+// ═══════════════════════════════════════
+// HOME SCREEN
+// ═══════════════════════════════════════
+let homeTab='build';
+function switchHomeTab(t,el){
+  homeTab=t;
+  document.querySelectorAll('.home-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderHomeBody();
+}
+
+function renderHome(){
+  renderHouseSVG();
+  renderBuildSteps();
+  renderBuildProgress();
+  renderHomeBody();
+}
+
+function renderBuildProgress(){
+  const pct=Math.round(gs.buildPhase/4*100);
+  document.getElementById('build-fill').style.width=pct+'%';
+  document.getElementById('build-pct').textContent=pct+'%';
+  const phases=['🏕️ Пустой участок','🔨 Закладка фундамента','🧱 Возведение стен','🏚️ Крыша','🏠 Дом готов!'];
+  document.getElementById('build-phase-badge').textContent=phases[gs.buildPhase]||phases[4];
+}
+
+function renderBuildSteps(){
+  const steps=document.getElementById('build-steps');
+  steps.innerHTML='';
+  BUILD_PHASES.filter(p=>p.id>0).forEach(p=>{
+    const done=gs.buildPhase>=p.id;
+    const active=gs.buildPhase===p.id-1;
+    const div=document.createElement('div');
+    div.className='build-step'+(done?' done':active?' active':'');
+    div.innerHTML=`<span class="bs-ico">${p.icon}</span>${p.label}`;
+    steps.appendChild(div);
+  });
+}
+
+function renderHomeBody(){
+  const body=document.getElementById('home-body');
+  if(homeTab==='build'){
+    if(gs.buildPhase>=4){
+      body.innerHTML=`<div style="text-align:center;padding:20px;font-family:'Neucha',cursive;">
+        <div style="font-size:48px;margin-bottom:10px">🏠</div>
+        <div style="font-size:18px;color:#80c060;margin-bottom:8px">Дом построен!</div>
+        <div style="font-size:13px;color:#4a7030;">Теперь обустраивай его мебелью</div>
+      </div>`;
+      return;
+    }
+    const phase=BUILD_PHASES[gs.buildPhase+1];
+    if(!phase){body.innerHTML='';return;}
+    let needsHTML='';
+    phase.needs.forEach(n=>{
+      const have=getItemQtyInv(n.id);
+      const ok=have>=n.qty;
+      needsHTML+=`<span style="color:${ok?'#60c060':'#c06060'}">${n.name} × ${n.qty} (есть: ${have}) ${ok?'✓':'✗'}</span>\n`;
+    });
+    const canBuild=canAffordBuildPhase(phase)&&gs.coins>=phase.cost;
+    body.innerHTML='';
+    const ba=document.createElement('div');
+    ba.className='build-action';
+    ba.innerHTML=`
+      <div class="ba-title">🔨 Следующий этап: ${phase.label}</div>
+      <div class="ba-need">Нужно:\n${needsHTML}💰 Стоимость работ: ${phase.cost}🪙</div>
+      <button class="ba-btn" onclick="buildPhase()" ${canBuild?'':'disabled'}>
+        ${canBuild?'🔨 Строить!':'❌ Не хватает материалов'}
+      </button>`;
+    body.appendChild(ba);
+  }
+  else if(homeTab==='furniture'){
+    if(gs.buildPhase<3){
+      body.innerHTML=`<div class="empty-state"><span class="es-ico">🏗️</span>Сначала построй дом!</div>`;
+      return;
+    }
+    const grid=document.createElement('div');
+    grid.className='furniture-grid';
+    FURNITURE.forEach(f=>{
+      const owned=gs.furniturePlaced&&gs.furniturePlaced[f.id];
+      const req=f.req||4;
+      const unlocked=gs.buildPhase>=req;
+      const div=document.createElement('div');
+      div.className='furn-card'+(owned?' placed':'');
+      div.innerHTML=`
+        <div class="furn-ico">${f.icon}</div>
+        <div class="furn-name">${f.name}</div>
+        <div class="furn-price">🪙 ${f.price}</div>
+        <div class="furn-status">${owned?'✓ Стоит':unlocked?'Купить':'🔒 Нужна крыша'}</div>`;
+      if(!owned&&unlocked)div.onclick=()=>buyFurniture(f.id);
+      grid.appendChild(div);
+    });
+    body.innerHTML='';
+    body.appendChild(grid);
+  }
+  else if(homeTab==='info'){
+    body.innerHTML=`
+      <div style="padding:0 4px;">
+        <div class="sec-title" style="margin-bottom:12px;">📊 Статистика</div>
+        ${[
+          ['🐟','Рыб поймано',gs.fishCount||0],
+          ['🍳','Блюд приготовлено',gs.cookedDishes||0],
+          ['😊','Счастье',`${gs.happiness||50}/100`],
+          ['⚡','Энергия',`${gs.energy}/${gs.maxEnergy}`],
+          ['🌍','Стран посещено',(gs.visitedCountries||[]).length],
+          ['🪙','Монет всего',gs.coins.toLocaleString('ru')],
+          ['📅','День',gs.day],
+        ].map(([ico,label,val])=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;margin-bottom:6px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:22px">${ico}</span>
+            <span style="font-family:'Neucha',cursive;font-size:13px;color:var(--text2);flex:1">${label}</span>
+            <span style="font-family:'Neucha',cursive;font-size:15px;color:var(--text)">${val}</span>
+          </div>`).join('')}
+      </div>`;
+  }
+}
+
+function getItemQtyInv(id){
+  const item=gs.inventory.find(x=>x.id===id);
+  return item?(item.qty||1):0;
+}
+
+function canAffordBuildPhase(phase){
+  return phase.needs.every(n=>getItemQtyInv(n.id)>=n.qty);
+}
+
+function buildPhase(){
+  if(gs.buildPhase>=4)return;
+  const phase=BUILD_PHASES[gs.buildPhase+1];
+  if(!phase)return;
+  if(!canAffordBuildPhase(phase)){toast('❌ Не хватает материалов!');return;}
+  if(gs.coins<phase.cost){toast(`❌ Нужно ${phase.cost}🪙 на рабочих!`);return;}
+  // consume materials
+  phase.needs.forEach(n=>{
+    let need=n.qty;
+    gs.inventory=gs.inventory.filter(item=>{
+      if(item.id===n.id&&need>0){
+        const used=Math.min(item.qty||1,need);
+        need-=used;
+        item.qty=(item.qty||1)-used;
+        return item.qty>0;
+      }
+      return true;
+    });
+  });
+  gs.coins-=phase.cost;
+  gs.buildPhase++;
+  updateTopbar();saveGame();
+  toast(`🔨 ${phase.label} завершено! Дом растёт!`);
+  renderHome();
+}
+
+function buyFurniture(id){
+  const f=FURNITURE.find(x=>x.id===id);
+  if(!f)return;
+  if(gs.coins<f.price){toast(`❌ Нужно ${f.price}🪙`);return;}
+  gs.coins-=f.price;
+  if(!gs.furniturePlaced)gs.furniturePlaced={};
+  gs.furniturePlaced[id]=true;
+  if(id==='bed')gs.maxEnergy=120;
+  if(id==='sofa')gs.happiness=Math.min(100,(gs.happiness||50)+10);
+  coinBurst(180,400);
+  updateTopbar();saveGame();
+  toast(`🛋️ ${f.name} поставлена! ${f.desc}`);
+  renderHome();
+}
+
+function renderHouseSVG(){
+  const svg=document.getElementById('house-svg');
+  const p=gs.buildPhase;
+  let content='';
+  // Ground
+  content+=`<rect x="0" y="155" width="340" height="25" fill="#1a3010"/>`;
+  content+=`<rect x="0" y="155" width="340" height="3" fill="#2a5020"/>`;
+  if(p>=1){// Foundation
+    content+=`<rect x="60" y="135" width="220" height="22" rx="2" fill="#5a5050" stroke="#3a3030" stroke-width="1"/>`;
+    content+=`<text x="170" y="150" text-anchor="middle" font-size="11" fill="#8a8080" font-family="sans-serif">Фундамент</text>`;
+  }
+  if(p>=2){// Walls
+    content+=`<rect x="70" y="75" width="200" height="62" fill="#a08060" stroke="#6a5040" stroke-width="2"/>`;
+    // Window left
+    content+=`<rect x="85" y="90" width="35" height="28" rx="3" fill="#4090c0" stroke="#2a6090" stroke-width="1.5"/>`;
+    content+=`<line x1="102" y1="90" x2="102" y2="118" stroke="#2a6090" stroke-width="1"/>`;
+    content+=`<line x1="85" y1="104" x2="120" y2="104" stroke="#2a6090" stroke-width="1"/>`;
+    // Window right
+    content+=`<rect x="220" y="90" width="35" height="28" rx="3" fill="#4090c0" stroke="#2a6090" stroke-width="1.5"/>`;
+    content+=`<line x1="237" y1="90" x2="237" y2="118" stroke="#2a6090" stroke-width="1"/>`;
+    content+=`<line x1="220" y1="104" x2="255" y2="104" stroke="#2a6090" stroke-width="1"/>`;
+    // Door
+    content+=`<rect x="148" y="105" width="44" height="32" rx="4" fill="#6a4020" stroke="#3a2010" stroke-width="2"/>`;
+    content+=`<circle cx="186" cy="121" r="3" fill="#d4a030"/>`;
+  }
+  if(p>=3){// Roof
+    content+=`<polygon points="55,78 170,30 285,78" fill="#8a2010" stroke="#5a1008" stroke-width="2"/>`;
+    content+=`<polygon points="60,78 170,35 280,78" fill="#c03020"/>`;
+    // Chimney
+    content+=`<rect x="210" y="38" width="20" height="38" fill="#6a5040" stroke="#4a3020" stroke-width="1"/>`;
+    // Smoke
+    for(let i=0;i<3;i++){
+      content+=`<ellipse cx="${215+i*5}" cy="${28-i*8}" rx="5" ry="5" fill="rgba(200,200,200,${0.3-i*0.08})"/>`;
+    }
+  }
+  if(p>=4){// Trees & garden
+    content+=`<circle cx="25" cy="135" r="22" fill="#2a5010"/>`;
+    content+=`<rect x="22" y="137" width="6" height="20" fill="#5a3010"/>`;
+    content+=`<circle cx="315" cy="135" r="22" fill="#2a5010"/>`;
+    content+=`<rect x="312" y="137" width="6" height="20" fill="#5a3010"/>`;
+    // Fence
+    for(let x=65;x<290;x+=15){
+      content+=`<rect x="${x}" y="148" width="8" height="14" rx="1" fill="#8a6030"/>`;
+    }
+    content+=`<rect x="65" y="152" width="225" height="4" rx="2" fill="#6a4820"/>`;
+  }
+  svg.innerHTML=content;
+}
+
+// ═══════════════════════════════════════
+// FISHING SCREEN
+// ═══════════════════════════════════════
+let fishTimer=null;
+let currentCatch=null;
+
+// ═══════════════════════════════════════
+// COUNTRY VISUAL THEMES
+// ═══════════════════════════════════════
+const COUNTRY_THEMES = {
+  russia: {
+    skyTop:'#0a0818', skyBot:'#1a1030',
+    waterTop:'#1a2a5a', waterBot:'#050d25',
+    waterTint:'rgba(80,120,220,.15)',
+    accent:'#4a6fdb', accentGlow:'rgba(74,111,219,.4)',
+    navBg:'linear-gradient(to right,#080e22,#101830)',
+    topBorder:'#2a3a70',
+    uiColor:'#7090e0',
+    particles:'❄️', particleCount:18, particleSize:'10px',
+    ambientLabel:'Снегопад',
+    fish:['🐟','🐠','🐡'],
+    horizonColor:'rgba(60,80,160,.3)',
+    moonSun:{type:'moon', x:0.8, y:0.18, color:'#c8d8ff', glow:'rgba(180,200,255,.2)'},
+  },
+  japan: {
+    skyTop:'#1a0510', skyBot:'#6a2030',
+    waterTop:'#8a3040', waterBot:'#2a0c18',
+    waterTint:'rgba(180,80,100,.12)',
+    accent:'#e06080', accentGlow:'rgba(220,80,100,.5)',
+    navBg:'linear-gradient(to right,#180508,#240c14)',
+    topBorder:'#6a2030',
+    uiColor:'#e08090',
+    particles:'🌸', particleCount:22, particleSize:'12px',
+    ambientLabel:'Сакура',
+    fish:['🐟','🦑','🐠'],
+    horizonColor:'rgba(220,80,80,.4)',
+    moonSun:{type:'sun', x:0.75, y:0.22, color:'#ffb040', glow:'rgba(255,160,40,.35)'},
+  },
+  italy: {
+    skyTop:'#0a1830', skyBot:'#2a5080',
+    waterTop:'#1a6090', waterBot:'#0a2840',
+    waterTint:'rgba(30,140,200,.2)',
+    accent:'#30b0e0', accentGlow:'rgba(40,180,230,.4)',
+    navBg:'linear-gradient(to right,#060e18,#0c1828)',
+    topBorder:'#1a5070',
+    uiColor:'#50c0e0',
+    particles:'☀️', particleCount:8, particleSize:'14px',
+    ambientLabel:'Солнечные блики',
+    fish:['🐟','🦑','🐙'],
+    horizonColor:'rgba(30,150,220,.5)',
+    moonSun:{type:'sun', x:0.7, y:0.15, color:'#ffe060', glow:'rgba(255,220,60,.4)'},
+  },
+  usa: {
+    skyTop:'#060c1a', skyBot:'#101828',
+    waterTop:'#0c3a5a', waterBot:'#040e20',
+    waterTint:'rgba(20,80,140,.18)',
+    accent:'#4090c0', accentGlow:'rgba(60,140,200,.4)',
+    navBg:'linear-gradient(to right,#060c18,#0c1828)',
+    topBorder:'#1a3050',
+    uiColor:'#60a0d0',
+    particles:'🦅', particleCount:5, particleSize:'16px',
+    ambientLabel:'Орлы',
+    fish:['🐟','🐠','🦈'],
+    horizonColor:'rgba(20,80,160,.3)',
+    moonSun:{type:'moon', x:0.78, y:0.2, color:'#e0e8ff', glow:'rgba(200,210,255,.2)'},
+  },
+  azerbaijan: {
+    skyTop:'#0a1420', skyBot:'#1e3040',
+    waterTop:'#104060', waterBot:'#06161e',
+    waterTint:'rgba(0,120,180,.2)',
+    accent:'#00b4d8', accentGlow:'rgba(0,180,220,.45)',
+    navBg:'linear-gradient(to right,#060e14,#0a1820)',
+    topBorder:'#0a4060',
+    uiColor:'#00c0e0',
+    particles:'⭐', particleCount:25, particleSize:'10px',
+    ambientLabel:'Звёзды Каспия',
+    fish:['⭐','🐟','🐠'],
+    horizonColor:'rgba(0,140,200,.4)',
+    moonSun:{type:'moon', x:0.82, y:0.16, color:'#a0e0ff', glow:'rgba(0,200,240,.3)'},
+  },
+  france: {
+    skyTop:'#08101e', skyBot:'#1a2838',
+    waterTop:'#1a4060', waterBot:'#081828',
+    waterTint:'rgba(60,120,180,.18)',
+    accent:'#6080c0', accentGlow:'rgba(80,110,200,.4)',
+    navBg:'linear-gradient(to right,#080c1a,#0e1428)',
+    topBorder:'#2a3860',
+    uiColor:'#8090d0',
+    particles:'🌙', particleCount:12, particleSize:'12px',
+    ambientLabel:'Лунный свет',
+    fish:['🐟','🦪','🐠'],
+    horizonColor:'rgba(60,90,180,.35)',
+    moonSun:{type:'moon', x:0.76, y:0.18, color:'#d8e8ff', glow:'rgba(150,180,255,.25)'},
+  },
+};
+
+// Sky animation loop
+let skyAnimFrame=null;
+let wavePhase=0;
+
+function renderFishing(){
+  const ct=COUNTRY_THEMES[gs.currentCountry]||COUNTRY_THEMES.russia;
+
+  // Apply country theme globally
+  applyCountryTheme(ct);
+
+  // Setup sky canvas
+  const canvas=document.getElementById('fish-sky-canvas');
+  const scene=document.getElementById('fish-scene');
+  if(!canvas||!scene)return;
+  const W=scene.offsetWidth||290; const H=scene.offsetHeight||440;
+  canvas.width=W; canvas.height=H;
+  canvas.style.position='absolute';canvas.style.inset='0';
+
+  // Water surface
+  const waterEl=document.getElementById('fish-water-body');
+  if(waterEl){
+    waterEl.style.background=`linear-gradient(to bottom,${ct.waterTop},${ct.waterBot})`;
+  }
+
+  // Cancel previous loop
+  if(skyAnimFrame)cancelAnimationFrame(skyAnimFrame);
+
+  // Draw loop
+  function drawSky(){
+    const ctx=canvas.getContext('2d');
+    if(!ctx)return;
+    // gradient sky
+    const grad=ctx.createLinearGradient(0,0,0,H*0.5);
+    grad.addColorStop(0,ct.skyTop);
+    grad.addColorStop(1,ct.skyBot);
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,W,H*0.5);
+
+    // horizon glow
+    const hgrad=ctx.createLinearGradient(0,H*0.44,0,H*0.52);
+    hgrad.addColorStop(0,'transparent');
+    hgrad.addColorStop(0.5,ct.horizonColor);
+    hgrad.addColorStop(1,'transparent');
+    ctx.fillStyle=hgrad;
+    ctx.fillRect(0,H*0.44,W,H*0.1);
+
+    // moon or sun
+    const ms=ct.moonSun;
+    const mx=ms.x*W, my=ms.y*H;
+    const glow=ctx.createRadialGradient(mx,my,0,mx,my,50);
+    glow.addColorStop(0,ms.glow);
+    glow.addColorStop(1,'transparent');
+    ctx.fillStyle=glow;
+    ctx.fillRect(mx-50,my-50,100,100);
+
+    if(ms.type==='moon'){
+      ctx.beginPath();ctx.arc(mx,my,14,0,Math.PI*2);
+      ctx.fillStyle=ms.color;ctx.fill();
+      // crater
+      ctx.beginPath();ctx.arc(mx+4,my-4,5,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,0,0,.12)';ctx.fill();
+      ctx.beginPath();ctx.arc(mx-4,my+4,3,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,0,0,.1)';ctx.fill();
+    } else {
+      // sun with rays
+      ctx.save();ctx.translate(mx,my);
+      ctx.beginPath();ctx.arc(0,0,13,0,Math.PI*2);
+      ctx.fillStyle=ms.color;ctx.fill();
+      const rayGrad=ctx.createRadialGradient(0,0,12,0,0,30);
+      rayGrad.addColorStop(0,ms.glow);rayGrad.addColorStop(1,'transparent');
+      ctx.fillStyle=rayGrad;ctx.beginPath();ctx.arc(0,0,30,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+
+    // stars (only for night themes)
+    if(ct.skyTop.startsWith('#0')||ct.skyTop.startsWith('#08')){
+      ctx.fillStyle='rgba(255,255,255,0)'; // handled by persistent stars below
+    }
+
+    // animate waves
+    wavePhase+=0.025;
+    const w1=document.getElementById('wave1-path');
+    const w2=document.getElementById('wave2-path');
+    if(w1){
+      const y1=12+Math.sin(wavePhase)*5;
+      const y2=8+Math.sin(wavePhase+1)*5;
+      w1.setAttribute('d',`M0,${y1} Q60,${y2} 120,${y1} Q180,${y1+8} 240,${y1} Q300,${y2} 360,${y1} Q420,${y1+6} 480,${y1} L480,0 L0,0Z`);
+    }
+    if(w2){
+      const y1=18+Math.sin(wavePhase+0.8)*4;
+      w2.setAttribute('d',`M0,${y1} Q90,${y1-8} 180,${y1} Q270,${y1+8} 360,${y1} Q420,${y1-4} 480,${y1} L480,0 L0,0Z`);
+    }
+
+    skyAnimFrame=requestAnimationFrame(drawSky);
+  }
+  drawSky();
+
+  // Stars (persistent dots for night sky)
+  const starsOld=document.querySelectorAll('.fish-star-dot');
+  starsOld.forEach(s=>s.remove());
+  if(ct.skyTop<'#1e'){// dark sky
+    for(let i=0;i<30;i++){
+      const s=document.createElement('div');
+      s.className='fish-star-dot';
+      const sz=1+Math.random()*1.5;
+      Object.assign(s.style,{
+        position:'absolute',borderRadius:'50%',
+        background:'#fff',
+        width:sz+'px',height:sz+'px',
+        left:(Math.random()*100)+'%',
+        top:(Math.random()*44)+'%',
+        opacity: (0.3+Math.random()*.6).toString(),
+        animation:`twinkleS ${2+Math.random()*3}s ease-in-out infinite alternate`,
+        animationDelay:(Math.random()*3)+'s',
+        zIndex:'3',
+      });
+      scene.appendChild(s);
+    }
+  }
+
+  // Water sparkles
+  const sw=document.getElementById('sparkle-wrap');
+  if(sw){
+    sw.innerHTML='';
+    for(let i=0;i<12;i++){
+      const sp=document.createElement('div');
+      sp.className='w-sparkle';
+      sp.style.cssText=`left:${Math.random()*100}%;top:${10+Math.random()*80}%;--sd:${2+Math.random()*3}s;--sdl:${Math.random()*3}s;`;
+      sw.appendChild(sp);
+    }
+  }
+
+  // Shadow fish
+  const sf=document.getElementById('shadow-fish-wrap');
+  if(sf){
+    sf.innerHTML='';
+    ct.fish.forEach((f,i)=>{
+      const d=document.createElement('div');
+      d.className='shadow-fish';
+      d.textContent=f;
+      d.style.cssText=`top:${25+i*20}%;left:0;--sd:${11+i*3}s;--sdl:${i*2.5}s;`;
+      sf.appendChild(d);
+    });
+  }
+
+  // Ambient particles
+  const aw=document.getElementById('ambient-wrap');
+  if(aw){
+    aw.innerHTML='';
+    for(let i=0;i<ct.particleCount;i++){
+      const p=document.createElement('div');
+      p.className='ambient-particle';
+      p.textContent=ct.particles;
+      p.style.cssText=`left:${Math.random()*100}%;--pd:${5+Math.random()*8}s;--pdl:${Math.random()*8}s;--px:${-30+Math.random()*60}px;--pfs:${ct.particleSize};`;
+      aw.appendChild(p);
+    }
+  }
+
+  // Pier color by theme
+  const pier=document.getElementById('fish-pier');
+  if(pier)pier.style.boxShadow=`0 4px 20px ${ct.accentGlow}`;
+
+  renderRodSelect();
+  updateFishUI();
+  setupFishCanvas();
+}
+
+function applyCountryTheme(ct){
+  // Topbar glow
+  const tb=document.getElementById('topbar');
+  if(tb){tb.style.borderBottomColor=ct.topBorder;tb.style.boxShadow=`0 2px 20px ${ct.accentGlow}`;}
+  // Nav sidebars
+  document.querySelectorAll('.nav-sidebar').forEach(n=>{n.style.background=ct.navBg;n.style.borderRightColor=ct.topBorder;});
+  // Fish status color
+  document.documentElement.style.setProperty('--fish-ui-color',ct.uiColor);
+  // Game border
+  const g=document.getElementById('game');
+  if(g)g.style.borderColor=ct.topBorder;
+}
+
+
+function renderRodSelect(){
+  const el=document.getElementById('fish-rod-select');
+  el.innerHTML='';
+  gs.ownedRods.forEach(rid=>{
+    const rod=RODS[rid];if(!rod)return;
+    const div=document.createElement('div');
+    div.className='frs-card'+(gs.currentRod===rid?' active-rod':'');
+    div.innerHTML=`<span class="frs-icon">${rod.icon}</span>${rod.name}`;
+    div.onclick=()=>{gs.currentRod=rid;renderRodSelect();toast(`🎣 Выбрана: ${rod.name}`);};
+    el.appendChild(div);
+  });
+}
+
+function setupFishCanvas(){
+  const canvas=document.getElementById('fish-line-canvas');
+  const scene=document.getElementById('fish-scene');
+  if(!canvas||!scene)return;
+  canvas.width=scene.offsetWidth||290;
+  canvas.height=scene.offsetHeight||440;
+  drawFishingLine();
+}
+
+// Draw fishing line from rod tip to bobber
+let lineAnimFrame=null;
+function drawFishingLine(){
+  if(lineAnimFrame)cancelAnimationFrame(lineAnimFrame);
+  const canvas=document.getElementById('fish-line-canvas');
+  const scene=document.getElementById('fish-scene');
+  const bobber=document.getElementById('bobber');
+  const rodWrap=document.getElementById('rod-wrap');
+  if(!canvas||!scene||!bobber||!rodWrap){return;}
+
+  function draw(){
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width, H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    if(gs.fishPhase==='idle'){lineAnimFrame=null;return;}
+
+    // Rod tip position — rod-wrap is at bottom-left, tip is at ~110,12 in its SVG (130x130)
+    const sceneRect=scene.getBoundingClientRect();
+    const rodRect=rodWrap.getBoundingClientRect();
+    // Rod tip relative to scene
+    const rodTipX=(rodRect.left - sceneRect.left) + 130*(110/130);
+    const rodTipY=(rodRect.top  - sceneRect.top)  + 130*(12/130);
+
+    // Bobber center
+    const bLeft=parseFloat(bobber.style.left||'62')/100*W;
+    const bTop =parseFloat(bobber.style.top ||'68')/100*H;
+
+    // Draw catenary-style line
+    ctx.beginPath();
+    ctx.moveTo(rodTipX, rodTipY);
+
+    // Control point for a natural droop
+    const midX=(rodTipX+bLeft)/2;
+    const sag=Math.min(60, Math.abs(bLeft-rodTipX)*0.28 + Math.abs(bTop-rodTipY)*0.15);
+    const cpX=midX + (bLeft>rodTipX ? 10 : -10);
+    const cpY=Math.min(rodTipY,bTop) + sag;
+
+    ctx.quadraticCurveTo(cpX, cpY, bLeft, bTop-8);
+
+    // Line style
+    ctx.strokeStyle='rgba(220,220,200,0.75)';
+    ctx.lineWidth=1;
+    ctx.shadowColor='rgba(200,230,255,.3)';
+    ctx.shadowBlur=2;
+    ctx.stroke();
+    ctx.shadowBlur=0;
+
+    // Tug wiggle when biting
+    if(gs.fishPhase==='biting'){
+      const t=Date.now()/80;
+      ctx.beginPath();
+      for(let i=0;i<=20;i++){
+        const tt=i/20;
+        const px=rodTipX+(bLeft-rodTipX)*tt;
+        const py=rodTipY+(bTop-8-rodTipY)*tt + sag*Math.sin(Math.PI*tt) + Math.sin(t+i*.8)*3*(1-tt);
+        i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+      }
+      ctx.strokeStyle='rgba(255,200,100,.5)';
+      ctx.lineWidth=1;
+      ctx.stroke();
+    }
+
+    lineAnimFrame=requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function updateFishUI(){
+  const castBtn=document.getElementById('btn-cast');
+  const reelBtn=document.getElementById('btn-reel');
+  const status=document.getElementById('fish-status');
+  const phase=gs.fishPhase;
+  if(phase==='idle'){
+    castBtn.style.display='';reelBtn.style.display='none';
+    status.innerHTML='🎣 Выбери удочку и забрось!';
+    castBtn.className='fish-btn fb-cast';castBtn.textContent='🎣 Забросить';
+  } else if(phase==='waiting'){
+    castBtn.style.display='none';
+    if(reelBtn){reelBtn.style.display='';reelBtn.className='fish-btn fb-reel';reelBtn.textContent='🔄 Вытащить';}
+    status.innerHTML='⏳ Ждём поклёвку<span class="wait-dot">.</span><span class="wait-dot">.</span><span class="wait-dot">.</span>';
+  } else if(phase==='biting'){
+    castBtn.style.display='none';reelBtn.style.display='';
+    reelBtn.className='fish-btn fb-catch';reelBtn.textContent='🎣 ПОДСЕЧЬ!';
+    status.innerHTML='🔴 <b>КЛЮЁТ!</b> Жми подсечку!';
+  } else if(phase==='reeling'){
+    castBtn.style.display='none';reelBtn.style.display='';
+    reelBtn.className='fish-btn fb-reel';reelBtn.textContent='⬆️ Тянуть!';
+    status.innerHTML='💪 Тяни удочку!';
+  }
+}
+
+function castLine(){
+  if(gs.fishPhase!=='idle')return;
+  if(gs.energy<5){toast('⚡ Нет энергии! Поешь или отдохни.');return;}
+  gs.fishPhase='waiting';
+  gs.energy=Math.max(0,gs.energy-3);
+  updateTopbar();
+
+  // Rod cast animation
+  const rodWrap=document.getElementById('rod-wrap');
+  if(rodWrap){
+    rodWrap.classList.add('casting');
+    setTimeout(()=>rodWrap.classList.remove('casting'),500);
+  }
+
+  // Animate bobber flying to water then splash
+  const b=document.getElementById('bobber');
+  if(b){
+    b.style.transition='top .05s,left .05s';
+    b.style.top='35%'; b.style.left='70%';
+    setTimeout(()=>{
+      b.style.transition='top .55s cubic-bezier(.25,.46,.45,.94),left .55s cubic-bezier(.25,.46,.45,.94)';
+      b.style.top='68%'; b.style.left='62%';
+      setTimeout(()=>{
+        b.classList.add('in-water');
+        spawnSplash();
+        spawnAmbientRipples();
+      },560);
+    },60);
+  }
+
+  // Start line draw
+  setTimeout(drawFishingLine, 100);
+
+  // Update waiting UI with animated dots
+  const status=document.getElementById('fish-status');
+  if(status) status.innerHTML='⏳ Ждём поклёвку<span class="wait-dot">.</span><span class="wait-dot">.</span><span class="wait-dot">.</span>';
+
+  const rod=RODS[gs.currentRod]||RODS.bamboo;
+  const wait=(3+Math.random()*6)*(2-rod.biteChance)*1000;
+  fishTimer=setTimeout(triggerBite,wait);
+
+  // Show reel button
+  const castBtn=document.getElementById('btn-cast');
+  const reelBtn=document.getElementById('btn-reel');
+  if(castBtn)castBtn.style.display='none';
+  if(reelBtn){reelBtn.style.display='';reelBtn.className='fish-btn fb-reel';reelBtn.textContent='🔄 Вытащить';}
+}
+
+function spawnSplash(){
+  const scene=document.getElementById('fish-scene');
+  if(!scene)return;
+  const W=scene.offsetWidth||290, H=scene.offsetHeight||440;
+  const bx=0.62*W, by=0.68*H;
+  // Rings
+  for(let i=0;i<3;i++){
+    const ring=document.createElement('div');
+    ring.className='splash-ring';
+    const sz=10+i*14;
+    ring.style.cssText=`left:${bx}px;top:${by}px;width:${sz}px;height:${sz/2}px;animation-delay:${i*.12}s`;
+    scene.appendChild(ring);
+    setTimeout(()=>ring.remove(),900+i*120);
+  }
+  // Water drops
+  for(let i=0;i<6;i++){
+    const drop=document.createElement('div');
+    drop.className='splash-drop';
+    const angle=(Math.PI*1.3+i/6*Math.PI*.8);
+    const dist=15+Math.random()*20;
+    drop.textContent='💧';
+    drop.style.cssText=`left:${bx}px;top:${by}px;--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist-25}px;animation-delay:${Math.random()*.1}s;font-size:7px;`;
+    scene.appendChild(drop);
+    setTimeout(()=>drop.remove(),700);
+  }
+}
+
+function spawnAmbientRipples(){
+  const scene=document.getElementById('fish-scene');
+  if(!scene)return;
+  // Clear old
+  scene.querySelectorAll('.water-ripple').forEach(r=>r.remove());
+  const W=scene.offsetWidth||290;
+  for(let i=0;i<5;i++){
+    const r=document.createElement('div');
+    r.className='water-ripple';
+    r.style.cssText=`left:${20+Math.random()*80}%;top:${50+Math.random()*40}%;--wr:${3+Math.random()*4}s;--wrl:${Math.random()*4}s;`;
+    scene.appendChild(r);
+  }
+}
+
+function triggerBite(){
+  if(gs.fishPhase!=='waiting')return;
+  gs.fishPhase='biting';
+  updateFishUI();
+  const bobber=document.getElementById('bobber');
+  if(bobber){bobber.classList.remove('in-water');bobber.classList.add('biting');}
+
+  // Rod tug animation
+  const rodWrap=document.getElementById('rod-wrap');
+  if(rodWrap){rodWrap.classList.add('biting-tug');setTimeout(()=>rodWrap.classList.remove('biting-tug'),800);}
+
+  // Spawn catch ripple at bobber
+  spawnCatchRipple();
+
+  // Vibrate device if supported
+  if(navigator.vibrate)navigator.vibrate([80,40,80]);
+
+  // Blink screen edge
+  const game=document.getElementById('game');
+  if(game){
+    game.style.transition='box-shadow .1s';
+    game.style.boxShadow='0 0 0 4px rgba(255,80,80,.6), 0 0 60px rgba(0,80,180,.4)';
+    setTimeout(()=>game.style.boxShadow='',400);
+  }
+
+  // Miss timeout
+  fishTimer=setTimeout(()=>{
+    if(gs.fishPhase==='biting'){
+      gs.fishPhase='idle';
+      if(bobber){bobber.classList.remove('biting','in-water');}
+      scene_clearRipples();
+      lineAnimFrame=null;
+      const canvas=document.getElementById('fish-line-canvas');
+      if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+      updateFishUI();animateBobber(false);
+      toast('🐟 Рыба ушла! Слишком медленно...');
+    }
+  },2200);
+}
+
+function spawnCatchRipple(){
+  const scene=document.getElementById('fish-scene');
+  if(!scene)return;
+  const W=scene.offsetWidth||290, H=scene.offsetHeight||440;
+  const r=document.createElement('div');
+  r.className='catch-ripple';
+  r.style.cssText=`left:${0.62*W}px;top:${0.68*H}px;`;
+  scene.appendChild(r);
+  setTimeout(()=>r.remove(),1000);
+}
+
+function scene_clearRipples(){
+  const scene=document.getElementById('fish-scene');
+  if(scene)scene.querySelectorAll('.water-ripple,.catch-ripple').forEach(r=>r.remove());
+}
+
+function reelIn(){
+  if(gs.fishPhase==='biting'){
+    clearTimeout(fishTimer);
+    gs.fishPhase='reeling';
+    const bobber=document.getElementById('bobber');
+    if(bobber){bobber.classList.remove('biting','in-water');}
+    scene_clearRipples();
+    updateFishUI();
+
+    // Fish jump out of water!
+    const scene=document.getElementById('fish-scene');
+    if(scene){
+      const W=scene.offsetWidth||290, H=scene.offsetHeight||440;
+      const jump=document.createElement('div');
+      jump.className='fish-jump';
+      jump.textContent=(FISH_POOLS[gs.currentCountry]||FISH_POOLS.russia)[0].icon||'🐟';
+      jump.style.cssText=`left:${0.62*W}px;top:${0.68*H}px;`;
+      scene.appendChild(jump);
+      setTimeout(()=>jump.remove(),1000);
+    }
+
+    // Line disappear
+    setTimeout(()=>{
+      const canvas=document.getElementById('fish-line-canvas');
+      if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+      lineAnimFrame=null;
+    },200);
+
+    setTimeout(()=>{
+      gs.fishPhase='idle';
+      animateBobber(false);
+      updateFishUI();
+      showCatch();
+    },700);
+  } else if(gs.fishPhase==='waiting'){
+    clearTimeout(fishTimer);
+    gs.fishPhase='idle';
+    const bobber=document.getElementById('bobber');
+    if(bobber)bobber.classList.remove('in-water');
+    scene_clearRipples();
+    lineAnimFrame=null;
+    const canvas=document.getElementById('fish-line-canvas');
+    if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+    animateBobber(false);updateFishUI();
+    toast('🎣 Удочка вытащена.');
+  }
+}
+
+function animateBobber(inWater){
+  const b=document.getElementById('bobber');
+  if(!b)return;
+  if(inWater){
+    b.style.top='68%';b.style.left='62%';
+    b.classList.add('in-water');
+  } else {
+    b.classList.remove('in-water','biting');
+    b.style.top='45%';b.style.left='55%';
+  }
+}
+
+function showCatch(){
+  const pool=FISH_POOLS[gs.currentCountry]||FISH_POOLS.russia;
+  const rod=RODS[gs.currentRod]||RODS.bamboo;
+  const weights={common:50,uncommon:30,rare:15,epic:4,legend:1};
+  const totalW=pool.reduce((s,f)=>{
+    const base=weights[f.rar]||10;
+    const bonus=f.rar==='legend'?rod.rarBonus*20:f.rar==='epic'?rod.rarBonus*10:f.rar==='rare'?rod.rarBonus*5:0;
+    return s+base+bonus;
+  },0);
+  let r=Math.random()*totalW;
+  let caught=pool[0];
+  for(const f of pool){
+    const base=weights[f.rar]||10;
+    const bonus=f.rar==='legend'?rod.rarBonus*20:f.rar==='epic'?rod.rarBonus*10:f.rar==='rare'?rod.rarBonus*5:0;
+    r-=base+bonus;
+    if(r<=0){caught=f;break;}
+  }
+  const w=(caught.w[0]+Math.random()*(caught.w[1]-caught.w[0])).toFixed(2);
+  currentCatch={...caught,weight:w};
+  const rarColors={common:'#a0b0c0',uncommon:'#60d060',rare:'#6090ff',epic:'#c060f0',legend:'#f0c040'};
+  document.getElementById('cp-icon').textContent=caught.icon;
+  document.getElementById('cp-name').textContent=caught.name;
+  document.getElementById('cp-rarity').textContent=caught.rarLabel;
+  document.getElementById('cp-rarity').style.color=rarColors[caught.rar]||'#a0b0c0';
+  document.getElementById('cp-weight').textContent=`${w} кг · 💰 ${caught.coins}🪙`;
+
+  const box=document.querySelector('.catch-box');
+  if(box){
+    box.classList.remove('legendary');
+    if(caught.rar==='legend'||caught.rar==='epic'){
+      void box.offsetWidth;
+      box.classList.add('legendary');
+      if(navigator.vibrate)navigator.vibrate([100,50,100,50,200]);
+    }
+  }
+  document.getElementById('catch-popup').classList.add('show');
+
+  // Coin burst for epic/legendary
+  if(caught.rar==='legend')coinBurst(180,350);
+}
+
+function keepFish(){
+  if(!currentCatch)return;
+  document.getElementById('catch-popup').classList.remove('show');
+  if(gs.inventory.length>=gs.maxInv){toast('🎒 Инвентарь полон! Продай рыбу.');return;}
+  gs.inventory.push({...currentCatch,type:'fish',id:'fish_'+Date.now(),qty:1});
+  gs.fishCount=(gs.fishCount||0)+1;
+  gs.totalCaught=(gs.totalCaught||0)+1;
+  gs.energy=Math.max(0,gs.energy-2);
+  // Burst effect for rare+
+  if(currentCatch.rar==='rare'||currentCatch.rar==='epic'||currentCatch.rar==='legend'){
+    coinBurst(180,350);
+  }
+  updateTopbar();saveGame();
+  toast(`🐟 ${currentCatch.name} ${currentCatch.weight}кг добавлена в рюкзак!`);
+  currentCatch=null;
+}
+
+function releaseFish(){
+  if(!currentCatch)return;
+  document.getElementById('catch-popup').classList.remove('show');
+  toast(`🌊 ${currentCatch.name} отпущена обратно в воду.`);
+  currentCatch=null;
+}
+
+// ═══════════════════════════════════════
+// COOKING SCREEN
+// ═══════════════════════════════════════
+// Country kitchen themes
+const KITCHEN_THEMES = {
+  russia:    {title:'🍲 Русская Кухня',   color:'#c8a060', soupColor:'#8B3A0A', flagLabel:'Россия'},
+  japan:     {title:'🍣 Японская Кухня',  color:'#e85050', soupColor:'#1a4060', flagLabel:'Япония'},
+  italy:     {title:'🍝 Итальянская Кухня',color:'#d04020',soupColor:'#a03010', flagLabel:'Италия'},
+  usa:       {title:'🍔 Американская Кухня',color:'#c0a020',soupColor:'#4a2010',flagLabel:'США'},
+  azerbaijan:{title:'🥙 Азербайджанская Кухня',color:'#e07030',soupColor:'#7a2010',flagLabel:'Азербайджан'},
+  france:    {title:'🥐 Французская Кухня',color:'#a090e0',soupColor:'#2a1870',flagLabel:'Франция'},
+};
+
+function setEl(id,prop,val){const e=document.getElementById(id);if(e)e[prop]=val;}
+function setStyle(id,prop,val){const e=document.getElementById(id);if(e)e.style[prop]=val;}
+
+function renderCook(){
+  const c=COUNTRIES[gs.currentCountry];
+  const kt=KITCHEN_THEMES[gs.currentCountry]||KITCHEN_THEMES.russia;
+
+  setEl('cook-flag','textContent',c.flag);
+  setEl('cook-label','textContent',c.kitchen||'Местная кухня');
+  setEl('cook-kitchen-title','textContent',kt.title);
+  setStyle('cook-kitchen-title','color',kt.color);
+  setStyle('cook-kitchen-title','textShadow',`0 0 20px ${kt.color}55`);
+  setEl('cook-country-name','textContent',kt.flagLabel);
+
+  // Update soup color
+  const soupSurface=document.getElementById('soup-surface');
+  if(soupSurface)soupSurface.setAttribute('fill',kt.soupColor);
+
+  const body=document.getElementById('cook-body');
+  body.innerHTML='';
+  const recipes=RECIPES_BY_COUNTRY[gs.currentCountry]||[];
+  if(!recipes.length){
+    body.innerHTML=`<div class="empty-state"><span class="es-ico">🍳</span>Рецептов нет в этой стране</div>`;
+    return;
+  }
+  recipes.forEach(r=>{
+    const missing=r.ingredients.filter(ing=>{
+      const hasFish=gs.inventory.some(x=>x.type==='fish'&&x.name===ing);
+      const hasItem=gs.inventory.some(x=>x.id===ing&&(x.qty||1)>0);
+      return !hasFish&&!hasItem;
+    });
+    const canCook=missing.length===0;
+    const div=document.createElement('div');
+    div.className='recipe-card';
+    div.innerHTML=`
+      <div class="rc-header">
+        <span class="rc-icon">${r.icon}</span>
+        <div class="rc-title-block">
+          <div class="rc-name">${r.name}</div>
+          <div class="rc-origin">${c.name} · ⏱️ ${r.time} сек</div>
+        </div>
+        <div class="rc-time">+${r.energy}⚡ +${r.happiness}😊</div>
+      </div>
+      <div class="rc-ingredients">
+        ${r.ingredients.map(ing=>{
+          const hasFish=gs.inventory.some(x=>x.type==='fish'&&x.name===ing);
+          const hasItem=gs.inventory.some(x=>x.id===ing&&(x.qty||1)>0);
+          const have=hasFish||hasItem;
+          return `<span class="rc-ing ${have?'have':'missing'}">${ing} ${have?'✓':'✗'}</span>`;
+        }).join('')}
+      </div>
+      <div class="rc-btn-row">
+        <button class="cook-btn" onclick="startCooking('${r.id}')" ${canCook?'':'disabled'}>
+          ${canCook?'🔥 Готовить!':'🔒 Нет ингредиентов'}
+        </button>
+      </div>`;
+    body.appendChild(div);
+  });
+}
+
+let cookingTimer=null;
+function startCooking(recipeId){
+  const c=COUNTRIES[gs.currentCountry];
+  const recipes=RECIPES_BY_COUNTRY[gs.currentCountry]||[];
+  const r=recipes.find(x=>x.id===recipeId);
+  if(!r)return;
+  // consume ingredients
+  r.ingredients.forEach(ing=>{
+    const fishIdx=gs.inventory.findIndex(x=>x.type==='fish'&&x.name===ing);
+    if(fishIdx!==-1){gs.inventory.splice(fishIdx,1);return;}
+    const itemIdx=gs.inventory.findIndex(x=>x.id===ing);
+    if(itemIdx!==-1){
+      gs.inventory[itemIdx].qty=(gs.inventory[itemIdx].qty||1)-1;
+      if(gs.inventory[itemIdx].qty<=0)gs.inventory.splice(itemIdx,1);
+    }
+  });
+  // show popup
+  document.getElementById('cp-dish-name').textContent=r.name;
+  document.getElementById('cooking-popup').classList.add('show');
+  const totalMs=r.time*1000;
+  const start=Date.now();
+  clearInterval(cookingTimer);
+  cookingTimer=setInterval(()=>{
+    const elapsed=Date.now()-start;
+    const pct=Math.min(100,elapsed/totalMs*100);
+    document.getElementById('cook-prog').style.width=pct+'%';
+    const left=Math.max(0,Math.ceil((totalMs-elapsed)/1000));
+    document.getElementById('cook-timer').textContent=left>0?`Ещё ${left} сек...`:'Готово! 🎉';
+    if(pct>=100){
+      clearInterval(cookingTimer);
+      setTimeout(()=>{
+        document.getElementById('cooking-popup').classList.remove('show');
+        // add cooked dish
+        gs.inventory.push({id:'dish_'+Date.now(),name:r.name,icon:r.icon,type:'cooked',qty:1,energy:r.energy,happiness:r.happiness,desc:`${c.name} блюдо`});
+        gs.cookedDishes=(gs.cookedDishes||0)+1;
+        gs.energy=Math.min(gs.maxEnergy,gs.energy+Math.floor(r.energy*0.3));
+        gs.happiness=Math.min(100,(gs.happiness||50)+5);
+        updateTopbar();saveGame();
+        toast(`🍽️ ${r.name} готово! +${r.energy}⚡ +${r.happiness}😊`);
+        renderCook();
+      },600);
+    }
+  },100);
+}
+
+// ═══════════════════════════════════════
+// INVENTORY SCREEN
+// ═══════════════════════════════════════
+let invTab='all';
+function switchInvTab(t,el){
+  invTab=t;
+  document.querySelectorAll('.inv-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderInventory();
+}
+
+function renderInventory(){
+  const body=document.getElementById('inv-body');
+  body.innerHTML='';
+  let items=gs.inventory;
+  if(invTab!=='all')items=items.filter(x=>x.type===invTab);
+  const grid=document.createElement('div');
+  grid.className='inv-grid';
+  const total=36;
+  for(let i=0;i<Math.max(items.length+3,12);i++){
+    const slot=document.createElement('div');
+    const item=items[i];
+    slot.className='inv-slot'+(item?'':' empty');
+    if(item){
+      slot.innerHTML=`
+        <div class="is-icon">${item.icon||'📦'}</div>
+        <div class="is-name">${item.name}</div>
+        <div class="is-sub">${item.type==='fish'?`${item.weight}кг`:(item.desc||'')}</div>
+        ${(item.qty||1)>1?`<div class="is-qty">×${item.qty}</div>`:''}`;
+      if(item.type==='cooked')slot.onclick=()=>eatItem(item);
+      else if(item.type==='fish')slot.onclick=()=>sellFishItem(item);
+    } else {
+      slot.innerHTML='<div class="is-icon" style="opacity:.3">·</div>';
+    }
+    grid.appendChild(slot);
+  }
+  body.appendChild(grid);
+}
+
+function eatItem(item){
+  const idx=gs.inventory.indexOf(item);
+  if(idx===-1)return;
+  gs.inventory.splice(idx,1);
+  gs.energy=Math.min(gs.maxEnergy,gs.energy+(item.energy||10));
+  gs.happiness=Math.min(100,(gs.happiness||50)+(item.happiness||5));
+  updateTopbar();saveGame();
+  toast(`🍽️ Съедено: ${item.name}! +${item.energy}⚡ +${item.happiness}😊`);
+  renderInventory();
+}
+
+function sellFishItem(item){
+  const idx=gs.inventory.indexOf(item);
+  if(idx===-1)return;
+  gs.inventory.splice(idx,1);
+  gs.coins+=item.coins||20;
+  coinBurst(180,400);
+  updateTopbar();saveGame();
+  toast(`💰 ${item.name} продана за ${item.coins}🪙!`);
+  renderInventory();
+}
+
+function sellAll(){
+  const fish=gs.inventory.filter(x=>x.type==='fish');
+  if(!fish.length){toast('🐟 Нет рыбы для продажи!');return;}
+  const total=fish.reduce((s,f)=>s+(f.coins||20),0);
+  gs.inventory=gs.inventory.filter(x=>x.type!=='fish');
+  gs.coins+=total;
+  coinBurst(180,600);
+  updateTopbar();saveGame();
+  toast(`💰 Продано ${fish.length} рыб за ${total}🪙!`);
+  renderInventory();
+}
+
+function eatBest(){
+  const cooked=gs.inventory.filter(x=>x.type==='cooked').sort((a,b)=>(b.energy||0)-(a.energy||0));
+  if(!cooked.length){toast('🍲 Нет готовых блюд!');return;}
+  eatItem(cooked[0]);
+}
+
+// ═══════════════════════════════════════
+// 💼 WORK SYSTEM
+// ═══════════════════════════════════════
+const JOBS = [
+  {
+    id:'fisherman', name:'Рыбный торговец', icon:'🐟',
+    desc:'Сортируй рыбу по размеру для рынка. Легко освоить!',
+    tags:['Начинающий','🕐 Быстрая смена','💰 Низкая зарплата'],
+    basePay:80, payPerLevel:40, energyCost:10,
+    minLevel:1, type:'sort',
+    color:'#4090c0', glow:'rgba(64,144,192,.3)',
+    sortItems:['🐟 Маленькая','🐠 Средняя','🦈 Большая'],
+    sortLabels:['small','medium','big'],
+  },
+  {
+    id:'builder', name:'Строитель', icon:'🏗️',
+    desc:'Бей по нужным блокам в такт. Физический труд!',
+    tags:['Средний','🕐 Долгая смена','💰 Хорошая зарплата'],
+    basePay:150, payPerLevel:60, energyCost:20,
+    minLevel:1, type:'tap',
+    color:'#e08030', glow:'rgba(220,120,40,.3)',
+  },
+  {
+    id:'chef', name:'Повар', icon:'👨‍🍳',
+    desc:'Набирай рецепты на кухонной клавиатуре. Требует ловкости!',
+    tags:['Средний','🍳 Навык готовки','💰 Хорошая зарплата'],
+    basePay:180, payPerLevel:70, energyCost:15,
+    minLevel:1, type:'type',
+    color:'#e05050', glow:'rgba(220,60,60,.3)',
+  },
+  {
+    id:'diver', name:'Ныряльщик', icon:'🤿',
+    desc:'Собирай жемчуг до того как кончится воздух!',
+    tags:['Сложный','⚡ Требует энергии','💰 Очень высокая зарплата'],
+    basePay:250, payPerLevel:100, energyCost:30,
+    minLevel:1, type:'dive',
+    color:'#30b0e0', glow:'rgba(40,170,220,.3)',
+  },
+  {
+    id:'captain', name:'Капитан судна', icon:'⚓',
+    desc:'Управляй кораблём в шторм — реагируй на волны!',
+    tags:['Эксперт','🌊 Опасно','💰 Огромная зарплата'],
+    basePay:400, payPerLevel:150, energyCost:35,
+    minLevel:1, type:'steer',
+    color:'#6060e0', glow:'rgba(80,80,220,.3)',
+  },
+];
+
+let workInterval=null;
+let workData={};
+
+function getJobPay(job){
+  if(!job)return 0;
+  return job.basePay + (gs.jobLevel-1)*job.payPerLevel;
+}
+
+function getJobExpNeeded(){
+  return 50 + gs.jobLevel*40;
+}
+
+function renderWork(){
+  const body=document.getElementById('work-body');
+  body.innerHTML='';
+
+  // Header
+  const hdr=document.createElement('div');
+  hdr.style.cssText='padding:6px 4px 2px;';
+  hdr.innerHTML=`<div class="sec-title">💼 Работа</div>
+    <div style="font-family:'Neucha',cursive;font-size:12px;color:#4060a0;margin-bottom:10px;">
+      Зарабатывай монеты на смене · Повышай уровень
+    </div>`;
+  body.appendChild(hdr);
+
+  // Current job banner
+  if(gs.currentJob){
+    const job=JOBS.find(j=>j.id===gs.currentJob);
+    if(job){
+      const pay=getJobPay(job);
+      const expNeeded=getJobExpNeeded();
+      const expPct=Math.min(100,Math.round(gs.jobExp/expNeeded*100));
+      const banner=document.createElement('div');
+      banner.style.cssText=`background:linear-gradient(135deg,${job.color}22,${job.color}11);border:2px solid ${job.color}66;border-radius:14px;padding:12px 14px;margin-bottom:12px;`;
+      banner.innerHTML=`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="font-size:30px;">${job.icon}</span>
+          <div style="flex:1;">
+            <div style="font-family:'Neucha',cursive;font-size:15px;color:#dce8ff;">Текущая работа: <b style="color:${job.color}">${job.name}</b></div>
+            <div style="font-family:'Neucha',cursive;font-size:11px;color:#5070a0;">Уровень ${gs.jobLevel} · Смен: ${gs.jobShiftsWorked} · Заработано: ${gs.jobTotalEarned}🪙</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Neucha',cursive;font-size:14px;color:#f0c040;">${pay}🪙</div>
+            <div style="font-family:'Neucha',cursive;font-size:10px;color:#5a4010;">за смену</div>
+          </div>
+        </div>
+        <div style="font-family:'Neucha',cursive;font-size:10px;color:#4060a0;margin-bottom:3px;display:flex;justify-content:space-between;">
+          <span>Опыт до ур.${gs.jobLevel+1}</span><span>${gs.jobExp}/${expNeeded}</span>
+        </div>
+        <div style="height:7px;background:rgba(0,0,0,.4);border-radius:4px;overflow:hidden;border:1px solid ${job.color}44;">
+          <div style="height:100%;width:${expPct}%;background:linear-gradient(to right,${job.color}88,${job.color});border-radius:4px;transition:width .5s;"></div>
+        </div>
+        <button onclick="startWork()" style="width:100%;margin-top:10px;padding:10px;border-radius:10px;
+          background:linear-gradient(to bottom,${job.color}44,${job.color}22);
+          border:2px solid ${job.color}99;color:#dce8ff;
+          font-family:'Neucha',cursive;font-size:14px;cursor:pointer;transition:all .15s;"
+          onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">
+          🚀 Начать смену · -${job.energyCost}⚡
+        </button>`;
+      body.appendChild(banner);
+    }
+  }
+
+  // Job list
+  const listTitle=document.createElement('div');
+  listTitle.style.cssText="font-family:'Neucha',cursive;font-size:13px;color:#4060a0;margin-bottom:8px;padding:0 2px;";
+  listTitle.textContent = gs.currentJob ? '🔄 Сменить работу:' : '📋 Выбери профессию:';
+  body.appendChild(listTitle);
+
+  JOBS.forEach(job=>{
+    const isCurrent=gs.currentJob===job.id;
+    const pay=getJobPay(job);
+    const card=document.createElement('div');
+    card.className='job-card'+(isCurrent?' current-job':'');
+    card.style.cssText+=`border-color:${isCurrent?job.color:'#2a3a55'};`;
+    if(isCurrent) card.style.boxShadow=`0 0 18px ${job.glow}`;
+    card.innerHTML=`
+      <div class="jc-top">
+        <div class="jc-icon">${job.icon}</div>
+        <div class="jc-info">
+          <div class="jc-name">${job.name}${isCurrent?' <span style="font-size:11px;color:#f0c040;">✓ Текущая</span>':''}</div>
+          <div class="jc-desc">${job.desc}</div>
+          <div class="jc-tags">${job.tags.map(t=>`<span class="jc-tag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="jc-pay">
+          <div style="font-size:15px;">${pay}🪙</div>
+          <div style="font-size:10px;color:#5a4010;">смена</div>
+          <div style="font-size:10px;color:#4060a0;margin-top:3px;">-${job.energyCost}⚡</div>
+        </div>
+      </div>`;
+    if(!isCurrent){
+      card.onclick=()=>hireJob(job.id);
+    } else {
+      card.style.cursor='default';
+    }
+    body.appendChild(card);
+  });
+}
+
+function hireJob(id){
+  const job=JOBS.find(j=>j.id===id);
+  if(!job) return;
+  if(gs.currentJob===id){toast('Ты уже работаешь здесь!');return;}
+
+  // Confirm switch if already working
+  if(gs.currentJob){
+    const old=JOBS.find(j=>j.id===gs.currentJob);
+    if(!confirm(`Сменить работу с "${old?.name}" на "${job.name}"?\nОпыт и уровень сбросятся!`)) return;
+    gs.jobLevel=1; gs.jobExp=0;
+  }
+
+  gs.currentJob=id;
+  saveGame();
+  toast(`💼 Ты устроился ${job.name}! Удачи!`);
+  renderWork();
+
+  // Animate job icon in topbar area
+  coinBurst(180,300);
+}
+
+function startWork(){
+  if(!gs.currentJob){toast('Сначала выберите работу!');return;}
+  const job=JOBS.find(j=>j.id===gs.currentJob);
+  if(!job) return;
+  if(gs.energy<job.energyCost){
+    toast(`⚡ Нужно ${job.energyCost} энергии для работы!`);
+    return;
+  }
+
+  // Deduct energy
+  gs.energy=Math.max(0, gs.energy-job.energyCost);
+  updateTopbar();
+
+  // Setup mini-game data
+  workData={
+    job, progress:0, earned:0,
+    misses:0, maxMisses:3,
+    combo:0, totalTaps:0,
+    startTime:Date.now(),
+    totalProgress:100,
+  };
+
+  // Show mini-game overlay
+  const mg=document.getElementById('work-minigame');
+  document.getElementById('wmg-job-icon').textContent=job.icon;
+  document.getElementById('wmg-job-title').textContent=job.name;
+  document.getElementById('wmg-shift-info').textContent=`Зарплата: ${getJobPay(job)}🪙 · Смена`;
+  document.getElementById('wmg-prog-fill').style.width='0%';
+  document.getElementById('wmg-pct').textContent='0%';
+  document.getElementById('wmg-earned').textContent='0';
+  document.getElementById('wmg-energy-left').textContent=gs.energy;
+  document.getElementById('wmg-misses').textContent='0';
+  mg.style.display='flex';
+
+  // Start the correct mini-game
+  if(job.type==='tap') startTapGame();
+  else if(job.type==='sort') startSortGame();
+  else if(job.type==='type') startTypeGame();
+  else if(job.type==='dive') startDiveGame();
+  else if(job.type==='steer') startSteerGame();
+}
+
+// ─── WORK PROGRESS HELPERS ───────────
+function addWorkProgress(amount, coins){
+  workData.progress=Math.min(workData.totalProgress, workData.progress+amount);
+  workData.earned+=coins;
+  workData.combo++;
+  workData.totalTaps++;
+
+  const pct=Math.round(workData.progress/workData.totalProgress*100);
+  document.getElementById('wmg-prog-fill').style.width=pct+'%';
+  document.getElementById('wmg-pct').textContent=pct+'%';
+  document.getElementById('wmg-earned').textContent=workData.earned;
+
+  // Combo flash
+  if(workData.combo>1){
+    spawnComboFlash('+'+(workData.combo>4?'💥':'⚡')+workData.combo+'x');
+  }
+
+  if(workData.progress>=workData.totalProgress) finishWork();
+}
+
+function addWorkMiss(){
+  workData.misses++;
+  workData.combo=0;
+  document.getElementById('wmg-misses').textContent=workData.misses;
+  // Shake area
+  const area=document.getElementById('wmg-area');
+  area.classList.remove('miss-shake');void area.offsetWidth;area.classList.add('miss-shake');
+  if(navigator.vibrate)navigator.vibrate(60);
+  if(workData.misses>=workData.maxMisses) finishWork(true);
+}
+
+function spawnComboFlash(txt){
+  const area=document.getElementById('wmg-area');
+  const el=document.createElement('div');
+  el.className='combo-flash';
+  el.textContent=txt;
+  area.appendChild(el);
+  setTimeout(()=>el.remove(),650);
+}
+
+function finishWork(failed=false){
+  clearInterval(workInterval);
+  document.getElementById('wmg-area').innerHTML='';
+
+  const job=workData.job;
+  const basePay=getJobPay(job);
+  const earned=failed ? Math.floor(workData.earned) : basePay;
+  workData.earned=earned;
+
+  gs.coins+=earned;
+  gs.jobShiftsWorked=(gs.jobShiftsWorked||0)+1;
+  gs.jobTotalEarned=(gs.jobTotalEarned||0)+earned;
+
+  // Give experience
+  if(!failed){
+    const expGain=20+workData.combo*2;
+    gs.jobExp=(gs.jobExp||0)+expGain;
+    const expNeeded=getJobExpNeeded();
+    if(gs.jobExp>=expNeeded && gs.jobLevel<10){
+      gs.jobLevel++;
+      gs.jobExp=0;
+      showLevelUpBanner(job);
+    }
+  }
+
+  updateTopbar();saveGame();
+
+  // Show result popup
+  const area=document.getElementById('wmg-area');
+  area.style.display='flex';
+  area.innerHTML=`
+    <div style="text-align:center;width:100%;">
+      <div style="font-size:48px;margin-bottom:8px;">${failed?'😓':'🎉'}</div>
+      <div style="font-family:'Neucha',cursive;font-size:18px;color:${failed?'#e06060':'#f0c040'};margin-bottom:6px;">
+        ${failed?'Смена прервана':'Смена завершена!'}
+      </div>
+      <div style="font-family:'Neucha',cursive;font-size:24px;color:#f0c040;margin-bottom:4px;">+${earned}🪙</div>
+      <div style="font-family:'Neucha',cursive;font-size:12px;color:#5070a0;margin-bottom:14px;">
+        Правильных действий: ${workData.totalTaps} · Ошибок: ${workData.misses}
+      </div>
+      <button onclick="closeWorkMinigame()" style="width:100%;padding:10px;border-radius:10px;
+        background:linear-gradient(to bottom,#1a4060,#0c2040);border:2px solid #2a6090;
+        color:#80c0f0;font-family:'Neucha',cursive;font-size:14px;cursor:pointer;">
+        ✅ Забрать деньги
+      </button>
+    </div>`;
+
+  if(!failed){
+    coinBurst(180,350);
+    setTimeout(()=>coinBurst(220,380),120);
+  }
+}
+
+function closeWorkMinigame(){
+  document.getElementById('work-minigame').style.display='none';
+  document.getElementById('wmg-area').innerHTML='';
+  renderWork();
+}
+
+function quitWork(){
+  clearInterval(workInterval);
+  finishWork(true);
+}
+
+function showLevelUpBanner(job){
+  const game=document.getElementById('game');
+  const el=document.createElement('div');
+  el.style.cssText=`position:absolute;top:80px;left:10px;right:10px;
+    background:linear-gradient(135deg,#1a1000,#0a0800);
+    border:2px solid #f0c040;border-radius:14px;padding:16px;
+    font-family:'Neucha',cursive;z-index:600;text-align:center;
+    animation:catchPop .4s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 0 30px rgba(240,192,64,.5);pointer-events:none;`;
+  el.innerHTML=`<div style="font-size:28px;margin-bottom:4px;">⬆️ УРОВЕНЬ ${gs.jobLevel}!</div>
+    <div style="font-size:14px;color:#f0c040;">${job.name}</div>
+    <div style="font-size:12px;color:#c09030;margin-top:4px;">Зарплата выросла до ${getJobPay(job)}🪙/смена!</div>`;
+  game.appendChild(el);
+  coinBurst(180,200);setTimeout(()=>coinBurst(270,250),150);
+  setTimeout(()=>{el.style.transition='opacity .5s';el.style.opacity='0';},3000);
+  setTimeout(()=>el.remove(),3600);
+}
+
+// ─── MINI-GAME: TAP ──────────────────
+// Tap the glowing target before it moves
+function startTapGame(){
+  const area=document.getElementById('wmg-area');
+  const job=workData.job;
+  let tapsNeeded=18;
+  workData.totalProgress=tapsNeeded;
+  workData.progress=0;
+
+  const TARGETS=[
+    {emoji:'🧱',color:'#e08030',border:'#f0a040'},
+    {emoji:'⚙️',color:'#6080b0',border:'#80a0d0'},
+    {emoji:'🔨',color:'#c06020',border:'#e08040'},
+    {emoji:'🪚',color:'#8060a0',border:'#b090d0'},
+  ];
+
+  const instructions=document.createElement('div');
+  instructions.style.cssText="font-family:'Neucha',cursive;font-size:12px;color:#5070a0;text-align:center;position:absolute;bottom:8px;left:0;right:0;";
+  instructions.textContent='Нажимай на мигающий объект!';
+  area.appendChild(instructions);
+  area.style.position='relative';
+
+  let currentTarget=null;
+  let missTimeout=null;
+
+  function spawnTarget(){
+    if(currentTarget){currentTarget.remove();currentTarget=null;}
+    if(workData.progress>=tapsNeeded)return;
+
+    const t=TARGETS[Math.floor(Math.random()*TARGETS.length)];
+    const btn=document.createElement('div');
+    btn.className='wmg-tap';
+    btn.textContent=t.emoji;
+    btn.style.background=`radial-gradient(circle,${t.color}44,${t.color}22)`;
+    btn.style.borderColor=t.border;
+    btn.style.boxShadow=`0 0 18px ${t.color}88`;
+    btn.style.animation='wmgTargetIn .25s cubic-bezier(.34,1.56,.64,1),wmgTargetPulse 0.6s ease-in-out infinite alternate';
+
+    // Random position within area
+    const aW=240, aH=180;
+    const x=20+Math.random()*(aW-80);
+    const y=20+Math.random()*(aH-80);
+    btn.style.left=x+'px'; btn.style.top=y+'px';
+
+    btn.onclick=()=>{
+      clearTimeout(missTimeout);
+      btn.style.transform='scale(1.3)';
+      btn.style.opacity='0';
+      btn.style.transition='all .15s';
+      setTimeout(()=>btn.remove(),160);
+      currentTarget=null;
+      const coins=Math.floor(getJobPay(job)/tapsNeeded);
+      addWorkProgress(1, coins);
+      setTimeout(spawnTarget,300+Math.random()*200);
+    };
+
+    area.appendChild(btn);
+    currentTarget=btn;
+
+    // Auto-miss after 2.5s
+    const delay=2500-workData.progress*50;
+    missTimeout=setTimeout(()=>{
+      if(currentTarget===btn){
+        btn.style.opacity='0.2';
+        btn.style.transition='opacity .2s';
+        currentTarget=null;
+        addWorkMiss();
+        if(workData.misses<workData.maxMisses)setTimeout(spawnTarget,400);
+      }
+    }, Math.max(1000, delay));
+  }
+
+  // Add tap target pulse keyframe dynamically
+  const st=document.createElement('style');
+  st.textContent='@keyframes wmgTargetPulse{from{box-shadow:0 0 12px rgba(255,150,50,.5)}to{box-shadow:0 0 28px rgba(255,150,50,.9),0 0 50px rgba(255,100,0,.3)}}';
+  document.head.appendChild(st);
+
+  spawnTarget();
+}
+
+// ─── MINI-GAME: SORT ─────────────────
+// Tap the right bucket for the fish
+function startSortGame(){
+  const area=document.getElementById('wmg-area');
+  const job=workData.job;
+  let roundsNeeded=15;
+  workData.totalProgress=roundsNeeded;
+  area.style.flexDirection='column';
+
+  const FISH_SIZES=[
+    {label:'🐟 Мелкая',size:'small',color:'#4090c0'},
+    {label:'🐠 Средняя',size:'medium',color:'#30a060'},
+    {label:'🦈 Крупная',size:'big',color:'#c06020'},
+  ];
+
+  let currentFish=null;
+
+  const fishDisplay=document.createElement('div');
+  fishDisplay.style.cssText="font-size:36px;text-align:center;margin-bottom:8px;min-height:50px;transition:all .2s;";
+  area.appendChild(fishDisplay);
+
+  const questionEl=document.createElement('div');
+  questionEl.style.cssText="font-family:'Neucha',cursive;font-size:13px;color:#8090b0;text-align:center;margin-bottom:12px;";
+  area.appendChild(questionEl);
+
+  const btnsRow=document.createElement('div');
+  btnsRow.style.cssText='display:flex;gap:8px;justify-content:center;flex-wrap:wrap;';
+  area.appendChild(btnsRow);
+
+  FISH_SIZES.forEach(fs=>{
+    const btn=document.createElement('div');
+    btn.className='wmg-sort-item';
+    btn.style.background=`${fs.color}22`;
+    btn.style.borderColor=`${fs.color}88`;
+    btn.style.color='#dce8ff';
+    btn.textContent=fs.label;
+    btn.onclick=()=>{
+      if(!currentFish)return;
+      if(fs.size===currentFish.size){
+        btn.style.background=`${fs.color}55`;
+        btn.style.transform='scale(1.1)';
+        setTimeout(()=>{btn.style.transform='';btn.style.background=`${fs.color}22`;},200);
+        addWorkProgress(1,Math.floor(getJobPay(job)/roundsNeeded));
+        nextFish();
+      } else {
+        btn.style.background='rgba(200,40,40,.3)';
+        btn.style.borderColor='#e05050';
+        setTimeout(()=>{btn.style.background=`${fs.color}22`;btn.style.borderColor=`${fs.color}88`;},300);
+        addWorkMiss();
+        if(workData.misses<workData.maxMisses)nextFish();
+      }
+    };
+    btnsRow.appendChild(btn);
+  });
+
+  const FISH_ICONS=['🐟','🐠','🐡','🦑','🦐'];
+
+  function nextFish(){
+    currentFish=FISH_SIZES[Math.floor(Math.random()*FISH_SIZES.length)];
+    const icon=FISH_ICONS[Math.floor(Math.random()*FISH_ICONS.length)];
+    const sizeLabel={small:'Маленькая рыба',medium:'Средняя рыба',big:'Большая рыба'}[currentFish.size];
+    fishDisplay.style.transform='scale(0)';
+    setTimeout(()=>{
+      fishDisplay.textContent=icon;
+      fishDisplay.style.transform='scale(1)';
+      questionEl.textContent=`Куда положить?`;
+    },150);
+  }
+  nextFish();
+}
+
+// ─── MINI-GAME: TYPE ─────────────────
+// Tap letters to spell the dish name
+function startTypeGame(){
+  const area=document.getElementById('wmg-area');
+  const job=workData.job;
+  const WORDS=['РЫБА','СУШИ','ПАСТА','БОРЩ','УХА','ПЛОВ','ПИЦЦА','РАМЕН'];
+  let wordIdx=0;
+  let typed='';
+  let currentWord='';
+  workData.totalProgress=8;
+  area.style.flexDirection='column';
+
+  const displayEl=document.createElement('div');
+  displayEl.className='wmg-type-display';
+  area.appendChild(displayEl);
+
+  const targetEl=document.createElement('div');
+  targetEl.style.cssText="font-family:'Neucha',cursive;font-size:13px;color:#5070a0;text-align:center;margin-bottom:10px;";
+  area.appendChild(targetEl);
+
+  const keysEl=document.createElement('div');
+  keysEl.className='wmg-keys';
+  area.appendChild(keysEl);
+
+  function nextWord(){
+    currentWord=WORDS[wordIdx%WORDS.length];wordIdx++;
+    typed='';
+    targetEl.textContent='Напечатай: '+currentWord;
+    displayEl.textContent='_'.repeat(currentWord.length);
+    renderKeys();
+  }
+
+  function renderKeys(){
+    keysEl.innerHTML='';
+    // Letters from current word + random extras
+    const extras='КЛМНОПРСТУФ';
+    let letters=[...new Set([...currentWord,...extras.split('')])];
+    // Shuffle
+    letters=letters.sort(()=>Math.random()-.5).slice(0,12);
+    if(!letters.includes(currentWord[typed.length]))letters[0]=currentWord[typed.length];
+    letters=letters.sort(()=>Math.random()-.5);
+    letters.forEach(ch=>{
+      const k=document.createElement('div');
+      k.className='wmg-key';
+      k.textContent=ch;
+      k.onclick=()=>{
+        if(ch===currentWord[typed.length]){
+          typed+=ch;
+          displayEl.textContent=typed+'_'.repeat(currentWord.length-typed.length);
+          displayEl.style.color='#80d080';
+          setTimeout(()=>displayEl.style.color='#f0c040',200);
+          if(typed===currentWord){
+            addWorkProgress(1,Math.floor(getJobPay(job)/workData.totalProgress));
+            setTimeout(nextWord,300);
+          } else renderKeys();
+        } else {
+          k.style.background='rgba(200,40,40,.3)';k.style.borderColor='#e05050';
+          setTimeout(()=>{k.style.background='';k.style.borderColor='';},250);
+          addWorkMiss();
+          if(workData.misses<workData.maxMisses)renderKeys();
+        }
+      };
+      keysEl.appendChild(k);
+    });
+  }
+  nextWord();
+}
+
+// ─── MINI-GAME: DIVE ─────────────────
+// Tap pearls before oxygen runs out
+function startDiveGame(){
+  const area=document.getElementById('wmg-area');
+  const job=workData.job;
+  workData.totalProgress=12;
+  area.style.position='relative';
+
+  // Oxygen bar
+  const oxyWrap=document.createElement('div');
+  oxyWrap.style.cssText='width:100%;margin-bottom:10px;';
+  oxyWrap.innerHTML=`<div style="font-family:'Neucha',cursive;font-size:11px;color:#30b0e0;margin-bottom:3px;display:flex;justify-content:space-between;"><span>🫧 Кислород</span><span id="oxy-pct">100%</span></div>
+    <div style="height:10px;background:rgba(0,0,0,.4);border-radius:5px;overflow:hidden;border:1px solid #1a5080;">
+      <div id="oxy-fill" style="height:100%;width:100%;background:linear-gradient(to right,#1a80c0,#50e0ff);border-radius:5px;transition:width .2s;"></div>
+    </div>`;
+  area.appendChild(oxyWrap);
+
+  const seaEl=document.createElement('div');
+  seaEl.style.cssText='position:relative;flex:1;width:100%;min-height:140px;background:radial-gradient(ellipse at 50% 0%,#1a4060,#020c18);border-radius:10px;overflow:hidden;';
+  area.appendChild(seaEl);
+
+  const hint=document.createElement('div');
+  hint.style.cssText="font-family:'Neucha',cursive;font-size:11px;color:#306080;text-align:center;margin-top:6px;";
+  hint.textContent='Нажимай на жемчужины!';
+  area.appendChild(hint);
+
+  let oxy=100;
+  const oxyDrain=0.8;
+
+  workInterval=setInterval(()=>{
+    oxy=Math.max(0,oxy-oxyDrain);
+    const oxyEl=document.getElementById('oxy-fill');
+    const oxyPct=document.getElementById('oxy-pct');
+    if(oxyEl)oxyEl.style.width=oxy+'%';
+    if(oxyPct)oxyPct.textContent=Math.round(oxy)+'%';
+    if(oxyEl)oxyEl.style.background=oxy<30?'linear-gradient(to right,#c04040,#e06060)':'linear-gradient(to right,#1a80c0,#50e0ff)';
+    if(oxy<=0){clearInterval(workInterval);finishWork(true);}
+  },200);
+
+  function spawnPearl(){
+    if(workData.progress>=workData.totalProgress)return;
+    const pearl=document.createElement('div');
+    pearl.style.cssText=`position:absolute;font-size:24px;cursor:pointer;
+      left:${10+Math.random()*75}%;top:${10+Math.random()*70}%;
+      animation:wmgTargetIn .3s cubic-bezier(.34,1.56,.64,1);
+      filter:drop-shadow(0 0 8px rgba(100,200,255,.8));
+      transition:transform .1s,opacity .15s;`;
+    pearl.textContent=['🔮','🫧','💎','⭐'][Math.floor(Math.random()*4)];
+    pearl.onclick=()=>{
+      pearl.style.transform='scale(1.5)';pearl.style.opacity='0';
+      setTimeout(()=>pearl.remove(),150);
+      oxy=Math.min(100,oxy+15); // breathing bonus
+      addWorkProgress(1,Math.floor(getJobPay(job)/workData.totalProgress));
+      setTimeout(spawnPearl,600+Math.random()*400);
+    };
+    seaEl.appendChild(pearl);
+    // Auto-despawn
+    setTimeout(()=>{
+      if(pearl.parentNode){pearl.style.opacity='0';setTimeout(()=>pearl.remove(),200);}
+      setTimeout(spawnPearl,400);
+    },3000);
+  }
+  for(let i=0;i<3;i++) setTimeout(spawnPearl,i*300);
+}
+
+// ─── MINI-GAME: STEER ────────────────
+// Tap LEFT/RIGHT to dodge waves
+function startSteerGame(){
+  const area=document.getElementById('wmg-area');
+  const job=workData.job;
+  workData.totalProgress=20;
+  workData.progress=0;
+  area.style.flexDirection='column';
+
+  const seaEl=document.createElement('div');
+  seaEl.style.cssText='width:100%;height:100px;position:relative;overflow:hidden;background:linear-gradient(to bottom,#0a1a30,#020c18);border-radius:10px;margin-bottom:8px;';
+  area.appendChild(seaEl);
+
+  // Ship
+  const ship=document.createElement('div');
+  ship.style.cssText='position:absolute;bottom:10px;font-size:28px;left:50%;transform:translateX(-50%);transition:left .2s;';
+  ship.textContent='⛵';
+  seaEl.appendChild(ship);
+
+  let shipX=50; // percent
+
+  const btnRow=document.createElement('div');
+  btnRow.style.cssText='display:flex;gap:12px;justify-content:center;margin-bottom:8px;';
+  area.appendChild(btnRow);
+
+  const hintEl=document.createElement('div');
+  hintEl.style.cssText="font-family:'Neucha',cursive;font-size:13px;color:#5070a0;text-align:center;";
+  hintEl.textContent='Уклоняйся от волн!';
+  area.appendChild(hintEl);
+
+  [['⬅️ Влево','left'],['Вправо ➡️','right']].forEach(([label,dir])=>{
+    const btn=document.createElement('button');
+    btn.style.cssText='flex:1;padding:12px;border-radius:10px;background:linear-gradient(to bottom,#1a3060,#0c1840);border:2px solid #2a5090;color:#80b0e0;font-family:Neucha,cursive;font-size:14px;cursor:pointer;transition:transform .1s;';
+    btn.textContent=label;
+    btn.onclick=()=>{
+      shipX=dir==='left'?Math.max(15,shipX-20):Math.min(85,shipX+20);
+      ship.style.left=shipX+'%';
+      btn.style.transform='scale(.92)';setTimeout(()=>btn.style.transform='',150);
+    };
+    btnRow.appendChild(btn);
+  });
+
+  // Wave spawner
+  const WAVE_EMOJIS=['🌊','🌊','💦','⚡'];
+  let waveInterval=setInterval(()=>{
+    if(workData.progress>=workData.totalProgress){clearInterval(waveInterval);return;}
+    const wave=document.createElement('div');
+    const wx=10+Math.random()*80;
+    wave.style.cssText=`position:absolute;top:-30px;left:${wx}%;font-size:22px;transition:top 1.2s linear;`;
+    wave.textContent=WAVE_EMOJIS[Math.floor(Math.random()*WAVE_EMOJIS.length)];
+    seaEl.appendChild(wave);
+
+    setTimeout(()=>wave.style.top='80px',50);
+
+    setTimeout(()=>{
+      // Check collision
+      const dist=Math.abs(wx-shipX);
+      if(dist<12){
+        addWorkMiss();
+        ship.style.filter='brightness(2) hue-rotate(180deg)';
+        setTimeout(()=>ship.style.filter='',300);
+      } else {
+        addWorkProgress(1,Math.floor(getJobPay(job)/workData.totalProgress));
+      }
+      wave.remove();
+    },1250);
+  },900-workData.progress*10);
+
+  workData._waveInterval=waveInterval;
+}
+
+// patch quitWork to also clear steer interval
+const _quitWorkOrig=quitWork;
+quitWork=function(){
+  if(workData._waveInterval)clearInterval(workData._waveInterval);
+  clearInterval(workInterval);
+  finishWork(true);
+};
+setInterval(()=>{
+  if(gs.energy<gs.maxEnergy){
+    gs.energy=Math.min(gs.maxEnergy,gs.energy+1);
+    updateTopbar();
+  }
+},30000);
+
+// Day tick
+setInterval(()=>{
+  gs.day++;
+  gs.energy=Math.min(gs.maxEnergy,gs.energy+15);
+  updateTopbar();saveGame();
+  showDayPopup(gs.day);
+},120000);
+
+// ═══════════════════════════════════════
+// DAY POPUP
+// ═══════════════════════════════════════
+function showDayPopup(day){
+  const game=document.getElementById('game');
+  const el=document.createElement('div');
+  const tips=['Попробуй редкие удочки!','В разных странах разная рыба!','Готовь блюда — бонус счастья!','Путешествуй и открывай мир!','Строй дом — каждый этап даёт бонусы!'];
+  const tip=tips[day%tips.length];
+  el.style.cssText='position:absolute;top:80px;left:10px;right:10px;background:linear-gradient(135deg,#0d1e30,#060e18);border:2px solid #2a4060;border-radius:14px;padding:14px 16px;font-family:Neucha,cursive;z-index:500;pointer-events:none;box-shadow:0 0 20px rgba(0,80,180,.3);';
+  el.innerHTML='<div style="font-size:16px;color:#f0c040;margin-bottom:4px">🌅 Наступил день '+day+'!</div><div style="font-size:11px;color:#6080a0">💡 '+tip+'</div><div style="font-size:12px;color:#60d080;margin-top:4px">+15⚡ восстановлено</div>';
+  el.style.animation='catchPop .4s cubic-bezier(.34,1.56,.64,1)';
+  game.appendChild(el);
+  setTimeout(()=>{el.style.transition='opacity .5s';el.style.opacity='0';},3500);
+  setTimeout(()=>el.remove(),4100);
+}
+
+// ═══════════════════════════════════════
+// FISHING STREAK
+// ═══════════════════════════════════════
+gs.fishStreak=gs.fishStreak||0;
+const CATCH_MSGS={common:['🎣 Неплохой улов!','🐟 Попалась!','✨ Хороший заброс!'],uncommon:['🌟 Удача!','💚 Редкая рыбка!','🎉 Отличный улов!'],rare:['💙 Редкая находка!','✨ Вот это рыба!'],epic:['💜 ЭПИЧЕСКИЙ УЛОВ!','🎆 ВАУ! Эпик!'],legend:['👑 ЛЕГЕНДА ПОЙМАНА!!!','🌟 НЕВЕРОЯТНО!!!']};
+
+const _keepFishOrig=keepFish;
+keepFish=function(){
+  if(!currentCatch)return;
+  const rar=currentCatch.rar||'common';
+  gs.fishStreak=(gs.fishStreak||0)+1;
+  document.getElementById('catch-popup').classList.remove('show');
+  if(gs.inventory.length>=gs.maxInv){toast('🎒 Инвентарь полон! Продай рыбу.');return;}
+  gs.inventory.push({...currentCatch,type:'fish',id:'fish_'+Date.now(),qty:1});
+  gs.fishCount=(gs.fishCount||0)+1;
+  gs.totalCaught=(gs.totalCaught||0)+1;
+  gs.energy=Math.max(0,gs.energy-2);
+  if(rar==='rare'||rar==='epic'||rar==='legend')coinBurst(180,350);
+  if(rar==='legend'){setTimeout(()=>coinBurst(260,380),150);setTimeout(()=>coinBurst(100,420),300);}
+  updateTopbar();saveGame();
+  const msgs=CATCH_MSGS[rar]||CATCH_MSGS.common;
+  const msg=msgs[Math.floor(Math.random()*msgs.length)];
+  const streak=gs.fishStreak>=5?' 🔥×'+gs.fishStreak+'!':'';
+  toast(msg+streak+' '+currentCatch.name+' '+currentCatch.weight+'кг');
+  if(gs.fishStreak===5||gs.fishStreak===10||gs.fishStreak===20)showStreakBanner(gs.fishStreak);
+  currentCatch=null;
+};
+
+const _releaseOrig=releaseFish;
+releaseFish=function(){
+  if(!currentCatch)return;
+  gs.fishStreak=0;
+  document.getElementById('catch-popup').classList.remove('show');
+  toast('🌊 '+currentCatch.name+' отпущена обратно в воду.');
+  currentCatch=null;
+};
+
+function showStreakBanner(n){
+  const game=document.getElementById('game');
+  const el=document.createElement('div');
+  el.style.cssText='position:absolute;top:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#2a1400,#1a0c00);border:2px solid #f0c040;border-radius:14px;padding:10px 22px;font-family:Neucha,cursive;font-size:18px;color:#f0c040;text-align:center;z-index:500;white-space:nowrap;pointer-events:none;box-shadow:0 0 30px rgba(240,192,64,.5);animation:catchPop .5s cubic-bezier(.34,1.56,.64,1);';
+  el.innerHTML='🔥 '+n+' В СЕРИИ! 🔥<br><span style="font-size:11px;color:#c09030">Рыбалка идёт отлично!</span>';
+  game.appendChild(el);
+  setTimeout(()=>{el.style.transition='opacity .6s,transform .6s';el.style.opacity='0';el.style.transform='translateX(-50%) translateY(-12px)';},2600);
+  setTimeout(()=>el.remove(),3300);
+  coinBurst(180,180);
+}
+
+// ═══════════════════════════════════════
+// SELL ALL upgrade
+// ═══════════════════════════════════════
+const _sellAllOrig=sellAll;
+sellAll=function(){
+  const fish=gs.inventory.filter(x=>x.type==='fish');
+  if(!fish.length){toast('🐟 Нет рыбы для продажи!');return;}
+  const total=fish.reduce((s,f)=>s+(f.coins||20),0);
+  gs.inventory=gs.inventory.filter(x=>x.type!=='fish');
+  gs.coins+=total;
+  coinBurst(180,400);
+  setTimeout(()=>coinBurst(230,370),100);
+  setTimeout(()=>coinBurst(130,430),200);
+  updateTopbar();saveGame();
+  toast('💰 Продано '+fish.length+' рыб за '+total+'🪙! Отлично!');
+  renderInventory();
+};
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+(function init(){
+  buildNavs();
+  updateTopbar();
+  renderMap();
+  const ct=COUNTRY_THEMES[gs.currentCountry]||COUNTRY_THEMES.russia;
+  applyCountryTheme(ct);
+
+  if(!localStorage.getItem(SAVE_KEY)){
+    gs.inventory.push(
+      {id:'plank',name:'Доска',icon:'🪵',type:'material',qty:5,desc:'Сосновая доска',price:80},
+      {id:'bread_ru',name:'Чёрный хлеб',icon:'🍞',type:'food',qty:2,energy:5,desc:'Стартовый паёк',price:15},
+    );
+    saveGame();
+    setTimeout(showWelcomePopup,600);
+  }
+})();
+
+function showWelcomePopup(){
+  const game=document.getElementById('game');
+  const el=document.createElement('div');
+  el.style.cssText='position:absolute;inset:0;background:rgba(0,0,0,.88);z-index:600;display:flex;align-items:center;justify-content:center;';
+  el.innerHTML='<div style="background:linear-gradient(135deg,#0d1e30,#060e18);border:2px solid #2a5070;border-radius:18px;padding:24px 20px;width:280px;text-align:center;animation:catchPop .45s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 50px rgba(0,80,180,.5);">'
+    +'<div style="font-size:52px;margin-bottom:10px">🎣</div>'
+    +'<div style="font-family:UnifrakturMaguntia,cursive;font-size:22px;color:#f0c040;margin-bottom:10px">Рыбалка Реборн!</div>'
+    +'<div style="font-family:Neucha,cursive;font-size:13px;color:#8090b0;line-height:1.8;margin-bottom:18px">'
+    +'🌍 Путешествуй по миру<br>🎣 Лови редкую рыбу<br>🍳 Готовь вкусные блюда<br>🏠 Строй свой дом мечты</div>'
+    +'<button onclick="this.closest(\'div[style]\').parentNode.remove()" style="width:100%;padding:11px;border-radius:12px;background:linear-gradient(to bottom,#1a4060,#0c2040);border:2px solid #2a6090;color:#80c0f0;font-family:Neucha,cursive;font-size:15px;cursor:pointer;transition:transform .1s;" onmousedown="this.style.transform=\'scale(.96)\'" onmouseup="this.style.transform=\'\'">🚀 Начать приключение!</button>'
+    +'</div>';
+  game.appendChild(el);
+}
+</script>
+</body>
+</html>
