@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>NFC Counter</title>
+</head>
+<body>
+
+<h1>Счётчик: <span id="count">0</span></h1>
+<button onclick="startNFC()">Начать сканирование NFC</button>
+
+<script>
+let count = 0;
+
+async function startNFC() {
+  if ('NDEFReader' in window) {
+    try {
+      const ndef = new NDEFReader();
+      await ndef.scan();
+
+      console.log("Сканирование запущено");
+
+      ndef.onreading = event => {
+        count++;
+        document.getElementById("count").textContent = count;
+        console.log("NFC считан!");
+      };
+
+    } catch (error) {
+      alert("Ошибка: " + error);
+    }
+  } else {
+    alert("NFC не поддерживается на этом устройстве");
+  }
+}
+</script>
+
+</body>
+</html>
