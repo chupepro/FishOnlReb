@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🌿 Chupepp Games — Деревянная Деревня</title>
-<link href="https://fonts.googleapis.com/css2?family=Rye&family=Philosopher:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Philosopher:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --wood-dark:#2a1a0a;--wood-mid:#3d2510;--wood-light:#5c3a1e;
@@ -284,6 +284,27 @@ footer{background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 38p
 .reward-bar-wrap{margin-top:8px;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
 .reward-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--moss-light),var(--straw));transition:width .6s ease;}
 .event-hint{font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:var(--muted);text-align:center;padding:12px;opacity:.6;}
+
+/* HOLLOW NIGHT AD */
+.hn-ad{
+  margin:18px 12px;border-radius:14px;overflow:hidden;position:relative;
+  background:#060606;border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 0 30px rgba(0,0,0,0.8),inset 0 0 40px rgba(0,0,0,0.5);
+  cursor:pointer;transition:border-color .3s,box-shadow .3s;
+}
+.hn-ad:hover{border-color:rgba(255,255,255,0.3);box-shadow:0 0 40px rgba(255,255,255,0.06),inset 0 0 40px rgba(0,0,0,0.5);}
+.hn-ad-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 80% 50%,rgba(255,255,255,0.04) 0%,transparent 70%);pointer-events:none;}
+.hn-ad-noise{position:absolute;inset:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;}
+.hn-ad-inner{position:relative;z-index:2;display:flex;align-items:center;gap:14px;padding:16px 18px;}
+.hn-ad-cover{width:64px;height:64px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid rgba(255,255,255,0.15);box-shadow:0 0 20px rgba(255,255,255,0.06);}
+.hn-ad-text{flex:1;min-width:0;}
+.hn-ad-label{font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px;}
+.hn-ad-title{font-family:'Syncopate','Rye',cursive;font-size:15px;font-weight:700;color:#fff;letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 18px rgba(255,255,255,0.4);line-height:1.2;}
+.hn-ad-sub{font-size:10px;color:rgba(255,255,255,0.45);letter-spacing:.1em;margin-top:4px;font-style:italic;}
+.hn-ad-btn{flex-shrink:0;border:1px solid rgba(255,255,255,0.25);color:#fff;background:transparent;border-radius:20px;padding:7px 14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s,border-color .2s;white-space:nowrap;}
+.hn-ad:hover .hn-ad-btn{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.5);}
+@keyframes hnPulse{0%,100%{opacity:.3;}50%{opacity:.7;}}
+.hn-ad-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:hnPulse 2s ease-in-out infinite;margin-right:5px;display:inline-block;vertical-align:middle;}
 </style>
 </head>
 <body>
@@ -354,6 +375,21 @@ footer{background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 38p
         <div class="plank-line"></div>
       </div>
       <div class="games-grid" id="archive-grid"></div>
+    </div>
+
+    <!-- HOLLOW NIGHT AD -->
+    <div class="hn-ad" onclick="window.open('https://chupepro.github.io/FishOnlReb/hollow_night.html','_blank')" title="Hollow Night — AI Music Project">
+      <div class="hn-ad-bg"></div>
+      <div class="hn-ad-noise"></div>
+      <div class="hn-ad-inner">
+        <img class="hn-ad-cover" src="https://i.postimg.cc/SQ2ndkcw/1775485416174.png" alt="Hollow Night">
+        <div class="hn-ad-text">
+          <div class="hn-ad-label"><span class="hn-ad-dot"></span>Музыкальный проект</div>
+          <div class="hn-ad-title">Hollow Night</div>
+          <div class="hn-ad-sub">Синтетическая симфония цифровой пустоты · AI Music</div>
+        </div>
+        <div class="hn-ad-btn">Слушать →</div>
+      </div>
     </div>
 
     <div>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hollow Night | AI Music Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .header-font {
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        .audio-player-container {
+            background: linear-gradient(90deg, #111, #1a1a1a);
+            border-radius: 1rem;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Аудио-элемент для реального воспроизведения -->
+    <audio id="mainAudio" src="hn1.mp3"></audio>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 px-6 py-4 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-white/5">
+        <div class="header-font text-xl font-bold tracking-widest">Hollow Night</div>
+        <div class="hidden md:flex space-x-8 text-sm font-light uppercase tracking-wider">
+            <a href="#home" class="hover:text-gray-400 transition">Главная</a>
+            <a href="#music" class="hover:text-gray-400 transition">Музыка</a>
+            <a href="#author" class="hover:text-gray-400 transition">Автор</a>
+        </div>
+        <button class="md:hidden text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex flex-col items-center justify-center relative px-4 pt-20">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent opacity-50"></div>
+        
+        <div class="z-10 text-center">
+            <h1 class="header-font text-5xl md:text-8xl font-bold mb-4 glow-text animate-pulse">
+                Hollow Night
+            </h1>
+            <p class="text-gray-400 text-lg md:text-xl font-light tracking-widest uppercase">
+                Синтетическая симфония цифровой пустоты
+            </p>
+        </div>
+
+        <a href="#music" class="mt-16 z-10 animate-bounce">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </a>
+    </section>
+
+    <!-- Music Section -->
+    <section id="music" class="py-24 px-6 max-w-6xl mx-auto">
+        <h2 class="header-font text-3xl mb-12 text-center">Свежий релиз</h2>
+        
+        <div class="glass-card rounded-2xl p-6 md:p-10 flex flex-col md:flex-row gap-10 items-center">
+            <!-- Cover Art -->
+            <div class="w-full md:w-1/2 overflow-hidden rounded-xl shadow-2xl">
+                <img src="https://i.postimg.cc/SQ2ndkcw/1775485416174.png" 
+                     alt="Обложка Nowhere Online" 
+                     class="w-full h-auto object-cover transform hover:scale-105 transition duration-700">
+            </div>
+            
+            <!-- Song Info -->
+            <div class="w-full md:w-1/2">
+                <span class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2 block">Single 2024</span>
+                <h3 class="text-4xl font-bold mb-4">Nowhere Online</h3>
+                <p class="text-gray-400 mb-8 font-light leading-relaxed">
+                    Галлюциногенное путешествие через заброшенные сервера и потерянные пакеты данных. 
+                    Песня исследует чувство одиночества в бесконечном цифровом пространстве.
+                </p>
+                
+                <!-- Audio Player -->
+                <div class="audio-player-container p-4">
+                    <div class="flex items-center gap-4">
+                        <button class="bg-white text-black p-3 rounded-full hover:bg-gray-200 transition" onclick="togglePlay()">
+                            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </button>
+                        <div class="flex-grow">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1 uppercase tracking-tighter">
+                                <span>Nowhere Online</span>
+                                <span id="timer">0:00 / 0:00</span>
+                            </div>
+                            <div class="w-full bg-white/10 h-1 rounded-full overflow-hidden cursor-pointer" onclick="seek(event)">
+                                <div id="progressBar" class="bg-white h-full w-0"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex gap-4">
+                    <a href="hn1.mp3" download class="border border-white/20 hover:bg-white hover:text-black transition px-6 py-2 rounded-full text-sm uppercase tracking-widest">Скачать</a>
+                    <button class="border border-white/20 hover:bg-white hover:text-black transition px-6 py-2 rounded-full text-sm uppercase tracking-widest">Share</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Author Section -->
+    <section id="author" class="py-24 px-6 bg-white/[0.02]">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="header-font text-3xl mb-12">Создатель</h2>
+            <div class="inline-block p-1 rounded-full bg-gradient-to-r from-gray-800 to-white/20 mb-8">
+                <div class="bg-black rounded-full p-4">
+                    <!-- Placeholder icon for AI Alexander -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-3xl font-bold mb-4">Александр</h3>
+            <p class="text-xl text-gray-500 italic mb-8">"Единственный разум в машине"</p>
+            <div class="max-w-2xl mx-auto text-gray-400 font-light leading-loose text-lg">
+                Александр — это полностью автономный ИИ-персонаж, который не просто генерирует звуки, 
+                а проживает музыку. Он пишет тексты, сочиняет мелодии и сводит треки Hollow Night, 
+                черпая вдохновение из шума старых процессоров и эстетики киберпанка. 
+                В его мире нет людей, есть только ритм и код.
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/5 text-center text-gray-600 text-sm tracking-widest uppercase">
+        <p>&copy; 2024 HOLLOW NIGHT PROJECT. ALL MUSIC BY ALEXANDER AI.</p>
+        <div class="mt-4 flex justify-center space-x-6">
+            <a href="#" class="hover:text-white">Spotify</a>
+            <a href="#" class="hover:text-white">Soundcloud</a>
+            <a href="#" class="hover:text-white">Bandcamp</a>
+        </div>
+    </footer>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const playIcon = document.getElementById('playIcon');
+        const progressBar = document.getElementById('progressBar');
+        const timer = document.getElementById('timer');
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play().catch(e => {
+                    console.log("Audio file not found or browser blocked it");
+                    showToast("Файл hn1.mp3 не найден");
+                });
+                playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            } else {
+                audio.pause();
+                playIcon.innerHTML = '<path d="M8 5v14l11-7z" />';
+            }
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            const percent = (audio.currentTime / audio.duration) * 100;
+            progressBar.style.width = percent + '%';
+            
+            const current = formatTime(audio.currentTime);
+            const total = isNaN(audio.duration) ? "0:00" : formatTime(audio.duration);
+            timer.innerText = `${current} / ${total}`;
+        });
+
+        audio.addEventListener('ended', () => {
+            playIcon.innerHTML = '<path d="M8 5v14l11-7z" />';
+            progressBar.style.width = '0%';
+        });
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        function seek(e) {
+            const rect = e.target.closest('.w-full').getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const width = rect.width;
+            audio.currentTime = (x / width) * audio.duration;
+        }
+
+        function showToast(msg) {
+            const div = document.createElement('div');
+            div.className = "fixed bottom-10 right-10 bg-red-900 text-white px-6 py-3 rounded-lg font-bold shadow-2xl z-[100]";
+            div.innerText = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
+
