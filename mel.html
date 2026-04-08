@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BurmalCat: Lost in Melstroynost - Mobile Edition</title>
+    <style>
+        /* Обнуление базовых стилей для предотвращения прокрутки и лишних отступов */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Основной контейнер игры с фоновым GIF-изображением космоса */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('https://64.media.tumblr.com/9c86c7b76883e84c749a3cb0c49d6679/b2303a8becc7a949-5e/s1280x1920/4f341806d815f19dcb75985d13a1b4899da6a49e.gifv');
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* Контейнер для отображения радужного следа кота */
+        #trail-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Персонаж Nyan Cat - адаптирован для удобного управления на мобильных устройствах */
+        #player {
+            position: absolute;
+            width: 140px; 
+            height: 90px;  
+            z-index: 20;
+            background-image: url('https://i.postimg.cc/653bS4sL/1775648234148.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            /* Плавный поворот персонажа при изменении направления */
+            transition: transform 0.15s ease-out;
+            will-change: transform, top;
+        }
+
+        /* Стили для игровых сущностей (еда и препятствия) */
+        .entity {
+            position: absolute;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        }
+
+        /* Стили сегмента радуги с анимацией движения влево */
+        .trail-part {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            animation: move-left 3s linear forwards;
+            pointer-events: none;
+        }
+
+        /* Анимация полета радуги в космосе */
+        @keyframes move-left {
+            from { transform: translateX(0); opacity: 0.9; }
+            to { transform: translateX(-150vw); opacity: 0; }
+        }
+
+        /* Отдельная полоска внутри радужного сегмента */
+        .rainbow-stripe {
+            width: 100%;
+            height: 16.6%;
+        }
+
+        /* Интерфейс пользователя: счетчик очков */
+        #ui {
+            position: absolute;
+            top: env(safe-area-inset-top, 20px);
+            left: 20px;
+            color: #fff;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Дизайн рамки счета */
+        .score-box {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 2px solid #ff00ff;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+
+        /* Экран завершения игры (Game Over) */
+        #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Контейнер текста на экране проигрыша */
+        .game-over-content {
+            text-align: center;
+            transform: scale(1.2);
+        }
+
+        /* Заголовок экрана проигрыша */
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #ff00ff;
+            text-shadow: 0 0 20px #ff00ff;
+        }
+
+        /* Текст финального результата */
+        .final-score-text {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        /* Стили кнопки перезапуска */
+        #restart-btn {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+        }
+
+        /* Эффект нажатия на кнопку */
+        #restart-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Текстовая инструкция для игрока */
+        #instructions {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 50;
+            animation: blink 1.5s infinite;
+        }
+
+        /* Анимация мерцания текста */
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Элемент аудио для фоновой музыки -->
+    <audio id="bg-music" loop>
+        <source src="bur.mp3" type="audio/mpeg">
+        Ваш браузер не поддерживает элемент audio.
+    </audio>
+
+    <div id="game-container">
+        <!-- Верхняя панель счета -->
+        <div id="ui">
+            <div class="score-box">ОЧКИ: <span id="score">0</span></div>
+        </div>
+        
+        <!-- Контейнеры для динамических элементов игрового процесса -->
+        <div id="trail-container"></div>
+        <div id="player"></div>
+
+        <!-- Подсказка по управлению -->
+        <div id="instructions">ЖМИ НА ЭКРАН, ЧТОБЫ ВЗЛЕТЕТЬ!</div>
+
+        <!-- Экран Game Over -->
+        <div id="game-over">
+            <div class="game-over-content">
+                <h1>КОНЕЦ ИГРЫ</h1>
+                <p class="final-score-text">Твой результат: <span id="final-score">0</span></p>
+                <button id="restart-btn">ИГРАТЬ СНОВА</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Глобальные переменные и ссылки на DOM-элементы
+         */
+        const container = document.getElementById('game-container');
+        const player = document.getElementById('player');
+        const scoreElement = document.getElementById('score');
+        const finalScoreElement = document.getElementById('final-score');
+        const gameOverScreen = document.getElementById('game-over');
+        const restartBtn = document.getElementById('restart-btn');
+        const trailContainer = document.getElementById('trail-container');
+        const bgMusic = document.getElementById('bg-music');
+
+        let gameActive = true;
+        let score = 0;
+        let py = window.innerHeight / 2;
+        let pVelocity = 0;
+        let musicStarted = false; // Флаг для отслеживания запуска музыки
+        
+        // Настройки физики и баланса игры
+        const gravity = 0.5; 
+        const jumpStrength = -9;
+        const playerWidth = 140;
+        const playerHeight = 90;
+        
+        let entities = [];
+        let lastTimestamp = 0;
+        let spawnTimer = 0;
+        let trailTimer = 0;
+
+        // Массив цветов для генерации радужного хвоста
+        const rainbowColors = ['#ff0000', '#ff9900', '#ffff00', '#33ff00', '#0099ff', '#6633ff'];
+
+        /**
+         * Функция запуска фоновой музыки.
+         * Вызывается при первом взаимодействии пользователя с экраном.
+         */
+        function startMusic() {
+            if (!musicStarted) {
+                bgMusic.play().catch(error => {
+                    console.log("Автовоспроизведение музыки заблокировано браузером до активного действия.");
+                });
+                musicStarted = true;
+            }
+        }
+
+        /**
+         * Обработка пользовательского ввода (клик или касание)
+         */
+        function handleInput(e) {
+            if (e) e.preventDefault();
+            if (!gameActive) return;
+            
+            // Запуск музыки при первом клике
+            startMusic();
+            
+            pVelocity = jumpStrength;
+            player.style.transform = "rotate(-20deg)";
+            
+            // Скрытие инструкции при начале игры
+            const inst = document.getElementById('instructions');
+            if (inst) inst.style.display = 'none';
+        }
+
+        // Регистрация событий мыши
+        window.addEventListener('mousedown', (e) => {
+            if (gameActive) handleInput(e);
+        });
+        
+        // Регистрация событий касания (мобильные устройства)
+        window.addEventListener('touchstart', (e) => {
+            if (gameActive) handleInput(e);
+        }, { passive: false });
+
+        // Обработка кнопки перезапуска игры
+        restartBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resetGame();
+        });
+
+        /**
+         * Функция создания сегмента радужного следа
+         */
+        function createTrailSegment() {
+            const segment = document.createElement('div');
+            segment.className = 'trail-part';
+            
+            // Позиционирование сегмента относительно текущего положения игрока
+            segment.style.left = (50 + 10) + 'px'; 
+            segment.style.top = (py + 20) + 'px';
+
+            // Создание 6 цветных полос радуги
+            rainbowColors.forEach(color => {
+                const stripe = document.createElement('div');
+                stripe.className = 'rainbow-stripe';
+                stripe.style.backgroundColor = color;
+                segment.appendChild(stripe);
+            });
+
+            trailContainer.appendChild(segment);
+
+            // Удаление сегмента из памяти после завершения анимации (3 секунды)
+            setTimeout(() => {
+                if (segment.parentNode) segment.remove();
+            }, 3000);
+        }
+
+        /**
+         * Генерация игровых объектов (бонусы еды или враги)
+         */
+        function spawnObject() {
+            const isEnemy = Math.random() > 0.6; // Вероятность появления врага 40%
+            const entity = document.createElement('div');
+            entity.className = 'entity';
+            
+            const size = isEnemy ? 70 : 50;
+            entity.style.width = size + 'px';
+            entity.style.height = size + 'px';
+            entity.style.fontSize = (size * 0.8) + 'px';
+            
+            // Выбор случайного визуального представления объекта
+            if (isEnemy) {
+                const enemies = ['☄️', '👾', '💣', '🛰️'];
+                entity.innerText = enemies[Math.floor(Math.random() * enemies.length)];
+                entity.dataset.type = 'enemy';
+            } else {
+                const foods = ['🧁', '🍩', '🍕', '🍰', '🍪'];
+                entity.innerText = foods[Math.floor(Math.random() * foods.length)];
+                entity.dataset.type = 'food';
+            }
+
+            // Установка начальных координат за правым краем экрана
+            const x = window.innerWidth + 100;
+            const y = Math.random() * (window.innerHeight - 150) + 50;
+            
+            entity.style.left = x + 'px';
+            entity.style.top = y + 'px';
+            
+            container.appendChild(entity);
+            
+            // Добавление объекта в массив для дальнейшего обновления
+            entities.push({
+                el: entity,
+                x: x,
+                y: y,
+                size: size,
+                type: entity.dataset.type
+            });
+        }
+
+        /**
+         * Основной игровой цикл (Game Loop)
+         */
+        function update(timestamp) {
+            if (!gameActive) return;
+
+            const deltaTime = timestamp - lastTimestamp;
+            lastTimestamp = timestamp;
+
+            // 1. Обновление физики игрока (Гравитация и Инерция)
+            pVelocity += gravity;
+            py += pVelocity;
+
+            // Ограничение полета вверх и проверка падения вниз (проигрыш)
+            if (py < -50) py = -50; 
+            if (py > window.innerHeight) {
+                endGame();
+                return;
+            }
+
+            player.style.top = py + 'px';
+            player.style.left = '50px';
+
+            // Визуальный наклон кота при падении
+            if (pVelocity > 3) {
+                player.style.transform = "rotate(20deg)";
+            }
+
+            // 2. Генерация хвоста радуги по таймеру (каждые 60 мс)
+            trailTimer += deltaTime;
+            if (trailTimer > 60) { 
+                createTrailSegment();
+                trailTimer = 0;
+            }
+
+            // 3. Генерация новых объектов в зависимости от текущего счета (уровня сложности)
+            spawnTimer += deltaTime;
+            const currentInterval = Math.max(600, 1500 - (score / 10)); 
+            if (spawnTimer > currentInterval) {
+                spawnObject();
+                spawnTimer = 0;
+            }
+
+            // 4. Движение объектов и проверка столкновений
+            const gameSpeed = 6 + (score / 1000); 
+
+            for (let i = entities.length - 1; i >= 0; i--) {
+                const ent = entities[i];
+                ent.x -= gameSpeed;
+                ent.el.style.left = ent.x + 'px';
+
+                // Определение хитбоксов для игрока и объекта
+                const pBox = { x: 60, y: py + 15, w: playerWidth - 40, h: playerHeight - 30 };
+                const eBox = { x: ent.x + 5, y: ent.y + 5, w: ent.size - 10, h: ent.size - 10 };
+
+                // Проверка пересечения прямоугольников (AABB Collision)
+                if (pBox.x < eBox.x + eBox.w &&
+                    pBox.x + pBox.w > eBox.x &&
+                    pBox.y < eBox.y + eBox.h &&
+                    pBox.y + pBox.h > eBox.y) {
+                    
+                    if (ent.type === 'food') {
+                        // Обработка подбора еды (бонусные очки)
+                        score += 250;
+                        scoreElement.innerText = score;
+                        ent.el.remove();
+                        entities.splice(i, 1);
+                        
+                        // Визуальный эффект вспышки персонажа
+                        player.style.filter = "brightness(1.5)";
+                        setTimeout(() => player.style.filter = "none", 100);
+                    } else {
+                        // Столкновение с врагом - конец игры
+                        endGame();
+                        return;
+                    }
+                    continue;
+                }
+
+                // Удаление объектов, вышедших за левую границу экрана, и начисление очков выживания
+                if (ent.x < -150) {
+                    ent.el.remove();
+                    entities.splice(i, 1);
+                    score += 10;
+                    scoreElement.innerText = score;
+                }
+            }
+
+            // Запрос следующего кадра анимации
+            requestAnimationFrame(update);
+        }
+
+        /**
+         * Завершение игровой сессии
+         */
+        function endGame() {
+            gameActive = false;
+            finalScoreElement.innerText = score;
+            gameOverScreen.style.display = 'flex';
+            // Музыку можно поставить на паузу или оставить играть дальше
+        }
+
+        /**
+         * Полный сброс состояния игры для нового раунда
+         */
+        function resetGame() {
+            // Сброс показателей счета и координат
+            score = 0;
+            scoreElement.innerText = "0";
+            py = window.innerHeight / 2;
+            pVelocity = 0;
+            gameActive = true;
+            
+            // Очистка DOM-элементов от объектов предыдущей игры
+            gameOverScreen.style.display = 'none';
+            entities.forEach(ent => ent.el.remove());
+            entities = [];
+            trailContainer.innerHTML = '';
+            
+            // Перезапуск основного цикла анимации
+            lastTimestamp = performance.now();
+            requestAnimationFrame(update);
+        }
+
+        /**
+         * Инициализация игры после полной загрузки окна
+         */
+        window.onload = () => {
+            lastTimestamp = performance.now();
+            requestAnimationFrame(update);
+        };
+
+    </script>
+</body>
+</html>
