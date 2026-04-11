@@ -109,9 +109,159 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   transition:background .15s;}
 #savebtn:active{background:#3a7a28;}
 #savebtn.saved{background:#1a4015;border-color:#4a7a30;}
+/* ══ ЗАГРУЗОЧНЫЙ ЭКРАН — стиль Brawl Stars ══ */
+#splash{
+  position:fixed;inset:0;z-index:9999;overflow:hidden;
+  background:#0a1a08;
+  transition:opacity .5s ease;
+}
+#splash.hidden{opacity:0;pointer-events:none;}
+
+/* Фоновый canvas */
+#splash-cv{position:absolute;inset:0;width:100%;height:100%;}
+
+/* Тёмный диагональный оверлей слева */
+#splash-left{
+  position:absolute;left:0;top:0;width:65%;height:100%;
+  background:linear-gradient(105deg,rgba(5,20,5,.97) 60%,transparent 100%);
+  z-index:1;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(20px,5vw,60px) clamp(16px,4vw,50px);
+  gap:12px;
+}
+
+/* Версия/тег вверху */
+#splash-tag{
+  font-family:'Cinzel',serif;font-size:clamp(10px,2vw,14px);
+  color:#50ee50;letter-spacing:4px;text-transform:uppercase;
+  opacity:.8;
+}
+
+/* Главное название */
+#splash-title{
+  font-family:'Cinzel',serif;font-weight:700;
+  font-size:clamp(32px,9vw,80px);
+  line-height:1;
+  color:#fff;
+  text-shadow:
+    0 0 30px rgba(0,220,50,.7),
+    0 4px 0 rgba(0,0,0,.8),
+    0 0 80px rgba(0,180,40,.3);
+}
+#splash-title span{color:#ffd700;}
+
+/* Подзаголовок */
+#splash-edition{
+  font-family:'Cinzel',serif;font-size:clamp(12px,3vw,22px);
+  color:#80ff80;letter-spacing:2px;
+  text-shadow:0 0 15px rgba(0,200,50,.6);
+}
+
+/* Иконки зданий */
+#splash-icons{
+  display:flex;gap:clamp(6px,2vw,14px);
+  margin-top:4px;
+}
+#splash-icons span{
+  font-size:clamp(20px,5vw,34px);
+  display:inline-block;
+  animation:bsIconPop .6s ease backwards;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));
+}
+#splash-icons span:nth-child(1){animation-delay:.3s;}
+#splash-icons span:nth-child(2){animation-delay:.45s;}
+#splash-icons span:nth-child(3){animation-delay:.6s;}
+#splash-icons span:nth-child(4){animation-delay:.75s;}
+#splash-icons span:nth-child(5){animation-delay:.9s;}
+@keyframes bsIconPop{
+  from{transform:scale(0) rotate(-20deg);opacity:0;}
+  to{transform:scale(1) rotate(0deg);opacity:1;}
+}
+
+/* Прогресс-бар снизу — во всю ширину как в BS */
+#splash-bottom{
+  position:absolute;bottom:0;left:0;right:0;z-index:3;
+  padding:0 0 clamp(10px,3vw,24px);
+}
+#splash-bar-track{
+  height:clamp(7px,1.5vw,12px);
+  background:rgba(0,0,0,.5);
+  border-top:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+}
+#splash-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#00aa22,#00ff44,#ffd700,#00ff44,#00aa22);
+  background-size:300% 100%;
+  animation:bsBarShine 1.2s linear infinite;
+  transition:width .25s linear;
+  box-shadow:0 0 12px rgba(0,255,60,.5);
+}
+@keyframes bsBarShine{
+  0%{background-position:0%;}100%{background-position:300%;}
+}
+#splash-tip{
+  text-align:center;font-family:'Cinzel',serif;
+  font-size:clamp(10px,2.5vw,14px);color:rgba(150,255,150,.65);
+  padding:6px 0 0;letter-spacing:1px;
+  transition:opacity .25s;
+}
+
+/* Персонаж справа — большой котёл/лепрекон */
+#splash-char{
+  position:absolute;right:-2%;bottom:0;
+  width:clamp(180px,48vw,420px);
+  z-index:2;
+  animation:bsCharSlide .7s cubic-bezier(.22,1,.36,1) both;
+  animation-delay:.1s;
+  pointer-events:none;
+}
+#splash-char canvas{display:block;width:100%;height:auto;}
+@keyframes bsCharSlide{
+  from{transform:translateX(40%) scale(.9);opacity:0;}
+  to{transform:translateX(0) scale(1);opacity:1;}
+}
+
+/* Вспышка при входе */
+#splash-flash{
+  position:absolute;inset:0;z-index:10;
+  background:#fff;opacity:1;
+  animation:bsFlash .4s ease forwards;
+  pointer-events:none;
+}
+@keyframes bsFlash{
+  0%{opacity:.8;}100%{opacity:0;}
+}
 </style>
 </head>
 <body>
+
+<!-- ══ ЗАГРУЗОЧНЫЙ ЭКРАН ══ -->
+<div id="splash">
+  <div id="splash-flash"></div>
+  <canvas id="splash-cv"></canvas>
+
+  <!-- Левая часть — текст -->
+  <div id="splash-left">
+    <div id="splash-tag">☘️ St. Patrick's Edition</div>
+    <div id="splash-title">Клёвое<br><span>Место</span></div>
+    <div id="splash-edition">Idle Builder</div>
+    <div id="splash-icons">
+      <span>⛏️</span><span>🍺</span><span>🏰</span><span>🌈</span><span>🪄</span>
+    </div>
+  </div>
+
+  <!-- Персонаж справа — рисуется на canvas -->
+  <div id="splash-char">
+    <canvas id="splash-char-cv" width="420" height="520"></canvas>
+  </div>
+
+  <!-- Прогресс снизу -->
+  <div id="splash-bottom">
+    <div id="splash-bar-track"><div id="splash-bar"></div></div>
+    <div id="splash-tip">Загружаем деревню...</div>
+  </div>
+</div>
 <canvas id="c"></canvas>
 <canvas id="sh" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:10"></canvas>
 
@@ -122,6 +272,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <div class="chip" title="Руда нужна для строительства!"><span>⛏️</span><span id="hore">0</span></div>
   <div class="chip"><span>🔩</span><span id="hb">0</span></div>
   <div class="chip"><span>🎣</span><span id="hr">0</span></div>
+  <div class="chip"><span>💎</span><span id="hcrystal">0</span></div>
+  <div class="chip"><span>🍞</span><span id="hbread">0</span></div>
+  <div class="chip"><span>🔶</span><span id="hbronze">0</span></div>
   <div class="chip"><span>🌱</span><span id="hn">0</span>/<span>10</span></div>
   <button id="savebtn" onclick="saveGame()">💾</button>
   <button id="bjrn" onclick="openJournal()">📖</button>
@@ -154,6 +307,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
   <div class="nb" id="nb-furn" onclick="pick('furn')"><div class="ni">🔥</div><div>Плавильщик</div><div class="nc">80🪙</div></div>
   <div class="nb" id="nb-wshp" onclick="pick('wshp')"><div class="ni">🔨</div><div>Мастерская</div><div class="nc">120🪙</div></div>
   <div class="nb" id="nb-fishhouse" onclick="pick('fishhouse')"><div class="ni">🏠</div><div>Рыб.Домик</div><div class="nc">250🪙</div></div>
+  <div class="nb" id="nb-smoker"    onclick="pick('smoker')"><div class="ni">🏺</div><div>Коптильня</div><div class="nc">180🪙</div></div>
+  <div class="nb" id="nb-saltery"   onclick="pick('saltery')"><div class="ni">🧂</div><div>Засолка</div><div class="nc">220🪙</div></div>
+  <div class="nb" id="nb-canner"    onclick="pick('canner')"><div class="ni">📦</div><div>Упаковщик</div><div class="nc">300🪙</div></div>
+  <div class="nb" id="nb-delimarket" onclick="pick('delimarket')"><div class="ni">🌟</div><div>Дели-Рынок</div><div class="nc">350🪙</div></div>
+  <div class="nb" id="nb-upgrader"   onclick="pick('upgrader')"><div class="ni">⬆️</div><div>Апгрейдер</div><div class="nc">200🪙</div></div>
+  <div class="nb" id="nb-novruz"     onclick="pick('novruz')"><div class="ni">⚡</div><div>Новруз-Рынок</div><div class="nc">400🪙</div></div>
+  <div class="nb" id="nb-cloverfarm" onclick="pick('cloverfarm')" style="border-color:#2d8a2d"><div class="ni">☘️</div><div>Клевер-Ферма</div><div class="nc">220🪙</div></div>
+  <div class="nb" id="nb-brewery"    onclick="pick('brewery')"    style="border-color:#2d8a2d"><div class="ni">🍺</div><div>Пивоварня</div><div class="nc">350🪙</div></div>
+  <div class="nb" id="nb-rainbowmkt" onclick="pick('rainbowmkt')" style="border-color:#2d8a2d"><div class="ni">🌈</div><div>Радужн.Рынок</div><div class="nc">500🪙</div></div>
+  <div class="nb" id="nb-lepcastle"  onclick="pick('lepcastle')"  style="border-color:#2d8a2d"><div class="ni">🏰</div><div>Замок Леп.</div><div class="nc">600🪙</div></div>
+  <div class="nb" id="nb-druidcauldron" onclick="pick('druidcauldron')" style="border-color:#2d8a2d;border-width:2px"><div class="ni">🪄</div><div>Котёл Друида</div><div class="nc">900🪙</div></div>
   <div class="nb" id="nb-mkt"  onclick="pick('mkt')"><div class="ni">🏪</div><div>Рынок</div><div class="nc">150🪙</div></div>
   <div class="nb" id="nb-seed" onclick="pick('seed')"><div class="ni">🌱</div><div>Səməni</div><div class="nc">60🪙</div></div>
   <div class="nb" id="nb-cowpen"  onclick="pick('cowpen')"><div class="ni">🐄</div><div>Коровник</div><div class="nc">180🪙</div></div>
@@ -184,7 +348,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#0a0601;font-family:
 //  КЛЁВОЕ МЕСТО  v3 — fixed routing + visuals
 // ════════════════════════════════════════════
 const cv = document.getElementById('c');
-const X  = cv.getContext('2d');
+window.X = cv.getContext('2d');
+const X = window.X;
 let W, H, GS;
 function resize() {
   W = cv.width  = window.innerWidth;
@@ -211,7 +376,7 @@ X.createLinearGradient = function(x0,y0,x1,y1){
 };
 
 // ── Resources ──────────────────────────────
-const R = {gold:200, ore:0, bars:0, rods:0, fish:0};
+const R = {gold:200, ore:0, bars:0, rods:0, fish:0, crystal:0, bread:0, bronze:0};
 function earn(k,v){ R[k]+=v; hud(); }
 function spend(k,v){ R[k]-=v; hud(); }
 function hud(){
@@ -220,6 +385,9 @@ function hud(){
   const hore=document.getElementById('hore'); if(hore) hore.textContent=R.ore;
   document.getElementById('hb').textContent = R.bars;
   document.getElementById('hr').textContent = R.rods;
+  const hc=document.getElementById('hcrystal'); if(hc) hc.textContent=R.crystal||0;
+  const hbr=document.getElementById('hbread'); if(hbr) hbr.textContent=R.bread||0;
+  const hbo=document.getElementById('hbronze'); if(hbo) hbo.textContent=R.bronze||0;
   const hn=document.getElementById('hn'); if(hn) hn.textContent=SEMENI_NPCS.length;
 }
 
@@ -334,12 +502,26 @@ const COST={
   raidtower:[150, 0],
   landspot: [300, 0],
   fishhouse:[250, 0],
+  // ── Рыбная цепочка ──
+  smoker:    [180, 0],  // 🏺 Коптильня
+  saltery:   [220, 0],  // 🧂 Засолка
+  canner:    [300, 0],  // 📦 Упаковщик
+  delimarket:[350, 0],  // 🌟 Дели-Рынок
+  upgrader:  [200, 0],  // ⬆️ Апгрейдер
+  novruz:    [400, 0],  // ⚡ Новруз-Рынок
+  // ── St. Patrick's Day ──
+  cloverfarm:[220, 0],  // ☘️ Клевер-Ферма
+  brewery:   [350, 0],  // 🍺 Пивоварня
+  rainbowmkt:[500, 0],  // 🌈 Радужный Рынок
+  lepcastle: [600, 0],  // 🏰 Замок Лепрекона
+  lepcauldron:[900, 0], // 🫕 Котёл Лепрекона
+  druidcauldron:[900,0],// 🪄 Котёл Друида
 };
 // Удобные геттеры
 function costGold(t){ return Array.isArray(COST[t])?COST[t][0]:(COST[t]||0); }
 function costOre(t){  return Array.isArray(COST[t])?COST[t][1]:0; }
 
-const NAME={bur:'Бур',bur2:'Мега-Бур',conv:'Конвейер',conv2:'Супер-Конвейер',teleport:'Телепортер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня',landspot:'Купить Место',fishhouse:'Рыбацкий Домик'};
+const NAME={bur:'Бур',bur2:'Мега-Бур',conv:'Конвейер',conv2:'Супер-Конвейер',teleport:'Телепортер',chest:'Сундук',furn:'Плавильщик',wshp:'Мастерская',mkt:'Рынок',del:'Снос',seed:'Səməni',cowpen:'Коровник',chickenpen:'Курятник',milkdel:'БанкоДел',eggpack:'УпаковкоДел',raidspot:'Место Рейда',raidtower:'Рейд Башня',landspot:'Купить Место',fishhouse:'Рыбацкий Домик',smoker:'Коптильня',saltery:'Засолка',canner:'Упаковщик',delimarket:'Дели-Рынок',upgrader:'Апгрейдер',novruz:'Новруз-Рынок',cloverfarm:'Клевер-Ферма',brewery:'Пивоварня',rainbowmkt:'Радужный Рынок',lepcastle:'Замок Лепрекона',druidcauldron:'Котёл Друида'};
 
 // ── Place / Demolish ─────────────────────────
 function place(type, col, row){
@@ -382,6 +564,19 @@ function place(type, col, row){
   // BUR2 — только на камне как обычный бур
   if(type==='bur2' && MAP[row][col]!==2) return toast('Мега-Бур — только на камне ⛏️');
 
+  // UPGRADER — ставится прямо на конвейер
+  if(type==='upgrader'){
+    const below=G[row][col];
+    if(!below||( below.type!=='conv'&&below.type!=='conv2')) return toast('Апгрейдер — только на конвейер! ➡️');
+    if(below._upgraded) return toast('На этом конвейере уже есть апгрейдер!');
+    if(R.gold<costGold('upgrader')) return toast(`Мало монет 🪙 (нужно ${costGold('upgrader')})`);
+    spend('gold',costGold('upgrader'));
+    below._upgraded=true;
+    below._buildT=0;
+    toast('⬆️ Апгрейдер установлен на конвейер!');
+    return;
+  }
+
   if(G[row][col])                         return toast('Место занято!');
   if(MAP[row][col]===1)                   return toast('На воде нельзя!');
   if(type==='bur'&&MAP[row][col]!==2)     return toast('Бур — только на камне ⛏️');
@@ -401,7 +596,7 @@ function place(type, col, row){
   if(R.ore  < oreCost)                    return toast(`Мало руды ⛏️ (нужно ${oreCost})`);
   spend('gold', cost);
   if(oreCost>0) spend('ore', oreCost);
-  const obj = {type, col, row, id:nid(), dir:0, timer:0, progress:0};
+  const obj = {type, col, row, id:nid(), dir:0, timer:0, progress:0, _buildT:0};
   G[row][col] = obj;
   if(type==='chest') cs(obj.id);
   if(type==='furn')  SMST[obj.id]={phase:'idle',t:0};
@@ -467,12 +662,20 @@ function outputOf(col, row){
     const nb=G[nr][nc]; return nb?{col:nc,row:nr,obj:nb}:null;
   }
 
-  // furnace / workshop / milkdel / eggpack / cowpen / chickenpen: use dir for output lane
-  if(obj.type==='furn'||obj.type==='wshp'||obj.type==='milkdel'||obj.type==='eggpack'||obj.type==='cowpen'||obj.type==='chickenpen'){
+  // furnace / workshop / milkdel / eggpack / cowpen / chickenpen / fish chain: use dir for output lane
+  if(obj.type==='furn'||obj.type==='wshp'||obj.type==='milkdel'||obj.type==='eggpack'||obj.type==='cowpen'||obj.type==='chickenpen'||obj.type==='fishhouse'||obj.type==='smoker'||obj.type==='saltery'||obj.type==='canner'||obj.type==='delimarket'||obj.type==='upgrader'||obj.type==='novruz'||obj.type==='cloverfarm'||obj.type==='brewery'||obj.type==='rainbowmkt'||obj.type==='lepcastle'||obj.type==='druidcauldron'){
+    // Сначала смотрим в направлении dir
     const [dc,dr]=DIR4[obj.dir];
     const nc=col+dc, nr=row+dr;
-    if(nc<0||nc>=COLS||nr<0||nr>=ROWS) return null;
-    const nb=G[nr][nc]; return nb?{col:nc,row:nr,obj:nb}:null;
+    if(nc>=0&&nc<COLS&&nr>=0&&nr<ROWS&&G[nr][nc]) return {col:nc,row:nr,obj:G[nr][nc]};
+    // Если в dir нет ничего — ищем любой конвейер или сундук рядом
+    for(const [dc2,dr2] of DIR4){
+      const nc2=col+dc2, nr2=row+dr2;
+      if(nc2<0||nc2>=COLS||nr2<0||nr2>=ROWS) continue;
+      const nb=G[nr2][nc2];
+      if(nb&&(nb.type==='conv'||nb.type==='conv2'||nb.type==='chest')) return {col:nc2,row:nr2,obj:nb};
+    }
+    return null;
   }
   return null;
 }
@@ -501,6 +704,18 @@ function deliver(chestId, icon){
   else if(icon==='egg')      d.eggs=(d.eggs||0)+1;
   else if(icon==='milk_bottle') d.milk_bottle=(d.milk_bottle||0)+1;
   else if(icon==='egg_pack') d.egg_pack=(d.egg_pack||0)+1;
+  else if(icon==='crystal')  { earn('crystal',1); }
+  else if(icon==='bread')    { earn('bread',1); }
+  else if(icon==='bronze')   { earn('bronze',1); }
+  else if(icon==='smokedfish')  { d.smokedfish=(d.smokedfish||0)+1; }
+  else if(icon==='saltedfish')  { d.saltedfish=(d.saltedfish||0)+1; }
+  else if(icon==='delicacy')    { d.delicacy=(d.delicacy||0)+1; }
+  else if(icon==='rich_ore')    { d.rich_ore=(d.rich_ore||0)+1; earn('ore',1); }
+  else if(icon==='golden_ore')  { d.golden_ore=(d.golden_ore||0)+1; earn('ore',2); }
+  else if(icon==='pure_bar')    { d.pure_bar=(d.pure_bar||0)+1; earn('bars',1); }
+  else if(icon==='clover')      { d.clover=(d.clover||0)+1; }
+  else if(icon==='beer')        { d.beer=(d.beer||0)+1; }
+  else if(icon==='goldbeer')    { d.goldbeer=(d.goldbeer||0)+1; }
 }
 
 // ── Super Chest spawn (Səməni chest) ─────────
@@ -654,16 +869,23 @@ function update(dt){
   updateSemeniNpcs(dt);
   updateRaid(dt);
   updateFisherChests(dt);
+  updateVillagers(dt);
+  updateAnimals(dt);
+  updateButterflies(dt);
+  updateEvents(dt);
 
   // ---- Buildings ----
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
     const obj=G[r][c]; if(!obj) continue;
     obj.timer+=dt;
+    // Анимация стройки
+    if(obj._buildT !== undefined && obj._buildT < 1) obj._buildT = Math.min(1, obj._buildT + dt*1.4);
 
-    // BUR — produce ore every 4s
+    // BUR — produce ore every 4s (2s if druid buff)
     if(obj.type==='bur'){
-      obj.progress = (obj.timer%4)/4;
-      if(obj.timer>=4){
+      const burRate=obj._druidBuff?2:4;
+      obj.progress = (obj.timer%burRate)/burRate;
+      if(obj.timer>=burRate){
         obj.timer=0;
         const hasSeed = adjOf(c,r,'seed')!==null;
         if(hasSeed){ obj._seedToggle = !obj._seedToggle; }
@@ -674,10 +896,11 @@ function update(dt){
       }
     }
 
-    // BUR2 — produce 2 ore every 2s, bigger sparks, glows
+    // BUR2 — produce 2 ore every 2s (1s if druid buff)
     if(obj.type==='bur2'){
-      obj.progress = (obj.timer%2)/2;
-      if(obj.timer>=2){
+      const bur2Rate=obj._druidBuff?1:2;
+      obj.progress = (obj.timer%bur2Rate)/bur2Rate;
+      if(obj.timer>=bur2Rate){
         obj.timer=0;
         const hasSeed = adjOf(c,r,'seed')!==null;
         if(hasSeed){ obj._seedToggle = !obj._seedToggle; }
@@ -749,6 +972,214 @@ function update(dt){
       for(const f of FISH){
         if(f.houseId===obj.id) f._catchMult=catchMult;
       }
+    }
+
+    // 🏺 КОПТИЛЬНЯ — принимает рыбу с конвейера → копчёная рыба каждые 4с
+    if(obj.type==='smoker'){
+      // Принимаем рыбу из буфера (частицы доставляют через deliver)
+      if(obj._fishBuf>0 && obj.timer>=4){
+        obj.timer=0; obj._fishBuf--;
+        obj.progress=0;
+        const nx=outputOf(c,r);
+        if(nx) spawnP(c,r,'smokedfish',nx.col,nx.row);
+        else earn('gold',12);
+      }
+      obj.progress=obj._fishBuf>0?Math.min(1,obj.timer/4):0;
+    }
+
+    // 🧂 ЗАСОЛКА — принимает копчёную рыбу → солёная рыба каждые 5с
+    if(obj.type==='saltery'){
+      if(obj._smokedBuf>0 && obj.timer>=5){
+        obj.timer=0; obj._smokedBuf--;
+        const nx=outputOf(c,r);
+        if(nx) spawnP(c,r,'saltedfish',nx.col,nx.row);
+        else earn('gold',22);
+      }
+      obj.progress=obj._smokedBuf>0?Math.min(1,obj.timer/5):0;
+    }
+
+    // 📦 УПАКОВЩИК — принимает солёную рыбу × 3 → деликатес каждые 6с
+    if(obj.type==='canner'){
+      if((obj._saltedBuf||0)>=3 && obj.timer>=6){
+        obj.timer=0; obj._saltedBuf-=3;
+        const nx=outputOf(c,r);
+        if(nx) spawnP(c,r,'delicacy',nx.col,nx.row);
+        else earn('gold',55);
+      }
+      obj.progress=(obj._saltedBuf||0)>0?Math.min(1,obj.timer/6):0;
+    }
+
+    // 🌟 ДЕЛИКАТЕСНЫЙ РЫНОК — продаёт деликатес за 55🪙, солёную за 22🪙, копчёную за 12🪙
+    if(obj.type==='delimarket'){
+      const bId=MBIND[obj.id];
+      if(bId && obj.timer>1.8){
+        let ch=null;
+        outer3: for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+          if(G[rr][cc]&&G[rr][cc].id===bId){ch=G[rr][cc];break outer3;}
+        }
+        if(ch){
+          const d=cs(bId);
+          if((d.delicacy||0)>0)      { d.delicacy--; earn('gold',55); obj.timer=0; toast('+55🪙 Деликатес! 🌟'); }
+          else if((d.saltedfish||0)>0){ d.saltedfish--; earn('gold',22); obj.timer=0; toast('+22🪙 Солёная! 🧂'); }
+          else if((d.smokedfish||0)>0){ d.smokedfish--; earn('gold',12); obj.timer=0; toast('+12🪙 Копчёная! 🏺'); }
+        }
+      }
+    }
+
+    // ⬆️ АПГРЕЙДЕР — улучшает ресурс проходящий через него
+    if(obj.type==='upgrader'){
+      if(obj._upgradeT>0){
+        obj._upgradeT-=dt;
+        obj.progress=1-obj._upgradeT/0.6;
+        if(obj._upgradeT<=0 && obj._pendingIcon){
+          const nx=outputOf(c,r);
+          if(nx) spawnP(c,r,obj._pendingIcon,nx.col,nx.row);
+          else earn('gold',5); // если некуда — монеты
+          obj._pendingIcon=null; obj._upgIcon=null;
+        }
+      }
+    }
+
+    // ⚡ НОВРУЗ-РЫНОК — мгновенно продаёт всё из привязанного сундука
+    if(obj.type==='novruz'){
+      const bId=MBIND[obj.id];
+      if(bId && obj.timer>0.3){ // очень быстрый кулдаун
+        let ch=null;
+        outer4: for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+          if(G[rr][cc]&&G[rr][cc].id===bId){ch=G[rr][cc];break outer4;}
+        }
+        if(ch){
+          obj.timer=0;
+          const d=cs(bId);
+          let sold=0;
+          // Продаёт ВСЁ сразу
+          sold+=d.ore*10;            d.ore=0;
+          sold+=d.fish*15;           d.fish=0;
+          sold+=d.rods*28;           d.rods=0;
+          sold+=d.bars*8;            d.bars=0;
+          sold+=(d.milk_bottle||0)*12; d.milk_bottle=0;
+          sold+=(d.egg_pack||0)*20;  d.egg_pack=0;
+          sold+=(d.milk||0)*6;       d.milk=0;
+          sold+=(d.eggs||0)*4;       d.eggs=0;
+          sold+=(d.smokedfish||0)*12;d.smokedfish=0;
+          sold+=(d.saltedfish||0)*22;d.saltedfish=0;
+          sold+=(d.delicacy||0)*55;  d.delicacy=0;
+          sold+=(d.rich_ore||0)*18;  d.rich_ore=0;
+          sold+=(d.golden_ore||0)*35;d.golden_ore=0;
+          sold+=(d.pure_bar||0)*20;  d.pure_bar=0;
+          if(sold>0){ earn('gold',sold); obj._lastSold=sold; obj._flashT=0.8; }
+        }
+      }
+    }
+
+    // ☘️ КЛЕВЕР-ФЕРМА — выращивает клевер каждые 5с → на конвейер
+    if(obj.type==='cloverfarm'){
+      obj.progress=Math.min(1,obj.timer/5);
+      if(obj.timer>=5){
+        obj.timer=0;
+        const nx=outputOf(c,r);
+        if(nx) spawnP(c,r,'clover',nx.col,nx.row);
+        else earn('gold',8);
+      }
+    }
+
+    // 🍺 ПИВОВАРНЯ — 3 клевера → 1 пиво каждые 8с
+    if(obj.type==='brewery'){
+      if((obj._cloverBuf||0)>=3 && obj.timer>=8){
+        obj.timer-=8; // не сбрасываем — вычитаем, избыток переходит в следующий цикл
+        obj._cloverBuf-=3;
+        const nx=outputOf(c,r);
+        if(nx){
+          spawnP(c,r,'beer',nx.col,nx.row);
+        } else {
+          const bId=MBIND[obj.id];
+          if(bId){ cs(bId).beer=(cs(bId).beer||0)+1; }
+          else {
+            const adjC=adjOf(c,r,'chest');
+            if(adjC){ cs(adjC.id).beer=(cs(adjC.id).beer||0)+1; }
+            else earn('gold',40);
+          }
+        }
+        toast('🍺 Пиво готово!');
+      }
+      obj.progress=(obj._cloverBuf||0)>=3?Math.min(1,obj.timer/8):0;
+    }
+
+    // 🌈 РАДУЖНЫЙ РЫНОК — продаёт пиво/клевер
+    if(obj.type==='rainbowmkt'){
+      const bId=MBIND[obj.id];
+      let chestObj=null;
+      if(bId){
+        outer5: for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+          if(G[rr][cc]&&G[rr][cc].id===bId){chestObj=G[rr][cc];break outer5;}
+        }
+      }
+      if(!chestObj) chestObj=adjOf(c,r,'chest');
+      if(chestObj && obj.timer>1.5){
+        const d=cs(chestObj.id);
+        if((d.goldbeer||0)>0)  { d.goldbeer--; earn('gold',80); obj.timer=0; toast('+80🪙 Золотое пиво! 🌈'); }
+        else if((d.beer||0)>0) { d.beer--;     earn('gold',45); obj.timer=0; toast('+45🪙 Ирл.пиво! 🍺'); }
+        else if((d.clover||0)>0){ d.clover--;  earn('gold',12); obj.timer=0; toast('+12🪙 Клевер! ☘️'); }
+      }
+    }
+
+    // 🪄 КОТЁЛ ДРУИДА — каждые 15с +150🪙, бафф на все буры ×2, ночью +300🪙
+    if(obj.type==='druidcauldron'){
+      obj._druidT=(obj._druidT||0)+dt;
+      obj._buffPulse=(obj._buffPulse||0)+dt;
+      // Бафф на буры — каждую секунду обновляем
+      if(obj._buffPulse>=1){
+        obj._buffPulse=0;
+        for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
+          if(G[rr][cc]&&(G[rr][cc].type==='bur'||G[rr][cc].type==='bur2')){
+            G[rr][cc]._druidBuff=true;
+            G[rr][cc]._druidBuffT=3; // бафф держится 3с
+          }
+        }
+      }
+      if(obj._druidT>=15){
+        obj._druidT=0;
+        const isNight=window._st&&(window._st*.5/60%(Math.PI*2))>Math.PI;
+        const bonus=isNight?300:150;
+        earn('gold',bonus);
+        obj._flashT=1.2;
+        // Выдаёт золотое пиво на конвейер
+        const nx=outputOf(c,r);
+        if(nx) spawnP(c,r,'goldbeer',nx.col,nx.row);
+        else {
+          const adjC=adjOf(c,r,'chest');
+          if(adjC) cs(adjC.id).goldbeer=(cs(adjC.id).goldbeer||0)+1;
+        }
+        toast(`🪄 Котёл Друида: +${bonus}🪙${isNight?' НОЧНОЙ БОНУС!':''}`)
+      }
+      obj.progress=Math.min(1,(obj._druidT||0)/15);
+    }
+
+    // Бафф буров от Котла Друида
+    if(obj._druidBuff){
+      obj._druidBuffT=(obj._druidBuffT||0)-dt;
+      if(obj._druidBuffT<=0) obj._druidBuff=false;
+    }
+
+    // 🏰 ЗАМОК ЛЕПРЕКОНА — каждые 25с даёт золото, ночью даёт вдвое больше + золотое пиво
+    if(obj.type==='lepcastle'){
+      obj._lepT=(obj._lepT||0)+dt;
+      if(obj._lepT>=25){
+        obj._lepT=0;
+        const isNight=window._st&&(window._st*.5/60%(Math.PI*2))>Math.PI;
+        const bonus=isNight?120:60;
+        earn('gold',bonus);
+        obj._flashT=1;
+        if(isNight){
+          // Ночью лепрекон даёт золотое пиво
+          const nx=outputOf(c,r);
+          if(nx) spawnP(c,r,'goldbeer',nx.col,nx.row);
+          toast(`🌙✨ Лепрекон: +${bonus}🪙 + золотое пиво!`);
+        } else {
+          toast(`🏰 Лепрекон: +${bonus}🪙 удачи!`);
+        }
+      }
+      obj.progress=Math.min(1,(obj._lepT||0)/25);
     }
 
     // COWPEN — produces 1 milk every 8s, outputs to conveyor, chest, or milkdel
@@ -909,13 +1340,54 @@ function update(dt){
           }
         } else if(dst.type==='conv'||dst.type==='conv2'){
           const nx=outputOf(p.dc, p.dr);
-          if(nx){ spawnP(p.dc,p.dr, p.icon, nx.col,nx.row); }
+          if(nx){
+            // Апгрейдер на конвейере?
+            let icon=p.icon;
+            if(dst._upgraded){
+              const up={'ore':'rich_ore','rich_ore':'golden_ore','bar':'pure_bar','fish':'smokedfish'};
+              if(up[icon]){
+                icon=up[icon];
+                // Вспышка апгрейда
+                dst._upgradeFlash=0.5;
+              }
+            }
+            spawnP(p.dc,p.dr,icon,nx.col,nx.row);
+          }
+        } else if(dst.type==='upgrader'){
+          // Апгрейдер — улучшает ресурс и выдаёт дальше
+          const upgraded = {
+            'ore':'rich_ore', 'rich_ore':'golden_ore',
+            'fish':'smoked_fish_raw', 'bar':'pure_bar',
+          }[p.icon] || p.icon;
+          dst._upgradeT=0.6; dst._lastIcon=p.icon; dst._upgIcon=upgraded;
+          // Выдаём улучшенный ресурс через 0.6с (в update)
+          dst._pendingIcon=upgraded;
         } else if(dst.type==='milkdel' && p.icon==='milk'){
           dst._milkBuf=(dst._milkBuf||0)+1;
         } else if(dst.type==='eggpack' && p.icon==='egg'){
           dst._eggBuf=(dst._eggBuf||0)+1;
         } else if(dst.type==='furn' && p.icon==='ore'){
           dst._oreBuf=(dst._oreBuf||0)+1;
+        } else if(dst.type==='brewery' && p.icon==='clover'){
+          dst._cloverBuf=(dst._cloverBuf||0)+1;
+          // Начинаем варку когда набрали 3 клевера
+          if(dst._cloverBuf===3) dst.timer=0;
+        } else if(dst.type==='saltery' && p.icon==='smokedfish'){
+          dst._smokedBuf=(dst._smokedBuf||0)+1; dst.timer=0;
+        } else if(dst.type==='canner' && p.icon==='saltedfish'){
+          dst._saltedBuf=(dst._saltedBuf||0)+1; dst.timer=0;
+        } else if(dst.type==='delimarket'){
+          const adjC2=adjOf(dst.col,dst.row,'chest');
+          if(adjC2) deliver(adjC2.id, p.icon);
+        } else if(dst.type==='rainbowmkt'){
+          // Принимает пиво/клевер в привязанный сундук или ближайший
+          const bId=MBIND[dst.id];
+          if(bId){
+            deliver(bId, p.icon);
+          } else {
+            const adjC3=adjOf(dst.col,dst.row,'chest');
+            if(adjC3) deliver(adjC3.id, p.icon);
+          }
         }
       }
     }
@@ -940,7 +1412,11 @@ function update(dt){
           f.carry=fish.i; f.carryIcon=fish.i; f.carryA=1;
           earn('fish',1);
           toast(fish.i+' Поймал '+fish.n+'!');
-          // Найти ближайший сундук
+          // Идём обратно к домику чтобы сдать рыбу
+          f.targetX=(f.houseCol??0)*GS+GS/2;
+          f.targetY=(f.houseRow??0)*GS+GS/2;
+          f.targetChestId=null;
+          // Ищем ближайший сундук как запасной вариант
           let bestChest=null, bestDist=Infinity;
           for(let rr=0;rr<ROWS;rr++) for(let cc=0;cc<COLS;cc++){
             if(G[rr][cc]&&G[rr][cc].type==='chest'){
@@ -949,12 +1425,8 @@ function update(dt){
               if(d<bestDist){bestDist=d;bestChest=G[rr][cc];}
             }
           }
-          if(bestChest){
-            f.targetX=bestChest.col*GS+GS/2;
-            f.targetY=bestChest.row*GS+GS/2;
-            f.targetChestId=bestChest.id;
-            f.state='walk_to_chest';
-          }
+          if(bestChest) f.targetChestId=bestChest.id;
+          f.state='walk_to_chest';
         }
       } else if(f.state==='walk_to_chest'){
         // Идём к сундуку
@@ -964,11 +1436,24 @@ function update(dt){
         f.facing=dx>0?1:-1;
         if(dist<8){
           // Дошли — кладём рыбу
-          if(f.targetChestId) cs(f.targetChestId).fish=(cs(f.targetChestId).fish||0)+1;
           f.carry=null; f.carryA=0;
-          // Анимация вброса
           f._depositFlash=0.6;
-          // Идём обратно к воде (позиция рыбалки)
+
+          // Сначала ищем конвейер рядом с домиком — выдаём рыбу на него
+          const hobj=G[f.houseRow]?.[f.houseCol];
+          let sentToConv=false;
+          if(hobj){
+            const nx=outputOf(f.houseCol,f.houseRow);
+            if(nx){
+              spawnP(f.houseCol,f.houseRow,'fish',nx.col,nx.row);
+              sentToConv=true;
+            }
+          }
+          // Если нет конвейера — в ближайший сундук как раньше
+          if(!sentToConv && f.targetChestId){
+            cs(f.targetChestId).fish=(cs(f.targetChestId).fish||0)+1;
+          }
+
           f.state='walk_to_water';
           f.targetX=f.homeX||(COLS-2.5)*GS;
           f.targetY=f.homeY||f.y;
@@ -1014,6 +1499,532 @@ function lerp(a,b,t){ return a+(b-a)*t; }
 function ease(t){ return t<.5?2*t*t:1-(-2*t+2)**2/2; }
 
 // ════════════════════════════════════════════
+//  ЖИВАЯ ДЕРЕВНЯ
+// ════════════════════════════════════════════
+
+// ── Жители деревни ────────────────────────────
+const VILLAGERS = [];
+const VILLAGER_NAMES = ['Алибек','Лейла','Тогрул','Нилуфар','Рустам','Гюнель','Фарид','Айсель','Камал','Зарина'];
+const VILLAGER_TYPES = ['elder','child','worker','merchant_v'];
+const VILLAGER_MOODS = ['happy','neutral','tired','excited'];
+const SPEECH_LINES = {
+  happy:   ['Хороший день!','Урожай богатый!','Жизнь прекрасна!','Солнце светит!','Рыба клюёт!'],
+  excited: ['ВАУ!','Невероятно!','Смотри сюда!','Ого-го!','Ура!!!'],
+  tired:   ['Устал...','Работы много...','Поспать бы...','Тяжело...','Ох...'],
+  neutral: ['Хм...','Ладно...','Посмотрим...','Нормально.','Угу.'],
+};
+// Пузыри разговоров
+const SPEECH_BUBBLES = [];
+
+function spawnVillager(){
+  if(VILLAGERS.length>=8) return;
+  // Ищем свободную травяную клетку
+  for(let attempt=0;attempt<30;attempt++){
+    const c=Math.floor(Math.random()*(COLS-4));
+    const r=Math.floor(1+Math.random()*(ROWS-2));
+    if(MAP[r][c]===0&&!G[r][c]){
+      const type=VILLAGER_TYPES[Math.floor(Math.random()*VILLAGER_TYPES.length)];
+      const name=VILLAGER_NAMES[Math.floor(Math.random()*VILLAGER_NAMES.length)];
+      VILLAGERS.push({
+        wx:c*GS+GS/2, wy:r*GS+GS/2,
+        type, name,
+        mood: VILLAGER_MOODS[0],
+        state:'wander', // wander | chat | sit | dance
+        targetX:null, targetY:null,
+        wanderT: Math.random()*4,
+        chatT:0, chatPartner:null,
+        bob:Math.random()*Math.PI*2,
+        walkCycle:0,
+        facing:1,
+        emote:null, emoteT:0,
+        _moodT: 20+Math.random()*30,
+      });
+      return;
+    }
+  }
+}
+
+// Спавним начальных жителей
+for(let i=0;i<4;i++) setTimeout(()=>spawnVillager(), i*800);
+
+function updateVillagers(dt){
+  for(const v of VILLAGERS){
+    v.bob+=dt*1.8;
+    v._moodT-=dt;
+    if(v._moodT<=0){
+      v._moodT=15+Math.random()*25;
+      v.mood=VILLAGER_MOODS[Math.floor(Math.random()*VILLAGER_MOODS.length)];
+      // Настроение меняется — издаём пузырь
+      if(Math.random()<0.4) addSpeech(v);
+    }
+
+    if(v.state==='wander'){
+      v.wanderT-=dt;
+      if(v.wanderT<=0){
+        v.wanderT=3+Math.random()*5;
+        // Новая цель
+        const dc=(Math.random()-0.5)*GS*4, dr=(Math.random()-0.5)*GS*4;
+        const nx=Math.max(GS,Math.min((COLS-4)*GS, v.wx+dc));
+        const ny=Math.max(GS,Math.min((ROWS-2)*GS, v.wy+dr));
+        v.targetX=nx; v.targetY=ny;
+        // Иногда меняем состояние
+        const r=Math.random();
+        if(r<0.15) v.state='sit';
+        else if(r<0.2) v.state='dance';
+        else v.state='wander';
+        // Ищем соседнего жителя для чата
+        if(r<0.25){
+          for(const other of VILLAGERS){
+            if(other===v) continue;
+            const dx=other.wx-v.wx, dy=other.wy-v.wy;
+            if(Math.sqrt(dx*dx+dy*dy)<GS*3){
+              v.state='chat'; v.chatPartner=other; v.chatT=4+Math.random()*3;
+              v.targetX=other.wx-GS*.5; v.targetY=other.wy;
+              other.state='chat'; other.chatPartner=v; other.chatT=4;
+              other.targetX=v.wx+GS*.5; other.targetY=v.wy;
+              if(Math.random()<0.7){ addSpeech(v); setTimeout(()=>addSpeech(other),1200); }
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if(v.state==='chat'){
+      v.chatT-=dt;
+      if(v.chatT<=0){ v.state='wander'; v.chatPartner=null; v.wanderT=1; }
+    }
+    if(v.state==='sit'){ v.wanderT-=dt; if(v.wanderT<=0){v.state='wander';v.wanderT=2;} }
+    if(v.state==='dance'){ v.wanderT-=dt; if(v.wanderT<=0){v.state='wander';v.wanderT=1;} }
+
+    // Движение к цели
+    if(v.targetX!==null && (v.state==='wander'||v.state==='chat')){
+      const dx=v.targetX-v.wx, dy=v.targetY-v.wy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>6){
+        const spd=GS*(v.type==='child'?1.8:1.1)*dt;
+        v.wx+=dx/dist*spd; v.wy+=dy/dist*spd;
+        v.facing=dx>0?1:-1;
+        v.walkCycle+=dt*(v.type==='child'?5:3.5);
+      } else {
+        v.targetX=null; v.targetY=null;
+      }
+    }
+
+    // Эмоции
+    if(v.emoteT>0) v.emoteT-=dt;
+  }
+
+  // Обновляем пузыри
+  for(let i=SPEECH_BUBBLES.length-1;i>=0;i--){
+    SPEECH_BUBBLES[i].t-=dt;
+    if(SPEECH_BUBBLES[i].t<=0) SPEECH_BUBBLES.splice(i,1);
+  }
+}
+
+function addSpeech(villager){
+  const lines=SPEECH_LINES[villager.mood]||SPEECH_LINES.neutral;
+  const text=lines[Math.floor(Math.random()*lines.length)];
+  // Убираем старый пузырь этого жителя
+  const idx=SPEECH_BUBBLES.findIndex(b=>b.owner===villager);
+  if(idx>=0) SPEECH_BUBBLES.splice(idx,1);
+  SPEECH_BUBBLES.push({owner:villager, text, t:3.5, maxT:3.5});
+}
+
+function drawVillagers(){
+  for(const v of VILLAGERS){
+    const bob = v.state==='sit' ? 0 : Math.sin(v.bob)*1.8;
+    const isWalking = v.targetX!==null && v.state!=='sit';
+    const isDancing = v.state==='dance';
+    const armSwing = isDancing ? Math.sin(GT*6)*30 : (isWalking ? Math.sin(v.walkCycle)*20 : Math.sin(GT*1.2)*4);
+
+    // Цвет по типу
+    const pal = {
+      elder:      {body:'#6a3a8a',hat:'#3a1a5a',acc:'#e8c860'},
+      child:      {body:'#2a7a3a',hat:'#1a4a22',acc:'#ff9020'},
+      worker:     {body:'#8a5a1a',hat:'#5a3a0a',acc:'#e0e0e0'},
+      merchant_v: {body:'#8a1a3a',hat:'#5a0a22',acc:'#ffd700'},
+    }[v.type]||{body:'#5a5a5a',hat:'#3a3a3a',acc:'#ffffff'};
+
+    X.save();
+    X.translate(v.wx, v.wy+bob);
+    if(v.facing<0) X.scale(-1,1);
+
+    // Тень
+    X.fillStyle='rgba(0,0,0,0.15)';
+    X.beginPath(); X.ellipse(0,22*(GS*.42/40),8*(GS*.42/40),3*(GS*.42/40),0,0,Math.PI*2); X.fill();
+
+    const s=GS*(v.type==='child'?0.32:0.38);
+    X.scale(s/40,s/40);
+
+    // Ноги
+    const ls=isDancing?Math.sin(GT*8)*20:(isWalking?Math.sin(v.walkCycle)*16:Math.sin(GT*1.5)*3);
+    X.strokeStyle=pal.body; X.lineWidth=6; X.lineCap='round';
+    [-4,4].forEach((lx,i)=>{
+      X.save(); X.translate(lx,10); X.rotate((i?-1:1)*ls*Math.PI/180);
+      X.beginPath(); X.moveTo(0,0); X.lineTo(0,13); X.stroke();
+      // Ботинок
+      X.fillStyle='#3a2808'; X.beginPath(); X.ellipse((i?-1:1)*2,13,4,2.5,0,0,Math.PI*2); X.fill();
+      X.restore();
+    });
+
+    // Тело
+    const bg=X.createLinearGradient(-8,-2,8,12);
+    bg.addColorStop(0,bright(pal.body)); bg.addColorStop(1,pal.body);
+    X.fillStyle=bg; rrx(-8,-2,16,14,3); X.fill();
+    // Пуговицы/детали
+    X.fillStyle=pal.acc;
+    if(v.type==='merchant_v'){ X.fillRect(-1,-1,2,10); } // галстук
+    else if(v.type==='elder'){ X.beginPath(); X.arc(0,4,2,0,Math.PI*2); X.fill(); } // брошь
+
+    // Руки
+    X.strokeStyle=pal.body; X.lineWidth=5; X.lineCap='round';
+    [[-10,2,1],[10,2,-1]].forEach(([ax,ay,side])=>{
+      X.save(); X.translate(ax,ay); X.rotate(side*armSwing*Math.PI/180);
+      X.beginPath(); X.moveTo(0,0); X.lineTo(side*4,10); X.stroke(); X.restore();
+    });
+
+    // Голова
+    const hg=X.createRadialGradient(-2,-18,0,0,-16,10);
+    hg.addColorStop(0,'#f5c89a'); hg.addColorStop(1,'#d4916a');
+    X.fillStyle=hg; X.beginPath(); X.arc(0,-16,9,0,Math.PI*2); X.fill();
+
+    // Шляпа/волосы по типу
+    if(v.type==='elder'){
+      X.fillStyle=pal.hat; X.fillRect(-10,-25,20,6); X.fillRect(-7,-31,14,7);
+      X.fillStyle='#fff'; X.font='8px serif'; X.textAlign='center'; X.fillText('👴',0,-16);
+    } else if(v.type==='child'){
+      // Косички/вихор
+      X.fillStyle=pal.hat; X.beginPath(); X.arc(0,-25,6,Math.PI,0); X.fill();
+      X.fillStyle='rgba(255,255,255,.5)'; X.beginPath(); X.arc(-2,-26,2,0,Math.PI*2); X.fill();
+    } else if(v.type==='worker'){
+      // Каска
+      X.fillStyle=pal.acc; X.beginPath(); X.arc(0,-24,8,Math.PI,0); X.fill();
+      X.fillStyle=pal.hat; X.fillRect(-9,-24,18,4);
+    } else {
+      // Тюрбан/платок
+      X.fillStyle=pal.hat; X.beginPath(); X.arc(0,-24,7,Math.PI,0); X.fill();
+      X.fillStyle=pal.acc; X.beginPath(); X.arc(0,-24,4,Math.PI,0); X.fill();
+    }
+
+    // Глаза
+    X.fillStyle='#2a1a0a';
+    X.beginPath(); X.arc(-3.5,-17,1.5,0,Math.PI*2); X.fill();
+    X.beginPath(); X.arc(3.5,-17,1.5,0,Math.PI*2); X.fill();
+    // Настроение — рот
+    if(v.mood==='happy'||v.mood==='excited'){
+      X.strokeStyle='#2a1a0a'; X.lineWidth=1.5; X.lineCap='round';
+      X.beginPath(); X.arc(0,-14,2.5,0.2,Math.PI-0.2); X.stroke();
+    } else if(v.mood==='tired'){
+      X.strokeStyle='#2a1a0a'; X.lineWidth=1.5;
+      X.beginPath(); X.moveTo(-2,-13); X.lineTo(2,-13); X.stroke();
+      // Закрытые глаза
+      X.beginPath(); X.moveTo(-5,-17); X.lineTo(-2,-17); X.stroke();
+      X.beginPath(); X.moveTo(2,-17); X.lineTo(5,-17); X.stroke();
+    }
+
+    // Танец — руки вверх
+    if(isDancing){
+      X.strokeStyle='rgba(255,200,50,.7)'; X.lineWidth=2;
+      for(let s2=0;s2<6;s2++){
+        const sa=s2/6*Math.PI*2+GT*3;
+        X.beginPath(); X.moveTo(Math.cos(sa)*8,Math.sin(sa)*8-10); X.lineTo(Math.cos(sa)*14,Math.sin(sa)*14-10); X.stroke();
+      }
+    }
+
+    X.restore();
+
+    // Имя над головой (маленькое, редко)
+    if(v.state==='chat'){
+      X.fillStyle='rgba(255,255,220,0.7)'; X.font=`${GS*.08}px Cinzel,serif`;
+      X.textAlign='center'; X.textBaseline='bottom';
+      X.fillText(v.name, v.wx, v.wy-GS*.45);
+    }
+  }
+
+  // Пузыри речи
+  for(const b of SPEECH_BUBBLES){
+    const fade=Math.min(1,b.t/0.5)*Math.min(1,(b.maxT-b.t+0.3)/0.3);
+    if(fade<=0) continue;
+    const v=b.owner;
+    const bx=v.wx, by=v.wy-GS*.6;
+    const tw=b.text.length*GS*.07+GS*.2;
+    const th=GS*.22;
+    X.save(); X.globalAlpha=fade;
+    // Фон пузыря
+    X.fillStyle='rgba(255,255,240,0.95)';
+    rrx(bx-tw/2, by-th/2, tw, th, 6); X.fill();
+    X.strokeStyle='rgba(100,80,40,0.6)'; X.lineWidth=1.5;
+    rrx(bx-tw/2, by-th/2, tw, th, 6); X.stroke();
+    // Хвостик
+    X.fillStyle='rgba(255,255,240,0.95)';
+    X.beginPath(); X.moveTo(bx-4,by+th/2); X.lineTo(bx+4,by+th/2); X.lineTo(bx,by+th/2+GS*.1); X.closePath(); X.fill();
+    // Текст
+    X.fillStyle='#3a2000'; X.font=`bold ${GS*.1}px Cinzel,serif`;
+    X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(b.text, bx, by);
+    X.restore();
+  }
+}
+
+// ── Случайные события ─────────────────────────
+let _eventT = 30+Math.random()*30;
+const EVENTS = [
+  {
+    name:'🎉 Праздник!', duration:15,
+    start(){ VILLAGERS.forEach(v=>{v.mood='excited';v.state='dance';v.wanderT=12;}); toast('🎉 В деревне праздник! Все танцуют!'); },
+    end(){ VILLAGERS.forEach(v=>{v.mood='happy';v.state='wander';}); },
+  },
+  {
+    name:'🌧️ Дождь', duration:20,
+    start(){
+      window._rain=[];
+      for(let i=0;i<80;i++) window._rain.push({x:Math.random(),y:Math.random(),spd:0.6+Math.random()*0.4});
+      VILLAGERS.forEach(v=>{v.mood='tired';}); toast('🌧️ Начался дождь...');
+    },
+    end(){ window._rain=null; VILLAGERS.forEach(v=>{v.mood='neutral';}); },
+  },
+  {
+    name:'🐦 Птицы', duration:12,
+    start(){
+      window._birds=[];
+      for(let i=0;i<6;i++) window._birds.push({x:Math.random(),y:0.1+Math.random()*0.3,spd:0.12+Math.random()*0.08,flap:Math.random()*Math.PI*2});
+      toast('🐦 Стая птиц пролетела над деревней!');
+    },
+    end(){ window._birds=null; },
+  },
+  {
+    name:'💰 Торговец', duration:25,
+    start(){
+      spawnVillager();
+      earn('gold',50); toast('💰 Странствующий торговец принёс 50🪙!');
+    },
+    end(){},
+  },
+  {
+    name:'⭐ Звездопад', duration:8,
+    start(){ window._stars=[]; for(let i=0;i<20;i++) window._stars.push({x:Math.random(),y:0,spd:0.4+Math.random()*0.5,trail:[]}); toast('⭐ Звездопад! Загадай желание!'); },
+    end(){ window._stars=null; },
+  },
+  // ☘️ ST. PATRICK'S DAY
+  {
+    name:"☘️ День Святого Патрика!", duration:45,
+    start(){
+      window._patrick=true;
+      // Лепреконы бегают по карте
+      window._leprechauns=[];
+      for(let i=0;i<3;i++) window._leprechauns.push({
+        x:Math.random()*(COLS-4)*GS, y:Math.random()*(ROWS-2)*GS,
+        tx:null,ty:null,wanderT:Math.random()*2,
+        bob:Math.random()*Math.PI*2, t:0, facing:1,
+        caught:false, catchT:0,
+      });
+      // Клевер на траве
+      window._clovers=[];
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+        if(MAP[r][c]===0&&!G[r][c]&&Math.random()<0.18)
+          window._clovers.push({c,r,sway:Math.random()*Math.PI*2, scale:0.7+Math.random()*0.6});
+      }
+      // Радуга
+      window._rainbow={t:0, alpha:0};
+      // Горшок с золотом — в случайном месте
+      for(let attempt=0;attempt<30;attempt++){
+        const pc=Math.floor(Math.random()*(COLS-4));
+        const pr=Math.floor(1+Math.random()*(ROWS-3));
+        if(MAP[pr][pc]===0&&!G[pr][pc]){
+          window._goldPot={c:pc,r:pr,found:false,sparkT:0};
+          break;
+        }
+      }
+      // Все жители в зелёных нарядах
+      VILLAGERS.forEach(v=>{v.mood='excited';v._stPatrick=true;});
+      toast("☘️ День Святого Патрика! Найди горшок с золотом!");
+      earn('gold',17); // 17 марта!
+    },
+    end(){
+      window._patrick=false;
+      window._leprechauns=null;
+      window._clovers=null;
+      window._rainbow=null;
+      window._goldPot=null;
+      VILLAGERS.forEach(v=>{v._stPatrick=false;v.mood='happy';});
+      toast("☘️ День Святого Патрика закончился! До следующего года!");
+    },
+  },
+];
+let _activeEvent=null;
+let _activeEventT=0;
+
+function updateEvents(dt){
+  _eventT-=dt;
+  if(_eventT<=0 && !_activeEvent){
+    _eventT=40+Math.random()*60;
+    const ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+    _activeEvent=ev; _activeEventT=ev.duration;
+    ev.start();
+  }
+  if(_activeEvent){
+    _activeEventT-=dt;
+    if(_activeEventT<=0){ _activeEvent.end(); _activeEvent=null; }
+  }
+  // Обновляем эффекты событий
+  if(window._birds) for(const b of window._birds){
+    b.x+=b.spd*dt; b.flap+=dt*8;
+    if(b.x>1.1) b.x=-0.1;
+  }
+  if(window._stars) for(const s of window._stars){
+    s.trail.push({x:s.x,y:s.y}); if(s.trail.length>12) s.trail.shift();
+    s.x+=s.spd*dt*0.3; s.y+=s.spd*dt;
+    if(s.y>1.1){s.x=Math.random();s.y=0;s.trail=[];}
+  }
+  if(window._rain) for(const r of window._rain){
+    r.y+=r.spd*dt; if(r.y>1.05){r.y=-0.02;r.x=Math.random();}
+  }
+}
+
+function drawEventEffects(){
+  // Дождь
+  if(window._rain){
+    X.strokeStyle='rgba(120,160,220,0.55)'; X.lineWidth=1; X.lineCap='round';
+    for(const r of window._rain){
+      const rx=r.x*W-camX, ry=r.y*H-camY;
+      X.beginPath(); X.moveTo(rx,ry); X.lineTo(rx-2,ry+12); X.stroke();
+    }
+  }
+  // Птицы (в экранных координатах — рисуем на shader canvas поверх)
+  // Метеоры
+  if(window._stars){
+    for(const s of window._stars){
+      const sx=s.x*W, sy=s.y*H;
+      if(s.trail.length>1){
+        X.strokeStyle='rgba(255,240,100,0.7)'; X.lineWidth=2; X.lineCap='round';
+        X.beginPath();
+        s.trail.forEach((p,i)=>{ const a=i/s.trail.length; if(i===0) X.moveTo(p.x*W,p.y*H); else X.lineTo(p.x*W,p.y*H); });
+        X.stroke();
+      }
+      X.fillStyle='rgba(255,240,120,0.9)';
+      X.beginPath(); X.arc(sx,sy,2,0,Math.PI*2); X.fill();
+    }
+  }
+}
+
+// ── Животные ──────────────────────────────────
+const ANIMALS = [];
+const ANIMAL_TYPES = ['🐇','🦊','🐿️','🦔'];
+function spawnWildAnimal(){
+  if(ANIMALS.length>=5) return;
+  for(let attempt=0;attempt<20;attempt++){
+    const c=Math.floor(Math.random()*(COLS-4));
+    const r=Math.floor(1+Math.random()*(ROWS-2));
+    if(MAP[r][c]===0&&!G[r][c]){
+      ANIMALS.push({
+        wx:c*GS+GS/2, wy:r*GS+GS/2,
+        icon:ANIMAL_TYPES[Math.floor(Math.random()*ANIMAL_TYPES.length)],
+        t:0, bob:Math.random()*Math.PI*2,
+        targetX:null, targetY:null,
+        wanderT:2+Math.random()*5, facing:1,
+        scared:false, scaredT:0,
+      });
+      return;
+    }
+  }
+}
+for(let i=0;i<3;i++) setTimeout(()=>spawnWildAnimal(),i*2000+1000);
+
+function updateAnimals(dt){
+  for(const a of ANIMALS){
+    a.t+=dt; a.bob+=dt*2.2;
+    if(a.scared){ a.scaredT-=dt; if(a.scaredT<=0) a.scared=false; }
+    a.wanderT-=dt;
+    if(a.wanderT<=0){
+      a.wanderT=1.5+Math.random()*4;
+      // Убегает от гоблинов
+      const gob=RAID_STATE.goblins.find(g=>g.alive);
+      if(gob){ a.scared=true; a.scaredT=5; const dx=a.wx-gob.wx,dy=a.wy-gob.wy; const d=Math.sqrt(dx*dx+dy*dy)||1; a.targetX=a.wx+dx/d*GS*3; a.targetY=a.wy+dy/d*GS*3; }
+      else {
+        a.targetX=Math.max(GS,Math.min((COLS-4)*GS, a.wx+(Math.random()-0.5)*GS*5));
+        a.targetY=Math.max(GS,Math.min((ROWS-2)*GS, a.wy+(Math.random()-0.5)*GS*5));
+      }
+    }
+    if(a.targetX!==null){
+      const dx=a.targetX-a.wx, dy=a.targetY-a.wy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>5){
+        const spd=GS*(a.scared?2.5:0.9)*dt;
+        a.wx+=dx/dist*spd; a.wy+=dy/dist*spd;
+        a.facing=dx>0?1:-1;
+      } else { a.targetX=null; }
+    }
+  }
+}
+
+function drawAnimals(){
+  for(const a of ANIMALS){
+    const bob=Math.sin(a.bob)*(a.scared?3:1.5);
+    X.save();
+    X.translate(a.wx, a.wy+bob);
+    if(a.facing<0) X.scale(-1,1);
+    X.font=`${GS*(a.scared?0.28:0.24)}px serif`;
+    X.textAlign='center'; X.textBaseline='middle';
+    if(a.scared){ X.globalAlpha=0.8+Math.sin(a.t*15)*0.2; }
+    X.fillText(a.icon,0,0);
+    X.globalAlpha=1;
+    // Тень
+    X.fillStyle='rgba(0,0,0,0.15)';
+    X.beginPath(); X.ellipse(0,GS*.15,GS*.1,GS*.04,0,0,Math.PI*2); X.fill();
+    X.restore();
+  }
+}
+
+// ── Природа: бабочки и листья ──────────────────
+const BUTTERFLIES = [];
+for(let i=0;i<5;i++) BUTTERFLIES.push({
+  wx:(0.5+Math.random()*(COLS-5))*GS, wy:(1+Math.random()*(ROWS-3))*GS,
+  t:Math.random()*10, spd:GS*0.4, targetX:null, targetY:null, wanderT:Math.random()*3,
+  hue:Math.floor(Math.random()*360), bob:Math.random()*Math.PI*2,
+});
+
+function updateButterflies(dt){
+  for(const b of BUTTERFLIES){
+    b.t+=dt; b.bob+=dt*3;
+    b.wanderT-=dt;
+    if(b.wanderT<=0){
+      b.wanderT=2+Math.random()*4;
+      b.targetX=Math.max(GS,Math.min((COLS-4)*GS, b.wx+(Math.random()-0.5)*GS*6));
+      b.targetY=Math.max(GS*.5,Math.min((ROWS-2)*GS, b.wy+(Math.random()-0.5)*GS*4));
+    }
+    if(b.targetX!==null){
+      const dx=b.targetX-b.wx, dy=b.targetY-b.wy;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>4){ b.wx+=dx/dist*b.spd*dt; b.wy+=dy/dist*b.spd*dt; }
+      else b.targetX=null;
+    }
+  }
+}
+
+function drawButterflies(){
+  for(const b of BUTTERFLIES){
+    const flap=Math.sin(b.t*8)*0.7; // угол крыльев
+    const bx=b.wx, by=b.wy+Math.sin(b.bob)*3;
+    X.save(); X.translate(bx,by);
+    // Левое крыло
+    X.save(); X.rotate(-Math.PI/4-flap);
+    X.fillStyle=`hsla(${b.hue},80%,60%,0.75)`;
+    X.beginPath(); X.ellipse(-GS*.05,0,GS*.1,GS*.06,0,0,Math.PI*2); X.fill();
+    X.restore();
+    // Правое крыло
+    X.save(); X.rotate(Math.PI/4+flap);
+    X.fillStyle=`hsla(${b.hue+30},80%,65%,0.75)`;
+    X.beginPath(); X.ellipse(GS*.05,0,GS*.1,GS*.06,0,0,Math.PI*2); X.fill();
+    X.restore();
+    // Тело
+    X.fillStyle=`hsl(${b.hue},50%,25%)`;
+    X.beginPath(); X.ellipse(0,0,1.5,GS*.055,0,0,Math.PI*2); X.fill();
+    X.restore();
+  }
+}
+
+// ════════════════════════════════════════════
 //  DRAW
 // ════════════════════════════════════════════
 function frame(ts){
@@ -1027,6 +2038,10 @@ function frame(ts){
   drawParticles();
   drawFishermen();
   drawSemeniNpcs();
+  drawAnimals();
+  drawButterflies();
+  drawVillagers();
+  drawEventEffects();
   drawRaidGoblins();
   drawRaidUnits();
   drawFisherChests();
@@ -1187,9 +2202,86 @@ function drawShaders(dt){
   ca.addColorStop(0,'rgba(0,0,0,0)');
   ca.addColorStop(1,'rgba(60,0,80,.04)');
   SX.fillStyle=ca; SX.fillRect(0,0,W,H);
-}
 
-// ── Terrain ──────────────────────────────────
+  // 11. Птицы (экранное пространство)
+  if(window._birds){
+    SX.fillStyle='rgba(30,20,10,0.85)';
+    for(const b of window._birds){
+      const bx=b.x*W, by=b.y*H;
+      const flapY=Math.sin(b.flap)*3;
+      // Тело
+      SX.beginPath(); SX.ellipse(bx,by,5,2.5,0,0,Math.PI*2); SX.fill();
+      // Крылья
+      SX.beginPath();
+      SX.moveTo(bx-8,by+flapY); SX.quadraticCurveTo(bx-4,by-4+flapY,bx,by);
+      SX.quadraticCurveTo(bx+4,by-4+flapY,bx+8,by+flapY);
+      SX.fill();
+    }
+  }
+
+  // 12. St. Patrick's Day — зелёный туман + летящие клеверы
+  if(!window._spatrickClovers){
+    window._spatrickClovers=[];
+    for(let i=0;i<14;i++) window._spatrickClovers.push({
+      x:Math.random(), y:Math.random(),
+      spd:0.04+Math.random()*0.07,
+      rot:Math.random()*Math.PI*2, rotSpd:(Math.random()-.5)*1.5,
+      size:0.5+Math.random()*0.9,
+    });
+  }
+  let hasPatrickBuilding=false;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    if(G[r]?.[c]&&['cloverfarm','brewery','lepcastle','rainbowmkt'].includes(G[r][c].type)){hasPatrickBuilding=true;break;}
+  }
+  if(hasPatrickBuilding){
+    // Зелёный туман снизу
+    const gfog=SX.createLinearGradient(0,H*.55,0,H);
+    gfog.addColorStop(0,'rgba(0,100,20,0)');
+    gfog.addColorStop(1,`rgba(0,80,10,${0.09+Math.sin(t*.5)*.03})`);
+    SX.fillStyle=gfog; SX.fillRect(0,H*.55,W,H*.45);
+
+    // Летящие клеверы
+    for(const cl of window._spatrickClovers){
+      cl.x+=cl.spd*dt*.25; cl.y-=cl.spd*dt*.12; cl.rot+=cl.rotSpd*dt;
+      if(cl.x>1.1){cl.x=-0.05;cl.y=0.5+Math.random()*.5;}
+      if(cl.y<-0.05){cl.y=1.05;cl.x=Math.random();}
+      const px=cl.x*W, py=cl.y*H, s=cl.size*16;
+      SX.save(); SX.translate(px,py); SX.rotate(cl.rot);
+      SX.globalAlpha=0.45+Math.sin(t+cl.rot)*0.1;
+      SX.fillStyle='rgba(40,180,20,1)';
+      [[-0.42,-0.38],[0.42,-0.38],[0,-0.72]].forEach(([lx,ly])=>{
+        SX.beginPath(); SX.ellipse(lx*s,ly*s,s*.48,s*.32,lx>0?.5:-.5,0,Math.PI*2); SX.fill();
+      });
+      SX.strokeStyle='rgba(20,120,10,0.5)'; SX.lineWidth=1;
+      SX.beginPath(); SX.moveTo(0,0); SX.lineTo(0,s*.55); SX.stroke();
+      SX.globalAlpha=1;
+      SX.restore();
+    }
+
+    // Радуга по горизонту (появляется редко)
+    const rp=Math.sin(t*.07);
+    if(rp>0.65){
+      const ri=(rp-.65)/.35;
+      ['rgba(255,0,0,','rgba(255,120,0,','rgba(255,230,0,','rgba(0,200,0,','rgba(0,80,255,','rgba(130,0,220,'].forEach((col,i)=>{
+        SX.strokeStyle=col+`${ri*.1})`; SX.lineWidth=9;
+        SX.beginPath(); SX.arc(W*.5,H*1.15,W*(.38+i*.045),Math.PI*1.08,Math.PI*.08,true); SX.stroke();
+      });
+    }
+
+    // Золотое свечение у Замка Лепрекона
+    for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+      if(G[r]?.[c]?.type==='lepcastle'){
+        const lx=(c+.5)*GS-camX, ly=(r+.5)*GS-camY;
+        if(lx>-GS&&lx<W+GS&&ly>-GS&&ly<H+GS){
+          const lg=SX.createRadialGradient(lx,ly,0,lx,ly,GS*1.2);
+          lg.addColorStop(0,`rgba(255,215,0,${0.06+Math.sin(t*2)*.03})`);
+          lg.addColorStop(1,'rgba(0,0,0,0)');
+          SX.fillStyle=lg; SX.fillRect(lx-GS*1.2,ly-GS*1.2,GS*2.4,GS*2.4);
+        }
+      }
+    }
+  }
+}
 function drawTerrain(){
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
     const m=MAP[r][c], x=c*GS, y=r*GS;
@@ -1371,15 +2463,113 @@ function drawStar(ctx,x,y,r,pts){
 }
 
 // ── Buildings ────────────────────────────────
+const BUILD_PIECES = {};
+function genBuildPieces(id){
+  const cols=3, rows=3, pieces=[];
+  for(let pr=0;pr<rows;pr++) for(let pc=0;pc<cols;pc++){
+    const angle=Math.random()*Math.PI*2;
+    const dist=1.8+Math.random()*1.2;
+    pieces.push({
+      pcol:pc, prow:pr,
+      ox:Math.cos(angle)*dist,
+      oy:Math.sin(angle)*dist,
+      rot:(Math.random()-0.5)*Math.PI*1.4,
+      delay:(pr*cols+pc)/9*0.3,
+    });
+  }
+  BUILD_PIECES[id]=pieces;
+}
+
 function drawBuildings(){
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
     const obj=G[r][c]; if(!obj) continue;
-    X.save();
     const x=c*GS, y=r*GS;
-    ({bur:dBur, bur2:dBur2, conv:dConv, conv2:dConv2, teleport:dTeleport, chest:dChest, furn:dFurn, wshp:dWshp, mkt:dMkt, seed:dSeed, cowpen:dCowPen, chickenpen:dChickenPen, milkdel:dMilkDel, eggpack:dEggPack, raidspot:dRaidSpot, landspot:dLandSpot, fishhouse:dFishHouse})[obj.type]?.(x,y,obj);
-    X.restore();
+    const bt=obj._buildT??1;
+
+    if(bt>=1){
+      // Готово — рисуем нормально
+      X.save();
+      ({bur:dBur,bur2:dBur2,conv:dConv,conv2:dConv2,teleport:dTeleport,chest:dChest,furn:dFurn,wshp:dWshp,mkt:dMkt,seed:dSeed,cowpen:dCowPen,chickenpen:dChickenPen,milkdel:dMilkDel,eggpack:dEggPack,raidspot:dRaidSpot,landspot:dLandSpot,fishhouse:dFishHouse,smoker:dSmoker,saltery:dSaltery,canner:dCanner,delimarket:dDeliMarket,upgrader:dUpgrader,novruz:dNovruz,cloverfarm:dCloverFarm,brewery:dBrewery,rainbowmkt:dRainbowMkt,lepcastle:dLepCastle,druidcauldron:dDruidCauldron})[obj.type]?.(x,y,obj);
+      X.restore();
+      delete BUILD_PIECES[obj.id];
+      continue;
+    }
+
+    // Генерим куски один раз
+    if(!BUILD_PIECES[obj.id]) genBuildPieces(obj.id);
+    const pieces=BUILD_PIECES[obj.id];
+
+    // Рендерим здание в offscreen canvas
+    const tmp=document.createElement('canvas');
+    tmp.width=GS; tmp.height=GS;
+    const TX=tmp.getContext('2d');
+    // Вызываем draw-функцию здания в tmp
+    // Нужно временно подменить X на TX
+    const origX=X;
+    // Рисуем через сохранение состояния — используем трюк с translate
+    // Рисуем здание в tmp напрямую
+    TX.save();
+    TX.translate(-x,-y);
+    const savedX = window.X;
+    window.X = TX;
+    TX.createRadialGradient = TX.createRadialGradient.bind(TX);
+    TX.createLinearGradient = TX.createLinearGradient.bind(TX);
+    try {
+      ({bur:dBur,bur2:dBur2,conv:dConv,conv2:dConv2,teleport:dTeleport,chest:dChest,furn:dFurn,wshp:dWshp,mkt:dMkt,seed:dSeed,cowpen:dCowPen,chickenpen:dChickenPen,milkdel:dMilkDel,eggpack:dEggPack,raidspot:dRaidSpot,landspot:dLandSpot,fishhouse:dFishHouse,smoker:dSmoker,saltery:dSaltery,canner:dCanner,delimarket:dDeliMarket,upgrader:dUpgrader,novruz:dNovruz,cloverfarm:dCloverFarm,brewery:dBrewery,rainbowmkt:dRainbowMkt,lepcastle:dLepCastle,druidcauldron:dDruidCauldron})[obj.type]?.(x,y,obj);
+    } catch(e) { /* silent - offscreen render failed */ }
+    window.X = savedX;
+    TX.restore();
+
+    // Рисуем куски
+    const cols=3, rows=3;
+    const pw=GS/cols, ph=GS/rows;
+
+    for(const p of pieces){
+      const localBt=Math.max(0,Math.min(1,(bt-p.delay)/(1-p.delay+0.001)));
+      if(localBt<=0) continue;
+      // Ease out cubic
+      const e=1-Math.pow(1-localBt,3);
+
+      // Целевая позиция куска в мировых координатах
+      const tx=x+p.pcol*pw, ty=y+p.prow*ph;
+      // Стартовая позиция (отлетает от центра)
+      const sx=x+GS/2+p.ox*GS-pw/2, sy=y+GS/2+p.oy*GS-ph/2;
+
+      const cx2=sx+(tx-sx)*e, cy2=sy+(ty-sy)*e;
+      const rot=p.rot*(1-e);
+
+      X.save();
+      X.translate(cx2+pw/2, cy2+ph/2);
+      X.rotate(rot);
+      // Рисуем нужный кусок из offscreen
+      X.drawImage(tmp,
+        p.pcol*pw, p.prow*ph, pw, ph,  // src
+        -pw/2, -ph/2, pw, ph             // dst
+      );
+      // Рамка куска пока летит
+      if(e<0.95){
+        X.strokeStyle=`rgba(255,255,255,${(1-e)*0.5})`;
+        X.lineWidth=1.5;
+        X.strokeRect(-pw/2,-ph/2,pw,ph);
+      }
+      // Искры при приземлении
+      if(e>0.88&&e<0.99){
+        const sf=(e-0.88)/0.11;
+        for(let s=0;s<4;s++){
+          const sa=s/4*Math.PI*2;
+          X.fillStyle=`rgba(255,220,80,${(1-sf)*0.9})`;
+          X.beginPath(); X.arc(Math.cos(sa)*pw*.4,Math.sin(sa)*ph*.4,2,0,Math.PI*2); X.fill();
+        }
+      }
+      X.restore();
+    }
+
+    // Прогресс-бар
+    X.fillStyle='rgba(0,0,0,0.5)'; X.fillRect(x+3,y+GS-7,GS-6,5);
+    X.fillStyle=bt<0.4?'#e84020':bt<0.7?'#e8a020':'#40e820';
+    X.fillRect(x+3,y+GS-7,(GS-6)*bt,5);
+    X.fillStyle='rgba(255,255,255,0.3)'; X.fillRect(x+3,y+GS-7,(GS-6)*bt,2);
   }
-  // Draw raid beam between top and bottom towers
   drawRaidBeam();
 }
 
@@ -1610,6 +2800,1133 @@ function dFishHouse(x,y,obj){
   // Метка
   X.fillStyle='rgba(100,60,20,.85)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top';
   X.fillText('РЫБ.ДОМИК',x+GS*.5,y+GS*.96);
+}
+
+// ⚗️ АЛХИМ.ЛАБОРАТОРИЯ ────────────────────────
+function dAlchLab(x,y,obj){
+  const t=GT; const cx=x+GS*.5, cy=y+GS*.5;
+  const active=obj._crystalT>0;
+  // Фундамент тёмный
+  const fg=X.createLinearGradient(x,y+GS*.5,x+GS,y+GS);
+  fg.addColorStop(0,'#1a0a2a'); fg.addColorStop(1,'#0a0415');
+  X.fillStyle=fg; rrx(x+2,y+GS*.48,GS-4,GS*.5,5); X.fill();
+  X.strokeStyle='#6030a0'; X.lineWidth=1.5; rrx(x+2,y+GS*.48,GS-4,GS*.5,5); X.stroke();
+
+  // Три колбы
+  const cols=[
+    {cx:cx-GS*.22,col:'#ff4060',glow:'rgba(255,60,80,'},
+    {cx:cx,       col:'#40c0ff',glow:'rgba(60,180,255,'},
+    {cx:cx+GS*.22,col:'#60ff40',glow:'rgba(80,255,60,'},
+  ];
+  cols.forEach(({cx:bcx,col,glow},i)=>{
+    const bub=(t*2+i*1.1)%1;
+    // Тело колбы
+    X.fillStyle=col+'33';
+    X.beginPath(); X.moveTo(bcx-GS*.07,y+GS*.52); X.lineTo(bcx-GS*.07,y+GS*.78);
+    X.arc(bcx,y+GS*.82,GS*.1,Math.PI,0);
+    X.lineTo(bcx+GS*.07,y+GS*.52); X.closePath(); X.fill();
+    X.strokeStyle=col; X.lineWidth=1.5;
+    X.beginPath(); X.moveTo(bcx-GS*.07,y+GS*.52); X.lineTo(bcx-GS*.07,y+GS*.78);
+    X.arc(bcx,y+GS*.82,GS*.1,Math.PI,0);
+    X.lineTo(bcx+GS*.07,y+GS*.52); X.closePath(); X.stroke();
+    // Горлышко
+    X.strokeStyle=col+'99'; X.lineWidth=3;
+    X.beginPath(); X.moveTo(bcx,y+GS*.35); X.lineTo(bcx,y+GS*.52); X.stroke();
+    // Пробка
+    X.fillStyle=col; rrx(bcx-GS*.05,y+GS*.31,GS*.1,GS*.06,2); X.fill();
+    // Пузырёк внутри
+    X.fillStyle=glow+`${0.6+Math.sin(t*3+i)*.3})`;
+    X.beginPath(); X.arc(bcx+Math.sin(t*2+i)*GS*.04, y+GS*.82-bub*GS*.25, GS*.025,0,Math.PI*2); X.fill();
+    // Свечение
+    const gl=X.createRadialGradient(bcx,y+GS*.8,0,bcx,y+GS*.8,GS*.2);
+    gl.addColorStop(0,glow+`${0.2+Math.sin(t*2+i)*.1})`); gl.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=gl; X.beginPath(); X.arc(bcx,y+GS*.8,GS*.2,0,Math.PI*2); X.fill();
+  });
+  // Соединительные трубки
+  X.strokeStyle='rgba(150,100,200,.6)'; X.lineWidth=2; X.setLineDash([3,2]);
+  X.beginPath(); X.moveTo(cx-GS*.15,y+GS*.45); X.lineTo(cx+GS*.15,y+GS*.45); X.stroke();
+  X.setLineDash([]);
+  // Кристалл в центре если готов
+  if(active||Math.sin(t*1.5)>0.5){
+    const cg=X.createRadialGradient(cx,y+GS*.18,0,cx,y+GS*.18,GS*.18);
+    cg.addColorStop(0,'rgba(200,100,255,0.9)'); cg.addColorStop(1,'rgba(100,0,200,0)');
+    X.fillStyle=cg; X.beginPath(); X.arc(cx,y+GS*.18,GS*.18,0,Math.PI*2); X.fill();
+    X.fillStyle='rgba(255,200,255,0.8)'; X.font=`${GS*.2}px serif`;
+    X.textAlign='center'; X.textBaseline='middle'; X.fillText('💎',cx,y+GS*.18);
+  }
+  // Лейбл
+  X.fillStyle='rgba(180,100,255,.8)'; X.font=`bold ${GS*.085}px Cinzel,serif`;
+  X.textAlign='center'; X.textBaseline='top'; X.fillText('АЛХ.ЛАБ',cx,y+GS*.96);
+}
+
+// 🔱 КУЗНИЦА ─────────────────────────────────
+function dForge(x,y,obj){
+  const t=GT; const cx=x+GS*.5;
+  const working=(obj._bronzeT||0)>0;
+  // Каменная база
+  const bg=X.createLinearGradient(x,y+GS*.4,x+GS,y+GS);
+  bg.addColorStop(0,'#5a3a20'); bg.addColorStop(1,'#2a1808');
+  X.fillStyle=bg; rrx(x+3,y+GS*.42,GS-6,GS*.56,4); X.fill();
+  // Кирпичи
+  X.strokeStyle='rgba(0,0,0,.3)'; X.lineWidth=0.8;
+  for(let r2=0;r2<3;r2++) for(let c2=0;c2<4;c2++){
+    X.strokeRect(x+3+c2*((GS-6)/4), y+GS*(.43+r2*.17), (GS-6)/4, GS*.17);
+  }
+  // Жерло — огонь
+  const fireH=GS*(0.22+Math.sin(t*4)*.04);
+  X.fillStyle='#1a0808'; rrx(cx-GS*.22,y+GS*.44,GS*.44,GS*.28,6); X.fill();
+  // Огонь внутри
+  for(let fi=0;fi<3;fi++){
+    const fp=(t*3+fi*.7)%1;
+    const fw=GS*(.14-fi*.03);
+    const fh=fireH*(0.5+fp*.5);
+    const fcg=X.createLinearGradient(cx,y+GS*.72,cx,y+GS*.72-fh);
+    fcg.addColorStop(0,fi===0?'#ff8000':fi===1?'#ffcc00':'#ff4000');
+    fcg.addColorStop(1,'rgba(255,255,0,0)');
+    X.fillStyle=fcg;
+    X.beginPath(); X.ellipse(cx+(fi-1)*GS*.06, y+GS*.72-fh*.3, fw, fh*.6, 0,0,Math.PI*2); X.fill();
+  }
+  // Наковальня
+  const ag=X.createLinearGradient(cx-GS*.2,y+GS*.28,cx+GS*.2,y+GS*.4);
+  ag.addColorStop(0,'#c0c0c8'); ag.addColorStop(1,'#707880');
+  X.fillStyle=ag;
+  rrx(cx-GS*.22,y+GS*.28,GS*.44,GS*.12,3); X.fill();
+  X.fillRect(cx-GS*.12,y+GS*.4,GS*.24,GS*.06);
+  rrx(cx-GS*.16,y+GS*.44,GS*.32,GS*.04,2); X.fill();
+  X.strokeStyle='rgba(255,255,255,.3)'; X.lineWidth=1.5;
+  X.beginPath(); X.moveTo(cx-GS*.2,y+GS*.29); X.lineTo(cx+GS*.15,y+GS*.29); X.stroke();
+  // Молот кузнеца (анимированный)
+  const hamA=working?Math.sin(t*8)*0.8:Math.sin(t*1.5)*0.15;
+  X.save(); X.translate(cx+GS*.25,y+GS*.22); X.rotate(hamA-0.3);
+  X.fillStyle='#8B5E28'; X.fillRect(-2,0,4,GS*.2);
+  X.fillStyle='#888'; X.fillRect(-6,-GS*.06,12,GS*.06);
+  X.fillStyle='#aaa'; X.fillRect(-6,-GS*.06,12,3);
+  X.restore();
+  // Искры если работает
+  if(working||Math.sin(t*5)>0.7){
+    for(let s=0;s<5;s++){
+      const sa=t*8+s*1.2, sr=GS*(0.05+Math.random()*.12);
+      if(Math.sin(t*6+s)>0.3){
+        X.fillStyle=`rgba(255,${180+s*15},0,.9)`;
+        X.beginPath(); X.arc(cx+Math.cos(sa)*sr, y+GS*.36+Math.sin(sa)*sr*.4, 2,0,Math.PI*2); X.fill();
+      }
+    }
+  }
+  // Бронза если готова
+  if(obj._bronzeBuf>0){
+    X.fillStyle='rgba(200,120,20,.9)'; X.font=`${GS*.18}px serif`;
+    X.textAlign='right'; X.textBaseline='top'; X.fillText('🔶',x+GS*.96,y+GS*.04);
+  }
+  X.fillStyle='rgba(200,160,80,.85)'; X.font=`bold ${GS*.085}px Cinzel,serif`;
+  X.textAlign='center'; X.textBaseline='top'; X.fillText('КУЗНИЦА',cx,y+GS*.96);
+}
+
+// 🌾 МЕЛЬНИЦА ─────────────────────────────────
+function dMill(x,y,obj){
+  const t=GT; const cx=x+GS*.5;
+  const working=obj._breadBuf>0||(obj._milkBuf||0)>0;
+  // Башня
+  const bg=X.createLinearGradient(x+GS*.28,y+GS*.12,x+GS*.72,y+GS*.92);
+  bg.addColorStop(0,'#d4b870'); bg.addColorStop(.5,'#b89848'); bg.addColorStop(1,'#8a7030');
+  X.fillStyle=bg;
+  X.beginPath(); X.moveTo(cx-GS*.22,y+GS*.92); X.lineTo(cx-GS*.2,y+GS*.22);
+  X.lineTo(cx,y+GS*.08); X.lineTo(cx+GS*.2,y+GS*.22); X.lineTo(cx+GS*.22,y+GS*.92); X.closePath(); X.fill();
+  X.strokeStyle='#6a5020'; X.lineWidth=2;
+  X.beginPath(); X.moveTo(cx-GS*.22,y+GS*.92); X.lineTo(cx-GS*.2,y+GS*.22);
+  X.lineTo(cx,y+GS*.08); X.lineTo(cx+GS*.2,y+GS*.22); X.lineTo(cx+GS*.22,y+GS*.92); X.closePath(); X.stroke();
+  // Окна
+  X.fillStyle='rgba(255,220,120,.5)';
+  [[cx,y+GS*.35],[cx-GS*.08,y+GS*.58],[cx+GS*.08,y+GS*.58]].forEach(([wx,wy])=>{
+    X.beginPath(); X.arc(wx,wy,GS*.05,0,Math.PI*2); X.fill();
+    X.strokeStyle='#6a5020'; X.lineWidth=1; X.beginPath(); X.arc(wx,wy,GS*.05,0,Math.PI*2); X.stroke();
+  });
+  // Дверь
+  X.fillStyle='#4a2808'; rrx(cx-GS*.08,y+GS*.68,GS*.16,GS*.22,3); X.fill();
+
+  // Лопасти мельницы
+  const rot=t*(working?2.5:0.4);
+  X.save(); X.translate(cx,y+GS*.3);
+  for(let b=0;b<4;b++){
+    X.save(); X.rotate(rot+b*Math.PI/2);
+    // Лопасть
+    const lg=X.createLinearGradient(0,0,0,-GS*.32);
+    lg.addColorStop(0,'#c0a040'); lg.addColorStop(1,'#e8d080');
+    X.fillStyle=lg;
+    X.beginPath(); X.moveTo(-GS*.04,0); X.lineTo(-GS*.07,-GS*.32); X.lineTo(GS*.07,-GS*.32); X.lineTo(GS*.04,0); X.closePath(); X.fill();
+    X.strokeStyle='#8a6020'; X.lineWidth=1; X.stroke();
+    // Поперечная планка
+    X.strokeStyle='#8a6020'; X.lineWidth=1.5;
+    X.beginPath(); X.moveTo(-GS*.06,-GS*.1); X.lineTo(GS*.06,-GS*.1); X.stroke();
+    X.beginPath(); X.moveTo(-GS*.06,-GS*.22); X.lineTo(GS*.06,-GS*.22); X.stroke();
+    X.restore();
+  }
+  // Ступица
+  X.fillStyle='#6a5020'; X.beginPath(); X.arc(0,0,GS*.05,0,Math.PI*2); X.fill();
+  X.fillStyle='#c0a040'; X.beginPath(); X.arc(0,0,GS*.03,0,Math.PI*2); X.fill();
+  X.restore();
+  // Хлеб если есть
+  if((obj._breadBuf||0)>0){
+    X.fillStyle='rgba(220,150,50,.9)'; X.font=`${GS*.18}px serif`;
+    X.textAlign='right'; X.textBaseline='top'; X.fillText('🍞',x+GS*.96,y+GS*.04);
+  }
+  X.fillStyle='rgba(200,160,60,.85)'; X.font=`bold ${GS*.085}px Cinzel,serif`;
+  X.textAlign='center'; X.textBaseline='top'; X.fillText('МЕЛЬНИЦА',cx,y+GS*.96);
+}
+
+// 🔭 ОБСЕРВАТОРИЯ ─────────────────────────────
+function dObservatory(x,y,obj){
+  const t=GT; const cx=x+GS*.5;
+  // База — купол
+  const bg=X.createLinearGradient(x+GS*.1,y+GS*.3,x+GS*.9,y+GS*.9);
+  bg.addColorStop(0,'#4060a0'); bg.addColorStop(.5,'#283870'); bg.addColorStop(1,'#181c3a');
+  X.fillStyle=bg;
+  X.beginPath(); X.arc(cx,y+GS*.7,GS*.38,Math.PI,0); X.fill();
+  X.fillRect(x+GS*.12,y+GS*.7,GS*.76,GS*.26);
+  X.strokeStyle='#6080c0'; X.lineWidth=2;
+  X.beginPath(); X.arc(cx,y+GS*.7,GS*.38,Math.PI,0); X.stroke();
+  X.strokeRect(x+GS*.12,y+GS*.7,GS*.76,GS*.26);
+  // Щель купола
+  const slitA=t*0.3;
+  X.strokeStyle='rgba(100,200,255,.6)'; X.lineWidth=3;
+  X.beginPath(); X.arc(cx,y+GS*.7,GS*.38,slitA-0.08,slitA+0.08); X.stroke();
+  // Телескоп
+  X.save(); X.translate(cx,y+GS*.58); X.rotate(slitA);
+  const tg=X.createLinearGradient(-GS*.04,0,GS*.04,-GS*.28);
+  tg.addColorStop(0,'#607090'); tg.addColorStop(1,'#90b0d0');
+  X.fillStyle=tg; rrx(-GS*.04,0,GS*.08,-GS*.28,3); X.fill();
+  X.strokeStyle='#4060a0'; X.lineWidth=1.5; rrx(-GS*.04,0,GS*.08,-GS*.28,3); X.stroke();
+  // Линза
+  X.fillStyle='rgba(100,200,255,.6)'; X.beginPath(); X.arc(0,-GS*.28,GS*.05,0,Math.PI*2); X.fill();
+  const lens=X.createRadialGradient(0,-GS*.28,0,0,-GS*.28,GS*.1);
+  lens.addColorStop(0,'rgba(100,200,255,.6)'); lens.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=lens; X.beginPath(); X.arc(0,-GS*.28,GS*.1,0,Math.PI*2); X.fill();
+  X.restore();
+  // Звёзды вокруг ночью
+  for(let s=0;s<5;s++){
+    const sa=t*0.5+s*1.256, sr=GS*(0.42+Math.sin(t*2+s)*.04);
+    const sa2=t*1.2+s;
+    if(Math.sin(t*3+s)>0.3){
+      X.fillStyle=`rgba(255,240,180,${0.4+Math.sin(sa2)*.35})`;
+      X.beginPath(); X.arc(cx+Math.cos(sa)*sr,y+GS*.7+Math.sin(sa)*sr*.5,1.5,0,Math.PI*2); X.fill();
+    }
+  }
+  // Луч света из телескопа
+  if(Math.sin(t*0.7)>0.5){
+    X.save(); X.globalAlpha=0.15;
+    X.translate(cx,y+GS*.58); X.rotate(slitA);
+    const beam=X.createLinearGradient(0,-GS*.28,0,-GS*.28-30);
+    beam.addColorStop(0,'rgba(100,200,255,1)'); beam.addColorStop(1,'rgba(100,200,255,0)');
+    X.fillStyle=beam; X.fillRect(-2,-GS*.28,4,-30);
+    X.restore();
+  }
+  X.fillStyle='rgba(100,180,255,.85)'; X.font=`bold ${GS*.075}px Cinzel,serif`;
+  X.textAlign='center'; X.textBaseline='top'; X.fillText('ОБСЕРВАТОРИЯ',cx,y+GS*.96);
+}
+
+// 🧪 ХИМ.ЗАВОД ────────────────────────────────
+function dChemFab(x,y,obj){
+  const t=GT; const cx=x+GS*.5;
+  // Корпус — индустриальный
+  const bg=X.createLinearGradient(x+GS*.08,y+GS*.22,x+GS*.92,y+GS*.9);
+  bg.addColorStop(0,'#3a3040'); bg.addColorStop(.5,'#252030'); bg.addColorStop(1,'#181018');
+  X.fillStyle=bg; rrx(x+GS*.08,y+GS*.25,GS*.84,GS*.65,4); X.fill();
+  X.strokeStyle='#5040a0'; X.lineWidth=2; rrx(x+GS*.08,y+GS*.25,GS*.84,GS*.65,4); X.stroke();
+
+  // Трубы — 3 штуки с дымом
+  [[cx-GS*.22,y],[cx,y+GS*.05],[cx+GS*.22,y]].forEach(([tx,ty],i)=>{
+    X.fillStyle='#2a2030'; X.fillRect(tx-4,ty,8,GS*.28);
+    X.strokeStyle='#5040a0'; X.lineWidth=1.5; X.strokeRect(tx-4,ty,8,GS*.28);
+    // Дым разных цветов
+    const dColors=['rgba(180,100,255,','rgba(100,200,255,','rgba(255,160,80,'];
+    for(let d=0;d<3;d++){
+      const dp=(t*0.8+d*0.4+i*0.3)%1;
+      const ds=GS*(0.06+dp*0.08);
+      X.fillStyle=dColors[i]+`${0.35*(1-dp)})`;
+      X.beginPath(); X.arc(tx+Math.sin(t*1.5+i+d)*GS*.04, ty-dp*GS*.35, ds,0,Math.PI*2); X.fill();
+    }
+  });
+
+  // Реактор в центре
+  const rg=X.createRadialGradient(cx,y+GS*.56,0,cx,y+GS*.56,GS*.18);
+  rg.addColorStop(0,`rgba(${100+Math.sin(t*3)*80},200,255,0.9)`);
+  rg.addColorStop(.5,'rgba(50,80,180,.5)');
+  rg.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=rg; X.beginPath(); X.arc(cx,y+GS*.56,GS*.18,0,Math.PI*2); X.fill();
+  X.strokeStyle=`rgba(100,200,255,${0.6+Math.sin(t*4)*.4})`; X.lineWidth=2;
+  X.beginPath(); X.arc(cx,y+GS*.56,GS*.14,0,Math.PI*2); X.stroke();
+  // Внутреннее кольцо
+  X.strokeStyle=`rgba(200,100,255,${0.5+Math.sin(t*3)*.3})`; X.lineWidth=1.5;
+  X.beginPath(); X.arc(cx,y+GS*.56,GS*.08,0,Math.PI*2); X.stroke();
+
+  // Индикаторы — маленькие огоньки
+  [['#ff4060',cx-GS*.3,y+GS*.35],['#60ff40',cx-GS*.3,y+GS*.45],['#4060ff',cx-GS*.3,y+GS*.55]].forEach(([col,lx,ly])=>{
+    X.fillStyle=col; X.beginPath(); X.arc(lx,ly,3,0,Math.PI*2); X.fill();
+    if(Math.random()>0.97){ // мигание
+      X.fillStyle='rgba(255,255,255,.5)'; X.beginPath(); X.arc(lx,ly,5,0,Math.PI*2); X.fill();
+    }
+  });
+  // Выходящий кристалл-ресурс
+  if((obj._superBuf||0)>0){
+    X.fillStyle='rgba(200,100,255,.9)'; X.font=`${GS*.18}px serif`;
+    X.textAlign='right'; X.textBaseline='top'; X.fillText('💜',x+GS*.96,y+GS*.04);
+  }
+  X.fillStyle='rgba(150,100,255,.85)'; X.font=`bold ${GS*.08}px Cinzel,serif`;
+  X.textAlign='center'; X.textBaseline='top'; X.fillText('ХИМ.ЗАВОД',cx,y+GS*.96);
+}
+
+// 🏺 КОПТИЛЬНЯ ────────────────────────────────
+function dSmoker(x,y,obj){
+  const t=GT, cx=x+GS*.5;
+  const active=(obj._fishBuf||0)>0;
+  // Каменная база
+  const bg=X.createLinearGradient(x,y+GS*.5,x+GS,y+GS);
+  bg.addColorStop(0,'#4a3020'); bg.addColorStop(1,'#281808');
+  X.fillStyle=bg; rrx(x+4,y+GS*.5,GS-8,GS*.48,5); X.fill();
+  X.strokeStyle='#6a4830'; X.lineWidth=1.5; rrx(x+4,y+GS*.5,GS-8,GS*.48,5); X.stroke();
+  // Кирпичи
+  X.strokeStyle='rgba(0,0,0,.25)'; X.lineWidth=0.8;
+  for(let r2=0;r2<3;r2++) for(let c2=0;c2<3;c2++) X.strokeRect(x+4+c2*(GS-8)/3, y+GS*(.51+r2*.16),(GS-8)/3,GS*.16);
+  // Бочка коптильни
+  const brg=X.createLinearGradient(cx-GS*.24,y+GS*.16,cx+GS*.24,y+GS*.52);
+  brg.addColorStop(0,'#8B4513'); brg.addColorStop(.4,'#6B3410'); brg.addColorStop(1,'#3B1808');
+  X.fillStyle=brg; X.beginPath(); X.ellipse(cx,y+GS*.34,GS*.24,GS*.2,0,0,Math.PI*2); X.fill();
+  X.strokeStyle='#5a2808'; X.lineWidth=2; X.beginPath(); X.ellipse(cx,y+GS*.34,GS*.24,GS*.2,0,0,Math.PI*2); X.stroke();
+  // Обручи бочки
+  X.strokeStyle='#c08030'; X.lineWidth=2.5;
+  [y+GS*.22,y+GS*.34,y+GS*.46].forEach(by2=>{ X.beginPath(); X.ellipse(cx,by2,GS*.24,GS*.07,0,0,Math.PI*2); X.stroke(); });
+  // Крышка с отверстием
+  X.fillStyle='#5a2808'; X.beginPath(); X.ellipse(cx,y+GS*.18,GS*.24,GS*.07,0,0,Math.PI*2); X.fill();
+  X.fillStyle='#1a0808'; X.beginPath(); X.ellipse(cx,y+GS*.18,GS*.08,GS*.025,0,0,Math.PI*2); X.fill();
+  // Дым (если активна)
+  if(active){
+    for(let s2=0;s2<4;s2++){
+      const sp=(t*1.2+s2*.5)%1;
+      X.fillStyle=`rgba(120,100,80,${0.5*(1-sp)})`;
+      X.beginPath(); X.arc(cx+Math.sin(t*2+s2)*GS*.06, y+GS*.18-sp*GS*.4, GS*(0.04+sp*.07), 0,Math.PI*2); X.fill();
+    }
+  }
+  // Прогресс-дуга
+  if(obj.progress>0){
+    X.strokeStyle='rgba(255,150,50,.8)'; X.lineWidth=3;
+    X.beginPath(); X.arc(cx,y+GS*.34,GS*.27,-Math.PI/2,-Math.PI/2+obj.progress*Math.PI*2); X.stroke();
+  }
+  // Буфер
+  if((obj._fishBuf||0)>0){ X.fillStyle='rgba(255,200,50,.9)'; X.font=`bold ${GS*.12}px Cinzel,serif`; X.textAlign='center'; X.fillText(`🐟×${obj._fishBuf}`,cx,y+GS*.1); }
+  X.fillStyle='rgba(180,100,40,.85)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('КОПТИЛЬНЯ',cx,y+GS*.96);
+}
+
+// 🧂 ЗАСОЛКА ──────────────────────────────────
+function dSaltery(x,y,obj){
+  const t=GT, cx=x+GS*.5;
+  const active=(obj._smokedBuf||0)>0;
+  // База
+  const bg=X.createLinearGradient(x,y+GS*.55,x+GS,y+GS);
+  bg.addColorStop(0,'#607090'); bg.addColorStop(1,'#304050');
+  X.fillStyle=bg; rrx(x+3,y+GS*.55,GS-6,GS*.43,5); X.fill();
+  X.strokeStyle='#8090b0'; X.lineWidth=1.5; rrx(x+3,y+GS*.55,GS-6,GS*.43,5); X.stroke();
+  // Большая бочка с рассолом
+  const rrg=X.createLinearGradient(cx-GS*.26,y+GS*.2,cx+GS*.26,y+GS*.54);
+  rrg.addColorStop(0,'#e8f0f8'); rrg.addColorStop(.5,'#c0d0e0'); rrg.addColorStop(1,'#8090a8');
+  X.fillStyle=rrg; rrx(cx-GS*.26,y+GS*.2,GS*.52,GS*.34,6); X.fill();
+  X.strokeStyle='#607090'; X.lineWidth=2; rrx(cx-GS*.26,y+GS*.2,GS*.52,GS*.34,6); X.stroke();
+  // Рассол внутри (волнение)
+  X.fillStyle=`rgba(180,210,240,${0.6+Math.sin(t*2)*.1})`;
+  rrx(cx-GS*.24,y+GS*.3,GS*.48,GS*.22,4); X.fill();
+  // Пузырьки рассола
+  if(active) for(let b=0;b<4;b++){
+    const bp=(t*1.5+b*.6)%1;
+    X.fillStyle=`rgba(255,255,255,${0.5*(1-bp)})`;
+    X.beginPath(); X.arc(cx+(b-1.5)*GS*.08, y+GS*.52-bp*GS*.25, 2+bp*2, 0,Math.PI*2); X.fill();
+  }
+  // Кристаллы соли
+  X.fillStyle='rgba(255,255,255,.8)';
+  [[-GS*.14,y+GS*.25],[GS*.14,y+GS*.27],[0,y+GS*.23],[-GS*.06,y+GS*.28]].forEach(([sx,sy])=>{
+    X.beginPath(); X.moveTo(cx+sx,sy); X.lineTo(cx+sx+3,sy+5); X.lineTo(cx+sx-3,sy+5); X.closePath(); X.fill();
+  });
+  // Крышка
+  X.fillStyle='#a0b0c0'; rrx(cx-GS*.28,y+GS*.17,GS*.56,GS*.06,3); X.fill();
+  X.strokeStyle='#708090'; X.lineWidth=1.5; rrx(cx-GS*.28,y+GS*.17,GS*.56,GS*.06,3); X.stroke();
+  if(obj.progress>0){
+    X.strokeStyle='rgba(150,200,255,.8)'; X.lineWidth=3;
+    X.beginPath(); X.arc(cx,y+GS*.37,GS*.27,-Math.PI/2,-Math.PI/2+obj.progress*Math.PI*2); X.stroke();
+  }
+  if((obj._smokedBuf||0)>0){ X.fillStyle='rgba(180,220,255,.9)'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.fillText(`🏺×${obj._smokedBuf}`,cx,y+GS*.1); }
+  X.fillStyle='rgba(80,120,160,.85)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('ЗАСОЛКА',cx,y+GS*.96);
+}
+
+// 📦 УПАКОВЩИК ────────────────────────────────
+function dCanner(x,y,obj){
+  const t=GT, cx=x+GS*.5;
+  const active=(obj._saltedBuf||0)>0;
+  // Промышленная база
+  const bg=X.createLinearGradient(x,y+GS*.5,x+GS,y+GS);
+  bg.addColorStop(0,'#505860'); bg.addColorStop(1,'#282e34');
+  X.fillStyle=bg; rrx(x+3,y+GS*.5,GS-6,GS*.48,4); X.fill();
+  X.strokeStyle='#7080a0'; X.lineWidth=1.5; rrx(x+3,y+GS*.5,GS-6,GS*.48,4); X.stroke();
+  // Три банки на конвейере
+  const cans=[cx-GS*.2, cx, cx+GS*.2];
+  cans.forEach((canx,i)=>{
+    const filled=active&&i<(obj._saltedBuf||0);
+    const cg=X.createLinearGradient(canx-GS*.08,y+GS*.28,canx+GS*.08,y+GS*.5);
+    cg.addColorStop(0,filled?'#e0f0e0':'#d0d0d8'); cg.addColorStop(1,filled?'#60a860':'#808090');
+    X.fillStyle=cg; rrx(canx-GS*.08,y+GS*.28,GS*.16,GS*.22,3); X.fill();
+    X.strokeStyle=filled?'#40a040':'#9090a0'; X.lineWidth=1.5; rrx(canx-GS*.08,y+GS*.28,GS*.16,GS*.22,3); X.stroke();
+    // Крышка
+    X.fillStyle=filled?'#80d080':'#b0b0c0'; X.fillRect(canx-GS*.09,y+GS*.26,GS*.18,GS*.04);
+    // Этикетка
+    if(filled){ X.fillStyle='rgba(255,255,255,.7)'; X.font=`${GS*.1}px serif`; X.textAlign='center'; X.fillText('🐟',canx,y+GS*.4); }
+  });
+  // Механическая рука (пресс)
+  const pressY=active?y+GS*.22+Math.sin(t*6)*GS*.04:y+GS*.2;
+  X.fillStyle='#a0a8b0'; X.fillRect(cx-GS*.04,y+GS*.06,GS*.08,pressY-y-GS*.06);
+  X.fillStyle='#c0c8d0'; rrx(cx-GS*.18,pressY,GS*.36,GS*.06,3); X.fill();
+  // Звёздочки при прессовке
+  if(active&&Math.sin(t*6)>0.8) for(let s2=0;s2<3;s2++){
+    X.fillStyle=`rgba(255,220,50,.8)`;
+    X.beginPath(); X.arc(cx+(s2-1)*GS*.14, pressY+GS*.06, 3, 0,Math.PI*2); X.fill();
+  }
+  if(obj.progress>0){
+    X.strokeStyle='rgba(100,200,100,.8)'; X.lineWidth=3;
+    X.beginPath(); X.arc(cx,y+GS*.55,GS*.27,-Math.PI/2,-Math.PI/2+obj.progress*Math.PI*2); X.stroke();
+  }
+  if((obj._saltedBuf||0)>0){ X.fillStyle='rgba(100,220,100,.9)'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.fillText(`🧂×${obj._saltedBuf}`,cx,y+GS*.1); }
+  X.fillStyle='rgba(80,120,80,.85)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('УПАКОВЩИК',cx,y+GS*.96);
+}
+
+// ⬆️ АПГРЕЙДЕР ────────────────────────────────
+function dUpgrader(x,y,obj){
+  const t=GT, cx=x+GS*.5, cy=y+GS*.5;
+  const working=(obj._upgradeT||0)>0;
+  const prog=obj.progress||0;
+
+  // Корпус — технологичный шестиугольник
+  X.save(); X.translate(cx,cy);
+  // Внешнее кольцо вращается
+  X.save(); X.rotate(t*0.8);
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2;
+    const r1=GS*.38, r2=GS*.32;
+    X.strokeStyle=`rgba(100,200,255,${0.3+Math.sin(t*3+i)*.2})`; X.lineWidth=2;
+    X.beginPath(); X.moveTo(Math.cos(a)*r1,Math.sin(a)*r1); X.lineTo(Math.cos(a+Math.PI/6)*r2,Math.sin(a+Math.PI/6)*r2); X.stroke();
+  }
+  X.restore();
+
+  // Центральное тело
+  const bg=X.createRadialGradient(0,0,0,0,0,GS*.28);
+  bg.addColorStop(0,working?'#4080ff':'#203060');
+  bg.addColorStop(.5,working?'#2050c0':'#151e40');
+  bg.addColorStop(1,'#0a0f20');
+  X.fillStyle=bg; X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/6, r=GS*.28;
+    i?X.lineTo(Math.cos(a)*r,Math.sin(a)*r):X.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  X.closePath(); X.fill();
+  X.strokeStyle=working?'rgba(100,200,255,.9)':'rgba(60,120,200,.5)'; X.lineWidth=2;
+  X.beginPath();
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2-Math.PI/6, r=GS*.28;
+    i?X.lineTo(Math.cos(a)*r,Math.sin(a)*r):X.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  X.closePath(); X.stroke();
+
+  // Стрелка вверх внутри
+  const arrowAlpha=working?0.5+Math.sin(t*8)*.4:0.4;
+  X.fillStyle=`rgba(100,220,255,${arrowAlpha})`;
+  X.beginPath();
+  X.moveTo(0,-GS*.18); X.lineTo(GS*.1,-GS*.05); X.lineTo(GS*.05,-GS*.05);
+  X.lineTo(GS*.05,GS*.14); X.lineTo(-GS*.05,GS*.14); X.lineTo(-GS*.05,-GS*.05);
+  X.lineTo(-GS*.1,-GS*.05); X.closePath(); X.fill();
+
+  // Частицы апгрейда
+  if(working){
+    for(let i=0;i<6;i++){
+      const pa=t*4+i*1.047, pr=GS*(0.1+Math.sin(t*3+i)*.08);
+      X.fillStyle=`rgba(${100+i*25},${180+i*10},255,${0.7+Math.sin(t*5+i)*.3})`;
+      X.beginPath(); X.arc(Math.cos(pa)*pr,Math.sin(pa)*pr,2.5,0,Math.PI*2); X.fill();
+    }
+    // Показываем что апгрейдится
+    if(obj._lastIcon){
+      const icons={'ore':'⛏️','rich_ore':'💎','fish':'🐟','bar':'🔩'};
+      X.font=`${GS*.2}px serif`; X.textAlign='center'; X.textBaseline='middle';
+      X.globalAlpha=0.6+Math.sin(t*6)*.3;
+      X.fillText(icons[obj._lastIcon]||'✨',0,0);
+      X.globalAlpha=1;
+    }
+  } else {
+    // Подсказка что делает
+    X.font=`${GS*.2}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.globalAlpha=0.5; X.fillText('✨',0,0); X.globalAlpha=1;
+  }
+
+  // Прогресс-кольцо
+  if(prog>0){
+    X.strokeStyle='rgba(100,220,255,.9)'; X.lineWidth=3;
+    X.beginPath(); X.arc(0,0,GS*.33,-Math.PI/2,-Math.PI/2+prog*Math.PI*2); X.stroke();
+  }
+  X.restore();
+
+  // Свечение при работе
+  if(working){
+    const glow=X.createRadialGradient(cx,cy,0,cx,cy,GS*.5);
+    glow.addColorStop(0,`rgba(50,150,255,${0.15+Math.sin(t*6)*.1})`);
+    glow.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=glow; X.fillRect(x-GS*.1,y-GS*.1,GS*1.2,GS*1.2);
+  }
+
+  // Метка улучшений
+  if(obj._lastIcon||obj._upgIcon){
+    const label={'ore→rich_ore':'⛏️→💎','rich_ore→golden_ore':'💎→🌟','fish→smoked_fish_raw':'🐟→🏺','bar→pure_bar':'🔩→✨'}[`${obj._lastIcon}→${obj._upgIcon}`];
+    if(label){ X.fillStyle='rgba(100,200,255,.9)'; X.font=`${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText(label,cx,y+GS*.02); }
+  }
+  X.fillStyle='rgba(80,160,255,.75)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('АПГРЕЙДЕР',cx,y+GS*.96);
+}
+
+// ⚡ НОВРУЗ-РЫНОК ──────────────────────────────
+function dNovruz(x,y,obj){
+  const t=GT, cx=x+GS*.5, cy=y+GS*.5;
+  const bound=!!MBIND[obj.id];
+  const flash=(obj._flashT||0)>0;
+
+  // Праздничная архитектура — купол и минарет
+  // Основа
+  const bg=X.createLinearGradient(x,y+GS*.3,x+GS,y+GS);
+  bg.addColorStop(0,'#1a4a1a'); bg.addColorStop(.5,'#0e3010'); bg.addColorStop(1,'#071808');
+  X.fillStyle=bg; rrx(x+3,y+GS*.4,GS-6,GS*.58,5); X.fill();
+
+  // Золотые орнаменты по бокам
+  X.strokeStyle=`rgba(255,215,0,${0.5+Math.sin(t*2)*.2})`; X.lineWidth=1.5;
+  for(let i=0;i<4;i++){
+    X.beginPath(); X.arc(x+GS*(.15+i*.24), y+GS*.65, GS*.06, 0, Math.PI*2); X.stroke();
+  }
+
+  // Купол зелёный
+  const dg=X.createRadialGradient(cx,y+GS*.32,0,cx,y+GS*.32,GS*.32);
+  dg.addColorStop(0,'#50c050'); dg.addColorStop(.5,'#2a8030'); dg.addColorStop(1,'#0e4018');
+  X.fillStyle=dg;
+  X.beginPath(); X.arc(cx,y+GS*.42,GS*.32,Math.PI,0); X.fill();
+  X.strokeStyle='#ffd700'; X.lineWidth=2;
+  X.beginPath(); X.arc(cx,y+GS*.42,GS*.32,Math.PI,0); X.stroke();
+
+  // Полумесяц на куполе
+  X.save(); X.translate(cx,y+GS*.12);
+  X.fillStyle='#ffd700';
+  X.beginPath(); X.arc(0,0,GS*.07,0,Math.PI*2); X.fill();
+  X.fillStyle='#1a4a1a'; X.beginPath(); X.arc(GS*.035,-GS*.02,GS*.06,0,Math.PI*2); X.fill();
+  // Звёздочка
+  X.fillStyle='#ffd700'; X.font=`${GS*.1}px serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText('★',GS*.11,-GS*.04);
+  X.restore();
+
+  // Витрина — мгновенная продажа
+  X.fillStyle='rgba(255,215,0,.12)'; rrx(cx-GS*.3,y+GS*.44,GS*.6,GS*.24,4); X.fill();
+  X.strokeStyle='rgba(255,215,0,.4)'; X.lineWidth=1.2; rrx(cx-GS*.3,y+GS*.44,GS*.6,GS*.24,4); X.stroke();
+  X.fillStyle='rgba(255,215,0,.85)'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText('⚡ ПРОДАТЬ',cx,y+GS*.56);
+
+  // Вспышка при продаже
+  if(flash){
+    const fi=obj._flashT/0.8;
+    obj._flashT-=1/60;
+    // Монетки разлетаются
+    for(let i=0;i<8;i++){
+      const a=i/8*Math.PI*2, r=GS*(0.2+(1-fi)*0.4);
+      X.fillStyle=`rgba(255,215,0,${fi*.9})`;
+      X.font=`${GS*.15}px serif`; X.textAlign='center'; X.textBaseline='middle';
+      X.fillText('🪙',cx+Math.cos(a)*r,cy+Math.sin(a)*r);
+    }
+    // Золотое свечение
+    const fg=X.createRadialGradient(cx,cy,0,cx,cy,GS*.6);
+    fg.addColorStop(0,`rgba(255,215,0,${fi*.4})`); fg.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=fg; X.fillRect(x-GS*.1,y-GS*.1,GS*1.2,GS*1.2);
+    // Сумма продажи
+    if(obj._lastSold>0){
+      X.fillStyle=`rgba(255,255,100,${fi})`;
+      X.font=`bold ${GS*.18}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+      X.fillText(`+${obj._lastSold}🪙`,cx,y+GS*.2);
+    }
+  }
+
+  // Пульсирующее свечение если привязан
+  if(bound){
+    const pulse=0.3+Math.sin(t*3)*.15;
+    X.strokeStyle=`rgba(255,215,0,${pulse})`; X.lineWidth=2.5;
+    X.beginPath(); X.arc(cx,y+GS*.65,GS*.42,0,Math.PI*2); X.stroke();
+  } else {
+    X.fillStyle='rgba(255,100,100,.8)'; X.font=`${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('→ привяжи!',cx,y+GS*.96);
+    return;
+  }
+  X.fillStyle='rgba(255,215,0,.85)'; X.font=`bold ${GS*.085}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('НОВРУЗ-РЫНОК',cx,y+GS*.96);
+}
+
+// ☘️ КЛЕВЕР-ФЕРМА ─────────────────────────────
+function dCloverFarm(x,y,obj){
+  const t=GT, cx=x+GS*.5;
+
+  // Земля с градиентом и текстурой
+  const soil=X.createLinearGradient(x,y+GS*.5,x,y+GS);
+  soil.addColorStop(0,'#4a6a18'); soil.addColorStop(.4,'#3a5210'); soil.addColorStop(1,'#1e2e08');
+  X.fillStyle=soil; rrx(x+2,y+GS*.52,GS-4,GS*.46,4); X.fill();
+  X.strokeStyle='#2a3e08'; X.lineWidth=1.5; rrx(x+2,y+GS*.52,GS-4,GS*.46,4); X.stroke();
+
+  // Рядки земли с тенями
+  X.strokeStyle='rgba(0,0,0,.25)'; X.lineWidth=1.5;
+  for(let i=0;i<3;i++){
+    const ry=y+GS*(.6+i*.12);
+    X.beginPath(); X.moveTo(x+4,ry); X.lineTo(x+GS-4,ry); X.stroke();
+  }
+
+  // Деревянный домик садовника (маленький)
+  const hg=X.createLinearGradient(x+GS*.6,y+GS*.08,x+GS*.95,y+GS*.42);
+  hg.addColorStop(0,'#c89050'); hg.addColorStop(1,'#8a6030');
+  X.fillStyle=hg; X.fillRect(x+GS*.6,y+GS*.22,GS*.34,GS*.28);
+  X.strokeStyle='#6a4020'; X.lineWidth=1.5; X.strokeRect(x+GS*.6,y+GS*.22,GS*.34,GS*.28);
+  // Крыша домика
+  X.fillStyle='#8a2010';
+  X.beginPath(); X.moveTo(x+GS*.56,y+GS*.22); X.lineTo(x+GS*.77,y+GS*.08); X.lineTo(x+GS*.98,y+GS*.22); X.closePath(); X.fill();
+  X.strokeStyle='#5a1008'; X.lineWidth=1.5;
+  X.beginPath(); X.moveTo(x+GS*.56,y+GS*.22); X.lineTo(x+GS*.77,y+GS*.08); X.lineTo(x+GS*.98,y+GS*.22); X.stroke();
+  // Дверца
+  X.fillStyle='#4a2808'; rrx(x+GS*.7,y+GS*.32,GS*.1,GS*.18,2); X.fill();
+  // Окошко
+  X.fillStyle=`rgba(255,220,100,${0.5+Math.sin(t*2)*.2})`; X.beginPath(); X.arc(x+GS*.67,y+GS*.27,GS*.04,0,Math.PI*2); X.fill();
+
+  // 8 клеверных кустов — красивые и детализированные
+  for(let i=0;i<8;i++){
+    const lx=x+GS*(.07+i*.11+Math.sin(i*3.7)*.03);
+    const ly=y+GS*(.35+Math.sin(i*2.1)*.06);
+    const sway=Math.sin(t*1.8+i*.7)*0.15;
+    const grown=((t*0.2+i*.3)%1)>.3;
+    if(!grown) continue;
+    X.save(); X.translate(lx,ly); X.rotate(sway);
+    // Стебель с изгибом
+    X.strokeStyle=`hsl(${115+i*3},65%,28%)`; X.lineWidth=1.8; X.lineCap='round';
+    X.beginPath(); X.moveTo(0,GS*.18); X.quadraticCurveTo(sway*GS*.1,GS*.1,0,0); X.stroke();
+    // 3 листика каждый другого оттенка
+    const hue=115+Math.sin(t*.5+i)*8;
+    [[-0.07,-0.07],[0.07,-0.07],[0,-0.14]].forEach(([lox,loy],li)=>{
+      const lg=X.createRadialGradient(lox*GS,loy*GS,0,lox*GS,loy*GS,GS*.075);
+      lg.addColorStop(0,`hsl(${hue+li*5},75%,45%)`);
+      lg.addColorStop(1,`hsl(${hue+li*5},60%,28%)`);
+      X.fillStyle=lg;
+      X.beginPath(); X.ellipse(lox*GS,loy*GS,GS*.075,GS*.05,lox>0?.6:lox<0?-.6:0,0,Math.PI*2); X.fill();
+      // Прожилка листа
+      X.strokeStyle=`rgba(255,255,255,.2)`; X.lineWidth=.8;
+      X.beginPath(); X.moveTo(lox*GS,loy*GS+GS*.02); X.lineTo(lox*GS,loy*GS-GS*.03); X.stroke();
+    });
+    // Маленькое сердечко на центральном листе (4й листик удачи у некоторых)
+    if(i===3||i===7){
+      X.fillStyle='rgba(255,200,200,.6)'; X.font=`${GS*.07}px serif`;
+      X.textAlign='center'; X.textBaseline='middle'; X.fillText('♥',0,-GS*.14);
+    }
+    // Блик на листьях
+    X.fillStyle='rgba(255,255,255,.15)'; X.beginPath(); X.ellipse(-GS*.02,-GS*.1,GS*.02,GS*.015,-.3,0,Math.PI*2); X.fill();
+    X.restore();
+  }
+
+  // Деревянный забор с детализацией
+  const posts=[x+3,x+GS*.23,x+GS*.45,x+GS*.55,x+GS-5];
+  X.fillStyle='#a06828';
+  posts.forEach(px=>{ rrx(px-2.5,y+GS*.5,5,GS*.14,1); X.fill(); });
+  // Планки забора
+  X.strokeStyle='#8a5020'; X.lineWidth=2; X.lineCap='round';
+  X.beginPath(); X.moveTo(x+3,y+GS*.55); X.lineTo(x+GS*.52,y+GS*.55); X.stroke();
+  X.beginPath(); X.moveTo(x+GS*.54,y+GS*.55); X.lineTo(x+GS-3,y+GS*.55); X.stroke();
+  // Гвоздики
+  X.fillStyle='#c08030'; posts.forEach(px=>{ X.beginPath(); X.arc(px,y+GS*.55,1.5,0,Math.PI*2); X.fill(); });
+
+  // Летящая бабочка над грядкой
+  const ba=t*1.5; const bx2=cx+Math.cos(ba)*GS*.2, by2=y+GS*.28+Math.sin(ba*1.3)*GS*.06;
+  X.save(); X.translate(bx2,by2);
+  const bf=Math.sin(t*8)*.5;
+  X.fillStyle='rgba(255,150,50,.7)'; X.beginPath(); X.ellipse(-GS*.04,0,GS*.06,GS*.035,-.3-bf,0,Math.PI*2); X.fill();
+  X.beginPath(); X.ellipse(GS*.04,0,GS*.06,GS*.035,.3+bf,0,Math.PI*2); X.fill();
+  X.fillStyle='rgba(80,40,10,.8)'; X.beginPath(); X.ellipse(0,0,1.5,GS*.045,0,0,Math.PI*2); X.fill();
+  X.restore();
+
+  // Прогресс-кольцо вокруг домика
+  if(obj.progress>0){
+    X.strokeStyle=`rgba(80,220,40,${0.6+Math.sin(t*4)*.3})`; X.lineWidth=2.5;
+    X.setLineDash([3,3]); X.beginPath(); X.arc(x+GS*.77,y+GS*.26,GS*.22,-Math.PI/2,-Math.PI/2+obj.progress*Math.PI*2); X.stroke(); X.setLineDash([]);
+  }
+  X.fillStyle='rgba(50,180,20,.88)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('КЛВ.ФЕРМА',cx,y+GS*.96);
+}
+
+// 🍺 ПИВОВАРНЯ ────────────────────────────────
+function dBrewery(x,y,obj){
+  const t=GT, cx=x+GS*.5;
+  const brewing=(obj._cloverBuf||0)>=3;
+  const prog=obj.progress||0;
+
+  // Каменный фундамент с кирпичами
+  const base=X.createLinearGradient(x,y+GS*.55,x+GS,y+GS);
+  base.addColorStop(0,'#5a4228'); base.addColorStop(1,'#2a1e0e');
+  X.fillStyle=base; rrx(x+3,y+GS*.56,GS-6,GS*.42,5); X.fill();
+  X.strokeStyle='#8a6840'; X.lineWidth=1.5; rrx(x+3,y+GS*.56,GS-6,GS*.42,5); X.stroke();
+  // Кирпичный узор
+  X.strokeStyle='rgba(0,0,0,.2)'; X.lineWidth=.8;
+  for(let r=0;r<3;r++) for(let c=0;c<4;c++){
+    const off=r%2?GS*.12:0;
+    X.strokeRect(x+3+off+c*(GS-6)/4, y+GS*(.57+r*.14), (GS-6)/4, GS*.13);
+  }
+
+  // Большой медный котёл с градиентом
+  const kg=X.createLinearGradient(cx-GS*.28,y+GS*.18,cx+GS*.28,y+GS*.56);
+  kg.addColorStop(0,brewing?'#7acc30':'#4a9a18');
+  kg.addColorStop(.4,brewing?'#3a8a10':'#286808');
+  kg.addColorStop(1,'#0e2e04');
+  X.fillStyle=kg;
+  X.beginPath();
+  X.moveTo(cx-GS*.28,y+GS*.24);
+  X.lineTo(cx-GS*.26,y+GS*.56); X.arc(cx,y+GS*.56,GS*.26,Math.PI,0,false);
+  X.lineTo(cx+GS*.28,y+GS*.24);
+  X.quadraticCurveTo(cx+GS*.22,y+GS*.16,cx,y+GS*.14);
+  X.quadraticCurveTo(cx-GS*.22,y+GS*.16,cx-GS*.28,y+GS*.24);
+  X.closePath(); X.fill();
+  // Обводка котла с медным блеском
+  X.strokeStyle='#c8a030'; X.lineWidth=2.5;
+  X.beginPath();
+  X.moveTo(cx-GS*.28,y+GS*.24);
+  X.lineTo(cx-GS*.26,y+GS*.56); X.arc(cx,y+GS*.56,GS*.26,Math.PI,0,false);
+  X.lineTo(cx+GS*.28,y+GS*.24);
+  X.quadraticCurveTo(cx+GS*.22,y+GS*.16,cx,y+GS*.14);
+  X.quadraticCurveTo(cx-GS*.22,y+GS*.16,cx-GS*.28,y+GS*.24);
+  X.closePath(); X.stroke();
+  // Горизонтальные обручи
+  X.strokeStyle='#e8b840'; X.lineWidth=2;
+  [y+GS*.3,y+GS*.42,y+GS*.52].forEach(ry=>{
+    X.beginPath(); X.ellipse(cx,ry,GS*.24,GS*.06,0,0,Math.PI*2); X.stroke();
+  });
+  // Блик на котле
+  const kbg=X.createLinearGradient(cx-GS*.2,y+GS*.18,cx-GS*.08,y+GS*.35);
+  kbg.addColorStop(0,'rgba(255,255,255,.18)'); kbg.addColorStop(1,'rgba(255,255,255,0)');
+  X.fillStyle=kbg; X.beginPath(); X.ellipse(cx-GS*.1,y+GS*.28,GS*.08,GS*.12,-.4,0,Math.PI*2); X.fill();
+
+  // Жидкость внутри булькает
+  X.fillStyle=`rgba(${brewing?'80,220,30':'40,160,20'},${0.7+Math.sin(t*3)*.15})`;
+  X.beginPath(); X.ellipse(cx,y+GS*(.22+Math.sin(t*4)*.01),GS*.2,GS*.055,0,0,Math.PI*2); X.fill();
+
+  // Пузырьки
+  for(let b=0;b<5;b++){
+    const bp=(t*1.5+b*.5)%1;
+    const bAlpha=Math.max(0,.7*(1-bp));
+    X.fillStyle=`rgba(150,255,80,${bAlpha})`;
+    X.beginPath(); X.arc(cx+(b-2)*GS*.05+Math.sin(b+t)*GS*.02, y+GS*.22-bp*GS*.16, 2+bp*2,0,Math.PI*2); X.fill();
+    // Блик на пузырьке
+    X.fillStyle=`rgba(255,255,255,${bAlpha*.5})`;
+    X.beginPath(); X.arc(cx+(b-2)*GS*.05+Math.sin(b+t)*GS*.02-0.8, y+GS*.22-bp*GS*.16-0.8, 1,0,Math.PI*2); X.fill();
+  }
+
+  // Две трубы разной высоты
+  [[cx-GS*.1,y,GS*.06],[cx+GS*.15,y+GS*.04,GS*.05]].forEach(([tx,ty,tw])=>{
+    const tg=X.createLinearGradient(tx-tw,ty,tx+tw,ty);
+    tg.addColorStop(0,'#6a4020'); tg.addColorStop(.5,'#8a5828'); tg.addColorStop(1,'#4a2c10');
+    X.fillStyle=tg; X.fillRect(tx-tw,ty,tw*2,GS*.28);
+    X.strokeStyle='#c8a030'; X.lineWidth=1.5; X.strokeRect(tx-tw,ty,tw*2,GS*.28);
+    // Ободок трубы
+    X.fillStyle='#a08020'; X.fillRect(tx-tw-1.5,ty,tw*2+3,GS*.04);
+    // Дым
+    for(let s=0;s<3;s++){
+      const sp=(t*0.8+s*.38+tx*.01)%1;
+      const smokex=tx+Math.sin(t*1.2+s+tx)*GS*.05;
+      X.fillStyle=`rgba(${brewing?'60,180,20':'120,140,80'},${0.4*(1-sp)})`;
+      X.beginPath(); X.arc(smokex, ty-sp*GS*.32, GS*(0.04+sp*.06),0,Math.PI*2); X.fill();
+    }
+  });
+
+  // Ручки котла
+  X.strokeStyle='#c8a030'; X.lineWidth=3.5; X.lineCap='round';
+  [[-1],[1]].forEach(([s])=>{
+    X.beginPath(); X.arc(cx+s*GS*.3,y+GS*.35,GS*.07,s>0?-Math.PI*.6:-Math.PI*.4,s>0?Math.PI*.4:Math.PI*.6); X.stroke();
+  });
+
+  // Буфер клевера (маленькие листики)
+  const buf=obj._cloverBuf||0;
+  for(let i=0;i<Math.min(buf,3);i++){
+    X.fillStyle=`hsl(${120+i*10},70%,40%)`;
+    X.font=`${GS*.12}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('☘',x+GS*(.16+i*.22),y+GS*.08);
+  }
+  if(buf>0){
+    X.fillStyle='rgba(80,220,40,.9)'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center';
+    X.fillText(`${buf}/3`,cx,y+GS*.09);
+  }
+
+  // Прогресс-кольцо
+  if(prog>0){
+    X.strokeStyle=`rgba(150,255,50,${0.5+Math.sin(t*5)*.3})`; X.lineWidth=3;
+    X.beginPath(); X.arc(cx,y+GS*.36,GS*.31,-Math.PI/2,-Math.PI/2+prog*Math.PI*2); X.stroke();
+  }
+  X.fillStyle='rgba(60,200,20,.88)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('ПИВОВАРНЯ',cx,y+GS*.96);
+}
+
+// 🌈 РАДУЖНЫЙ РЫНОК ───────────────────────────
+function dRainbowMkt(x,y,obj){
+  const t=GT, cx=x+GS*.5, cy=y+GS*.5;
+  const bound=!!MBIND[obj.id];
+
+  // Основание — зелёный рыночный прилавок
+  const base=X.createLinearGradient(x,y+GS*.38,x+GS,y+GS);
+  base.addColorStop(0,'#1e6a1e'); base.addColorStop(.5,'#0e4a0e'); base.addColorStop(1,'#071e07');
+  X.fillStyle=base; rrx(x+2,y+GS*.38,GS-4,GS*.6,5); X.fill();
+  X.strokeStyle='#50cc30'; X.lineWidth=2; rrx(x+2,y+GS*.38,GS-4,GS*.6,5); X.stroke();
+
+  // Радужная арка — многослойная с блеском
+  const rainbow=['#ff2020','#ff8800','#ffe000','#20cc20','#2060ff','#8820cc'];
+  rainbow.forEach((col,i)=>{
+    const r2=GS*(.36-i*.045);
+    X.strokeStyle=col; X.lineWidth=4.5;
+    X.globalAlpha=0.75+Math.sin(t*2+i*.5)*.12;
+    X.beginPath(); X.arc(cx,y+GS*.45,r2,Math.PI,0,false); X.stroke();
+  });
+  X.globalAlpha=1;
+  // Блеск радуги
+  X.strokeStyle='rgba(255,255,255,0.18)'; X.lineWidth=1.5;
+  X.beginPath(); X.arc(cx,y+GS*.45,GS*.34,Math.PI,0,false); X.stroke();
+
+  // Пушистые облака у основания радуги
+  [[cx-GS*.37,y+GS*.43],[cx+GS*.37,y+GS*.43]].forEach(([ox,oy])=>{
+    X.fillStyle='rgba(255,255,255,.88)';
+    [-GS*.07,0,GS*.07].forEach((dx,i)=>{
+      X.beginPath(); X.arc(ox+dx,oy-i*GS*.01,GS*(.065-i*.005),0,Math.PI*2); X.fill();
+    });
+  });
+
+  // Прилавок с товарами
+  X.fillStyle='rgba(0,0,0,.25)'; rrx(cx-GS*.32,y+GS*.46,GS*.64,GS*.28,4); X.fill();
+  X.fillStyle='rgba(255,220,50,.12)'; rrx(cx-GS*.3,y+GS*.47,GS*.6,GS*.26,3); X.fill();
+  X.strokeStyle='rgba(255,215,0,.4)'; X.lineWidth=1; rrx(cx-GS*.3,y+GS*.47,GS*.6,GS*.26,3); X.stroke();
+
+  // Товары на прилавке
+  const items=bound?['☘️','🍺','🌟']:['☘️','?','?'];
+  items.forEach((ic,i)=>{
+    X.font=`${GS*.14}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.globalAlpha=bound?1:0.4;
+    X.fillText(ic, x+GS*(.22+i*.28), y+GS*.6);
+    X.globalAlpha=1;
+  });
+
+  // Цены
+  if(bound){
+    X.fillStyle='rgba(255,215,0,.9)'; X.font=`bold ${GS*.08}px Cinzel,serif`; X.textAlign='center';
+    ['12','45','80'].forEach((p,i)=>X.fillText(p+'🪙', x+GS*(.22+i*.28), y+GS*.7));
+  }
+
+  // Флаги-вымпелы сверху
+  const flagColors=['#ff2020','#20aa20','#ffe000','#2060ff'];
+  for(let f=0;f<4;f++){
+    const fx=x+GS*(.1+f*.25), fy=y+GS*.38;
+    X.strokeStyle='rgba(80,40,10,.6)'; X.lineWidth=1;
+    X.beginPath(); X.moveTo(fx,fy); X.lineTo(fx+GS*.2,fy); X.stroke();
+    X.fillStyle=flagColors[f];
+    X.beginPath(); X.moveTo(fx+f*.5%GS*.2,fy); X.lineTo(fx+f*.5%GS*.2+GS*.08,fy+GS*.05); X.lineTo(fx+f*.5%GS*.2,fy+GS*.1); X.closePath(); X.fill();
+  }
+
+  // Пульс если привязан
+  if(bound){
+    X.strokeStyle=`rgba(100,255,50,${0.25+Math.sin(t*2.5)*.15})`; X.lineWidth=2;
+    X.beginPath(); X.arc(cx,y+GS*.65,GS*.4,0,Math.PI*2); X.stroke();
+  }
+
+  if(!bound){ X.fillStyle='rgba(255,100,80,.9)'; X.font=`${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('→ привяжи!',cx,y+GS*.97); }
+  else { X.fillStyle='rgba(80,240,50,.9)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('РАД.РЫНОК',cx,y+GS*.97); }
+}
+
+// 🏰 ЗАМОК ЛЕПРЕКОНА ──────────────────────────
+function dLepCastle(x,y,obj){
+  const t=GT, cx=x+GS*.5, cy=y+GS*.5;
+  const flash=(obj._flashT||0)>0;
+  if(flash) obj._flashT=Math.max(0,(obj._flashT||0)-1/60);
+
+  // Тень замка
+  X.fillStyle='rgba(0,0,0,.2)'; X.beginPath(); X.ellipse(cx,y+GS*.97,GS*.42,GS*.06,0,0,Math.PI*2); X.fill();
+
+  // Главные стены — градиент от светло-зелёного к тёмному
+  const wallGrad=X.createLinearGradient(x+GS*.08,y+GS*.18,x+GS*.92,y+GS);
+  wallGrad.addColorStop(0,'#368a36'); wallGrad.addColorStop(.4,'#226222'); wallGrad.addColorStop(1,'#0e2e0e');
+  X.fillStyle=wallGrad; rrx(x+GS*.12,y+GS*.22,GS*.76,GS*.75,4); X.fill();
+  // Каменная текстура
+  X.strokeStyle='rgba(0,0,0,.18)'; X.lineWidth=0.8;
+  for(let r=0;r<4;r++) for(let c=0;c<3;c++){
+    const off=r%2?GS*.13:0;
+    X.strokeRect(x+GS*.13+off+c*GS*.26, y+GS*(.23+r*.18), GS*.26, GS*.18);
+  }
+  // Внешняя обводка стен
+  X.strokeStyle='#60cc40'; X.lineWidth=2; rrx(x+GS*.12,y+GS*.22,GS*.76,GS*.75,4); X.stroke();
+  // Блик на стенах
+  const wbg=X.createLinearGradient(x+GS*.12,y+GS*.22,x+GS*.3,y+GS*.5);
+  wbg.addColorStop(0,'rgba(255,255,255,.07)'); wbg.addColorStop(1,'rgba(255,255,255,0)');
+  X.fillStyle=wbg; rrx(x+GS*.12,y+GS*.22,GS*.76,GS*.75,4); X.fill();
+
+  // Угловые башни — высокие
+  [[x+GS*.04,y],[x+GS*.72,y]].forEach(([tx,ty])=>{
+    const tg=X.createLinearGradient(tx,ty,tx+GS*.24,ty+GS*.45);
+    tg.addColorStop(0,'#40a040'); tg.addColorStop(1,'#1a4a1a');
+    X.fillStyle=tg; rrx(tx,ty+GS*.04,GS*.24,GS*.42,3); X.fill();
+    X.strokeStyle='#60cc40'; X.lineWidth=1.8; rrx(tx,ty+GS*.04,GS*.24,GS*.42,3); X.stroke();
+    // Зубцы башни
+    for(let z=0;z<3;z++){
+      X.fillStyle='#30883a'; X.fillRect(tx+z*GS*.075,ty,GS*.06,GS*.08);
+      X.strokeStyle='#60cc40'; X.lineWidth=1; X.strokeRect(tx+z*GS*.075,ty,GS*.06,GS*.08);
+    }
+    // Окно башни
+    X.fillStyle=`rgba(255,200,50,${0.6+Math.sin(t*2+tx)*.25})`;
+    X.beginPath(); X.arc(tx+GS*.12,ty+GS*.2,GS*.04,0,Math.PI*2); X.fill();
+    X.strokeStyle='#2a6a2a'; X.lineWidth=1; X.beginPath(); X.arc(tx+GS*.12,ty+GS*.2,GS*.04,0,Math.PI*2); X.stroke();
+    // Флаг
+    X.strokeStyle='#4aaa30'; X.lineWidth=1.5;
+    X.beginPath(); X.moveTo(tx+GS*.12,ty-GS*.02); X.lineTo(tx+GS*.12,ty+GS*.14); X.stroke();
+    const fa=Math.sin(t*3+tx)*0.15;
+    X.fillStyle='#ffd700';
+    X.beginPath();
+    X.moveTo(tx+GS*.12,ty); X.lineTo(tx+GS*.12+Math.cos(fa)*GS*.14,ty+GS*.04); X.lineTo(tx+GS*.12,ty+GS*.09); X.closePath(); X.fill();
+    // Звёздочка на флаге
+    X.fillStyle='rgba(0,60,0,.7)'; X.font=`${GS*.06}px serif`; X.textAlign='center'; X.fillText('☘',tx+GS*.19,ty+GS*.04);
+  });
+
+  // Главные зубцы (5 штук)
+  for(let i=0;i<5;i++){
+    const zx=x+GS*(.14+i*.18);
+    const zg=X.createLinearGradient(zx,y+GS*.12,zx+GS*.14,y+GS*.24);
+    zg.addColorStop(0,'#40a040'); zg.addColorStop(1,'#1a5a1a');
+    X.fillStyle=zg; rrx(zx,y+GS*.12,GS*.12,GS*.12,2); X.fill();
+    X.strokeStyle='#60cc40'; X.lineWidth=1.5; rrx(zx,y+GS*.12,GS*.12,GS*.12,2); X.stroke();
+  }
+
+  // Ворота — арочные
+  const gateGrad=X.createLinearGradient(cx-GS*.14,y+GS*.6,cx+GS*.14,y+GS*.96);
+  gateGrad.addColorStop(0,'#0a1e0a'); gateGrad.addColorStop(1,'#050e05');
+  X.fillStyle=gateGrad;
+  X.beginPath(); X.arc(cx,y+GS*.68,GS*.14,Math.PI,0,false); X.fill();
+  X.fillRect(cx-GS*.14,y+GS*.68,GS*.28,GS*.3);
+  // Решётка ворот
+  X.strokeStyle=`rgba(80,180,50,${0.4+Math.sin(t*1.5)*.1})`; X.lineWidth=1.2;
+  for(let i=0;i<4;i++){ X.beginPath(); X.moveTo(cx-GS*.11+i*GS*.075,y+GS*.68); X.lineTo(cx-GS*.11+i*GS*.075,y+GS*.96); X.stroke(); }
+  X.beginPath(); X.moveTo(cx-GS*.14,y+GS*.76); X.lineTo(cx+GS*.14,y+GS*.76); X.stroke();
+  X.beginPath(); X.moveTo(cx-GS*.14,y+GS*.84); X.lineTo(cx+GS*.14,y+GS*.84); X.stroke();
+  // Арочная обводка ворот
+  X.strokeStyle='#60cc40'; X.lineWidth=2;
+  X.beginPath(); X.arc(cx,y+GS*.68,GS*.14,Math.PI,0,false); X.stroke();
+  X.moveTo(cx-GS*.14,y+GS*.68); X.lineTo(cx-GS*.14,y+GS*.96);
+  X.moveTo(cx+GS*.14,y+GS*.68); X.lineTo(cx+GS*.14,y+GS*.96); X.stroke();
+
+  // Окна с золотым свечением
+  [[cx-GS*.28,y+GS*.35],[cx+GS*.28,y+GS*.35],[cx,y+GS*.42],[cx-GS*.28,y+GS*.52],[cx+GS*.28,y+GS*.52]].forEach(([wx,wy],wi)=>{
+    const wg=X.createRadialGradient(wx,wy,0,wx,wy,GS*.07);
+    wg.addColorStop(0,`rgba(255,200,50,${0.6+Math.sin(t*2.5+wi)*.3})`);
+    wg.addColorStop(1,'rgba(255,150,0,0)');
+    X.fillStyle=wg; X.beginPath(); X.arc(wx,wy,GS*.07,0,Math.PI*2); X.fill();
+    // Ромбическое окно
+    X.fillStyle='rgba(255,220,80,.7)';
+    X.beginPath(); X.moveTo(wx,wy-GS*.04); X.lineTo(wx+GS*.04,wy); X.lineTo(wx,wy+GS*.04); X.lineTo(wx-GS*.04,wy); X.closePath(); X.fill();
+    X.strokeStyle='#2a6a2a'; X.lineWidth=1;
+    X.beginPath(); X.moveTo(wx,wy-GS*.04); X.lineTo(wx+GS*.04,wy); X.lineTo(wx,wy+GS*.04); X.lineTo(wx-GS*.04,wy); X.closePath(); X.stroke();
+  });
+
+  // Вспышка золота при выдаче монет
+  if(flash){
+    const fi=obj._flashT;
+    const glow=X.createRadialGradient(cx,cy,0,cx,cy,GS*.7);
+    glow.addColorStop(0,`rgba(255,215,0,${fi*.45})`); glow.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=glow; X.fillRect(x-GS*.15,y-GS*.15,GS*1.3,GS*1.3);
+    // Лепрекон выглядывает
+    X.font=`${GS*.28}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.globalAlpha=Math.min(1,fi*2); X.fillText('🍀',cx,y+GS*.38); X.globalAlpha=1;
+    X.fillStyle=`rgba(255,240,50,${fi*.95})`;
+    X.font=`bold ${GS*.17}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(`+${window._st&&(window._st*.5/60%(Math.PI*2))>Math.PI?120:60}🪙`,cx,y+GS*.18);
+  }
+
+  // Прогресс-дуга
+  const prog=Math.min(1,(obj._lepT||0)/25);
+  X.strokeStyle='rgba(0,0,0,.4)'; X.lineWidth=4; X.beginPath(); X.arc(cx,cy,GS*.45,0,Math.PI*2); X.stroke();
+  X.strokeStyle=`hsl(${110+prog*50},75%,45%)`; X.lineWidth=3.5;
+  X.beginPath(); X.arc(cx,cy,GS*.45,-Math.PI/2,-Math.PI/2+prog*Math.PI*2); X.stroke();
+
+  X.fillStyle='rgba(80,220,80,.9)'; X.font=`bold ${GS*.085}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('ЗАМОК ЛЕП.',cx,y+GS*.97);
+}
+
+// 🪄 КОТЁЛ ДРУИДА ─────────────────────────────
+function dDruidCauldron(x,y,obj){
+  const t=GT, cx=x+GS*.5, cy=y+GS*.5;
+  const prog=obj.progress||0;
+  const isNight=window._st&&(window._st*.5/60%(Math.PI*2))>Math.PI;
+  const flash=(obj._flashT||0)>0;
+  if(flash) obj._flashT=Math.max(0,(obj._flashT||0)-1/60);
+
+  // Мощное свечение вокруг — зелёное/золотое
+  const glowCol=isNight?'rgba(255,215,0,':'rgba(0,200,50,';
+  const outerGlow=X.createRadialGradient(cx,cy,0,cx,cy,GS*.7);
+  outerGlow.addColorStop(0,glowCol+`${0.12+Math.sin(t*2)*.06})`);
+  outerGlow.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=outerGlow; X.fillRect(x-GS*.2,y-GS*.2,GS*1.4,GS*1.4);
+
+  // Тень
+  X.fillStyle='rgba(0,0,0,.3)'; X.beginPath(); X.ellipse(cx,y+GS*.97,GS*.38,GS*.07,0,0,Math.PI*2); X.fill();
+
+  // Три опоры котла — кованые ноги
+  X.strokeStyle='#3a3a3a'; X.lineWidth=4; X.lineCap='round';
+  [[-GS*.2,GS*.08],[0,GS*.12],[GS*.2,GS*.08]].forEach(([dx,dy])=>{
+    X.beginPath(); X.moveTo(cx+dx*0.6,y+GS*.72); X.lineTo(cx+dx,y+GS*.92+dy); X.stroke();
+  });
+  // Стыки ног
+  X.fillStyle='#2a2a2a';
+  [[-GS*.2,GS*.08],[0,GS*.12],[GS*.2,GS*.08]].forEach(([dx,dy])=>{
+    X.beginPath(); X.arc(cx+dx,y+GS*.92+dy,4,0,Math.PI*2); X.fill();
+  });
+
+  // Основной котёл — массивный, чёрный с зелёным
+  const kg=X.createLinearGradient(cx-GS*.32,y+GS*.2,cx+GS*.32,y+GS*.75);
+  kg.addColorStop(0,'#2a3a28'); kg.addColorStop(.3,'#1a2818'); kg.addColorStop(.7,'#0e1a0e'); kg.addColorStop(1,'#060e06');
+  X.fillStyle=kg;
+  X.beginPath();
+  X.moveTo(cx-GS*.3,y+GS*.22);
+  X.quadraticCurveTo(cx-GS*.36,y+GS*.48,cx-GS*.28,y+GS*.72);
+  X.arc(cx,y+GS*.72,GS*.28,Math.PI,0,false);
+  X.quadraticCurveTo(cx+GS*.36,y+GS*.48,cx+GS*.3,y+GS*.22);
+  X.quadraticCurveTo(cx,y+GS*.12,cx-GS*.3,y+GS*.22);
+  X.closePath(); X.fill();
+
+  // Металлические обручи
+  X.strokeStyle='#1a3a1a'; X.lineWidth=3;
+  [y+GS*.3,y+GS*.46,y+GS*.6].forEach(ry=>{
+    const rx=GS*(.28+Math.abs(ry-(y+GS*.46))*0.1);
+    X.beginPath(); X.ellipse(cx,ry,rx,rx*.28,0,0,Math.PI*2); X.stroke();
+  });
+  // Золотые кельтские узоры на котле
+  X.strokeStyle=`rgba(80,220,50,${0.5+Math.sin(t*2)*.2})`; X.lineWidth=1.5;
+  for(let i=0;i<4;i++){
+    const ra=i/4*Math.PI*2+t*.3;
+    const rx=cx+Math.cos(ra)*GS*.22, ry=y+GS*.48+Math.sin(ra)*GS*.1;
+    X.beginPath(); X.arc(rx,ry,GS*.04,0,Math.PI*2); X.stroke();
+  }
+
+  // Обводка котла
+  X.strokeStyle='#2a5a2a'; X.lineWidth=2.5;
+  X.beginPath();
+  X.moveTo(cx-GS*.3,y+GS*.22);
+  X.quadraticCurveTo(cx-GS*.36,y+GS*.48,cx-GS*.28,y+GS*.72);
+  X.arc(cx,y+GS*.72,GS*.28,Math.PI,0,false);
+  X.quadraticCurveTo(cx+GS*.36,y+GS*.48,cx+GS*.3,y+GS*.22);
+  X.quadraticCurveTo(cx,y+GS*.12,cx-GS*.3,y+GS*.22);
+  X.closePath(); X.stroke();
+
+  // Зелье внутри — переливается
+  const potion=isNight?
+    X.createRadialGradient(cx,y+GS*.28,0,cx,y+GS*.3,GS*.26):
+    X.createRadialGradient(cx,y+GS*.28,0,cx,y+GS*.3,GS*.26);
+  potion.addColorStop(0,isNight?`rgba(255,230,50,${0.9+Math.sin(t*4)*.08})`:`rgba(50,255,80,${0.9+Math.sin(t*3)*.08})`);
+  potion.addColorStop(.4,isNight?'rgba(200,150,0,.7)':'rgba(0,180,40,.7)');
+  potion.addColorStop(1,isNight?'rgba(100,60,0,.4)':'rgba(0,80,20,.4)');
+  X.fillStyle=potion;
+  X.beginPath(); X.ellipse(cx,y+GS*(.24+Math.sin(t*3)*.01),GS*.24,GS*.07,0,0,Math.PI*2); X.fill();
+
+  // Пузыри зелья
+  for(let b=0;b<6;b++){
+    const bp=(t*1.2+b*.4)%1;
+    const bx=cx+(Math.sin(b*2.1+t)*GS*.18);
+    X.fillStyle=isNight?`rgba(255,220,80,${0.65*(1-bp)})`:`rgba(100,255,80,${0.65*(1-bp)})`;
+    X.beginPath(); X.arc(bx, y+GS*.24-bp*GS*.18, 2.8+bp*2.2,0,Math.PI*2); X.fill();
+    X.fillStyle=`rgba(255,255,255,${0.3*(1-bp)})`;
+    X.beginPath(); X.arc(bx-0.8, y+GS*.24-bp*GS*.18-0.8, 1.2,0,Math.PI*2); X.fill();
+  }
+
+  // Пар и дым из котла
+  for(let s=0;s<5;s++){
+    const sp=(t*0.7+s*.28)%1;
+    const sw=Math.sin(t*2+s)*GS*.08;
+    X.fillStyle=isNight?
+      `rgba(255,200,50,${0.35*(1-sp)})`:
+      `rgba(80,220,50,${0.35*(1-sp)})`;
+    X.beginPath(); X.arc(cx+sw, y+GS*.18-sp*GS*.38, GS*(0.05+sp*.08),0,Math.PI*2); X.fill();
+  }
+
+  // Руны вокруг котла (вращаются)
+  const runes=['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ'];
+  X.font=`bold ${GS*.13}px serif`; X.textAlign='center'; X.textBaseline='middle';
+  runes.forEach((r2,i)=>{
+    const ra=i/6*Math.PI*2+t*0.4;
+    const rx=cx+Math.cos(ra)*GS*.44, ry=cy+Math.sin(ra)*GS*.28;
+    X.fillStyle=isNight?`rgba(255,215,0,${0.5+Math.sin(t*3+i)*.3})`:`rgba(80,255,50,${0.5+Math.sin(t*2+i)*.3})`;
+    X.save(); X.translate(rx,ry); X.rotate(ra+Math.PI/2); X.fillText(r2,0,0); X.restore();
+  });
+
+  // Вспышка при выдаче золота
+  if(flash){
+    const fi=obj._flashT;
+    const fg=X.createRadialGradient(cx,cy,0,cx,cy,GS*.8);
+    fg.addColorStop(0,`rgba(255,215,0,${fi*.6})`); fg.addColorStop(1,'rgba(0,0,0,0)');
+    X.fillStyle=fg; X.fillRect(x-GS*.2,y-GS*.2,GS*1.4,GS*1.4);
+    X.fillStyle=`rgba(255,240,80,${fi})`;
+    X.font=`bold ${GS*.2}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText(`+${isNight?300:150}🪙`,cx,y+GS*.12);
+    // Буфф надпись
+    X.font=`bold ${GS*.1}px Cinzel,serif`;
+    X.fillStyle=`rgba(100,255,50,${fi})`;
+    X.fillText('⛏️×2 БАФФ!',cx,y+GS*.28);
+  }
+
+  // Прогресс-кольцо — тёмное с цветным заполнением
+  X.strokeStyle='rgba(0,0,0,.5)'; X.lineWidth=5; X.beginPath(); X.arc(cx,cy,GS*.46,0,Math.PI*2); X.stroke();
+  X.strokeStyle=isNight?`rgba(255,215,0,${0.7+Math.sin(t*3)*.2})`:`rgba(80,255,50,${0.7+Math.sin(t*2)*.2})`;
+  X.lineWidth=4;
+  X.beginPath(); X.arc(cx,cy,GS*.46,-Math.PI/2,-Math.PI/2+prog*Math.PI*2); X.stroke();
+  // Бафф индикатор
+  const anyBurred=Object.values(G).some(row=>row&&row.some&&row.some(o=>o&&o._druidBuff));
+  if(anyBurred){
+    X.fillStyle='rgba(100,255,50,.9)'; X.font=`${GS*.1}px serif`; X.textAlign='right'; X.textBaseline='top';
+    X.fillText('⛏️⚡',x+GS*.96,y+GS*.04);
+  }
+  X.fillStyle=isNight?'rgba(255,215,0,.9)':'rgba(80,220,50,.9)';
+  X.font=`bold ${GS*.08}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top';
+  X.fillText('КОТЁЛ ДРУИДА',cx,y+GS*.97);
+}
+
+// 🌟 ДЕЛИ-РЫНОК ───────────────────────────────
+function dDeliMarket(x,y,obj){
+  const t=GT, cx=x+GS*.5;
+  const bound=!!MBIND[obj.id];
+  // Красивый прилавок
+  const bg=X.createLinearGradient(x,y+GS*.3,x+GS,y+GS);
+  bg.addColorStop(0,'#8B2020'); bg.addColorStop(.5,'#6B1818'); bg.addColorStop(1,'#3B0808');
+  X.fillStyle=bg; rrx(x+2,y+GS*.32,GS-4,GS*.66,6); X.fill();
+  X.strokeStyle='#ffd700'; X.lineWidth=2; rrx(x+2,y+GS*.32,GS-4,GS*.66,6); X.stroke();
+  // Золотые угловые украшения
+  X.fillStyle='#ffd700';
+  [[x+4,y+GS*.34],[x+GS-4,y+GS*.34],[x+4,y+GS*.96],[x+GS-4,y+GS*.96]].forEach(([px,py])=>{
+    X.beginPath(); X.arc(px,py,4,0,Math.PI*2); X.fill();
+  });
+  // Витрина — три товара
+  const items=['🏺','🧂','🌟'];
+  items.forEach((ic,i)=>{
+    const ib=cx-GS*.22+i*GS*.22;
+    X.fillStyle='rgba(255,220,180,.15)'; rrx(ib-GS*.09,y+GS*.38,GS*.18,GS*.22,3); X.fill();
+    X.strokeStyle='rgba(255,200,100,.4)'; X.lineWidth=1; rrx(ib-GS*.09,y+GS*.38,GS*.18,GS*.22,3); X.stroke();
+    X.font=`${GS*.14}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText(ic,ib,y+GS*.49);
+  });
+  // Ценник
+  X.fillStyle='rgba(255,215,0,.9)'; X.font=`bold ${GS*.1}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='middle';
+  X.fillText('+55🪙',cx,y+GS*.72);
+  // Крыша — навес
+  const rg=X.createLinearGradient(x,y,x,y+GS*.32);
+  rg.addColorStop(0,'#ff4040'); rg.addColorStop(1,'#cc0000');
+  X.fillStyle=rg;
+  X.beginPath(); X.moveTo(x-4,y+GS*.32); X.lineTo(cx,y+GS*.04); X.lineTo(x+GS+4,y+GS*.32); X.closePath(); X.fill();
+  X.strokeStyle='#ffd700'; X.lineWidth=2;
+  X.beginPath(); X.moveTo(x-4,y+GS*.32); X.lineTo(cx,y+GS*.04); X.lineTo(x+GS+4,y+GS*.32); X.stroke();
+  // Флажки
+  for(let f=0;f<5;f++){
+    const fx=x+f*(GS/4), fy=y+GS*(0.08+f*.04);
+    X.fillStyle=f%2?'#ffd700':'#ff4040';
+    X.beginPath(); X.moveTo(fx,fy); X.lineTo(fx+10,fy+6); X.lineTo(fx,fy+12); X.closePath(); X.fill();
+  }
+  // Блик если привязан
+  if(bound){
+    X.strokeStyle=`rgba(255,215,0,${0.4+Math.sin(t*3)*.3})`; X.lineWidth=2;
+    X.beginPath(); X.arc(cx,y+GS*.65,GS*.38,0,Math.PI*2); X.stroke();
+  }
+  if(!bound){ X.fillStyle='rgba(255,80,80,.85)'; X.font=`${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('→ привяжи!',cx,y+GS*.96); }
+  else { X.fillStyle='rgba(255,215,0,.85)'; X.font=`bold ${GS*.09}px Cinzel,serif`; X.textAlign='center'; X.textBaseline='top'; X.fillText('ДЕЛИ-РЫНОК',cx,y+GS*.96); }
 }
 
 // COWPEN — Коровник ───────────────────────────
@@ -1863,6 +4180,33 @@ function dConv(x,y,obj){
   X.strokeStyle='#6a4820'; X.lineWidth=2; rrx(x+3,y+3,GS-6,GS-6,7); X.stroke();
   X.fillStyle='rgba(255,235,170,.8)'; X.font=`bold ${GS*.35}px serif`; X.textAlign='center'; X.textBaseline='middle';
   X.fillText(DARR[d],x+GS*.5,y+GS*.5);
+
+  // Апгрейдер сверху конвейера
+  if(obj._upgraded){
+    const cx=x+GS*.5, cy=y+GS*.5;
+    // Вспышка при прохождении ресурса
+    if((obj._upgradeFlash||0)>0){
+      obj._upgradeFlash-=1/60;
+      const f=obj._upgradeFlash/0.5;
+      const gl=X.createRadialGradient(cx,cy,0,cx,cy,GS*.5);
+      gl.addColorStop(0,`rgba(100,220,255,${f*.7})`); gl.addColorStop(1,'rgba(0,0,0,0)');
+      X.fillStyle=gl; X.fillRect(x,y,GS,GS);
+    }
+    // Синий шестиугольник-апгрейдер
+    X.save(); X.translate(cx,cy); X.rotate(t*0.6);
+    X.strokeStyle=`rgba(80,180,255,${0.7+Math.sin(t*4)*.2})`; X.lineWidth=2;
+    X.beginPath();
+    for(let i=0;i<6;i++){
+      const a=i/6*Math.PI*2-Math.PI/6, r=GS*.2;
+      i?X.lineTo(Math.cos(a)*r,Math.sin(a)*r):X.moveTo(Math.cos(a)*r,Math.sin(a)*r);
+    }
+    X.closePath(); X.stroke();
+    X.restore();
+    // Стрелка вверх в центре
+    X.fillStyle=`rgba(100,220,255,${0.8+Math.sin(t*3)*.15})`;
+    X.font=`bold ${GS*.22}px serif`; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('⬆',cx,cy);
+  }
 }
 
 // CHEST ───────────────────────────────────────
@@ -2558,8 +4902,8 @@ function drawParticles(){
       X.fillStyle='#fff'; X.beginPath(); X.arc(GS*.1,-GS*.01,GS*.028,0,Math.PI*2); X.fill();
       X.fillStyle='#111'; X.beginPath(); X.arc(GS*.11,-GS*.01,GS*.014,0,Math.PI*2); X.fill();
       X.strokeStyle='rgba(0,100,50,.22)'; X.lineWidth=.8;
-      X.beginPath(); X.arc(GS*.04,0,GS*.065,-.8,.8); X.stroke();
-      X.beginPath(); X.arc(-GS*.05,0,GS*.065,-.8,.8); X.stroke();
+      X.beginPath(); X.arc(GS*.04,0,GS*.065,-.8,.8,false); X.stroke();
+      X.beginPath(); X.arc(-GS*.05,0,GS*.065,-.8,.8,false); X.stroke();
       const fg2=X.createRadialGradient(0,0,0,0,0,GS*.24); fg2.addColorStop(0,'rgba(60,200,100,.28)'); fg2.addColorStop(1,'rgba(0,0,0,0)');
       X.fillStyle=fg2; X.beginPath(); X.arc(0,0,GS*.24,0,Math.PI*2); X.fill();
     } else if(p.icon==='milk'){
@@ -2596,6 +4940,63 @@ function drawParticles(){
       });
       const epgl=X.createRadialGradient(0,0,0,0,0,GS*.25); epgl.addColorStop(0,'rgba(255,225,75,.28)'); epgl.addColorStop(1,'rgba(0,0,0,0)');
       X.fillStyle=epgl; X.beginPath(); X.arc(0,0,GS*.25,0,Math.PI*2); X.fill();
+    } else if(p.icon==='crystal'){
+      const cg=X.createRadialGradient(0,0,0,0,0,GS*.28);
+      cg.addColorStop(0,'rgba(220,160,255,.9)'); cg.addColorStop(.4,'rgba(160,80,255,.5)'); cg.addColorStop(1,'rgba(80,0,180,0)');
+      X.fillStyle=cg; X.beginPath(); X.arc(0,0,GS*.28,0,Math.PI*2); X.fill();
+      X.save(); X.rotate(GT*.8);
+      for(let fi=0;fi<6;fi++){
+        const fa=fi/6*Math.PI*2;
+        X.fillStyle=fi%2?'rgba(220,160,255,.9)':'rgba(180,80,255,.7)';
+        X.beginPath(); X.moveTo(0,0); X.lineTo(Math.cos(fa)*GS*.16,Math.sin(fa)*GS*.16);
+        X.lineTo(Math.cos(fa+Math.PI/6)*GS*.1,Math.sin(fa+Math.PI/6)*GS*.1); X.closePath(); X.fill();
+      }
+      X.fillStyle='rgba(255,220,255,.8)'; X.beginPath(); X.arc(-GS*.04,-GS*.04,GS*.04,0,Math.PI*2); X.fill();
+      X.restore();
+    } else if(p.icon==='bread'){
+      const bg2=X.createRadialGradient(-GS*.02,-GS*.04,0,0,0,GS*.18);
+      bg2.addColorStop(0,'#e8c870'); bg2.addColorStop(.5,'#c89830'); bg2.addColorStop(1,'#8a6010');
+      X.fillStyle=bg2; X.beginPath(); X.ellipse(0,GS*.02,GS*.17,GS*.12,0,0,Math.PI*2); X.fill();
+      X.fillStyle='#d4a020'; X.beginPath(); X.ellipse(0,-GS*.04,GS*.14,GS*.09,0,0,Math.PI*2); X.fill();
+      X.fillStyle='rgba(255,220,100,.5)'; X.beginPath(); X.ellipse(-GS*.04,-GS*.06,GS*.06,GS*.04,-.3,0,Math.PI*2); X.fill();
+    } else if(p.icon==='bronze'){
+      const bg3=X.createLinearGradient(-GS*.15,-GS*.1,GS*.15,GS*.1);
+      bg3.addColorStop(0,'#e8a030'); bg3.addColorStop(.4,'#c07820'); bg3.addColorStop(1,'#8a5010');
+      X.fillStyle=bg3;
+      X.beginPath(); X.moveTo(0,-GS*.17); X.lineTo(GS*.17,0); X.lineTo(0,GS*.17); X.lineTo(-GS*.17,0); X.closePath(); X.fill();
+      X.strokeStyle='rgba(255,200,80,.7)'; X.lineWidth=1.5;
+      X.beginPath(); X.moveTo(0,-GS*.17); X.lineTo(GS*.17,0); X.lineTo(0,GS*.17); X.lineTo(-GS*.17,0); X.closePath(); X.stroke();
+      X.fillStyle='rgba(255,200,100,.5)'; X.beginPath(); X.ellipse(-GS*.04,-GS*.05,GS*.05,GS*.04,-.4,0,Math.PI*2); X.fill();
+    } else if(p.icon==='clover'){
+      const cg=X.createRadialGradient(0,0,0,0,0,GS*.22);
+      cg.addColorStop(0,'rgba(80,220,40,.8)'); cg.addColorStop(1,'rgba(20,120,10,0)');
+      X.fillStyle=cg; X.beginPath(); X.arc(0,0,GS*.22,0,Math.PI*2); X.fill();
+      X.save(); X.rotate(GT*1.5);
+      X.fillStyle='#3aaa18';
+      [[-0.1,-0.1],[0.1,-0.1],[0,-0.18]].forEach(([lx,ly],i)=>{
+        X.beginPath(); X.ellipse(lx*GS,ly*GS,GS*.09,GS*.06,i*1.05,0,Math.PI*2); X.fill();
+      });
+      X.strokeStyle='#2a8010'; X.lineWidth=1.5; X.beginPath(); X.moveTo(0,0); X.lineTo(0,GS*.15); X.stroke();
+      X.restore();
+    } else if(p.icon==='beer'){
+      const bg2=X.createLinearGradient(-GS*.13,-GS*.15,GS*.13,GS*.15);
+      bg2.addColorStop(0,'#d4a820'); bg2.addColorStop(1,'#8a5c08');
+      X.fillStyle=bg2; rrx(-GS*.13,-GS*.17,GS*.26,GS*.32,4); X.fill();
+      X.strokeStyle='rgba(255,200,80,.6)'; X.lineWidth=1.5; rrx(-GS*.13,-GS*.17,GS*.26,GS*.32,4); X.stroke();
+      X.fillStyle='rgba(255,255,255,.9)'; X.beginPath(); X.ellipse(0,-GS*.17,GS*.13,GS*.05,0,0,Math.PI*2); X.fill();
+      X.strokeStyle='#b88010'; X.lineWidth=3; X.beginPath(); X.arc(GS*.2,-GS*.04,GS*.08,-Math.PI/2,Math.PI/2); X.stroke();
+      X.fillStyle='rgba(255,220,100,.4)'; X.beginPath(); X.ellipse(-GS*.04,-GS*.06,GS*.04,GS*.1,-.3,0,Math.PI*2); X.fill();
+    } else if(p.icon==='goldbeer'){
+      const gg=X.createRadialGradient(0,0,0,0,0,GS*.28);
+      gg.addColorStop(0,'rgba(255,240,80,.9)'); gg.addColorStop(1,'rgba(200,100,0,0)');
+      X.fillStyle=gg; X.beginPath(); X.arc(0,0,GS*.28,0,Math.PI*2); X.fill();
+      for(let i=0;i<5;i++){
+        const sa=GT*3+i*1.257;
+        X.fillStyle=`rgba(255,240,50,${0.7+Math.sin(GT*4+i)*.3})`;
+        X.font=`${GS*.1}px serif`; X.textAlign='center'; X.textBaseline='middle';
+        X.fillText('✦',Math.cos(sa)*GS*.18,Math.sin(sa)*GS*.18);
+      }
+      X.font=`${GS*.2}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText('🍺',0,0);
     } else {
       const gl=X.createRadialGradient(0,0,0,0,0,GS*.22);
       gl.addColorStop(0,'rgba(200,200,200,.4)'); gl.addColorStop(1,'rgba(0,0,0,0)');
@@ -3016,6 +5417,98 @@ function openRaidMenu(col,row){
   info.innerHTML='<b>Юниты:</b> '+(Object.entries(unitCount).map(([k,v])=>UNIT_DEFS[k].icon+'×'+v).join(' ')||'нет')+
     (RAID_STATE.raidRunning?`<br><b style="color:#c00">⏱ Рейд: ${Math.ceil(RAID_STATE.raidTimeLeft||0)}с</b>`:'<br>Купи юнитов до следующего рейда!');
   b.appendChild(info);
+  document.getElementById('popup').classList.add('on');
+}
+
+function openChestMenu(col,row){
+  const o=G[row]?.[col]; if(!o) return;
+  const d=cs(o.id);
+  const b=document.getElementById('pbody'); b.innerHTML='';
+  document.getElementById('ptitle').textContent='📦 Сундук';
+  const items=[
+    {icon:'⛏️',name:'Руда',val:d.ore},
+    {icon:'🌱',name:'Семяни-руда',val:d.seed_ore||0},
+    {icon:'🔩',name:'Слитки',val:d.bars},
+    {icon:'🎣',name:'Удочки',val:d.rods},
+    {icon:'🐟',name:'Рыба',val:d.fish},
+    {icon:'🥛',name:'Молоко',val:(d.milk||0)+(d.milk_bottle||0)},
+    {icon:'🥚',name:'Яйца',val:(d.eggs||0)+(d.egg_pack||0)*5},
+  ].filter(i=>i.val>0);
+  if(!items.length){
+    b.innerHTML='<div style="text-align:center;padding:16px;opacity:.5;color:#4a2e0a">Сундук пуст</div>';
+  } else {
+    items.forEach(item=>{
+      const div=document.createElement('div'); div.className='fe';
+      div.innerHTML=`<span style="font-size:24px">${item.icon}</span><div style="flex:1"><b>${item.name}</b></div><b style="color:#c4863a;font-size:16px">${item.val}</b>`;
+      b.appendChild(div);
+    });
+  }
+  if(Object.values(MBIND).includes(o.id)){
+    const info=document.createElement('div');
+    info.style.cssText='margin-top:8px;padding:6px;background:rgba(196,134,58,.15);border-radius:8px;text-align:center;color:#4a2e0a;font-size:12px;';
+    info.innerHTML='🔗 Привязан к рынку'; b.appendChild(info);
+  }
+  document.getElementById('popup').classList.add('on');
+}
+
+function openPenMenu(col,row,type){
+  const o=G[row]?.[col]; if(!o) return;
+  const isCow=type==='cowpen';
+  const icon=isCow?'🐄':'🐔', prod=isCow?'🥛 Молоко':'🥚 Яйца';
+  const buf=isCow?(o._milkBuf||0):(o._eggBuf||0);
+  const rate=isCow?8:5;
+  const prog=Math.round((o.timer%rate)/rate*100);
+  const b=document.getElementById('pbody'); b.innerHTML='';
+  document.getElementById('ptitle').textContent=`${icon} ${NAME[type]}`;
+  b.innerHTML=`
+    <div style="text-align:center;padding:10px 0;font-size:40px">${icon}</div>
+    <div class="fe">
+      <span style="font-size:20px">${prod.split(' ')[0]}</span>
+      <div style="flex:1"><b>${prod.split(' ')[1]}</b><br><span style="font-size:11px;opacity:.6">каждые ${rate} сек</span></div>
+      <b style="color:#c4863a">${buf} в буфере</b>
+    </div>
+    <div class="fe">
+      <span style="font-size:18px">⏱</span>
+      <div style="flex:1"><b>До следующего</b></div>
+      <div style="width:80px;height:12px;background:rgba(0,0,0,.2);border-radius:6px;overflow:hidden">
+        <div style="height:100%;width:${prog}%;background:#c4863a;transition:width .3s;border-radius:6px"></div>
+      </div>
+    </div>
+    <div style="margin-top:8px;padding:8px;background:rgba(74,46,10,.08);border-radius:8px;font-size:12px;color:#4a2e0a;line-height:1.6">
+      ${isCow?'🐄→🥛 Молоко → 🏭 БанкоДел → 🥛 Бутылочка (+12🪙 в рынке)':'🐔→🥚 Яйца × 5 → 🏭 УпаковкоДел → 📦 Коробка (+20🪙)'}
+    </div>`;
+  document.getElementById('popup').classList.add('on');
+}
+
+function openBuildingInfo(col,row){
+  const o=G[row]?.[col]; if(!o) return;
+  const SMST_=window.SMST||{};
+  const infos={
+    furn:   {icon:'🔥',title:'Плавильщик',desc:'Берёт руду ⛏️ из соседнего сундука и плавит в слитки 🔩',stat:`Фаза: ${SMST_[o.id]?.phase||'ожидание'}`},
+    wshp:   {icon:'🔨',title:'Мастерская',desc:'Тратит 2 слитка 🔩🔩 → делает удочку 🎣 каждые 5 сек. Каждая удочка = новый рыбак!',stat:`Прогресс: ${Math.round((o.progress||0)*100)}%`},
+    mkt:    {icon:'🏪',title:'Рынок',desc:'Продаёт из привязанного сундука: 🐟+15🪙, 🎣+28🪙, 🥛+12🪙, 📦+20🪙',stat:MBIND[o.id]?'🔗 Привязан к сундуку':'⚠️ Не привязан! Долгий тап → Привязать к сундуку'},
+    milkdel:{icon:'🥛',title:'БанкоДел',desc:'Принимает молоко 🐄 от соседнего коровника и разливает в бутылочки 🥛',stat:`В буфере: ${o._milkBuf||0} молока`},
+    eggpack:{icon:'🥚',title:'УпаковкоДел',desc:'Собирает 5 яиц 🥚×5 и пакует в коробку 📦 каждые 4 сек',stat:`В буфере: ${o._eggBuf||0} яиц`},
+    alchlab:{icon:'⚗️',title:'Алхим.Лаборатория',desc:'Тратит 3⛏️ + 2🐟 → создаёт 💎 Кристалл каждые 12с. Нужен для Хим.Завода!',stat:`Всего кристаллов: ${R.crystal||0}💎 | Прогресс: ${Math.round((o._crystalT||0)/12*100)}%`},
+    forge:  {icon:'🔱',title:'Кузница',desc:'Тратит 3🔩 → кует 🔶 Бронзу каждые 10с. Бронза автоматически усиливает боевых юнитов на x1.5!',stat:`Бронзы: ${R.bronze||0}🔶 | Усилено юнитов: ${RAID_STATE.units.filter(u=>u._bronzed).length}`},
+    mill:   {icon:'🌾',title:'Мельница',desc:'Тратит 3🐟 → печёт 🍞 Хлеб каждые 8с. Хлеб продаётся за +35🪙!',stat:`Хлеба: ${R.bread||0}🍞 | Прогресс: ${Math.round((o.timer||0)/8*100)}%`},
+    observatory:{icon:'🔭',title:'Обсерватория',desc:'Каждые 30с предсказывает время рейда. Ночью даёт +20🪙 бонус!',stat:`До предсказания: ${Math.round(30-(o._obsT||0))}с`},
+    chemfab:{icon:'🧪',title:'Хим.Завод',desc:'Тратит 1💎 + 2🔩 → синтезирует +80🪙 каждые 15с. Это финальная цепочка!',stat:`Прогресс: ${Math.round((o.timer||0)/15*100)}% | Синтезов: ${o._superBuf||0}`},
+    cloverfarm:{icon:'☘️',title:'Клевер-Ферма',desc:'Выращивает клевер ☘️ каждые 5с и отправляет на конвейер. Нужен для Пивоварни!',stat:`Прогресс: ${Math.round((o.progress||0)*100)}%`},
+    brewery:{icon:'🍺',title:'Пивоварня',desc:'Принимает 3 клевера ☘️☘️☘️ и варит ирландское пиво 🍺 за 8с. Пиво → Радужный Рынок +45🪙!',stat:`Клевера в буфере: ${o._cloverBuf||0}/3`},
+    rainbowmkt:{icon:'🌈',title:'Радужный Рынок',desc:'Продаёт: ☘️ клевер +12🪙, 🍺 пиво +45🪙, 🌟 золотое пиво +80🪙. Привяжи к сундуку!',stat:MBIND[o.id]?'🔗 Привязан к сундуку':'⚠️ Не привязан! Долгий тап → Привязать'},
+    lepcastle:{icon:'🏰',title:'Замок Лепрекона',desc:'Каждые 25с даёт +60🪙. Ночью (шейдер темнеет) даёт +120🪙 и создаёт золотое пиво! Ставь и жди!',stat:`До следующего: ${Math.round(25-(o._lepT||0))}с`},
+  };
+  const info=infos[o.type]; if(!info) return;
+  const b=document.getElementById('pbody'); b.innerHTML='';
+  document.getElementById('ptitle').textContent=`${info.icon} ${info.title}`;
+  b.innerHTML=`
+    <div style="text-align:center;padding:8px 0;font-size:44px">${info.icon}</div>
+    <div style="padding:10px;background:rgba(74,46,10,.08);border-radius:10px;color:#4a2e0a;font-size:13px;line-height:1.6;margin-bottom:8px">${info.desc}</div>
+    <div class="fe" style="background:rgba(196,134,58,.1)">
+      <span style="font-size:18px">📊</span>
+      <div style="color:#4a2e0a;font-size:13px;flex:1">${info.stat}</div>
+    </div>`;
   document.getElementById('popup').classList.add('on');
 }
 
@@ -3574,7 +6067,7 @@ function drawGhost(){
   X.globalAlpha=.55;
   X.fillStyle=ok?'rgba(255,255,80,.1)':'rgba(255,40,40,.18)'; X.fillRect(x,y,GS,GS);
   X.strokeStyle=ok?'#ffd700':'#ff4444'; X.lineWidth=2.2; rrx(x+2,y+2,GS-4,GS-4,5); X.stroke();
-  const IC={bur:'⛏️',bur2:'🔩',conv:'➡️',conv2:'⚡',teleport:'🌀',chest:'📦',furn:'🔥',wshp:'🔨',fishhouse:'🏠',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚',landspot:'🪙'};
+  const IC={bur:'⛏️',bur2:'🔩',conv:'➡️',conv2:'⚡',teleport:'🌀',chest:'📦',furn:'🔥',wshp:'🔨',fishhouse:'🏠',mkt:'🏪',seed:'🌱',cowpen:'🐄',chickenpen:'🐔',milkdel:'🥛',eggpack:'🥚',landspot:'🪙',smoker:'🏺',saltery:'🧂',canner:'📦',delimarket:'🌟',upgrader:'⬆️',novruz:'⚡',cloverfarm:'☘️',brewery:'🍺',rainbowmkt:'🌈',lepcastle:'🏰',druidcauldron:'🪄'};
   X.font=`${GS*.38}px serif`; X.textAlign='center'; X.textBaseline='middle';
   X.fillText(IC[curTool]||'',x+GS*.5,y+GS*.5);
   X.globalAlpha=1;
@@ -3582,9 +6075,10 @@ function drawGhost(){
 
 // ── Helpers ───────────────────────────────────
 function rrx(x,y,w,h,r){
-  X.beginPath(); X.moveTo(x+r,y); X.lineTo(x+w-r,y); X.arcTo(x+w,y,x+w,y+r,r);
-  X.lineTo(x+w,y+h-r); X.arcTo(x+w,y+h,x+w-r,y+h,r); X.lineTo(x+r,y+h);
-  X.arcTo(x,y+h,x,y+h-r,r); X.lineTo(x,y+r); X.arcTo(x,y,x+r,y,r); X.closePath();
+  const ctx=window.X;
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
 }
 function lbl(x,y,ic,sz){
   X.font=`${sz}px serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText(ic,x+GS*.5,y+GS*.07);
@@ -3598,7 +6092,7 @@ let curTool=null;
 function pick(t){
   curTool=t;
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('sel'));
-  const map={null:'nb-null',bur:'nb-bur',bur2:'nb-bur2',conv:'nb-conv',conv2:'nb-conv2',teleport:'nb-teleport',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',fishhouse:'nb-fishhouse',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower',landspot:'nb-landspot'};
+  const map={null:'nb-null',bur:'nb-bur',bur2:'nb-bur2',conv:'nb-conv',conv2:'nb-conv2',teleport:'nb-teleport',chest:'nb-chest',furn:'nb-furn',wshp:'nb-wshp',fishhouse:'nb-fishhouse',mkt:'nb-mkt',del:'nb-del',seed:'nb-seed',cowpen:'nb-cowpen',chickenpen:'nb-chickenpen',milkdel:'nb-milkdel',eggpack:'nb-eggpack',raidspot:'nb-raidspot',raidtower:'nb-raidtower',landspot:'nb-landspot',smoker:'nb-smoker',saltery:'nb-saltery',canner:'nb-canner',delimarket:'nb-delimarket',upgrader:'nb-upgrader',novruz:'nb-novruz',cloverfarm:'nb-cloverfarm',brewery:'nb-brewery',rainbowmkt:'nb-rainbowmkt',lepcastle:'nb-lepcastle',druidcauldron:'nb-druidcauldron'};
   document.getElementById(map[t]||'nb-null')?.classList.add('sel');
   if(t) toast('Выбрано: '+NAME[t]+' — тапни на карту');
 }
@@ -3611,7 +6105,7 @@ function openCtx(col,row,cx2,cy2){
   ctxT={col,row};
   const ctx2=document.getElementById('ctx');
   document.getElementById('cm-rot').style.display   = ['conv','conv2','teleport','cowpen','chickenpen','milkdel','eggpack','furn','wshp'].includes(obj.type)?'flex':'none';
-  document.getElementById('cm-bind').style.display  = obj.type==='mkt'?'flex':'none';
+  document.getElementById('cm-bind').style.display  = (obj.type==='mkt'||obj.type==='novruz'||obj.type==='delimarket'||obj.type==='rainbowmkt')?'flex':'none';
   document.getElementById('cm-tbind').style.display = obj.type==='teleport'?'flex':'none';
   document.getElementById('cm-info').style.display  = obj.type==='chest'?'flex':'none';
   ctx2.style.left=Math.min(cx2,W-165)+'px'; ctx2.style.top=Math.min(cy2,H-170)+'px';
@@ -3710,9 +6204,25 @@ function handleTap(tx,ty){
   if(!curTool){
     const o=G[row]?.[col];
     if(o){
-      if(o.type==='chest'){ const d=cs(o.id); toast(`📦 ⛏️${d.ore} 🔩${d.bars} 🎣${d.rods} 🐟${d.fish}`); }
+      if(o.type==='chest')          { openChestMenu(col,row); }
       else if(o.type==='raidspot'&&o.hasTower){ openRaidMenu(col,row); }
-      else if(o.type==='fishhouse'){ openFishHouseMenu(col,row); }
+      else if(o.type==='fishhouse') { openFishHouseMenu(col,row); }
+      else if(o.type==='cowpen')    { openPenMenu(col,row,'cowpen'); }
+      else if(o.type==='chickenpen'){ openPenMenu(col,row,'chickenpen'); }
+      else if(o.type==='furn')      { openBuildingInfo(col,row); }
+      else if(o.type==='wshp')      { openBuildingInfo(col,row); }
+      else if(o.type==='mkt')       { openBuildingInfo(col,row); }
+      else if(o.type==='milkdel')   { openBuildingInfo(col,row); }
+      else if(o.type==='eggpack')   { openBuildingInfo(col,row); }
+      else if(o.type==='alchlab')   { openBuildingInfo(col,row); }
+      else if(o.type==='forge')     { openBuildingInfo(col,row); }
+      else if(o.type==='mill')      { openBuildingInfo(col,row); }
+      else if(o.type==='observatory'){ openBuildingInfo(col,row); }
+      else if(o.type==='chemfab')   { openBuildingInfo(col,row); }
+      else if(o.type==='cloverfarm'){ openBuildingInfo(col,row); }
+      else if(o.type==='brewery')   { openBuildingInfo(col,row); }
+      else if(o.type==='rainbowmkt'){ openBuildingInfo(col,row); }
+      else if(o.type==='lepcastle') { openBuildingInfo(col,row); }
       else toast(NAME[o.type]);
     }
     return;
@@ -3806,7 +6316,7 @@ function loadGame(){
     for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) G[r][c]=null;
     for(const o of (data.grid||[])){
       if(o.row>=0&&o.row<ROWS&&o.col>=0&&o.col<COLS){
-        G[o.row][o.col]={...o};
+        G[o.row][o.col]={...o, _buildT:1}; // уже построено — без анимации
         if(o.type==='furn') SMST[o.id]={phase:'idle',t:0};
       }
     }
@@ -4155,6 +6665,323 @@ function hideHL(){ document.getElementById('hl').classList.remove('on'); }
 //  INIT
 // ════════════════════════════════════════════
 hud();
+
+// ══ SPLASH SCREEN — Brawl Stars стиль ══
+(function(){
+  const splashEl=document.getElementById('splash');
+  const scv=document.getElementById('splash-cv');
+  const sctx=scv.getContext('2d');
+  const chcv=document.getElementById('splash-char-cv');
+  const chctx=chcv.getContext('2d');
+  const bar=document.getElementById('splash-bar');
+  const tip=document.getElementById('splash-tip');
+
+  const tips=[
+    'Бур на камень → Конвейер → Сундук ⛏️',
+    'Рыбацкий Домик нужен рядом с водой 🌊',
+    'Долгий тап = меню здания 📋',
+    'Котёл Друида ускоряет все Буры ×2 🪄',
+    'Ночью Замок Лепрекона даёт ×2 монет 🌙',
+    'Апгрейдер — прямо на Конвейер ⬆️',
+    'Пивоварня: 3 клевера → пиво 🍺',
+    'Новруз-Рынок продаёт всё мгновенно ⚡',
+  ];
+  let tipIdx=0;
+
+  // Частицы фона — клеверы летят снизу
+  const pts=[];
+  for(let i=0;i<45;i++) pts.push({
+    x:Math.random(),y:0.6+Math.random()*0.6,
+    vx:(Math.random()-.5)*.0015,vy:-(0.0008+Math.random()*.002),
+    s:6+Math.random()*14,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.04,
+    a:0.15+Math.random()*.35,t:Math.floor(Math.random()*3),
+  });
+
+  // ── Рисуем персонажа (Котёл Друида + Лепрекон) ──
+  function drawChar(t){
+    const W=420,H=520,cx=W/2;
+    chctx.clearRect(0,0,W,H);
+
+    // Свечение вокруг котла
+    const glow=chctx.createRadialGradient(cx,H*.6,0,cx,H*.6,W*.5);
+    glow.addColorStop(0,`rgba(0,220,50,${0.15+Math.sin(t*.003)*.08})`);
+    glow.addColorStop(.5,`rgba(0,150,30,${0.08+Math.sin(t*.002)*.04})`);
+    glow.addColorStop(1,'rgba(0,0,0,0)');
+    chctx.fillStyle=glow; chctx.fillRect(0,0,W,H);
+
+    // Ноги котла
+    chctx.strokeStyle='#222'; chctx.lineWidth=18; chctx.lineCap='round';
+    [[-70,20],[0,30],[70,20]].forEach(([dx,dy])=>{
+      chctx.beginPath();
+      chctx.moveTo(cx+dx*.5,H*.72);
+      chctx.lineTo(cx+dx,H*.88+dy);
+      chctx.stroke();
+    });
+    chctx.strokeStyle='#333'; chctx.lineWidth=14;
+    [[-70,20],[0,30],[70,20]].forEach(([dx,dy])=>{
+      chctx.beginPath();
+      chctx.moveTo(cx+dx*.5,H*.72);
+      chctx.lineTo(cx+dx,H*.88+dy);
+      chctx.stroke();
+    });
+    // Лапки
+    [[-70,20],[0,30],[70,20]].forEach(([dx,dy])=>{
+      chctx.fillStyle='#1a1a1a';
+      chctx.beginPath(); chctx.ellipse(cx+dx,H*.88+dy,22,10,0,0,Math.PI*2); chctx.fill();
+    });
+
+    // Тело котла
+    const kg=chctx.createLinearGradient(cx-130,H*.22,cx+130,H*.72);
+    kg.addColorStop(0,'#2a4a28'); kg.addColorStop(.3,'#1a3018');
+    kg.addColorStop(.7,'#0e1e0e'); kg.addColorStop(1,'#060e06');
+    chctx.fillStyle=kg;
+    chctx.beginPath();
+    chctx.moveTo(cx-130,H*.28);
+    chctx.quadraticCurveTo(cx-155,H*.52,cx-115,H*.72);
+    chctx.arc(cx,H*.72,115,Math.PI,0,false);
+    chctx.quadraticCurveTo(cx+155,H*.52,cx+130,H*.28);
+    chctx.quadraticCurveTo(cx,H*.1,cx-130,H*.28);
+    chctx.closePath(); chctx.fill();
+
+    // Обручи
+    chctx.strokeStyle='#2a5a2a'; chctx.lineWidth=12;
+    [H*.34,H*.5,H*.64].forEach(ry=>{
+      const rx=105+Math.abs(ry-H*.52)*0.3;
+      chctx.beginPath(); chctx.ellipse(cx,ry,rx,rx*.28,0,0,Math.PI*2); chctx.stroke();
+    });
+    chctx.strokeStyle='#40aa40'; chctx.lineWidth=3;
+    [H*.34,H*.5,H*.64].forEach(ry=>{
+      const rx=105+Math.abs(ry-H*.52)*0.3;
+      chctx.beginPath(); chctx.ellipse(cx,ry,rx,rx*.28,0,0,Math.PI*2); chctx.stroke();
+    });
+
+    // Кельтские узоры
+    chctx.strokeStyle=`rgba(80,220,50,${0.4+Math.sin(t*.003)*.2})`; chctx.lineWidth=3;
+    for(let i=0;i<5;i++){
+      const ra=i/5*Math.PI*2+t*.001;
+      chctx.beginPath(); chctx.arc(cx+Math.cos(ra)*90,H*.48+Math.sin(ra)*30,12,0,Math.PI*2); chctx.stroke();
+    }
+
+    // Обводка котла
+    chctx.strokeStyle='#40aa40'; chctx.lineWidth=4;
+    chctx.beginPath();
+    chctx.moveTo(cx-130,H*.28);
+    chctx.quadraticCurveTo(cx-155,H*.52,cx-115,H*.72);
+    chctx.arc(cx,H*.72,115,Math.PI,0,false);
+    chctx.quadraticCurveTo(cx+155,H*.52,cx+130,H*.28);
+    chctx.quadraticCurveTo(cx,H*.1,cx-130,H*.28);
+    chctx.closePath(); chctx.stroke();
+
+    // Зелье внутри — переливается
+    const potion=chctx.createRadialGradient(cx+Math.sin(t*.004)*8,H*.24,0,cx,H*.26,100);
+    potion.addColorStop(0,`rgba(80,255,100,${0.95+Math.sin(t*.005)*.04})`);
+    potion.addColorStop(.4,'rgba(0,200,50,.8)');
+    potion.addColorStop(1,'rgba(0,80,20,.5)');
+    chctx.fillStyle=potion;
+    chctx.beginPath(); chctx.ellipse(cx,H*(.22+Math.sin(t*.004)*.005),100,28,0,0,Math.PI*2); chctx.fill();
+    // Отблеск зелья
+    chctx.fillStyle='rgba(200,255,200,.3)';
+    chctx.beginPath(); chctx.ellipse(cx-25,H*.2,30,8,-.3,0,Math.PI*2); chctx.fill();
+
+    // Пузыри из зелья
+    for(let b=0;b<8;b++){
+      const bp=(t*.002+b*.18)%1;
+      const bx=cx+(Math.sin(b*2.3+t*.003)*80);
+      const bs=6+bp*8;
+      chctx.fillStyle=`rgba(100,255,80,${0.6*(1-bp)})`;
+      chctx.beginPath(); chctx.arc(bx,H*.22-bp*80,bs,0,Math.PI*2); chctx.fill();
+      chctx.fillStyle=`rgba(255,255,255,${0.3*(1-bp)})`;
+      chctx.beginPath(); chctx.arc(bx-bs*.3,H*.22-bp*80-bs*.3,bs*.3,0,Math.PI*2); chctx.fill();
+    }
+
+    // Лепрекон сидит на котле
+    const lepY=H*.08;
+    const lepBob=Math.sin(t*.003)*6;
+
+    // Ноги лепрекона
+    chctx.strokeStyle='#2a5a10'; chctx.lineWidth=14; chctx.lineCap='round';
+    chctx.beginPath(); chctx.moveTo(cx-20,lepY+90+lepBob); chctx.lineTo(cx-35,lepY+118+lepBob); chctx.stroke();
+    chctx.beginPath(); chctx.moveTo(cx+20,lepY+90+lepBob); chctx.lineTo(cx+35,lepY+118+lepBob); chctx.stroke();
+    // Башмаки
+    chctx.fillStyle='#1a3a08';
+    chctx.beginPath(); chctx.ellipse(cx-40,lepY+122+lepBob,14,8,-.2,0,Math.PI*2); chctx.fill();
+    chctx.beginPath(); chctx.ellipse(cx+40,lepY+122+lepBob,14,8,.2,0,Math.PI*2); chctx.fill();
+    // Пряжки
+    chctx.fillStyle='#ffd700';
+    chctx.fillRect(cx-46,lepY+118+lepBob,8,5);
+    chctx.fillRect(cx+38,lepY+118+lepBob,8,5);
+
+    // Тело лепрекона
+    const lg2=chctx.createLinearGradient(cx-35,lepY+30+lepBob,cx+35,lepY+90+lepBob);
+    lg2.addColorStop(0,'#3aaa18'); lg2.addColorStop(1,'#1e6a08');
+    chctx.fillStyle=lg2;
+    chctx.beginPath(); chctx.roundRect(cx-32,lepY+32+lepBob,64,60,12); chctx.fill();
+    // Пуговицы
+    chctx.fillStyle='#ffd700';
+    [45,58,71].forEach(py=>{ chctx.beginPath(); chctx.arc(cx,lepY+py+lepBob,4,0,Math.PI*2); chctx.fill(); });
+    // Ремень
+    chctx.fillStyle='#8B4513';
+    chctx.fillRect(cx-34,lepY+62+lepBob,68,10);
+    chctx.fillStyle='#ffd700';
+    chctx.fillRect(cx-6,lepY+63+lepBob,12,8);
+
+    // Руки — одна держит кружку пива!
+    chctx.strokeStyle='#3aaa18'; chctx.lineWidth=12; chctx.lineCap='round';
+    chctx.beginPath(); chctx.moveTo(cx-32,lepY+48+lepBob); chctx.quadraticCurveTo(cx-65,lepY+55+lepBob,cx-68,lepY+72+lepBob); chctx.stroke();
+    chctx.beginPath(); chctx.moveTo(cx+32,lepY+48+lepBob); chctx.quadraticCurveTo(cx+55,lepY+38+lepBob+Math.sin(t*.004)*4,cx+60,lepY+22+lepBob+Math.sin(t*.004)*4); chctx.stroke();
+
+    // Кружка пива в руке
+    const mug_x=cx+56,mug_y=lepY+18+lepBob+Math.sin(t*.004)*4;
+    chctx.fillStyle='#c8a020';
+    chctx.beginPath(); chctx.roundRect(mug_x-12,mug_y-14,24,28,3); chctx.fill();
+    chctx.strokeStyle='rgba(255,200,50,.5)'; chctx.lineWidth=2;
+    chctx.beginPath(); chctx.roundRect(mug_x-12,mug_y-14,24,28,3); chctx.stroke();
+    // Пена
+    chctx.fillStyle='rgba(255,255,255,.9)';
+    chctx.beginPath(); chctx.ellipse(mug_x,mug_y-14,12,5,0,0,Math.PI*2); chctx.fill();
+    // Ручка кружки
+    chctx.strokeStyle='#c8a020'; chctx.lineWidth=4;
+    chctx.beginPath(); chctx.arc(mug_x+16,mug_y-2,8,-Math.PI/2,Math.PI/2); chctx.stroke();
+
+    // Голова
+    const hg2=chctx.createRadialGradient(cx-5,lepY+12+lepBob,0,cx,lepY+16+lepBob,26);
+    hg2.addColorStop(0,'#f5c898'); hg2.addColorStop(1,'#d4916a');
+    chctx.fillStyle=hg2;
+    chctx.beginPath(); chctx.arc(cx,lepY+16+lepBob,26,0,Math.PI*2); chctx.fill();
+
+    // Борода
+    chctx.fillStyle='#f0e050';
+    chctx.beginPath(); chctx.ellipse(cx,lepY+36+lepBob,18,10,0,0,Math.PI); chctx.fill();
+    // Усы
+    chctx.strokeStyle='#d8c840'; chctx.lineWidth=3; chctx.lineCap='round';
+    chctx.beginPath(); chctx.moveTo(cx,lepY+26+lepBob); chctx.quadraticCurveTo(cx-20,lepY+22+lepBob,cx-24,lepY+26+lepBob); chctx.stroke();
+    chctx.beginPath(); chctx.moveTo(cx,lepY+26+lepBob); chctx.quadraticCurveTo(cx+20,lepY+22+lepBob,cx+24,lepY+26+lepBob); chctx.stroke();
+
+    // Глаза весёлые
+    chctx.fillStyle='#1a0a00';
+    chctx.beginPath(); chctx.arc(cx-10,lepY+10+lepBob,4,0,Math.PI*2); chctx.fill();
+    chctx.beginPath(); chctx.arc(cx+10,lepY+10+lepBob,4,0,Math.PI*2); chctx.fill();
+    // Блик глаз
+    chctx.fillStyle='rgba(255,255,255,.8)';
+    chctx.beginPath(); chctx.arc(cx-8,lepY+8+lepBob,1.5,0,Math.PI*2); chctx.fill();
+    chctx.beginPath(); chctx.arc(cx+12,lepY+8+lepBob,1.5,0,Math.PI*2); chctx.fill();
+    // Улыбка
+    chctx.strokeStyle='#6a2a00'; chctx.lineWidth=2.5;
+    chctx.beginPath(); chctx.arc(cx,lepY+18+lepBob,8,.2,Math.PI-.2); chctx.stroke();
+    // Румянец
+    chctx.fillStyle='rgba(255,100,80,.2)';
+    chctx.beginPath(); chctx.ellipse(cx-16,lepY+20+lepBob,8,5,0,0,Math.PI*2); chctx.fill();
+    chctx.beginPath(); chctx.ellipse(cx+16,lepY+20+lepBob,8,5,0,0,Math.PI*2); chctx.fill();
+
+    // Высокая шляпа лепрекона
+    chctx.fillStyle='#1a5a08';
+    chctx.beginPath(); chctx.roundRect(cx-20,lepY-42+lepBob,40,30,3); chctx.fill();
+    chctx.strokeStyle='#40aa20'; chctx.lineWidth=2;
+    chctx.beginPath(); chctx.roundRect(cx-20,lepY-42+lepBob,40,30,3); chctx.stroke();
+    // Поля шляпы
+    chctx.fillStyle='#1a5a08';
+    chctx.beginPath(); chctx.ellipse(cx,lepY-12+lepBob,32,8,0,0,Math.PI*2); chctx.fill();
+    chctx.strokeStyle='#40aa20'; chctx.lineWidth=2;
+    chctx.beginPath(); chctx.ellipse(cx,lepY-12+lepBob,32,8,0,0,Math.PI*2); chctx.stroke();
+    // Лента на шляпе
+    chctx.fillStyle='#ffd700';
+    chctx.fillRect(cx-20,lepY-18+lepBob,40,6);
+    // Клевер на шляпе
+    chctx.fillStyle='#40cc20';
+    const cs2=cx+5,cy2=lepY-32+lepBob;
+    [[-0.4,-0.4],[0.4,-0.4],[0,-0.8]].forEach(([lx,ly])=>{
+      chctx.beginPath(); chctx.ellipse(cs2+lx*12,cy2+ly*12,7,5,lx>0?.5:-.5,0,Math.PI*2); chctx.fill();
+    });
+
+    // Летящие монетки из котла
+    for(let i=0;i<5;i++){
+      const mt=(t*.002+i*.3)%1;
+      const mx=cx+(Math.cos(i*1.2+t*.001)*60)*(0.5+mt*.5);
+      const my=H*.22-mt*120-Math.sin(t*.003+i)*20;
+      if(mt<0.8){
+        chctx.fillStyle=`rgba(255,215,0,${0.8*(1-mt/0.8)})`;
+        chctx.beginPath(); chctx.ellipse(mx,my,8,4,t*.002+i,0,Math.PI*2); chctx.fill();
+        chctx.strokeStyle=`rgba(200,160,0,${0.5*(1-mt/0.8)})`; chctx.lineWidth=1.5;
+        chctx.beginPath(); chctx.ellipse(mx,my,8,4,t*.002+i,0,Math.PI*2); chctx.stroke();
+      }
+    }
+  }
+
+  // Фоновый canvas
+  function drawBg(now){
+    const W2=scv.width=window.innerWidth, H2=scv.height=window.innerHeight;
+    sctx.clearRect(0,0,W2,H2);
+
+    // Глубокий зелёный фон
+    const bg=sctx.createLinearGradient(0,0,W2,H2);
+    bg.addColorStop(0,'#081408'); bg.addColorStop(.5,'#060e06'); bg.addColorStop(1,'#020802');
+    sctx.fillStyle=bg; sctx.fillRect(0,0,W2,H2);
+
+    // Звёзды
+    for(let i=0;i<60;i++){
+      const sx=((i*137.5)%1)*W2, sy=((i*97.3)%1)*H2*.7;
+      const tw=0.3+Math.sin(now*.003+i)*.3;
+      sctx.fillStyle=`rgba(180,255,160,${tw*0.5})`;
+      sctx.beginPath(); sctx.arc(sx,sy,0.6+tw*.4,0,Math.PI*2); sctx.fill();
+    }
+
+    // Частицы
+    for(const p of pts){
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rv;
+      if(p.y<-0.08){p.y=1.08;p.x=Math.random();}
+      const px=p.x*W2, py=p.y*H2;
+      sctx.save(); sctx.translate(px,py); sctx.rotate(p.rot); sctx.globalAlpha=p.a;
+      if(p.t===0){
+        sctx.fillStyle='rgba(50,200,30,1)';
+        [[-0.4,-0.35],[0.4,-0.35],[0,-0.7]].forEach(([lx,ly])=>{
+          sctx.beginPath(); sctx.ellipse(lx*p.s,ly*p.s,p.s*.42,p.s*.3,lx>0?.5:-.5,0,Math.PI*2); sctx.fill();
+        });
+      } else if(p.t===1){
+        sctx.fillStyle='rgba(255,215,0,1)';
+        sctx.font=`${p.s*1.2}px serif`; sctx.textAlign='center'; sctx.textBaseline='middle'; sctx.fillText('✦',0,0);
+      } else {
+        sctx.strokeStyle='rgba(80,255,80,.6)'; sctx.lineWidth=1.5;
+        sctx.beginPath(); sctx.arc(0,0,p.s*.4,0,Math.PI*2); sctx.stroke();
+      }
+      sctx.restore();
+    }
+
+    // Радуга сзади справа
+    const rwColors=['rgba(255,30,30,','rgba(255,130,0,','rgba(255,230,0,','rgba(30,200,30,','rgba(30,80,255,','rgba(130,0,200,'];
+    rwColors.forEach((col,i)=>{
+      sctx.strokeStyle=col+'0.06)'; sctx.lineWidth=10;
+      sctx.beginPath(); sctx.arc(W2*.85,H2*.9,H2*(.5+i*.06),Math.PI*1.15,Math.PI*.05,true); sctx.stroke();
+    });
+  }
+
+  let animId, startT=performance.now();
+  const DURATION=2500;
+
+  function splashLoop(now){
+    drawBg(now);
+    drawChar(now);
+    const prog=Math.min(1,(now-startT)/DURATION);
+    bar.style.width=(prog*100)+'%';
+    const ni=Math.min(Math.floor(prog*tips.length),tips.length-1);
+    if(ni!==tipIdx){
+      tipIdx=ni; tip.style.opacity='0';
+      setTimeout(()=>{ tip.textContent=tips[ni]; tip.style.opacity='1'; },180);
+    }
+    if(prog<1){
+      animId=requestAnimationFrame(splashLoop);
+    } else {
+      bar.style.width='100%';
+      tip.textContent='Добро пожаловать в деревню! 🍀';
+      setTimeout(()=>{
+        splashEl.classList.add('hidden');
+        setTimeout(()=>{ splashEl.style.display='none'; cancelAnimationFrame(animId); },600);
+      },350);
+    }
+  }
+  tip.style.transition='opacity .2s'; tip.textContent=tips[0];
+  animId=requestAnimationFrame(splashLoop);
+})();
+
 
 const loaded=loadGame();
 if(loaded){
