@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>🌿 Chupepp Games — Деревня</title>
 <link href="https://fonts.googleapis.com/css2?family=Rye&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -395,6 +398,101 @@ header{
 .fev-back{background:transparent;border:2px solid var(--w4);border-radius:var(--r6);padding:12px;font-family:'IM Fell English',serif;font-size:12px;color:var(--parch3);cursor:pointer;width:100%;text-align:center;transition:all .15s;letter-spacing:.06em;}
 .fev-back:active{background:rgba(255,255,255,.04);}
 
+/* ═══ ИИ-ИГРА (AI GAME) ═══ */
+#ai-game-view{flex:1;padding:14px 14px 24px;display:none;flex-direction:column;gap:16px;}
+.aig-hero{
+  text-align:center;
+  background:linear-gradient(135deg,#0a0520,#180838);
+  border:2px solid #5a2a9a;border-radius:var(--r8);padding:22px 18px;position:relative;overflow:hidden;
+}
+.aig-hero::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:140px;height:80px;background:radial-gradient(ellipse,rgba(160,80,255,.25),transparent 70%);pointer-events:none;}
+.aig-hero h1{font-family:'Rye',cursive;font-size:clamp(17px,5vw,28px);color:#c080ff;letter-spacing:.06em;text-shadow:0 0 20px rgba(180,80,255,.4);}
+.aig-hero p{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:#7a50a0;margin-top:6px;line-height:1.5;}
+.aig-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 14px;background:rgba(60,10,120,.7);border:1px solid rgba(160,80,255,.35);border-radius:14px;font-family:'IM Fell English',serif;font-size:10px;color:#c090ff;letter-spacing:.08em;}
+
+/* Кнопка СКАНИРОВАТЬ */
+.aig-scan-btn{
+  width:100%;height:60px;border:none;border-radius:var(--r8);cursor:pointer;
+  background:linear-gradient(180deg,#7a28d4,#4a0a90);
+  color:#e0c0ff;font-family:'Rye',cursive;font-size:16px;letter-spacing:.06em;
+  box-shadow:0 6px 0 #2a0050,0 0 30px rgba(180,80,255,.2);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:transform .12s,box-shadow .12s;
+  position:relative;overflow:hidden;
+}
+.aig-scan-btn::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent 18px,rgba(255,255,255,.03) 18px,rgba(255,255,255,.03) 19px);}
+.aig-scan-btn:active{transform:translateY(5px);box-shadow:0 1px 0 #2a0050;}
+.aig-scan-btn:disabled{background:linear-gradient(180deg,#3a1860,#1a0830);color:#7a5090;box-shadow:0 4px 0 #150025;cursor:not-allowed;}
+.aig-scan-btn .scan-spinner{display:none;width:20px;height:20px;border:2px solid rgba(200,150,255,.3);border-top-color:#c080ff;border-radius:50%;animation:spin .7s linear infinite;}
+.aig-scan-btn.loading .scan-spinner{display:block;}
+.aig-scan-btn.loading .scan-icon{display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Карточки вариантов */
+.aig-variants{display:flex;flex-direction:column;gap:10px;}
+.aig-variant{
+  background:var(--w2);border:2px solid var(--w4);border-radius:var(--r6);
+  padding:14px 16px;cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.aig-variant::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:rgba(150,70,255,.4);transition:background .2s;}
+.aig-variant:hover{border-color:rgba(150,70,255,.4);background:rgba(30,10,50,.6);}
+.aig-variant.selected{border-color:#9a40ff;background:rgba(50,10,90,.5);box-shadow:0 0 16px rgba(150,70,255,.2);}
+.aig-variant.selected::before{background:#9a40ff;}
+.aig-var-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.aig-var-num{width:26px;height:26px;border-radius:50%;background:rgba(100,40,200,.3);border:1px solid rgba(150,80,255,.4);display:flex;align-items:center;justify-content:center;font-family:'Rye',cursive;font-size:11px;color:#c090ff;flex-shrink:0;}
+.aig-var-title{font-family:'Rye',cursive;font-size:13px;color:var(--s2);flex:1;}
+.aig-var-genre{font-family:'IM Fell English',serif;font-size:10px;color:#9060c0;padding:2px 8px;border:1px solid rgba(120,60,200,.3);border-radius:10px;white-space:nowrap;}
+.aig-var-desc{font-family:'IM Fell English',serif;font-style:italic;font-size:12.5px;color:var(--parch2);line-height:1.6;}
+.aig-var-mechanic{margin-top:8px;font-family:'IM Fell English',serif;font-size:11px;color:#8050b0;display:flex;align-items:center;gap:6px;}
+.aig-var-mechanic::before{content:'⚙';font-size:12px;}
+.aig-var-select{position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;border:2px solid rgba(150,80,255,.35);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .2s;}
+.aig-variant.selected .aig-var-select{background:#9a40ff;border-color:#9a40ff;color:#fff;}
+
+/* Кнопка «Отправить на суд» */
+.aig-submit-btn{
+  width:100%;height:var(--touch);border:none;border-radius:var(--r6);cursor:pointer;
+  background:linear-gradient(180deg,#c04020,#801808);
+  color:#ffe0c0;font-family:'Rye',cursive;font-size:14px;letter-spacing:.05em;
+  box-shadow:0 5px 0 #3a0800;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .12s,box-shadow .12s;
+}
+.aig-submit-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #3a0800;}
+.aig-submit-btn:disabled{background:linear-gradient(180deg,#3a1808,#200800);color:#7a4030;box-shadow:0 3px 0 #180500;cursor:not-allowed;}
+
+/* Топ-игр */
+.aig-top-list{display:flex;flex-direction:column;gap:8px;}
+.aig-top-item{
+  background:var(--w2);border:2px solid var(--w4);border-radius:var(--r6);
+  padding:12px 14px;display:flex;align-items:center;gap:12px;
+}
+.aig-top-rank{font-family:'Rye',cursive;font-size:18px;color:var(--s0);width:28px;flex-shrink:0;text-align:center;}
+.aig-top-rank.gold{color:#ffd700;}
+.aig-top-rank.silver{color:#c0c0c0;}
+.aig-top-rank.bronze{color:#cd7f32;}
+.aig-top-info{flex:1;}
+.aig-top-title{font-family:'Rye',cursive;font-size:12px;color:var(--s2);}
+.aig-top-author{font-family:'IM Fell English',serif;font-size:10px;color:var(--parch3);margin-top:2px;}
+.aig-top-votes{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.aig-top-vote-btn{background:rgba(100,40,200,.2);border:1px solid rgba(150,80,255,.3);border-radius:6px;padding:4px 8px;font-size:14px;cursor:pointer;transition:all .15s;}
+.aig-top-vote-btn:active{background:rgba(150,70,255,.4);}
+.aig-top-vote-btn.voted{background:rgba(150,70,255,.35);border-color:#9a40ff;}
+.aig-top-likes{font-family:'Rye',cursive;font-size:11px;color:#c080ff;}
+
+/* Сезон-баннер */
+.aig-season{
+  background:linear-gradient(135deg,#1a0838,#0a0520);
+  border:2px solid rgba(150,60,255,.3);border-radius:var(--r6);
+  padding:12px 16px;display:flex;align-items:center;gap:12px;
+}
+.aig-season-ico{font-size:28px;flex-shrink:0;}
+.aig-season-title{font-family:'Rye',cursive;font-size:12px;color:#c080ff;}
+.aig-season-desc{font-family:'IM Fell English',serif;font-size:11px;color:#8060b0;margin-top:2px;line-height:1.4;}
+.aig-season-days{font-family:'Rye',cursive;font-size:10px;color:#9a60d0;margin-top:4px;}
+
+/* Пустое состояние топа */
+.aig-empty{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--parch3);opacity:.5;text-align:center;padding:20px;}
+
 /* ═══ ИГРОВОЙ ЭКРАН ═══ */
 .game-view{display:none;position:fixed;inset:0;z-index:500;flex-direction:column;background:#000;}
 .game-view.visible{display:flex;}
@@ -592,7 +690,94 @@ header{
   pointer-events:none;
 }
 
-/* ═══ ФУТЕР ═══ */
+/* ═══ ИИ-ИГРА СЕКЦИЯ НА ГЛАВНОЙ ═══ */
+.aig-home-section{}
+.aig-season-cta{
+  background:linear-gradient(135deg,#12043a,#1e0850);
+  border:2px solid rgba(140,60,255,.35);
+  border-radius:var(--r8);
+  padding:18px 16px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:10px;text-align:center;cursor:pointer;
+  box-shadow:0 0 24px rgba(120,40,255,.1);
+  transition:all .2s;
+}
+.aig-season-cta:active{opacity:.85;}
+.aig-cta-icon{font-size:40px;filter:drop-shadow(0 0 12px rgba(180,80,255,.5));}
+.aig-cta-title{font-family:'Rye',cursive;font-size:15px;color:#c080ff;text-shadow:0 0 12px rgba(180,80,255,.4);}
+.aig-cta-sub{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:#7050a0;line-height:1.5;}
+.aig-cta-btn{
+  margin-top:4px;padding:9px 22px;
+  background:linear-gradient(180deg,#7a28d4,#4a0a90);
+  border:none;border-radius:20px;
+  font-family:'Rye',cursive;font-size:12px;color:#e0c0ff;
+  box-shadow:0 4px 0 #2a0050;cursor:pointer;letter-spacing:.06em;
+}
+/* Мини-карточки топа на главной */
+.aig-home-top{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+.aig-home-item{
+  background:rgba(20,5,50,.6);border:1px solid rgba(120,50,220,.25);
+  border-radius:var(--r6);padding:10px 12px;
+  display:flex;align-items:center;gap:10px;
+}
+.aig-home-rank{font-family:'Rye',cursive;font-size:14px;width:22px;text-align:center;flex-shrink:0;}
+.aig-home-title{font-family:'Lora',serif;font-weight:700;font-size:12px;color:var(--parch);flex:1;line-height:1.3;}
+.aig-home-likes{font-family:'Rye',cursive;font-size:11px;color:#c080ff;}
+
+/* ═══ НОВЫЙ ДИЗАЙН КАРТОЧЕК ВАРИАНТОВ ═══ */
+.aig-variant{
+  background:linear-gradient(160deg,#0e0428 0%,#180840 100%);
+  border:1.5px solid rgba(120,50,220,.3);
+  border-radius:14px;
+  padding:0;overflow:hidden;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+.aig-variant:hover{border-color:rgba(160,80,255,.5);transform:translateY(-2px);box-shadow:0 8px 24px rgba(80,20,180,.25);}
+.aig-variant.selected{border-color:#9a40ff;box-shadow:0 0 20px rgba(150,60,255,.3);}
+.aig-variant::before{display:none;}
+.aig-var-top-bar{
+  display:flex;align-items:center;gap:0;
+  background:rgba(100,30,220,.15);
+  border-bottom:1px solid rgba(120,50,220,.2);
+  padding:10px 14px;
+}
+.aig-var-num{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#6020b0,#3a0880);
+  border:1.5px solid rgba(180,100,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Rye',cursive;font-size:12px;color:#d0a0ff;
+  flex-shrink:0;margin-right:10px;
+}
+.aig-var-title{font-family:'Rye',cursive;font-size:13.5px;color:#e8d0ff;flex:1;line-height:1.2;}
+.aig-var-genre{
+  font-family:'IM Fell English',serif;font-size:9px;color:#9060c0;
+  padding:3px 9px;border:1px solid rgba(120,60,200,.3);border-radius:10px;
+  background:rgba(60,10,120,.4);white-space:nowrap;
+}
+.aig-var-body{padding:12px 14px 14px;}
+.aig-var-desc{
+  font-family:'Lora',serif;font-size:13px;color:var(--parch2);
+  line-height:1.65;margin-bottom:10px;
+}
+.aig-var-mechanic{
+  display:flex;align-items:flex-start;gap:8px;
+  background:rgba(80,20,160,.2);border-radius:8px;
+  padding:8px 10px;border-left:3px solid rgba(140,60,255,.5);
+}
+.aig-var-mechanic-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.aig-var-mechanic-txt{font-family:'IM Fell English',serif;font-size:12px;color:#a070d0;line-height:1.5;}
+.aig-var-select{
+  position:absolute;top:10px;right:12px;
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(150,80,255,.35);background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:transparent;transition:all .2s;
+}
+.aig-variant.selected .aig-var-select{background:#9a40ff;border-color:#9a40ff;color:#fff;}
+.aig-variant.selected .aig-var-top-bar{background:rgba(120,40,255,.25);}
+.aig-variant.selected .aig-var-mechanic{border-left-color:#9a40ff;background:rgba(100,30,200,.3);}
 footer{
   background:repeating-linear-gradient(180deg,var(--bark) 0,var(--bark) 36px,var(--w0) 36px,var(--w0) 38px);
   border-top:3px solid var(--bark);padding:0 16px;height:42px;
@@ -600,6 +785,70 @@ footer{
   font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:var(--parch3);
 }
 .footer-seal{padding:3px 10px;background:var(--bark);border:1px solid var(--s0);border-radius:3px;font-family:'Rye',cursive;font-size:8px;color:var(--amber2);letter-spacing:.05em;}
+
+/* ═══ ПРОФИЛЬ ═══ */
+.hdr-profile-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--bark2);background:var(--w2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--w0);transition:all .15s;flex-shrink:0;margin-left:4px;}
+.hdr-profile-btn:active{transform:scale(.9);}
+.hdr-profile-btn.has-user{border-color:var(--s1);background:rgba(210,160,60,.1);}
+#profile-modal{position:fixed;inset:0;z-index:3500;background:rgba(5,3,0,.88);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;}
+#profile-modal.visible{display:flex;}
+.prof-sheet{width:100%;max-width:520px;background:repeating-linear-gradient(178deg,var(--w3) 0,var(--w3) 44px,var(--bark) 44px,var(--bark) 46px);border-top:3px solid var(--bark2);border-radius:22px 22px 0 0;box-shadow:0 -16px 60px rgba(0,0,0,.85);max-height:90vh;overflow-y:auto;animation:sheetUp .3s cubic-bezier(.22,1,.36,1) both;}
+.prof-drag{display:flex;justify-content:center;padding:14px 0 0;cursor:pointer;}
+.prof-drag-bar{width:40px;height:5px;background:rgba(200,160,60,.3);border-radius:3px;}
+.prof-setup{padding:22px 20px 28px;text-align:center;}
+.prof-setup-title{font-family:'Rye',cursive;font-size:18px;color:var(--s2);margin-bottom:6px;}
+.prof-setup-sub{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--parch3);margin-bottom:20px;line-height:1.5;}
+.prof-avatar-pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;}
+.prof-av-opt{font-size:28px;width:48px;height:48px;border-radius:50%;border:2px solid var(--bark2);background:var(--w2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.prof-av-opt.sel{border-color:var(--s1);background:rgba(210,160,60,.15);transform:scale(1.15);}
+.prof-name-input{width:100%;background:var(--w1);border:2px solid var(--bark2);border-radius:var(--r6);padding:12px 16px;font-family:'Rye',cursive;font-size:14px;color:var(--s2);outline:none;margin-bottom:14px;}
+.prof-name-input:focus{border-color:var(--s1);}
+.prof-name-input::placeholder{color:var(--parch3);font-family:'IM Fell English',serif;font-size:12px;}
+.prof-setup-btn{width:100%;height:var(--touch);border:none;border-radius:var(--r6);background:linear-gradient(180deg,var(--s1),var(--s0));font-family:'Rye',cursive;font-size:14px;color:var(--w0);box-shadow:0 5px 0 #3a2000;cursor:pointer;letter-spacing:.05em;}
+.prof-setup-btn:active{transform:translateY(4px);box-shadow:none;}
+.prof-header{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:2px solid var(--bark);background:rgba(0,0,0,.2);}
+.prof-avatar-big{font-size:50px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.6));line-height:1;}
+.prof-info{flex:1;}
+.prof-username{font-family:'Rye',cursive;font-size:19px;color:var(--s2);line-height:1.1;}
+.prof-uid-tag{font-family:'IM Fell English',serif;font-size:9px;color:var(--parch3);margin-top:3px;letter-spacing:.06em;}
+.prof-edit-btn{font-size:14px;background:none;border:1px solid var(--bark2);border-radius:8px;padding:5px 10px;color:var(--parch3);cursor:pointer;font-family:'IM Fell English',serif;}
+.prof-section{padding:14px 18px;border-bottom:1px solid rgba(100,60,20,.2);}
+.prof-sec-title{font-family:'Rye',cursive;font-size:10px;color:var(--s2);letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.prof-sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--bark2),transparent);}
+.prof-coins-row{display:flex;align-items:center;gap:14px;}
+.prof-coin-val{font-family:'Rye',cursive;font-size:26px;color:var(--amber3);}
+.prof-coin-info{flex:1;}
+.prof-coin-lbl{font-family:'IM Fell English',serif;font-size:11px;color:var(--parch3);}
+.prof-soon-badge{display:inline-block;margin-top:4px;padding:2px 10px;background:rgba(100,60,0,.4);border:1px solid var(--amber);border-radius:10px;font-family:'IM Fell English',serif;font-size:9px;color:var(--amber2);letter-spacing:.06em;}
+.prof-fav-game{display:flex;align-items:center;gap:10px;background:var(--w2);border:1px solid var(--bark2);border-radius:var(--r6);padding:10px 14px;}
+.prof-fav-ico{font-size:28px;}
+.prof-fav-name{font-family:'Rye',cursive;font-size:13px;color:var(--s2);}
+.prof-fav-sub{font-family:'IM Fell English',serif;font-size:10px;color:var(--parch3);margin-top:2px;}
+.prof-saved-idea-card{background:linear-gradient(160deg,#0e0428,#180840);border:1.5px solid rgba(120,50,220,.35);border-radius:12px;overflow:hidden;}
+.prof-idea-bar{background:rgba(100,30,220,.2);border-bottom:1px solid rgba(120,50,220,.2);padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.prof-idea-title{font-family:'Rye',cursive;font-size:12px;color:#e0c0ff;flex:1;}
+.prof-idea-genre{font-family:'IM Fell English',serif;font-size:9px;color:#9060c0;padding:2px 8px;border:1px solid rgba(120,60,200,.3);border-radius:10px;}
+.prof-idea-body{padding:10px 14px;}
+.prof-idea-desc{font-family:'Lora',serif;font-size:12px;color:var(--parch2);line-height:1.6;margin-bottom:8px;}
+.prof-idea-mech{font-family:'IM Fell English',serif;font-size:11px;color:#9060c0;display:flex;gap:6px;align-items:flex-start;}
+.prof-replace-btn{width:100%;margin-top:10px;padding:9px;border:none;border-radius:8px;background:linear-gradient(180deg,#5a18a8,#3a0878);color:#d0a0ff;font-family:'Rye',cursive;font-size:11px;cursor:pointer;letter-spacing:.05em;box-shadow:0 3px 0 #1a0040;}
+.prof-replace-btn:disabled{background:rgba(60,20,100,.3);color:#6040a0;box-shadow:none;cursor:default;}
+.prof-no-idea{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--parch3);opacity:.6;text-align:center;padding:14px;}
+.prof-friend-search{display:flex;gap:8px;margin-bottom:10px;}
+.prof-friend-input{flex:1;background:var(--w1);border:2px solid var(--bark2);border-radius:var(--r4);padding:9px 12px;font-family:'IM Fell English',serif;font-size:13px;color:var(--parch);outline:none;}
+.prof-friend-input:focus{border-color:var(--s1);}
+.prof-friend-add-btn{padding:0 14px;border:none;border-radius:var(--r4);background:var(--moss1);color:var(--amber3);font-family:'Rye',cursive;font-size:11px;cursor:pointer;box-shadow:0 3px 0 var(--moss0);}
+.prof-friend-add-btn:active{transform:translateY(2px);box-shadow:none;}
+.prof-friend-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(100,60,20,.2);}
+.prof-friend-item:last-child{border-bottom:none;}
+.prof-friend-av{font-size:22px;}
+.prof-friend-name{font-family:'Rye',cursive;font-size:12px;color:var(--s2);flex:1;}
+.prof-friend-fav{font-family:'IM Fell English',serif;font-size:10px;color:var(--parch3);}
+.prof-no-friends{font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:var(--parch3);opacity:.5;text-align:center;padding:10px;}
+.prof-close-btn{width:100%;margin:14px 18px 20px;padding:11px;border:2px solid var(--bark2);border-radius:var(--r6);background:transparent;font-family:'IM Fell English',serif;font-size:12px;color:var(--parch3);cursor:pointer;letter-spacing:.06em;width:calc(100% - 36px);}
+.aig-var-save-btn{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:5px 12px;border:1px solid rgba(180,100,255,.3);border-radius:10px;background:rgba(80,20,160,.2);color:#b080e0;font-family:'IM Fell English',serif;font-size:11px;cursor:pointer;transition:all .15s;}
+.aig-var-save-btn:active{background:rgba(120,40,220,.35);}
+.aig-var-save-btn.saved{border-color:var(--s1);color:var(--s2);background:rgba(210,160,60,.1);}
 </style>
 </head>
 <body>
@@ -632,8 +881,8 @@ footer{
     </div>
     <nav class="nav">
       <div class="nav-btn active" id="nav-home" onclick="showHome()"><div class="ni">🏠</div><div class="nl">Главная</div></div>
-      <div class="nav-btn" id="nav-archive" onclick="showArchiveScroll()"><div class="ni">📜</div><div class="nl">Архив</div></div>
-      <div class="nav-btn" id="nav-news" onclick="showNewsScroll()"><div class="ni">📰</div><div class="nl">Новости</div></div>
+      <div class="nav-btn" id="nav-aigame" onclick="showAiGame()"><div class="ni">🎲</div><div class="nl">ИИ-Игра</div></div>
+      <button class="hdr-profile-btn" id="hdr-profile-btn" onclick="openProfile()" title="Профиль">👤</button>
     </nav>
   </header>
 
@@ -682,6 +931,15 @@ footer{
         <div class="sec-line"></div>
       </div>
       <div class="shortcuts-grid" id="archive-shortcuts"></div>
+    </div>
+
+    <!-- ИИ-ИГРЫ СЕКЦИЯ -->
+    <div class="aig-home-section" id="aig-home-section">
+      <div class="sec-head" style="margin-bottom:12px;">
+        <div class="sec-plank" style="background:#3a0878;border-color:#6a20b8;color:#d0a0ff;">🎲 ИИ-Игры</div>
+        <div class="sec-line"></div>
+      </div>
+      <div id="aig-home-content"></div>
     </div>
 
     <!-- HOLLOW NIGHT -->
@@ -765,6 +1023,61 @@ footer{
     <button class="fev-back" onclick="showHome()">← Вернуться в деревню</button>
   </div>
 
+  <!-- ИИ-ИГРА -->
+  <div id="ai-game-view">
+    <div class="aig-hero">
+      <h1>🎲 Случайная ИИ-Игра</h1>
+      <p>Нейросеть генерирует 5 уникальных концептов.<br>Выбери лучший — и отправь его на суд сообщества!</p>
+      <div class="aig-badge">✨ &nbsp;Каждый месяц — новый сезон&nbsp; ✨</div>
+    </div>
+
+    <!-- Сезон -->
+    <div class="aig-season">
+      <div class="aig-season-ico">🌸</div>
+      <div>
+        <div class="aig-season-title">Сезон 1 · Весна Алгоритмов</div>
+        <div class="aig-season-desc">Генерируй игры, голосуй за лучшие, попади в топ!</div>
+        <div class="aig-season-days" id="aig-season-days">Загрузка...</div>
+      </div>
+    </div>
+
+    <!-- Панель: Генерация -->
+    <div class="fev-panel">
+      <div class="fev-ptitle">🔬 Генерация концептов</div>
+      <div class="fev-rule"><div class="fev-rule-ico">🎲</div><div class="fev-rule-txt">Нажми <b>«Сканировать»</b> — ИИ создаст 5 уникальных игровых концептов</div></div>
+      <div class="fev-rule"><div class="fev-rule-ico">👁️</div><div class="fev-rule-txt">Изучи каждый вариант: сюжет, механику, стиль</div></div>
+      <div class="fev-rule" style="border:none"><div class="fev-rule-ico">🏆</div><div class="fev-rule-txt">Выбери лучший и <b>отправь на голосование</b> сообществу!</div></div>
+    </div>
+
+    <!-- Кнопка сканировать -->
+    <button class="aig-scan-btn" id="aig-scan-btn" onclick="aigScan()">
+      <span class="scan-icon">🔭</span>
+      <span class="scan-spinner"></span>
+      <span id="aig-scan-label">Сканировать Пространство Идей</span>
+    </button>
+
+    <!-- Статус генерации -->
+    <div id="aig-gen-status" style="display:none;text-align:center;font-family:'IM Fell English',serif;font-style:italic;font-size:12px;color:#9060c0;padding:6px;"></div>
+
+    <!-- Варианты -->
+    <div id="aig-variants-wrap" style="display:none;">
+      <div class="fev-ptitle" style="margin-bottom:10px;font-family:'Rye',cursive;font-size:11px;color:var(--s2);letter-spacing:.12em;display:flex;align-items:center;gap:8px;">🃏 Выбери лучший концепт<div style="flex:1;height:1px;background:linear-gradient(90deg,var(--bark2),transparent)"></div></div>
+      <div class="aig-variants" id="aig-variants-list"></div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+        <button class="aig-submit-btn" id="aig-submit-btn" onclick="aigSubmit()" disabled>🏆 Отправить на суд сообщества</button>
+        <button style="background:transparent;border:2px solid var(--w4);border-radius:var(--r6);padding:10px;font-family:'IM Fell English',serif;font-size:12px;color:var(--parch3);cursor:pointer;" onclick="aigScan()">↺ Новый набор вариантов</button>
+      </div>
+    </div>
+
+    <!-- Топ ИИ-игр -->
+    <div class="fev-panel">
+      <div class="fev-ptitle">🏅 Топ ИИ-Игр · Голосование</div>
+      <div class="aig-top-list" id="aig-top-list"><div class="aig-empty">🔮 Первый сезон только начался. Будь первым!</div></div>
+    </div>
+
+    <button class="fev-back" onclick="showHome()">← Вернуться в деревню</button>
+  </div>
+
   <!-- ИГРОВОЙ ФРЕЙМ -->
   <div id="game-view" class="game-view">
     <div class="game-topbar">
@@ -795,6 +1108,14 @@ footer{
 </div>
 
 <!-- ГАЛЕРЕЯ -->
+<!-- ПРОФИЛЬ -->
+<div id="profile-modal" onclick="if(event.target===this)closeProfile()">
+  <div class="prof-sheet" id="prof-sheet">
+    <div class="prof-drag" onclick="closeProfile()"><div class="prof-drag-bar"></div></div>
+    <div id="prof-content"></div>
+  </div>
+</div>
+
 <div id="gallery-modal">
   <button class="gal-close" onclick="closeGallery()">✕</button>
   <div class="gal-inner">
@@ -830,7 +1151,7 @@ const GAMES=[
   {id:3,name:'SprayZone',icon:'🎨',sub:'Граффити-Редактор · Активна',desc:'Рисуй граффити баллончиком на тёмных стенах. Шаблоны, лутбоксы с редкими красками!',tags:['Творчество','Граффити'],url:'https://chupepro.github.io/FishOnlReb/graffiti-1.html',banner:'banner-graffiti',active:true},
   {id:6,name:'Графиополия',icon:'🎲',sub:'Юбилейная · Только APK',desc:'Специальная игра в честь юбилея! Только Android-приложение. Min Android 7.0 · 27.5MB · Kotlin.',tags:['Юбилей','Android','APK'],url:null,apk:'https://github.com/chupepro/FishOnlReb/raw/refs/heads/main/grafiopoly.apk',banner:'banner-grafiopoly',active:true},
   {id:7,name:'Переборн!',icon:'🏆',sub:'Ивент · Открой & Играй',desc:'Финальная версия легендарной рыбалки. Новые механики, мир, предметы. Разблокируй через ивент!',tags:['Ивент','Легенда','Переборн'],url:'https://chupepro.github.io/FishOnlReb/FishReborn_World_1_1.html',banner:'banner-reborn',active:true,gallery:['https://i.postimg.cc/rpVxHH1X/Screenshot-20260406-111427-Treb-Edit.jpg','https://i.postimg.cc/ryK7dVDQ/Screenshot-20260406-111438-Treb-Edit.jpg','https://i.postimg.cc/d05S1pwP/Screenshot-20260406-111444-Treb-Edit.jpg']},
-  {id:8,name:'Алхимик: Город',icon:'⚗️',sub:'Новинка · Симулятор · Активна',desc:'Мастерская алхимика в городе эпохи Просвещения. Смешивай стихии — песок, воду, огонь — и строй живой город!',tags:['Симулятор','Алхимия','Стихии','Город'],url:'alchemist_city.html',banner:'banner-alchemist',active:true,imperial:true}
+  {id:8,name:'Алхимик: Город',icon:'⚗️',sub:'Новинка · Симулятор · Активна',desc:'Мастерская алхимика в городе эпохи Просвещения. Смешивай стихии — песок, воду, огонь — и строй живой город!',tags:['Симулятор','Алхимия','Стихии','Город'],url:'https://chupepro.github.io/FishOnlReb/alchemist_city.html',banner:'banner-alchemist',active:true,imperial:true}
 ];
 const ARCHIVED=[
   {id:0,name:'Рыбалка Онлайн',icon:'🎣',sub:'Оригинал · Закрыта',desc:'Первая игра студии — самая любимая. Закрыта из-за разросшегося кода, но жива в памяти.',tags:['Мультиплеер','Классика'],url:'https://chupepro.github.io/FishOnlReb/Fishp.html',banner:'banner-fishing1',active:false},
@@ -913,11 +1234,12 @@ function showHome(){
   if(_mbRaf){cancelAnimationFrame(_mbRaf);_mbRaf=null;}
   document.getElementById('home-view').style.display='flex';
   document.getElementById('flash-event-view').style.display='none';
+  document.getElementById('ai-game-view').style.display='none';
   document.getElementById('game-view').classList.remove('visible');
   document.querySelector('footer').style.display='';
   renderShortcuts('active-shortcuts',GAMES);
   renderShortcuts('archive-shortcuts',ARCHIVED);
-  renderNews(4);renderAnl();setNav('nav-home');
+  renderNews(4);renderAnl();aigRenderHome();setNav('nav-home');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function showArchiveScroll(){showHome();setNav('nav-archive');setTimeout(()=>document.getElementById('archive-section')?.scrollIntoView({behavior:'smooth',block:'start'}),120);}
@@ -927,6 +1249,7 @@ function showFlashEvent(){
   stopBanners();
   document.getElementById('home-view').style.display='none';
   document.getElementById('flash-event-view').style.display='flex';
+  document.getElementById('ai-game-view').style.display='none';
   document.getElementById('game-view').classList.remove('visible');
   document.querySelector('footer').style.display='';
   setNav(null);renderFlashEvent();window.scrollTo({top:0,behavior:'smooth'});
@@ -992,6 +1315,7 @@ function launchGame(id){
   if(_mbRaf){cancelAnimationFrame(_mbRaf);_mbRaf=null;}
   document.getElementById('home-view').style.display='none';
   document.getElementById('flash-event-view').style.display='none';
+  document.getElementById('ai-game-view').style.display='none';
   document.getElementById('game-view').classList.add('visible');
   document.querySelector('footer').style.display='none';
   document.getElementById('gbar-icon').textContent=g.icon;
@@ -1100,7 +1424,619 @@ function renderFlashEvent(){
     else{gg.innerHTML=all.map(s=>s.img?`<div class="fgi"><img src="${s.img}" loading="lazy"><div class="fgi-lbl">${s.gameIcon} ${new Date(s.ts).getHours()}:${String(new Date(s.ts).getMinutes()).padStart(2,'0')}</div></div>`:`<div class="fgi" style="display:flex;align-items:center;justify-content:center;"><span style="font-size:20px">${s.gameIcon}</span></div>`).join('');}}
 }
 
-// ═══ ЧАСТИЦЫ ═══
+// ═══ ПРОФИЛЬ ═══
+const PROF_AVATARS=['🧙','🏴‍☠️','🐉','🦊','🐺','🦁','🐸','🤖','👾','🎩','🧛','🧜','🦄','🐙','🦋'];
+let _profData=null; // {username, avatar, friends:{uid:{username,avatar,favGame}}, savedIdea, coins}
+
+function profGetLocal(){try{return JSON.parse(localStorage.getItem('cg_prof')||'null');}catch(e){return null;}}
+function profSaveLocal(d){try{localStorage.setItem('cg_prof',JSON.stringify(d));}catch(e){}}
+
+async function profLoad(){
+  const local=profGetLocal();
+  if(local){_profData=local;profUpdateHeaderBtn();return;}
+}
+
+function profUpdateHeaderBtn(){
+  const btn=document.getElementById('hdr-profile-btn');
+  if(!btn)return;
+  if(_profData?.username){
+    btn.textContent=_profData.avatar||'👤';
+    btn.classList.add('has-user');
+  }else{
+    btn.textContent='👤';
+    btn.classList.remove('has-user');
+  }
+}
+
+function openProfile(){
+  const modal=document.getElementById('profile-modal');
+  modal.classList.add('visible');
+  profRender();
+}
+
+function closeProfile(){
+  document.getElementById('profile-modal').classList.remove('visible');
+}
+
+function profRender(){
+  const el=document.getElementById('prof-content');
+  if(!_profData?.username){
+    profRenderSetup(el);
+  }else{
+    profRenderMain(el);
+  }
+}
+
+function profRenderSetup(el){
+  let selAv=PROF_AVATARS[0];
+  el.innerHTML=`
+  <div class="prof-setup">
+    <div class="prof-setup-title">👋 Добро пожаловать!</div>
+    <div class="prof-setup-sub">Создай профиль чтобы сохранять идеи,<br>добавлять друзей и получать монеты</div>
+    <div class="prof-avatar-pick" id="prof-av-pick">
+      ${PROF_AVATARS.map((a,i)=>`<div class="prof-av-opt${i===0?' sel':''}" onclick="profSelAv(this,'${a}')">${a}</div>`).join('')}
+    </div>
+    <input class="prof-name-input" id="prof-name-inp" placeholder="Придумай никнейм..." maxlength="20">
+    <button class="prof-setup-btn" onclick="profCreate()">✨ Создать профиль</button>
+  </div>`;
+}
+
+function profSelAv(el,av){
+  document.querySelectorAll('.prof-av-opt').forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+  window._selAv=av;
+}
+
+async function profCreate(){
+  const nameEl=document.getElementById('prof-name-inp');
+  const name=(nameEl?.value||'').trim();
+  if(!name||name.length<2){showToast('⚠️ Никнейм минимум 2 символа');return;}
+  const av=window._selAv||PROF_AVATARS[0];
+  _profData={username:name,avatar:av,friends:{},savedIdea:null,coins:0,uid:aigUserId(),createdAt:Date.now()};
+  profSaveLocal(_profData);
+  // Сохраняем в Firebase
+  try{
+    const db=await fbInit();
+    if(db){
+      const{ref,set}=_fbDbModule;
+      await set(ref(db,'users/'+aigUserId()),{username:name,avatar:av,coins:0,createdAt:Date.now()});
+      await set(ref(db,'usernames/'+name.toLowerCase()),aigUserId());
+    }
+  }catch(e){}
+  profUpdateHeaderBtn();
+  showToast('🎉 Профиль создан! Привет, '+name+'!');
+  profRender();
+}
+
+function profRenderMain(el){
+  const d=_profData;
+  const a=getA();
+  let favGame=null,best=0;
+  if(a.sessions)for(const[id,n]of Object.entries(a.sessions))if(n>best){best=n;favGame=ALL().find(g=>String(g.id)===id);}
+  const friends=d.friends||{};
+  const friendKeys=Object.keys(friends);
+
+  el.innerHTML=`
+  <div class="prof-header">
+    <div class="prof-avatar-big">${d.avatar||'👤'}</div>
+    <div class="prof-info">
+      <div class="prof-username">${d.username}</div>
+      <div class="prof-uid-tag">ID: ${(d.uid||'').slice(0,12)}...</div>
+    </div>
+    <button class="prof-edit-btn" onclick="profEdit()">✏️ Изм.</button>
+  </div>
+
+  <div class="prof-section">
+    <div class="prof-sec-title">🪙 Монеты</div>
+    <div class="prof-coins-row">
+      <div class="prof-coin-val">🪙 ${d.coins||0}</div>
+      <div class="prof-coin-info">
+        <div class="prof-coin-lbl">Внутриигровая валюта</div>
+        <div class="prof-soon-badge">⚙ Скоро: отправляй монеты друзьям</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prof-section">
+    <div class="prof-sec-title">❤️ Любимая игра</div>
+    ${favGame?`<div class="prof-fav-game">
+      <div class="prof-fav-ico">${favGame.icon}</div>
+      <div><div class="prof-fav-name">${favGame.name}</div><div class="prof-fav-sub">Сыграно ${a.sessions?.[favGame.id]||0} раз</div></div>
+    </div>`:`<div class="prof-no-idea">Пока не играл ни в одну игру</div>`}
+  </div>
+
+  <div class="prof-section">
+    <div class="prof-sec-title">💾 Сохранённая ИИ-Идея</div>
+    ${d.savedIdea?`
+    <div class="prof-saved-idea-card">
+      <div class="prof-idea-bar">
+        <div class="prof-idea-title">${d.savedIdea.emoji||'🎮'} ${d.savedIdea.title}</div>
+        <div class="prof-idea-genre">${d.savedIdea.genre||''}</div>
+      </div>
+      <div class="prof-idea-body">
+        <div class="prof-idea-desc">${d.savedIdea.desc||''}</div>
+        <div class="prof-idea-mech"><span>🕹️</span><span>${d.savedIdea.mechanic||''}</span></div>
+        <button class="prof-replace-btn" ${1===1?'disabled':''} onclick="profUseIdea()">
+          ${1===1?'🔒 Замена доступна в Сезоне 2':'✨ Использовать как мою идею'}
+        </button>
+      </div>
+    </div>`:`<div class="prof-no-idea">Нет сохранённой идеи.<br>Генерируй в 🎲 ИИ-Игры и нажимай 💾</div>`}
+  </div>
+
+  <div class="prof-section">
+    <div class="prof-sec-title">👥 Друзья (${friendKeys.length})</div>
+    <div class="prof-friend-search">
+      <input class="prof-friend-input" id="prof-friend-inp" placeholder="Никнейм друга...">
+      <button class="prof-friend-add-btn" onclick="profAddFriend()">+ Добавить</button>
+    </div>
+    <div id="prof-friends-list">
+      ${friendKeys.length?friendKeys.map(uid=>{const f=friends[uid];return`<div class="prof-friend-item">
+        <div class="prof-friend-av">${f.avatar||'👤'}</div>
+        <div class="prof-friend-name">${f.username}</div>
+        <div class="prof-friend-fav">${f.favGame?f.favGame+' любимая':'Нет данных'}</div>
+      </div>`;}).join(''):`<div class="prof-no-friends">Друзей пока нет 🤷</div>`}
+    </div>
+  </div>
+  <div style="padding:0 18px 20px;">
+    <button class="prof-close-btn" onclick="closeProfile()">✕ Закрыть профиль</button>
+  </div>`;
+}
+
+function profEdit(){
+  _profData=null;
+  profSaveLocal(null);
+  profUpdateHeaderBtn();
+  profRender();
+}
+
+async function profAddFriend(){
+  const inp=document.getElementById('prof-friend-inp');
+  const name=(inp?.value||'').trim().toLowerCase();
+  if(!name){showToast('⚠️ Введи никнейм');return;}
+  if(name===(_profData?.username||'').toLowerCase()){showToast('⚠️ Это ты сам!');return;}
+  try{
+    const db=await fbInit();
+    if(!db){showToast('⚠️ Firebase недоступен');return;}
+    const{ref,get}=_fbDbModule;
+    const uidSnap=await get(ref(db,'usernames/'+name));
+    if(!uidSnap.exists()){showToast('❌ Игрок «'+name+'» не найден');return;}
+    const friendUid=uidSnap.val();
+    const userSnap=await get(ref(db,'users/'+friendUid));
+    if(!userSnap.exists()){showToast('❌ Профиль не найден');return;}
+    const fData=userSnap.val();
+    if(!_profData.friends)_profData.friends={};
+    _profData.friends[friendUid]={username:fData.username,avatar:fData.avatar||'👤',favGame:null};
+    profSaveLocal(_profData);
+    showToast('✅ '+fData.username+' добавлен в друзья!');
+    profRenderMain(document.getElementById('prof-content'));
+  }catch(e){showToast('⚠️ Ошибка: '+e.message);}
+}
+
+function profSaveIdea(variant){
+  if(!_profData){showToast('⚠️ Сначала создай профиль!');openProfile();return;}
+  _profData.savedIdea={...variant,savedAt:Date.now()};
+  profSaveLocal(_profData);
+  showToast('💾 Идея сохранена в профиль!');
+}
+
+function profUseIdea(){
+  // Будет активна в Сезоне 2
+  showToast('🔒 Замена будет доступна в Сезоне 2!');
+}
+const GEMINI_KEY='AIzaSyDQi5yoyUiW2aKobGSpqAJyStpCqvVCzOs';
+const FB_CFG={apiKey:"AIzaSyBIyr4nNTN_l43zvwb8Mba5bKRV2gfLMyE",authDomain:"launcherai-b1148.firebaseapp.com",databaseURL:"https://launcherai-b1148-default-rtdb.firebaseio.com",projectId:"launcherai-b1148",storageBucket:"launcherai-b1148.firebasestorage.app",messagingSenderId:"1003098525338",appId:"1:1003098525338:web:b5fe03798c169b22b39923"};
+let _fbApp=null,_fbDb=null,_fbDbModule=null;
+async function fbInit(){
+  if(_fbDb)return _fbDb;
+  try{
+    const{initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const{getDatabase,ref,set,get,push,update,onValue}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    _fbDbModule={ref,set,get,push,update,onValue};
+    const apps=getApps();
+    _fbApp=apps.length?apps[0]:initializeApp(FB_CFG,'aigame');
+    _fbDb=getDatabase(_fbApp);
+    return _fbDb;
+  }catch(e){console.warn('Firebase не подключён:',e);return null;}
+}
+
+// Uid пользователя (анонимный)
+function aigUserId(){let id=localStorage.getItem('cg_uid');if(!id){id='u_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);localStorage.setItem('cg_uid',id);}return id;}
+
+// Генерация через Gemini
+let _aigVariants=null,_aigSelected=null;
+const OR_KEY='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';
+let _freeModels=null;
+
+async function getFreeModels(){
+  if(_freeModels) return _freeModels;
+  try{
+    const r=await fetch('https://openrouter.ai/api/v1/models',{headers:{'Authorization':'Bearer '+OR_KEY}});
+    if(!r.ok) throw new Error();
+    const d=await r.json();
+    // Берём только бесплатные модели (pricing.prompt === "0")
+    _freeModels=d.data
+      .filter(m=>m.pricing&&(m.pricing.prompt==='0'||parseFloat(m.pricing.prompt)===0))
+      .map(m=>m.id);
+    console.log('🆓 Бесплатных моделей найдено:',_freeModels.length,_freeModels);
+    return _freeModels;
+  }catch(e){
+    // Fallback список если API недоступен
+    _freeModels=['google/gemma-3-27b-it:free','mistralai/mistral-7b-instruct:free','meta-llama/llama-3.1-8b-instruct:free','microsoft/phi-3-mini-128k-instruct:free','qwen/qwen-2-7b-instruct:free'];
+    return _freeModels;
+  }
+}
+
+async function callOpenRouter(prompt, modelIdx=0){
+  const models=await getFreeModels();
+  if(modelIdx>=models.length) return callPollinations(prompt);
+  const model=models[modelIdx];
+  const shortName=model.split('/')[1]?.split(':')[0]||model;
+  aigSetStatus(`🔄 Пробуем ${shortName} (${modelIdx+1}/${models.length})...`);
+  try{
+    const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+OR_KEY,'HTTP-Referer':'https://chupepp.games','X-Title':'Chupepp Launcher'},
+      body:JSON.stringify({model,messages:[
+        {role:'system',content:'Отвечай ТОЛЬКО валидным JSON-массивом без markdown и пояснений.'},
+        {role:'user',content:prompt}
+      ],max_tokens:1400,temperature:1.0})
+    });
+    if(!r.ok){
+      console.warn(`❌ ${model} вернул ${r.status}, пробуем следующую...`);
+      return callOpenRouter(prompt, modelIdx+1);
+    }
+    const d=await r.json();
+    const text=d.choices?.[0]?.message?.content||'';
+    if(!text){
+      console.warn(`❌ ${model} вернул пустой ответ, пробуем следующую...`);
+      return callOpenRouter(prompt, modelIdx+1);
+    }
+    // Проверяем что ответ похож на JSON
+    if(!text.includes('{')){
+      console.warn(`❌ ${model} вернул не-JSON, пробуем следующую...`);
+      return callOpenRouter(prompt, modelIdx+1);
+    }
+    return text;
+  }catch(e){
+    console.warn(`❌ ${model} ошибка: ${e.message}, пробуем следующую...`);
+    return callOpenRouter(prompt, modelIdx+1);
+  }
+}
+
+async function callPollinations(prompt){
+  aigSetStatus('🌸 Pollinations AI...');
+  try{
+    const r=await fetch('https://text.pollinations.ai/openai',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'openai',messages:[{role:'system',content:'Отвечай ТОЛЬКО валидным JSON-массивом без markdown и пояснений.'},{role:'user',content:prompt}],max_tokens:1400})
+    });
+    if(!r.ok) throw new Error();
+    const d=await r.json();
+    return d.choices?.[0]?.message?.content||'';
+  }catch(e){ throw new Error('Все ИИ-провайдеры недоступны. Попробуй позже.'); }
+}
+
+// Надёжный парсер JSON — вытаскивает массив из любого мусора
+function parseAiJson(raw){
+  if(!raw) throw new Error('Пустой ответ от ИИ');
+  // 1. Убираем markdown фенсы
+  let s=raw.replace(/```json|```/gi,'').trim();
+  // 2. Ищем первый [ и последний ]
+  const start=s.indexOf('[');
+  const end=s.lastIndexOf(']');
+  if(start!==-1&&end!==-1&&end>start){
+    s=s.slice(start,end+1);
+    try{ return JSON.parse(s); }catch(e){}
+  }
+  // 3. Пробуем найти отдельные объекты {…} и собрать массив
+  const objs=[];
+  let depth=0,buf='',inStr=false,esc=false;
+  for(const ch of s){
+    if(esc){buf+=ch;esc=false;continue;}
+    if(ch==='\\'&&inStr){buf+=ch;esc=true;continue;}
+    if(ch==='"') inStr=!inStr;
+    if(!inStr){if(ch==='{')depth++;if(ch==='}')depth--;}
+    buf+=ch;
+    if(depth===0&&buf.trim().startsWith('{')){
+      try{objs.push(JSON.parse(buf.trim()));}catch(e){}
+      buf='';
+    }
+  }
+  if(objs.length>0) return objs;
+  throw new Error('Не удалось разобрать ответ ИИ');
+}
+
+async function callGemini(prompt, attempt=0){
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:1.1,maxOutputTokens:1400}})
+  });
+  if(r.status===429){
+    if(attempt<2){
+      const wait=(attempt+1)*6000;
+      aigSetStatus(`⏳ Лимит Gemini... повтор через ${Math.round(wait/1000)}с (попытка ${attempt+1}/2)`);
+      await new Promise(res=>setTimeout(res,wait));
+      return callGemini(prompt,attempt+1);
+    }
+    // Gemini исчерпан — fallback на OpenRouter
+    return callOpenRouter(prompt);
+  }
+  if(!r.ok){
+    // Любая другая ошибка Gemini — тоже fallback
+    return callOpenRouter(prompt);
+  }
+  const d=await r.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
+function aigSetStatus(msg){const el=document.getElementById('aig-gen-status');if(el){el.style.display=msg?'block':'none';el.textContent=msg;}}
+function aigSetScanning(on){
+  const btn=document.getElementById('aig-scan-btn'),lbl=document.getElementById('aig-scan-label');
+  if(!btn)return;
+  btn.classList.toggle('loading',on);
+  btn.disabled=on;
+  if(lbl)lbl.textContent=on?'Нейросеть работает...':'Сканировать Пространство Идей';
+}
+
+async function aigScan(){
+  _aigVariants=null;_aigSelected=null;
+  document.getElementById('aig-variants-wrap').style.display='none';
+  document.getElementById('aig-submit-btn').disabled=true;
+  aigSetScanning(true);
+  const statuses=['⚡ Активируем нейросеть...','🌌 Сканируем пространство идей...','🎲 Генерируем концепты...','✨ Финализация...'];
+  let si=0;aigSetStatus(statuses[si]);
+  const stI=setInterval(()=>{si=(si+1)%statuses.length;aigSetStatus(statuses[si]);},1400);
+  try{
+    const prompt=`Ты — генератор идей для простых браузерных игр. Придумай РОВНО 5 разных мини-игр.
+Отвечай ТОЛЬКО JSON-массивом без markdown, без пояснений, без лишнего текста.
+Формат:
+[{"title":"Название игры","genre":"Жанр","emoji":"🎮","desc":"3-4 предложения: где происходит действие, кто главный герой, какова главная цель и что мешает её достичь. Пиши просто и интересно, как описание игры в магазине.","mechanic":"2 предложения: что именно делает игрок руками и как это влияет на игру. Например: нажимаешь на монстров чтобы атаковать, собираешь монеты и покупаешь улучшения."}]
+Правила:
+- Никаких умных слов: пиши просто и понятно
+- Описание должно быть живым и интересным — чтобы захотелось сыграть
+- Разные жанры: action, puzzle, idle, rpg, sim
+- Оригинальные и весёлые идеи
+- Названия на русском`;
+    const raw=await callGemini(prompt);
+    clearInterval(stI);
+    let parsed;
+    try{ parsed=parseAiJson(raw); }
+    catch(e){ throw new Error('Не удалось разобрать ответ ИИ: '+e.message); }
+    if(!Array.isArray(parsed)||parsed.length<1)throw new Error('ИИ вернул пустой список');
+    _aigVariants=parsed.slice(0,5);
+    aigSetStatus('');
+    aigRenderVariants();
+  }catch(err){
+    clearInterval(stI);
+    aigSetStatus('⚠️ '+err.message+'. Попробуй снова!');
+  }finally{aigSetScanning(false);}
+}
+
+function aigRenderVariants(){
+  if(!_aigVariants)return;
+  const wrap=document.getElementById('aig-variants-wrap'),list=document.getElementById('aig-variants-list');
+  list.innerHTML=_aigVariants.map((v,i)=>`
+    <div class="aig-variant" id="aigv-${i}" onclick="aigSelect(${i})" style="position:relative;">
+      <div class="aig-var-select">✓</div>
+      <div class="aig-var-top-bar">
+        <div class="aig-var-num">${i+1}</div>
+        <div class="aig-var-title">${v.emoji||'🎮'} ${v.title||'Без названия'}</div>
+        <div class="aig-var-genre">${v.genre||'Игра'}</div>
+      </div>
+      <div class="aig-var-body">
+        <div class="aig-var-desc">${v.desc||''}</div>
+        ${v.mechanic?`<div class="aig-var-mechanic"><div class="aig-var-mechanic-icon">🕹️</div><div class="aig-var-mechanic-txt">${v.mechanic}</div></div>`:''}
+        <button class="aig-var-save-btn" onclick="event.stopPropagation();profSaveIdeaFromCard(${i})" id="aig-save-${i}">💾 Сохранить в профиль</button>
+      </div>
+    </div>`).join('');
+  wrap.style.display='block';
+  setTimeout(()=>wrap.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function profSaveIdeaFromCard(idx){
+  if(!_aigVariants)return;
+  const v=_aigVariants[idx];
+  profSaveIdea(v);
+  const btn=document.getElementById('aig-save-'+idx);
+  if(btn){btn.textContent='✅ Сохранено';btn.classList.add('saved');}
+}
+
+function aigSelect(idx){
+  _aigSelected=idx;
+  document.querySelectorAll('.aig-variant').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  document.getElementById('aig-submit-btn').disabled=false;
+}
+
+async function aigSubmit(){
+  if(_aigSelected===null||!_aigVariants)return;
+  // Проверка: уже отправлял?
+  if(localStorage.getItem('cg_aig_submitted')){
+    showToast('✅ Ты уже отправил идею в этом сезоне!');return;
+  }
+  const v=_aigVariants[_aigSelected];
+  const btn=document.getElementById('aig-submit-btn');
+  btn.disabled=true;btn.textContent='⏳ Отправляем...';
+  try{
+    const db=await fbInit();
+    if(!db){showToast('⚠️ Firebase недоступен');btn.disabled=false;btn.innerHTML='🏆 Отправить на суд сообщества';return;}
+    const{ref,push}=_fbDbModule;
+    const uid=aigUserId();
+    const entry={title:`${v.emoji||'🎮'} ${v.title}`,genre:v.genre||'',desc:v.desc||'',mechanic:v.mechanic||'',author:uid,likes:0,ts:Date.now(),season:1};
+    await push(ref(db,'aigames/entries'),entry);
+    localStorage.setItem('cg_aig_submitted','1');
+    showToast('🏆 Концепт отправлен на голосование!');
+    btn.innerHTML='✅ Отправлено! (1 раз за сезон)';
+    aigCheckSubmitLimit();
+    aigLoadTop();
+  }catch(e){showToast('⚠️ Ошибка: '+e.message);btn.disabled=false;btn.innerHTML='🏆 Отправить на суд сообщества';}
+}
+
+async function aigClearTestData(){
+  try{
+    const db=await fbInit();if(!db)return;
+    const{ref,remove}=_fbDbModule;
+    await remove(ref(db,'aigames/entries'));
+    // Также сбрасываем локальный флаг отправки чтобы можно было отправить снова
+    localStorage.removeItem('cg_aig_submitted');
+    localStorage.removeItem('cg_votes');
+    showToast('🗑️ База очищена!');
+    aigLoadTop();
+    aigCheckSubmitLimit();
+  }catch(e){showToast('⚠️ Ошибка очистки: '+e.message);}
+}
+async function aigAutoClean(){
+  if(!localStorage.getItem('cg_aig_cleaned_v1')){
+    localStorage.setItem('cg_aig_cleaned_v1','1');
+    localStorage.removeItem('cg_aig_submitted');
+    localStorage.removeItem('cg_votes');
+    const db=await fbInit();
+    if(db){
+      try{
+        const{ref,remove}=_fbDbModule;
+        await remove(ref(db,'aigames/entries'));
+        console.log('✅ Тестовые данные очищены');
+      }catch(e){}
+    }
+  }
+}
+aigAutoClean();
+
+async function aigRenderHome(){
+  const el=document.getElementById('aig-home-content');
+  if(!el)return;
+  try{
+    const db=await fbInit();
+    if(!db){renderAigHomeCta();return;}
+    const{ref,get}=_fbDbModule;
+    const snap=await get(ref(db,'aigames/entries'));
+    if(!snap.exists()){renderAigHomeCta();return;}
+    let entries=[];
+    snap.forEach(c=>entries.push({id:c.key,...c.val()}));
+    entries.sort((a,b)=>(b.likes||0)-(a.likes||0));
+    const top=entries.slice(0,3);
+    const ranks=['🥇','🥈','🥉'];
+    el.innerHTML=`
+      <div class="aig-season-cta" onclick="showAiGame()" style="margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:10px;width:100%;">
+          <div style="font-size:28px;">🎲</div>
+          <div style="flex:1;text-align:left;">
+            <div class="aig-cta-title" style="font-size:13px;">Сезон 1 · ИИ-Игры</div>
+            <div class="aig-cta-sub" style="font-size:11px;">Голосуй за лучшие концепты!</div>
+          </div>
+          <div style="font-family:'Rye',cursive;font-size:11px;color:#9060c0;">Открыть →</div>
+        </div>
+      </div>
+      <div class="aig-home-top">
+        ${top.map((e,i)=>`<div class="aig-home-item" onclick="showAiGame()">
+          <div class="aig-home-rank">${ranks[i]}</div>
+          <div class="aig-home-title">${e.title||'—'}</div>
+          <div class="aig-home-likes">❤️ ${e.likes||0}</div>
+        </div>`).join('')}
+      </div>`;
+  }catch(e){renderAigHomeCta();}
+}
+
+function renderAigHomeCta(){
+  const el=document.getElementById('aig-home-content');
+  if(!el)return;
+  el.innerHTML=`<div class="aig-season-cta" onclick="showAiGame()">
+    <div class="aig-cta-icon">🎲</div>
+    <div class="aig-cta-title">Сезон начался!</div>
+    <div class="aig-cta-sub">Генерируй игровые идеи с помощью ИИ и отправляй их на суд сообщества. Пока никто не участвовал — будь первым!</div>
+    <div class="aig-cta-btn">✨ Создать идею</div>
+  </div>`
+}
+
+function aigCheckSubmitLimit(){
+  const btn=document.getElementById('aig-submit-btn');
+  if(!btn)return;
+  if(localStorage.getItem('cg_aig_submitted')){
+    btn.disabled=true;
+    btn.innerHTML='✅ Идея уже отправлена (1 раз за сезон)';
+  }
+}
+
+async function aigVote(entryId){
+  const votedKey='cg_votes';
+  let voted;try{voted=JSON.parse(localStorage.getItem(votedKey)||'{}');}catch(e){voted={};}
+  if(voted[entryId]){showToast('✅ Уже проголосовал!');return;}
+  try{
+    const db=await fbInit();if(!db)return;
+    const{ref,get,update}=_fbDbModule;
+    const r=ref(db,'aigames/entries/'+entryId);
+    const snap=await get(r);
+    if(!snap.exists())return;
+    const cur=snap.val().likes||0;
+    await update(r,{likes:cur+1});
+    voted[entryId]=true;localStorage.setItem(votedKey,JSON.stringify(voted));
+    showToast('❤️ Голос засчитан!');
+    aigLoadTop();
+  }catch(e){showToast('⚠️ Ошибка голосования');}
+}
+
+async function aigLoadTop(){
+  const list=document.getElementById('aig-top-list');
+  if(!list)return;
+  try{
+    const db=await fbInit();
+    if(!db){list.innerHTML='<div class="aig-empty">Firebase недоступен</div>';return;}
+    const{ref,get}=_fbDbModule;
+    const snap=await get(ref(db,'aigames/entries'));
+    if(!snap.exists()){list.innerHTML='<div class="aig-empty">🔮 Первый сезон только начался. Будь первым!</div>';return;}
+    let entries=[];
+    snap.forEach(c=>{entries.push({id:c.key,...c.val()});});
+    entries.sort((a,b)=>(b.likes||0)-(a.likes||0));
+    const top=entries.slice(0,10);
+    const votedKey='cg_votes';let voted;try{voted=JSON.parse(localStorage.getItem(votedKey)||'{}');}catch(e){voted={};}
+    const ranks=['🥇','🥈','🥉'];
+    const rankCls=['gold','silver','bronze'];
+    list.innerHTML=top.map((e,i)=>{
+      const rank=i<3?`<span class="aig-top-rank ${rankCls[i]||''}">${ranks[i]||'#'+(i+1)}</span>`:`<span class="aig-top-rank">#${i+1}</span>`;
+      const isVoted=!!voted[e.id];
+      return `<div class="aig-top-item" style="flex-direction:column;align-items:stretch;gap:0;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${rank}
+          <div class="aig-top-info">
+            <div class="aig-top-title">${e.title||'Без названия'}</div>
+            <div class="aig-top-author">жанр: ${e.genre||'?'} · ${new Date(e.ts||0).toLocaleDateString('ru')}</div>
+          </div>
+          <div class="aig-top-votes">
+            <button class="aig-top-vote-btn ${isVoted?'voted':''}" onclick="aigVote('${e.id}')">❤️</button>
+            <div class="aig-top-likes">${e.likes||0}</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(100,60,20,.25);">
+          <div style="font-family:'IM Fell English',serif;font-style:italic;font-size:12.5px;color:var(--parch2);line-height:1.6;">${e.desc||''}</div>
+          ${e.mechanic?`<div style="margin-top:6px;font-family:'IM Fell English',serif;font-size:11px;color:#8050b0;display:flex;align-items:flex-start;gap:5px;"><span>⚙</span><span>${e.mechanic}</span></div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(err){list.innerHTML='<div class="aig-empty">⚠️ Ошибка загрузки</div>';}
+}
+
+function aigUpdateSeason(){
+  const el=document.getElementById('aig-season-days');if(!el)return;
+  const end=new Date(2025,3,30);const now=new Date();
+  const diff=Math.max(0,Math.floor((end-now)/(1000*60*60*24)));
+  el.textContent=diff>0?`До конца сезона: ${diff} дн.`:'Сезон завершён';
+}
+
+function showAiGame(){
+  if(_cur!==null){closeSession(_cur);_cur=null;}
+  stopBanners();
+  if(_mbRaf){cancelAnimationFrame(_mbRaf);_mbRaf=null;}
+  document.getElementById('home-view').style.display='none';
+  document.getElementById('flash-event-view').style.display='none';
+  document.getElementById('ai-game-view').style.display='flex';
+  document.getElementById('game-view').classList.remove('visible');
+  document.querySelector('footer').style.display='';
+  setNav('nav-aigame');
+  aigUpdateSeason();
+  aigLoadTop();
+  aigCheckSubmitLimit();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 (function(){
   const cv=document.getElementById('particle-bg'),ctx=cv.getContext('2d');
   let W,H,pts=[];
@@ -1298,7 +2234,7 @@ function bannerAlchemist(cv,modal=false){
   const msgs=['Инициализация...','Загружаем деревню...','Зажигаем фонари...','Собираем жителей...','Приглашаем рыбаков...','Добро пожаловать! 🌿'];
   const bar=document.getElementById('pre-bar'),st=document.getElementById('pre-status');
   let p=0;const iv=setInterval(()=>{p+=100/msgs.length;bar.style.width=Math.min(100,p)+'%';st.textContent=msgs[Math.min(Math.floor(p/(100/msgs.length)),msgs.length-1)];
-    if(p>=100){clearInterval(iv);setTimeout(()=>{const pre=document.getElementById('preloader');pre.style.opacity='0';setTimeout(()=>{pre.style.display='none';spawnLeaves();showHome();initTimer();},600);},300);}},260);
+    if(p>=100){clearInterval(iv);setTimeout(()=>{const pre=document.getElementById('preloader');pre.style.opacity='0';setTimeout(()=>{pre.style.display='none';spawnLeaves();showHome();initTimer();profLoad();},600);},300);}},260);
 })();
 </script>
 </body>
