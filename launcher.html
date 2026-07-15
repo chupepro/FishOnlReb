@@ -167,6 +167,26 @@ header{
 .sec-plank.gold{background:#7a5010;border-color:#4a3008;}
 .sec-line{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--bark) 0,var(--bark) 7px,transparent 7px,transparent 12px);}
 
+/* ═══ МИНИ-ВКЛАДКИ ВНУТРИ «АКТИВНЫЕ» ═══ */
+.subtabs{display:flex;gap:6px;margin:2px 0 12px;}
+.subtab-btn{
+  flex:1;text-align:center;cursor:pointer;
+  font-family:'IM Fell English',serif;font-style:italic;font-size:11px;color:var(--parch3);
+  padding:8px 6px;border-radius:var(--r4);border:2px solid var(--bark);
+  background:var(--w2);transition:all .15s;min-height:38px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.subtab-btn.active{background:var(--moss1);border-color:var(--moss0);color:var(--s3);}
+.subtab-btn .stb-count{font-family:'Lora',serif;font-style:normal;font-size:9px;opacity:.75;}
+
+/* Значок «обновлено» на карточке */
+.shortcut-updated{
+  position:absolute;top:7px;left:8px;z-index:2;
+  background:rgba(180,60,0,.75);border:1px solid var(--amber2);border-radius:8px;
+  padding:1px 6px;font-family:'IM Fell English',serif;font-style:italic;font-size:8px;color:var(--amber3);
+  animation:badgePulse 2s ease-in-out infinite;
+}
+
 /* ═══════════════════════════════════
    ЯРЛЫКИ — ГЛАВНЫЙ ЭЛЕМЕНТ
    Большие карточки, удобные для пальца
@@ -921,6 +941,10 @@ footer{
         <div class="sec-plank green">🌿 Активные игры</div>
         <div class="sec-line"></div>
       </div>
+      <div class="subtabs">
+        <div class="subtab-btn active" id="subtab-all" onclick="setActiveSubtab('all')">Все <span class="stb-count" id="stb-count-all"></span></div>
+        <div class="subtab-btn" id="subtab-temp" onclick="setActiveSubtab('temp')">⏳ Временно Активные <span class="stb-count" id="stb-count-temp"></span></div>
+      </div>
       <div class="shortcuts-grid" id="active-shortcuts"></div>
     </div>
 
@@ -1145,6 +1169,7 @@ footer{
 <script>
 // ═══ ДАННЫЕ ═══
 const GAMES=[
+  {id:0,name:'Рыбалка Онлайн',icon:'🎣',sub:'Ремастер+ · Временно Активна',desc:'Легендарная первая игра студии вернулась! После 4 месяцев в архиве вышла обновлённая версия — Ремастер+: новый код, исправления и подчищенный мир.',tags:['Мультиплеер','Классика','Ремастер+'],url:'https://chupepro.github.io/FishOnlReb/Fishp.html',banner:'banner-fishing1',active:true,tempActive:true,updated:true},
   {id:2,name:'Клёвое Место',icon:'🏡',sub:'Idle Строитель · Активна',desc:'Деревянная деревня, конвейеры, NPC, фермы и рыбный дом. Строй и развивай!',tags:['Idle','Стройка','NPC','Конвейеры'],url:'https://chupepro.github.io/FishOnlReb/te.html',banner:'banner-klevoe',active:true},
   {id:4,name:'Robolab',icon:'🤖',sub:'Idle Строитель · Активна',desc:'Строй роботизированный завод: добывай ресурсы, чини механизмов, апгрейди технологии!',tags:['Idle','Роботы','Заводы'],url:'РоботноеМесто-4.html',banner:'banner-robot',active:true},
   {id:5,name:'3D Рыбалка',icon:'🎣',sub:'3D Рыбалка · Активна',desc:'Реалистичная 3D рыбалка на Three.js: забрасывай удочку, лови рыбу, прокачивай снасти!',tags:['3D','Three.js','Рыбалка'],url:'https://chupepro.github.io/FishOnlReb/fishing3d-4.html',banner:'banner-fishing3d',active:true},
@@ -1154,11 +1179,11 @@ const GAMES=[
   {id:8,name:'Алхимик: Город',icon:'⚗️',sub:'Новинка · Симулятор · Активна',desc:'Мастерская алхимика в городе эпохи Просвещения. Смешивай стихии — песок, воду, огонь — и строй живой город!',tags:['Симулятор','Алхимия','Стихии','Город'],url:'https://chupepro.github.io/FishOnlReb/alchemist_city.html',banner:'banner-alchemist',active:true,imperial:true}
 ];
 const ARCHIVED=[
-  {id:0,name:'Рыбалка Онлайн',icon:'🎣',sub:'Оригинал · Закрыта',desc:'Первая игра студии — самая любимая. Закрыта из-за разросшегося кода, но жива в памяти.',tags:['Мультиплеер','Классика'],url:'https://chupepro.github.io/FishOnlReb/Fishp.html',banner:'banner-fishing1',active:false},
   {id:1,name:'Реборн 2',icon:'🐟',sub:'Реборн 2 · Закрыта',desc:'Firebase-мультиплеер, лутбоксы, промокоды, тайм-ивенты.',tags:['Firebase','Лутбоксы'],url:'https://chupepro.github.io/FishOnlReb/Fish2ta.html',banner:'banner-fishing2',active:false}
 ];
 const ALL=()=>[...GAMES,...ARCHIVED];
 const NEWS=[
+  {game:'Рыбалка Онлайн',dot:'nd-b',title:'🎣 Рыбалка Онлайн: вышел Ремастер+!',body:'Спустя 4 месяца легенда вернулась — временно активна, смотри вкладку «Временно Активные».',date:'Сегодня'},
   {game:'Лаунчер',dot:'nd-a',title:'⚗ Алхимик: Город добавлен!',body:'Новая игра от студии — смешивай стихии, строй алхимический город эпохи Просвещения.',date:'Сегодня'},
   {game:'Лаунчер',dot:'nd-a',title:'📸 Ивент «Вспышка» начался!',body:'8 моментов в каждой игре → Photo Sim.',date:'Сегодня'},
   {game:'Лаунчер',dot:'nd-a',title:'🏆 Переборн вышел!',body:'Финальная версия легендарной рыбалки!',date:'Сегодня'},
@@ -1166,7 +1191,6 @@ const NEWS=[
   {game:'Robolab',dot:'nd-b',title:'Robolab запущен!',body:'Строй завод, апгрейди роботов.',date:'Недавно'},
   {game:'SprayZone',dot:'nd-r',title:'SprayZone запущена!',body:'Баллончик, шаблоны, лутбоксы.',date:'Недавно'},
   {game:'Клёвое Место',dot:'nd-g',title:'NPC-деревенщики',body:'Жители ходят по деревне и реагируют на постройки.',date:'12 мар'},
-  {game:'Рыбалка Онлайн',dot:'nd-b',title:'Легенда закрыта',body:'Первая игра студии ушла в архив.',date:'2023'},
 ];
 
 // ═══ АНАЛИТИКА ═══
@@ -1198,7 +1222,9 @@ function renderShortcuts(cid,list){
     else if(isEv){bCls='badge-event';bTxt='🏆 Ивент';sCls='s-event';}
     else if(isApk){bCls='badge-apk';bTxt='📲 APK';sCls='s-apk';}
     else if(isArch){bCls='badge-archive';bTxt='📦 Архив';sCls='s-archive';}
+    else if(g.tempActive){bCls='badge-active';bTxt='⏳ Временно';}
     const hStr=hrs>0?`<div class="shortcut-hours">⏱${hrs}ч</div>`:'';
+    const updStr=g.updated?`<div class="shortcut-updated">🔥 Обновлено</div>`:'';
     const cornSVG=`<svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1 L7 1 L7 3 L3 3 L3 7 L1 7 Z" fill="rgba(212,175,55,0.55)"/><path d="M1 1 L7 1" stroke="rgba(212,175,55,0.8)" stroke-width="1.2"/><path d="M1 1 L1 7" stroke="rgba(212,175,55,0.8)" stroke-width="1.2"/><circle cx="2.5" cy="2.5" r="1" fill="rgba(212,175,55,0.6)"/></svg>`;
     const impDecor=isImp?`
       <div class="imp-corner tl">${cornSVG}</div>
@@ -1210,6 +1236,7 @@ function renderShortcuts(cid,list){
     return `<div class="shortcut ${sCls} ${impCls}" onclick="openGameModal(${g.id})" style="animation-delay:${i*.06}s">
       ${impDecor}
       <div class="shortcut-stripe"></div>
+      ${updStr}
       ${hStr}
       <div class="shortcut-icon">${g.icon}</div>
       <div class="shortcut-name">${g.name}</div>
@@ -1218,6 +1245,21 @@ function renderShortcuts(cid,list){
   }).join('');
   const el=document.getElementById(cid);
   if(el)el.innerHTML=html;
+}
+// ═══ МИНИ-ВКЛАДКИ «АКТИВНЫЕ / ВРЕМЕННО АКТИВНЫЕ» ═══
+let _activeSubtab='all';
+function setActiveSubtab(tab){
+  _activeSubtab=tab;
+  document.getElementById('subtab-all')?.classList.toggle('active',tab==='all');
+  document.getElementById('subtab-temp')?.classList.toggle('active',tab==='temp');
+  renderActiveShortcuts();
+}
+function renderActiveShortcuts(){
+  const list=_activeSubtab==='temp'?GAMES.filter(g=>g.tempActive):GAMES;
+  renderShortcuts('active-shortcuts',list);
+  const c1=document.getElementById('stb-count-all'),c2=document.getElementById('stb-count-temp');
+  if(c1)c1.textContent='('+GAMES.length+')';
+  if(c2)c2.textContent='('+GAMES.filter(g=>g.tempActive).length+')';
 }
 function renderNews(lim){
   const items=lim?NEWS.slice(0,lim):NEWS;
@@ -1237,7 +1279,7 @@ function showHome(){
   document.getElementById('ai-game-view').style.display='none';
   document.getElementById('game-view').classList.remove('visible');
   document.querySelector('footer').style.display='';
-  renderShortcuts('active-shortcuts',GAMES);
+  renderActiveShortcuts();
   renderShortcuts('archive-shortcuts',ARCHIVED);
   renderNews(4);renderAnl();aigRenderHome();setNav('nav-home');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1271,6 +1313,7 @@ function openGameModal(id){
   else if(isApk){nail.className='modal-nail nail-apk';nail.textContent='📲 APK';}
   else if(isArch){nail.className='modal-nail nail-arch';nail.textContent='📦 Архив';}
   else if(isImp){nail.className='modal-nail nail-imp';nail.textContent='⚗ Новинка';}
+  else if(g.tempActive){nail.className='modal-nail nail-a';nail.textContent='⏳ Временно Активна';}
   else{nail.className='modal-nail nail-a';nail.textContent='✅ Активна';}
   const tc=isArch&&!isEv?'arch':'';
   document.getElementById('modal-tags').innerHTML=g.tags.map(t=>`<span class="modal-tag ${tc}">${t}</span>`).join('');

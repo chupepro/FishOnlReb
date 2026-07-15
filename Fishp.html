@@ -2043,10 +2043,10 @@ body {
     <div id="cast-hint">Нажми на воду для заброса</div>
 
     <!-- Pokemon mode badge -->
-    <div id="poke-mode-badge">⚡ ПОКЕМОН РЕЖИМ</div>
-    <div id="coast-mode-badge">🏖️ ПОБЕРЕЖЬЕ ЛЕГЕНДАРОК</div>
-    <div id="hardcore-mode-badge">💀 ХАРДКОР КАРТА — БОССЫ АТАКУЮТ!</div>
-    <div id="bum-mode-badge">🧟 БОМЖАТСКАЯ КАРТА — накопи 1000🪙 чтобы уйти!</div>
+    <div id="poke-mode-badge">🔮 ЗОНА АНОМАЛИИ</div>
+    <div id="coast-mode-badge">🌅 БУХТА ЛЕГЕНД</div>
+    <div id="hardcore-mode-badge">☠️ БЕЗДНА — ХИЩНИКИ АТАКУЮТ!</div>
+    <div id="bum-mode-badge">🏚️ ТРУЩОБЫ — накопи 1000🪙 чтобы уйти!</div>
     <!-- HC Boss bar (shown during hardcore boss encounter) -->
     <div id="hc-boss-bar">
       <div id="hc-boss-name">👹 ???</div>
@@ -2075,20 +2075,18 @@ body {
     <!-- Quest panel -->
     <div id="quest-panel" style="display:none;position:absolute;bottom:360px;left:10px;width:180px;background:rgba(5,15,5,.92);border:1.5px solid #3a6020;border-radius:12px;padding:8px;z-index:80;box-shadow:0 4px 20px rgba(0,60,0,.7);"></div>
     <!-- Achievement button -->
-    <div id="achieve-btn" onclick="showAchievements()" title="Достижения" style="position:absolute;bottom:365px;right:10px;background:linear-gradient(135deg,#2a1a00,#1a0a00);border:2px solid #c0a030;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 2px 10px rgba(200,160,0,.4);z-index:30;">🏅</div>
-    <!-- Achievement popup -->
-    <div id="achieve-popup" style="display:none;position:absolute;top:54px;left:8px;right:8px;background:rgba(5,5,20,.95);border:2px solid #c0a030;border-radius:14px;padding:10px;z-index:200;max-height:400px;overflow-y:auto;"></div>
+
 
     <!-- Map selector -->
     <div id="map-selector">
-      <div id="easter-mode-badge">🐰 Карта Пасха — Ловим кроликов!</div>
-      <div class="map-btn active" id="map-btn-normal" onclick="setMap('normal')">🌊 Обычная</div>
-      <div class="map-btn" id="map-btn-pokemon" onclick="setMap('pokemon')">⚡ Покемон</div>
-      <div class="map-btn" id="map-btn-coast" onclick="setMap('coast')" style="color:#60c0ff;border-color:#2080c0;">🏖️ Побережье</div>
-      <div class="map-btn" id="map-btn-easter" onclick="setMap('easter')" style="color:#ff80c0;border-color:#c04090;">🐰 Пасха</div>
-      <div class="map-btn" id="map-btn-hardcore" onclick="setMap('hardcore')" style="color:#ff4040;border-color:#aa0000;display:none;">💀 ХАРДКОР</div>
-      <div class="map-btn" id="map-btn-hobo" onclick="setMap('hobo')" style="color:#a08060;border-color:#604020;display:none;">🏚️ Бомжатня</div>
-      <div class="map-btn" id="map-btn-bum" onclick="tryLeaveBumMap()" style="color:#a06020;border-color:#604010;display:none;">🧟 Бомжатник</div>
+      <div id="easter-mode-badge">☄️ Звездопад — Лови метеоритные осколки!</div>
+      <div class="map-btn active" id="map-btn-normal" onclick="setMap('normal')">🌊 Классика</div>
+      <div class="map-btn" id="map-btn-pokemon" onclick="setMap('pokemon')" style="color:#c060ff;border-color:#7020a0;">🔮 Аномалия</div>
+      <div class="map-btn" id="map-btn-coast" onclick="setMap('coast')" style="color:#60c0ff;border-color:#2080c0;">🌅 Бухта Легенд</div>
+      <div class="map-btn" id="map-btn-easter" onclick="setMap('easter')" style="color:#ffd23f;border-color:#c08a00;">☄️ Звездопад</div>
+      <div class="map-btn" id="map-btn-hardcore" onclick="setMap('hardcore')" style="color:#ff4040;border-color:#aa0000;">☠️ Бездна</div>
+      <div class="map-btn" id="map-btn-hobo" onclick="setMap('hobo')" style="color:#a08060;border-color:#604020;display:none;">🏚️ Трущобы</div>
+      <div class="map-btn" id="map-btn-bum" onclick="tryLeaveBumMap()" style="color:#a06020;border-color:#604010;display:none;">🧟 Трущобы</div>
     </div>
 
     <!-- Streak display -->
@@ -2233,6 +2231,13 @@ body {
       </div>
     </div>
 
+    <!-- Account recovery / rename -->
+    <div class="multi-section">
+      <div class="multi-section-title">Аккаунт</div>
+      <button class="multi-btn" style="width:100%;margin-bottom:6px;" onclick="openRecoveryModal('restore')">🔄 Вернуть аккаунт</button>
+      <button class="multi-btn" style="width:100%;" onclick="openRecoveryModal('rename')">✏️ Сменить имя</button>
+    </div>
+
     <div class="multi-fish-parade" id="multi-parade"></div>
   </div>
 
@@ -2260,40 +2265,13 @@ body {
 
   <!-- ===== GARDEN SCREEN ===== -->
   <div id="garden-screen" class="screen">
-    <!-- Scene: main garden view -->
-    <div id="gscene-garden" class="garden-scene">
-      <div class="gdn-sky"></div>
+    <!-- Scene: rod workshop -->
+    <div id="gscene-garden" class="garden-scene" style="background:linear-gradient(to bottom,#241305,#100802 60%,#0a0602);overflow-y:auto;">
+      <div id="workshop-root" style="padding:56px 12px 80px;"></div>
 
-      <!-- Decorative trees -->
-      <div class="gdn-tree" style="left:10px;">
-        <div class="gdn-tree-top"></div><div class="gdn-tree-trunk"></div>
-      </div>
-      <div class="gdn-tree" style="right:10px;">
-        <div class="gdn-tree-top"></div><div class="gdn-tree-trunk"></div>
-      </div>
-      <div class="gdn-tree" style="left:30px;bottom:120px;">
-        <div class="gdn-tree-top" style="width:46px;height:55px;"></div><div class="gdn-tree-trunk" style="width:11px;height:38px;"></div>
-      </div>
-      <div class="gdn-tree" style="right:28px;bottom:130px;">
-        <div class="gdn-tree-top" style="width:50px;height:60px;"></div><div class="gdn-tree-trunk" style="width:12px;height:42px;"></div>
-      </div>
-
-      <div class="gdn-ground"></div>
-
-      <!-- Flower plots - left side -->
-      <div class="gdn-flower-bed" id="garden-plots-left" style="left:10px;bottom:120px;width:130px;"></div>
-      <!-- Flower plots - right side -->
-      <div class="gdn-flower-bed" id="garden-plots-right" style="right:10px;bottom:120px;width:130px;"></div>
-
-      <!-- Path to shop -->
+      <!-- Path to online market -->
       <div class="gdn-path" id="garden-path" onclick="walkToShop()">
-        <div class="gdn-path-label">⬆️ В магазин</div>
-      </div>
-
-      <!-- Garden UI bar -->
-      <div style="position:absolute;bottom:68px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 12px;z-index:20;">
-        <div style="font-family:'Neucha',cursive;font-size:12px;color:rgba(200,255,150,.7);">🌸 Сад</div>
-        <button onclick="harvestAll()" style="background:rgba(40,80,20,.8);border:1.5px solid #4a7a20;border-radius:8px;padding:4px 12px;font-family:'Neucha',cursive;font-size:11px;color:#a0e040;cursor:pointer;">Собрать всё 🌺</button>
+        <div class="gdn-path-label">🛖 Рынок игроков</div>
       </div>
     </div>
 
@@ -2313,7 +2291,7 @@ body {
       <div class="road-flower" style="right:22%;top:52%;animation-delay:.5s;">🌺</div>
       <!-- Shop building: ROOF on top, WALLS below -->
       <div class="shop-building">
-        <div class="shop-sign" id="road-building-sign">🌱 Лавка Семян</div>
+        <div class="shop-sign" id="road-building-sign">🛖 Рыбацкий Киоск</div>
         <!-- Chimney -->
         <div class="shop-chimney"></div>
         <!-- Roof SVG -->
@@ -2345,8 +2323,7 @@ body {
       <!-- Road choice (shown when arrived) -->
       <div id="road-choice">
         <div style="font-family:'Neucha',cursive;font-size:13px;color:rgba(240,210,140,.9);margin-bottom:6px;text-align:center;">Куда идём?</div>
-        <div class="road-choice-btn road-choice-plant" onclick="enterShop()">🌱 Магазин Растений</div>
-        <div class="road-choice-btn road-choice-kiosk" onclick="enterKiosk()">🛖 Киоск (торговля)</div>
+        <div class="road-choice-btn road-choice-kiosk" onclick="enterKiosk()">🛖 Рынок игроков (торговля)</div>
       </div>
       <!-- Hint -->
       <div style="position:absolute;bottom:72px;left:50%;transform:translateX(-50%);font-family:'Neucha',cursive;font-size:13px;color:rgba(220,200,140,.9);white-space:nowrap;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:10px;" id="road-hint">Идём в магазин...</div>
@@ -2404,7 +2381,7 @@ body {
     <div id="catch-board">
       <div class="board-nail tl"></div><div class="board-nail tr"></div>
       <div class="board-nail bl"></div><div class="board-nail br"></div>
-      <div id="easter-rabbit-bonus" class="easter-rabbit-bonus" style="display:none">🐰+10000🪙</div>
+      <div id="easter-rabbit-bonus" class="easter-rabbit-bonus" style="display:none">☄️+10000🪙</div>
       <div id="catch-header">🎉 Улов!</div>
       <svg id="catch-fish-svg" width="100" height="55" viewBox="0 0 100 55" xmlns="http://www.w3.org/2000/svg">
         <defs><radialGradient id="fishG" cx="40%" cy="40%"><stop offset="0%" stop-color="#e0a030"/><stop offset="100%" stop-color="#905010"/></radialGradient></defs>
@@ -2447,8 +2424,8 @@ body {
   <div class="screen easter-screen" id="event-screen">
     <div style="padding:10px;overflow-y:auto;height:100%;">
       <div style="text-align:center;margin-bottom:10px;">
-        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:26px;color:#ff80c0;text-shadow:0 0 12px #ff80c055;">🐰 Пасхальный Ивент</div>
-        <div style="font-family:'Neucha',cursive;font-size:12px;color:#c080a0;margin-top:3px;">Лови кроликов с баффом Cha Cha!</div>
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:26px;color:#ffd23f;text-shadow:0 0 12px #ffd23f55;">☄️ Звездопад</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#d0b070;margin-top:3px;">Небо усыпано метеоритами — лови их с воды! 🌠</div>
       </div>
       <div id="easter-event-content"></div>
     </div>
@@ -2472,8 +2449,8 @@ body {
       <div class="nav-player-dot" id="nav-inv-dot"></div>
     </div>
     <div class="navtab" id="nav-garden" onclick="switchScreen('garden')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6 8 4 14 12 22c8-8 6-14 0-22z"/><path d="M12 22V10"/></svg>
-      Сад
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.4-3.4a4 4 0 01-5 5L6 20 4 18 12.9 8.9a4 4 0 015-5l-3.2 3.4z"/></svg>
+      Мастерская
       <div class="nav-player-dot" id="nav-garden-dot"></div>
     </div>
     <div class="navtab" id="nav-multi" onclick="switchScreen('multi')">
@@ -2481,17 +2458,14 @@ body {
       Онлайн
       <div class="nav-player-dot" id="nav-multi-dot"></div>
     </div>
-    <div class="navtab" id="nav-achieve" onclick="switchScreen('achievements')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
-      Успехи
-    </div>
+
     <div class="navtab" id="nav-lb" onclick="switchScreen('leaderboard')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg>
       Топ
     </div>
-    <div class="navtab" id="nav-event" onclick="switchScreen('event')" style="color:#ff80c0;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M6 8 Q4 14 12 20 Q20 14 18 8"/><path d="M9 8 Q12 12 15 8"/></svg>
-      Ивент
+    <div class="navtab" id="nav-event" onclick="switchScreen('event')" style="color:#ffd23f;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M4.9 4.9l2.8 2.8M2 12h4M4.9 19.1l2.8-2.8M19.1 19.1l-2.8-2.8M22 12h-4M19.1 4.9l-2.8 2.8"/><circle cx="12" cy="12" r="3"/></svg>
+      Звездопад
     </div>
   </div>
 
@@ -2693,39 +2667,64 @@ const FISH_DATA = [
   {name:'Солнечная Арована',  w:[0.5,3.0],  pts:1000, coins:900,  rar:'og', label:'👑 OG', col:'#fff080', col2:'#d0a000', og:true},
   {name:'Квантовая Рыбка',    w:[0.1,0.8],  pts:1300, coins:1200, rar:'og', label:'👑 OG КВАНТ', col:'#ff00ff', col2:'#8000c0', og:true},
   {name:'Ледяной Дракон',     w:[5.0,25.0], pts:1600, coins:1500, rar:'og', label:'👑 OG', col:'#a0f0ff', col2:'#4090c0', og:true},
+  // ═══ НОВЫЕ РЫБЫ ═══
+  {name:'Плотва Серебристая', w:[.1,.7],   pts:9,  coins:4,   rar:'common',  label:'Обычный',     col:'#d0d8e0', col2:'#909aa8'},
+  {name:'Краснопёрый Голавль',w:[.3,1.8],  pts:14, coins:7,   rar:'common',  label:'Обычный',     col:'#c86040', col2:'#804020'},
+  {name:'Подуст',             w:[.2,1.4],  pts:24, coins:13,  rar:'rare',    label:'Редкий',      col:'#a89858', col2:'#706030'},
+  {name:'Жерех-Тень',         w:[.6,3.5],  pts:34, coins:20,  rar:'rare',    label:'Редкий',      col:'#404858', col2:'#202830'},
+  {name:'Сиг Байкальский',    w:[1.0,5.5],  pts:65, coins:48,  rar:'epic',    label:'Эпический',   col:'#88a0b8', col2:'#485868'},
+  {name:'Таймень',            w:[3.0,18.0], pts:95, coins:75,  rar:'epic',    label:'Эпический',   col:'#a04828', col2:'#602010'},
+  {name:'Калуга',             w:[15.,60.],  pts:280,coins:220, rar:'legend', label:'Легендарный!', col:'#607080', col2:'#303840'},
+  {name:'Радужный Форель-Гигант',w:[4.0,20.],pts:260,coins:210, rar:'legend', label:'Легендарный', col:'#e080c0', col2:'#a04090'},
+  // ═══ МОРСКИЕ КОНЬКИ ═══ (редкость определяется цветом)
+  {name:'Морской Конёк',            w:[.01,.05], pts:15,  coins:10,  rar:'common', label:'🐴 Обычный',      col:'#b09060', col2:'#705828', seahorse:true},
+  {name:'Морской Конёк Изумрудный', w:[.02,.06], pts:60,  coins:40,  rar:'rare',   label:'🐴 Редкий',       col:'#30c070', col2:'#158040', seahorse:true},
+  {name:'Морской Конёк Аметистовый',w:[.02,.07], pts:180, coins:130, rar:'epic',   label:'🐴 Эпический',    col:'#a040e0', col2:'#601c90', seahorse:true},
+  {name:'Морской Конёк Золотой',    w:[.03,.08], pts:450, coins:380, rar:'legend', label:'🐴 Легендарный!', col:'#ffd020', col2:'#c09000', seahorse:true},
+  {name:'Морской Конёк Радужный',   w:[.03,.09], pts:900, coins:800, rar:'og',     label:'🐴👑 OG',         col:'#ff80ff', col2:'#40e0ff', og:true, seahorse:true},
 ];
 
 // ============================================================
 // DATA — RODS
 // ============================================================
+// Насколько удочка влияет на РЕДКОСТЬ улова (не только на клёв/вываживание).
+// Раньше удочки почти не влияли на то, какая рыба попадётся — теперь дорогая
+// удочка реально даёт куда больше редкой/эпической/легендарной рыбы.
+const ROD_RARITY_WEIGHTS = {
+  common:    {common:60, rare:16, epic:3,  legend:0.4, og:0.02},
+  uncommon:  {common:48, rare:26, epic:7,  legend:1,   og:0.05},
+  rare:      {common:34, rare:32, epic:14, legend:2.5, og:0.15},
+  epic:      {common:20, rare:32, epic:24, legend:6,   og:0.6},
+  legendary: {common:9,  rare:26, epic:30, legend:16,  og:2.5},
+  mythic:    {common:3,  rare:16, epic:28, legend:30,  og:8},
+};
+function pickWeightedFish(list, weightFn) {
+  let total = 0;
+  const weights = list.map(f=>{ const w = Math.max(0, weightFn(f)); total += w; return w; });
+  if(total <= 0) return list[Math.floor(Math.random()*list.length)];
+  let r = Math.random() * total;
+  for(let i=0;i<list.length;i++){ r -= weights[i]; if(r <= 0) return list[i]; }
+  return list[list.length-1];
+}
+
 const RODS = [
-  {id:'wood',   name:'Деревенская', desc:'Простая деревянная удочка', price:0,    biteChance:1.0, catchMult:1.0, stats:'Клёв: обычный'},
-  {id:'bamboo', name:'Бамбуковая',  desc:'Легче и гибче',             price:80,   biteChance:1.2, catchMult:1.1, stats:'Клёв: +20%'},
-  {id:'carbon', name:'Карбоновая',  desc:'Современный материал',      price:250,  biteChance:1.5, catchMult:1.3, stats:'Клёв: +50% • Улов: +30%'},
-  {id:'magic',  name:'Волшебная',   desc:'Из чего она сделана?',      price:800,  biteChance:2.5, catchMult:2.0, stats:'Клёв: x2.5 • Улов: x2'},
-  {id:'golden',    name:'Золотая',        desc:'Легенда среди удочек',                  price:2000,  biteChance:4.0, catchMult:3.0, stats:'Клёв: x4 • Улов: x3'},
-  {id:'rubberduck', name:'Резиновая Утка', desc:'Странная... но работает!',               price:5000,  biteChance:3.5, catchMult:2.5, stats:'Клёв: x3.5 • Только ЭПИКИ+ • +1-100🪙/улов', special:'duck'},
-  {id:'crystal',    name:'Кристальная',   desc:'Из чистейшего горного хрусталя',         price:8000,  biteChance:5.0, catchMult:4.0, stats:'Клёв: x5 • Улов: x4 • Редк. x2'},
-  {id:'thunder',    name:'Громовая',      desc:'Заряжена молнией — рыба не убежит',      price:12000, biteChance:6.0, catchMult:5.0, stats:'Клёв: x6 • Улов: x5 • Мгновенный клёв'},
-  {id:'void',       name:'Бездны',        desc:'Из глубин где нет света',                price:25000, biteChance:8.0, catchMult:7.0, stats:'Клёв: x8 • Улов: x7 • Только легенды'},
-  {id:'shark',      name:'Акулья',        desc:'Скрафтлена из Кожи Акулы! Пускает мини-акул на легендарки', price:0, biteChance:10.0, catchMult:9.0, stats:'Клёв: x10 • Мини-акулы ищут OG! • Всегда OG', special:'shark', craftable:true},
-  // ═══ ХАРДКОР УДОЧКИ ═══
-  {id:'meteor',     name:'Метеоритная',   desc:'Скована из упавшего метеорита. Чувствуется жар космоса',    price:50000,  biteChance:12.0, catchMult:10.0, stats:'Клёв: x12 • x10 улов • Огненные эффекты', special:'meteor'},
-  {id:'dragon',     name:'Драконья',      desc:'Выточена из кости дракона. Дышит огнём при забросе',        price:80000,  biteChance:15.0, catchMult:12.0, stats:'Клёв: x15 • x12 • Драко-улов (мега рыбы)', special:'dragon'},
-  {id:'poseidon',   name:'Трезубец Посейдона', desc:'Личное оружие бога морей. Рыбы сами прыгают на крючок',price:120000, biteChance:18.0, catchMult:15.0, stats:'Клёв: x18 • x15 • Авто-улов каждые 3 сек', special:'poseidon'},
-  {id:'quantum',    name:'Квантовая',     desc:'Существует в нескольких измерениях одновременно',           price:200000, biteChance:20.0, catchMult:18.0, stats:'Клёв: x20 • x18 • 2 рыбы за раз!', special:'quantum'},
-  {id:'celestial',  name:'Небесная',      desc:'Упала с небес. Ловит рыб из параллельных вселенных',        price:350000, biteChance:25.0, catchMult:22.0, stats:'Клёв: x25 • x22 • Только OG+Легенды', special:'celestial'},
-  {id:'apocalypse', name:'Апокалипсис',   desc:'КОНЕЦ ВСЕМУ. Ломает реальность при каждом забросе',         price:999999, biteChance:50.0, catchMult:50.0, stats:'Клёв: x50 • x50 • ВСЁ СРАЗУ • Мгновенный клёв', special:'apocalypse'},
-  // ═══ УЛЬТРА УДОЧКИ ═══
-  {id:'mech',    name:'МехУдочка 9000',     desc:'Механический шедевр с шестерёнками, поршнями и ИИ-чипом.',        price:80000,  biteChance:15.0, catchMult:12.0, stats:'Клёв: x15 • Авто-прицел • OG+10% • Мех-подсечка',    detail:'Гипер-Детальная', owned:false, equipped:false},
-  {id:'cosmic',  name:'Космическая',         desc:'Сделана из метеорита. Искривляет пространство чтобы притянуть рыбу.', price:120000, biteChance:20.0, catchMult:15.0, stats:'Клёв: x20 • Гравитация рыбы • OG всегда • Космос',    detail:'Гипер-Детальная', owned:false, equipped:false},
-  {id:'demonic', name:'Демоническая',        desc:'Пропитана кровью тёмных существ. Только ЛЕГЕНДЫ и OG.',            price:200000, biteChance:25.0, catchMult:20.0, stats:'Клёв: x25 • Только OG/Легенды • +666🪙 за улов',       detail:'Гипер-Детальная', owned:false, equipped:false},
-  {id:'godly',   name:'Удочка Богов',        desc:'МАКСИМАЛЬНАЯ УДОЧКА. Создана самими богами рыбалки.',               price:500000, biteChance:50.0, catchMult:30.0, stats:'Клёв: x50 • x30 улов • ВСЕ РЫБЫ • БОГ РЫБАЛКИ',       detail:'БОГ-ТИЕР',        owned:false, equipped:false},
-  {id:'flower',  name:'Цветочная Удочка',    desc:'Создана из живых цветов. Ловит Цветочных Рыб и баффит сад при каждом улове!', price:0, biteChance:30.0, catchMult:25.0, stats:'Клёв: x30 • x25 • Цветочные Рыбы • Бафф Сада • Анимированные!', detail:'🌸 ЦВЕТОК', owned:false, equipped:false, craftable:true, craftType:'flower'},
-  {id:'easter',  name:'Удочка Пасхи',         desc:'Скрафтлена из 30 кроликов с баффом Cha Cha! При каждом улове — Денежный Кролик +10000🪙!', price:0, biteChance:8.0, catchMult:6.0, stats:'Клёв: x8 • x6 • +10000🪙 Денежный Кролик • 💃 Cha Cha бафф', detail:'🐰 ПАСХА', owned:false, equipped:false, craftable:true, craftType:'easter'},
-  {id:'marble',  name:'Мраморная Удочка',    desc:'Высечена из чистейшего мрамора. Бросает мраморный шар в воду — ×2 к продаже!', price:750000, biteChance:40.0, catchMult:35.0, stats:'Клёв: x40 • x35 улов • Только OG+Легенды • ×2 цена продажи', detail:'🪨 МРАМОР', owned:false, equipped:false, special:'marble'},
-  // ═══ ПРИЗРАК ═══
-  {id:'ghost',   name:'Призрачная Удочка',   desc:'Удочка из другого измерения. Каждый заброс случайно меняет силу клёва — от слабой до x3!', price:15000, biteChance:1.0, catchMult:2.0, stats:'Клёв: СЛУЧАЙНЫЙ (x0.3–x3) • Только Легенды и ниже • Авантюра!', detail:'👻 ПРИЗРАК', owned:false, equipped:false, special:'ghost'},
+  {id:'reed',    name:'Тростниковая удочка', desc:'Простая удочка для первого заброса — без особых свойств.',                                              price:0,       biteChance:1.0, catchMult:1.0, tier:'common',    icon:'🎋', detail:'', owned:true, equipped:true},
+  {id:'birch',   name:'Берёзовая удочка',    desc:'Способность: лёгкая леска почти не создаёт напряжения — оно растёт на 15% медленнее.',                  price:600,     biteChance:1.15,catchMult:1.1, tier:'common',    icon:'🌳', detail:''},
+  {id:'copper',  name:'Медная удочка',       desc:'Способность: толстая медная леска гасит рывки рыбы — они на 20% слабее.',                               price:2500,    biteChance:1.35,catchMult:1.25,tier:'uncommon',  icon:'🔶', detail:'✦ НЕОБЫЧНАЯ'},
+  {id:'silver',  name:'Серебряная удочка',   desc:'Способность: плавная катушка — натяжение спадает на 30% быстрее, когда отпускаешь кнопку.',             price:7000,    biteChance:1.6, catchMult:1.5, tier:'uncommon',  icon:'⚪', detail:'✦ НЕОБЫЧНАЯ'},
+  {id:'jade',    name:'Нефритовая удочка',   desc:'Способность: прочное удилище держит рыбу крепче — она на 25% медленнее уплывает обратно.',              price:18000,   biteChance:1.9, catchMult:1.8, tier:'rare',      icon:'💚', detail:'✦✦ РЕДКАЯ'},
+  {id:'sapphire',name:'Сапфировая удочка',   desc:'Способность: скользкая леска увеличивает силу подсечки — рыба идёт к берегу быстрее.',                  price:40000,   biteChance:2.2, catchMult:2.1, tier:'rare',      icon:'💙', detail:'✦✦ РЕДКАЯ'},
+  {id:'inferno', name:'Огненная удочка',     desc:'Способность: раскалённый металл держит рыбу в напряжении реже — рывки происходят на 35% реже.',        price:90000,   biteChance:2.6, catchMult:2.5, tier:'epic',      icon:'🔥', detail:'💜 ЭПИЧЕСКАЯ'},
+  {id:'frost',   name:'Морозная удочка',     desc:'Способность: подмораживает рыбу при каждом рывке — его сила почти обнуляется.',                        price:160000,  biteChance:3.0, catchMult:2.9, tier:'epic',      icon:'❄️', detail:'💜 ЭПИЧЕСКАЯ'},
+  {id:'storm',   name:'Штормовая удочка',    desc:'Способность: разряд шокирует рыбу при рывке — вместо атаки её отбрасывает ближе к берегу.',            price:280000,  biteChance:3.5, catchMult:3.4, tier:'epic',      icon:'⛈️', detail:'💜 ЭПИЧЕСКАЯ'},
+  {id:'phoenix', name:'Удочка Феникса',      desc:'Способность: если леска порвётся или рыба сорвётся — один раз возрождает вываживание заново.',          price:550000,  biteChance:4.2, catchMult:4.1, tier:'legendary', icon:'🪽', detail:'👑 ЛЕГЕНДАРНАЯ'},
+  {id:'abyssal', name:'Бездноискатель',      desc:'Способность: бездонная тяга — сила подсечки выше, чем у любой другой удочки этого уровня.',            price:1000000, biteChance:5.0, catchMult:5.0, tier:'legendary', icon:'🐙', detail:'👑 ЛЕГЕНДАРНАЯ'},
+  {id:'stellar', name:'Звёздная удочка',     desc:'Способность: звёздный магнетизм — рыба уже наполовину подтянута к берегу в начале вываживания.',        price:2200000, biteChance:6.0, catchMult:6.2, tier:'mythic',    icon:'🌌', detail:'🌌 МИФИЧЕСКАЯ'},
+  {id:'oblivion',name:'Удочка Забвения',     desc:'Способность: разрыв измерений выдёргивает рыбу почти к самому берегу в момент подсечки.',              price:4200000, biteChance:7.2, catchMult:7.5, tier:'mythic',    icon:'🕳️', detail:'🌌 МИФИЧЕСКАЯ'},
+  {id:'genesis', name:'Удочка Генезис',      desc:'Способность: совмещает силу всех удочек — минимальное натяжение и максимальная тяга разом.',           price:8000000, biteChance:9.0, catchMult:9.5, tier:'mythic',    icon:'👑', detail:'🌌 МИФИЧЕСКАЯ'},
+  {id:'comet',   name:'Кометная удочка',     desc:'Способность: кометный металл — при каждом улове осыпает тебя дождём монет.', price:0, biteChance:8.0, catchMult:6.0, tier:'legendary', icon:'☄️', detail:'☄️ ЗВЕЗДОПАД', owned:false, equipped:false, craftable:true, craftType:'comet'},
+  {id:'dnd',     name:'Удочка D&D',          desc:'Способность: при подсечке бросается настоящий d20 — чем выше выпавшее число, тем реже и жирнее улов. В мастерской эта удочка не качает силу, а качает УДАЧУ: каждый уровень добавляет ещё один кубик в бросок (берётся лучший результат).', price:620000, biteChance:3.8, catchMult:3.6, tier:'legendary', icon:'🎲', detail:'👑 ЛЕГЕНДАРНАЯ · d20', stats:'Клёв: x3.8 • Улов: бросок d20'},
+  {id:'seahorse',name:'Удочка Конькобоя',    desc:'Способность: ловит ТОЛЬКО морских коньков — самую редкую и капризную добычу побережья, зато каждый конёк стоит целое состояние.', price:95000, biteChance:2.4, catchMult:2.2, tier:'epic', icon:'🐴', detail:'💜 ЭПИЧЕСКАЯ · ТОЛЬКО КОНЬКИ'},
 ];
 
 // ============================================================
@@ -2786,7 +2785,7 @@ function saveGame() {
       pikaCatchCount: gs.pikaCatchCount || 0,
       mapMode: (gs.mapMode==='bum') ? 'normal' : (gs.mapMode || 'normal'),
       coastUnlocked: gs.coastUnlocked || false,
-      hardcoreUnlocked: gs.hardcoreUnlocked || false,
+      hardcoreUnlocked: true,
       caughtPokemon: gs.caughtPokemon || [],
       xp: gs.xp || 0,
       achievements: gs.achievements || {},
@@ -2843,7 +2842,7 @@ function loadGame() {
       gs.pikaCatchCount   = extra.pikaCatchCount   ?? 0;
       gs.mapMode          = extra.mapMode          ?? 'normal';
       gs.coastUnlocked    = extra.coastUnlocked    ?? false;
-      gs.hardcoreUnlocked = extra.hardcoreUnlocked ?? false;
+      gs.hardcoreUnlocked = true;
       gs.caughtPokemon    = extra.caughtPokemon    ?? [];
       gs.xp               = extra.xp               ?? 0;
       gs.achievements     = extra.achievements     ?? {};
@@ -3414,7 +3413,7 @@ function triggerBite() {
     if(navigator.vibrate) navigator.vibrate([60,20,60]);
     const autoReel = UPGRADES.find(u=>u.id==='auto_reel')?.owned;
     if(autoReel) {
-      setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, 1000);
+      setTimeout(()=>{ if(gs.phase==='bite') catchFish(true); }, 1000);
     } else {
       gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, ghostRoll < 1.0 ? 3000 : 6000);
     }
@@ -3438,8 +3437,32 @@ function triggerBite() {
     return;
   }
 
-  FISH_DATA.filter(f=>!f.coastal).forEach(f=>{
-    let w = f.rar==='common'?60 : f.rar==='rare'?30 : f.rar==='epic'?8 : f.rar==='og'?0.5 : 2;
+  // 🐴 Удочка Конькобоя — ловит ТОЛЬКО морских коньков
+  const isSeahorse = gs.currentRod.id === 'seahorse';
+  if(isSeahorse) {
+    const shPool = FISH_DATA.filter(f=>f.seahorse);
+    const shRw = ROD_RARITY_WEIGHTS[gs.currentRod.tier || 'epic'] || ROD_RARITY_WEIGHTS.epic;
+    gs.fish = pickWeightedFish(shPool, f=>{
+      let w = shRw[f.rar] ?? 2;
+      if(f.rar==='legend' && hasLucky) w*=1.5;
+      if(f.rar!=='common') w *= (1+lureBonus);
+      return w;
+    });
+    gs.currentCatch = {...gs.fish, weight:(gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)};
+    bobWrap.style.animation='floatBite .9s ease-in-out 4';
+    biteEl.classList.add('visible');
+    if(navigator.vibrate) navigator.vibrate([90,40,90]);
+    gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
+    return;
+  }
+
+  // Редкость улова теперь реально зависит от удочки: чем выше её уровень
+  // (tier удочки), тем сильнее сдвигается вес в сторону редких/эпических/
+  // легендарных рыб — вместо фиксированной таблицы для всех удочек разом.
+  const rodTierW = ROD_RARITY_WEIGHTS[gs.currentRod.tier || 'common'] || ROD_RARITY_WEIGHTS.common;
+  const biteablePool = FISH_DATA.filter(f=>!f.coastal && !f.seahorse);
+  gs.fish = pickWeightedFish(biteablePool, f=>{
+    let w = rodTierW[f.rar] ?? 2;
     if(isDuck && (f.rar==='common'||f.rar==='rare')) w=0; // утка — только эпики+
     if(legendOnly && f.rar!=='legend'&&f.rar!=='og') w=0; // событие легенд
     if(isVoid && f.rar!=='legend'&&f.rar!=='og') w=0; // бездна — только легенды
@@ -3447,10 +3470,8 @@ function triggerBite() {
     if(f.rar!=='common') w *= (1+lureBonus);
     // OG лура: в 35% случаев ловит OG
     if(ogLureActive && f.rar==='og') w = 35;
-    for(let i=0;i<Math.round(w);i++) pool.push(f);
+    return w;
   });
-  if(pool.length===0) FISH_DATA.filter(f=>!f.coastal && f.rar==='epic').forEach(f=>pool.push(f));
-  gs.fish = pool[Math.floor(Math.random()*pool.length)];
   gs.currentCatch = {
     ...gs.fish,
     weight: (gs.fish.w[0]+Math.random()*(gs.fish.w[1]-gs.fish.w[0])).toFixed(2)
@@ -3461,7 +3482,7 @@ function triggerBite() {
   const autoReel = UPGRADES.find(u=>u.id==='auto_reel')?.owned;
   const isThunder = gs.currentRod.id === 'thunder';
   if(autoReel || isThunder) {
-    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, isThunder ? 200 : 1200);
+    setTimeout(()=>{ if(gs.phase==='bite') catchFish(true); }, isThunder ? 200 : 1200);
   } else {
     gs.biteTimeout = setTimeout(()=>{ if(gs.phase==='bite') miss(); }, 5000);
   }
@@ -3622,13 +3643,13 @@ function catchFish() {
     updateCoins();
     showToast('🦆 Утиный магнит: +'+bonus+'🪙!');
   }
-  // 🐰 Удочка Пасхи: +10000 монет + кролик в попапе
-  if(gs.currentRod.id === 'easter') {
+  // ☄️ Кометная удочка: +10000 монет + звёздный дождь в попапе
+  if(gs.currentRod.id === 'comet') {
     gs.coins += 10000;
     updateCoins();
     const bonusBadge = document.getElementById('easter-rabbit-bonus');
     if(bonusBadge) bonusBadge.style.display = 'block';
-    showToast('🐰 Денежный Кролик! +10000🪙! 💃 Cha Cha!');
+    showToast('☄️ Звёздный дождь! +10000🪙! 🌠');
     spawnEasterConfetti();
   } else {
     const bonusBadge = document.getElementById('easter-rabbit-bonus');
@@ -3805,7 +3826,7 @@ fishingScreen.addEventListener('click', e=>{
   if(y > toolbarTop) return;
   castTo(x, y);
 });
-biteEl.addEventListener('click', catchFish);
+biteEl.addEventListener('click', function(){ catchFish(); });
 
 // ============================================================
 // TOOL SELECT
@@ -3855,12 +3876,7 @@ function switchScreen(name) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
   if(name === 'achievements') {
-    gs.currentScreen = 'achievements';
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
-    document.getElementById('achievements-screen').classList.add('active');
-    document.getElementById('nav-achieve').classList.add('active');
-    renderAchievementsScreen();
+    switchScreen('fishing');
     return;
   }
   if(name === 'leaderboard') {
@@ -4434,6 +4450,220 @@ function rodIconSVG(rod) {
       <!-- Поплавок-призрак -->
       <circle cx="44" cy="36" r="5" fill="rgba(180,255,220,.3)" stroke="rgba(128,255,200,.7)" stroke-width="1.2" stroke-dasharray="3,2"/>
       <text x="44" y="39" text-anchor="middle" font-size="6" fill="rgba(128,255,200,.9)">👻</text>`,
+
+    /* ══════════════════════════════════════════════════════════════
+       АКТУАЛЬНЫЕ УДОЧКИ ИГРЫ — у каждой полностью свой дизайн,
+       никакая не является перекрашенной копией другой.
+       ══════════════════════════════════════════════════════════════ */
+
+    // Тростниковая (reed) — тонкая живая тростинка с листом
+    reed: `
+      <line x1="36" y1="6" x2="20" y2="48" stroke="#4a7020" stroke-width="4" stroke-linecap="round"/>
+      <line x1="36" y1="6" x2="20" y2="48" stroke="#8aaa40" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+      <line x1="35" y1="10" x2="31" y2="10" stroke="#2a5010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="32" y1="17" x2="28" y2="17" stroke="#2a5010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="30" y1="24" x2="26" y2="24" stroke="#2a5010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="27" y1="31" x2="23" y2="31" stroke="#2a5010" stroke-width="2" stroke-linecap="round"/>
+      <line x1="24" y1="39" x2="21" y2="39" stroke="#2a5010" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34,13 Q42,8 44,15 Q38,16 34,13Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.8"/>
+      <line x1="36" y1="6" x2="46" y2="30" stroke="rgba(180,200,160,.6)" stroke-width="0.8"/>
+      <circle cx="46" cy="32" r="5" fill="#e8c860" stroke="#5a3010" stroke-width="1"/>
+      <path d="M20,46 Q16,46 16,50 Q16,54 20,54" stroke="#888" stroke-width="1.5" fill="none"/>`,
+
+    // Берёзовая (birch) — светлое дерево с чёрными полосками бересты
+    birch: `
+      <rect x="23" y="6" width="7" height="40" rx="3" fill="url(#brchGrad)" stroke="#a89870" stroke-width="1"/>
+      <defs><linearGradient id="brchGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c8dba0"/><stop offset="50%" stop-color="#eef0e0"/><stop offset="100%" stop-color="#c8dba0"/></linearGradient></defs>
+      <path d="M23,12 Q27,11 30,12" stroke="#405020" stroke-width="1.4" fill="none"/>
+      <path d="M23,20 Q26,21 30,19" stroke="#405020" stroke-width="1.4" fill="none"/>
+      <path d="M23,29 Q27,30 30,28" stroke="#405020" stroke-width="1.4" fill="none"/>
+      <path d="M23,37 Q26,38 30,37" stroke="#405020" stroke-width="1.4" fill="none"/>
+      <path d="M26,6 Q30,3 34,7 Q30,9 26,6Z" fill="#8fae5a" stroke="#4a7020" stroke-width="0.8"/>
+      <line x1="27" y1="6" x2="42" y2="24" stroke="rgba(200,220,180,.6)" stroke-width="0.8"/>
+      <ellipse cx="42" cy="26" rx="4" ry="6" fill="#eef0e0" stroke="#a89870" stroke-width="1"/>
+      <circle cx="18" cy="34" r="5.5" fill="rgba(0,0,0,.4)" stroke="#c8dba0" stroke-width="1.5"/>
+      <circle cx="18" cy="34" r="2.5" fill="#c8dba0"/>`,
+
+    // Медная (copper) — трубчатое клёпаное удилище с патиной
+    copper: `
+      <rect x="22" y="7" width="8" height="39" rx="3" fill="url(#cprGrad)" stroke="#8a4a1a" stroke-width="1.2"/>
+      <defs><linearGradient id="cprGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#8a4a1a"/><stop offset="35%" stop-color="#e0985a"/><stop offset="65%" stop-color="#d9843a"/><stop offset="100%" stop-color="#7a3e12"/></linearGradient></defs>
+      <circle cx="26" cy="14" r="1.1" fill="#5a2c0a"/><circle cx="26" cy="22" r="1.1" fill="#5a2c0a"/>
+      <circle cx="26" cy="30" r="1.1" fill="#5a2c0a"/><circle cx="26" cy="38" r="1.1" fill="#5a2c0a"/>
+      <path d="M22,16 Q20,20 22,24" stroke="#3fae7a" stroke-width="1.4" fill="none" opacity=".55"/>
+      <path d="M30,26 Q32,30 30,34" stroke="#3fae7a" stroke-width="1.2" fill="none" opacity=".5"/>
+      <circle cx="26" cy="5" r="4" fill="none" stroke="#d9843a" stroke-width="2"/>
+      <line x1="26" y1="5" x2="44" y2="26" stroke="rgba(220,150,80,.5)" stroke-width="0.9"/>
+      <ellipse cx="44" cy="28" rx="4" ry="6" fill="#c87030" stroke="#7a3e12" stroke-width="1"/>
+      <circle cx="18" cy="38" r="6" fill="rgba(60,30,10,.7)" stroke="#d9843a" stroke-width="2"/>
+      <circle cx="18" cy="38" r="2.6" fill="#e0985a"/>`,
+
+    // Серебряная (silver) — сияющий кристальный столп (переработан из старой "кристальной")
+    silver: `
+      <polygon points="26,6 33,16 30,46 22,46 19,16" fill="rgba(216,221,226,.35)" stroke="#d8dde2" stroke-width="1.5"/>
+      <polygon points="26,6 33,16 26,18 19,16" fill="rgba(240,245,250,.7)" stroke="#d8dde2" stroke-width="1"/>
+      <line x1="26" y1="6" x2="26" y2="46" stroke="rgba(255,255,255,.6)" stroke-width="1.2"/>
+      <line x1="8" y1="10" x2="14" y2="18" stroke="rgba(200,220,255,.6)" stroke-width="1.2"/>
+      <line x1="8" y1="18" x2="14" y2="26" stroke="rgba(230,230,255,.5)" stroke-width="1"/>
+      <circle cx="40" cy="16" r="2" fill="rgba(230,240,250,.8)" stroke="#d8dde2" stroke-width="0.8"/>
+      <line x1="26" y1="6" x2="44" y2="14" stroke="#d8dde2" stroke-width="0.8" opacity=".7"/>
+      <polygon points="44,14 48,20 44,28 40,20" fill="rgba(216,221,226,.55)" stroke="#d8dde2" stroke-width="1"/>`,
+
+    // Нефритовая (jade) — резной зелёный камень с драконьей гравировкой
+    jade: `
+      <rect x="22" y="8" width="8" height="38" rx="4" fill="url(#jdGrad)" stroke="#1f8a4a" stroke-width="1.2"/>
+      <defs><radialGradient id="jdGrad" cx="35%" cy="20%"><stop offset="0%" stop-color="#9df5bf"/><stop offset="55%" stop-color="#2ecc71"/><stop offset="100%" stop-color="#1a8a4a"/></radialGradient></defs>
+      <path d="M24,14 Q28,17 24,20 Q28,23 24,26" stroke="#0e5c30" stroke-width="1.1" fill="none" opacity=".7"/>
+      <path d="M28,30 Q24,33 28,36" stroke="#0e5c30" stroke-width="1" fill="none" opacity=".6"/>
+      <circle cx="26" cy="6" r="5" fill="#2ecc71" stroke="#1a8a4a" stroke-width="1.4"/>
+      <circle cx="24.5" cy="4.5" r="1.4" fill="#eafff0" opacity=".8"/>
+      <line x1="26" y1="6" x2="44" y2="24" stroke="rgba(46,204,113,.5)" stroke-width="1"/>
+      <circle cx="44" cy="26" r="5" fill="#9df5bf" stroke="#1a8a4a" stroke-width="1.2"/>
+      <circle cx="18" cy="38" r="6" fill="rgba(10,50,25,.7)" stroke="#2ecc71" stroke-width="2"/>
+      <circle cx="18" cy="38" r="2.6" fill="#9df5bf"/>`,
+
+    // Сапфировая (sapphire) — гранёный синий кристалл с искрами
+    sapphire: `
+      <polygon points="26,6 32,14 32,32 26,46 20,32 20,14" fill="url(#sphGrad)" stroke="#3080ff" stroke-width="1.4"/>
+      <defs><linearGradient id="sphGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a0d0ff"/><stop offset="50%" stop-color="#3080ff"/><stop offset="100%" stop-color="#103a80"/></linearGradient></defs>
+      <line x1="26" y1="6" x2="26" y2="46" stroke="rgba(255,255,255,.5)" stroke-width="1"/>
+      <line x1="20" y1="14" x2="32" y2="14" stroke="rgba(255,255,255,.35)" stroke-width="0.8"/>
+      <line x1="20" y1="32" x2="32" y2="32" stroke="rgba(255,255,255,.3)" stroke-width="0.8"/>
+      <circle cx="14" cy="12" r="1.5" fill="#a0d0ff" opacity=".8"/>
+      <circle cx="40" cy="18" r="1.2" fill="#c0e0ff" opacity=".7"/>
+      <circle cx="12" cy="34" r="1" fill="#80c0ff" opacity=".6"/>
+      <line x1="26" y1="6" x2="44" y2="20" stroke="#3080ff" stroke-width="0.8" opacity=".7"/>
+      <polygon points="44,20 48,26 44,34 40,26" fill="rgba(48,128,255,.55)" stroke="#3080ff" stroke-width="1"/>`,
+
+    // Огненная (inferno) — раскалённый прут с языками пламени
+    inferno: `
+      <line x1="38" y1="10" x2="16" y2="44" stroke="#7a2010" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="16" y2="44" stroke="#ff5020" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+      <path d="M38,10 Q34,4 38,0 Q40,5 44,4 Q40,8 38,10Z" fill="#ff5020" opacity=".9"/>
+      <path d="M30,20 Q27,16 30,13 Q31,17 34,16 Q31,19 30,20Z" fill="#ff8040" opacity=".8"/>
+      <path d="M22,32 Q19,28 22,25 Q23,29 26,28 Q23,31 22,32Z" fill="#ffa060" opacity=".7"/>
+      <circle cx="38" cy="10" r="7" fill="rgba(255,80,32,.25)" stroke="#ff5020" stroke-width="1.5"/>
+      <line x1="38" y1="10" x2="46" y2="30" stroke="rgba(255,150,60,.6)" stroke-width="0.9"/>
+      <ellipse cx="46" cy="32" rx="4" ry="6" fill="#ff5020" stroke="#801010" stroke-width="1"/>
+      <circle cx="18" cy="40" r="6" fill="rgba(60,10,0,.8)" stroke="#ff5020" stroke-width="2"/>
+      <circle cx="18" cy="40" r="2.6" fill="#ffa060"/>`,
+
+    // Морозная (frost) — ледяное удилище с сосульками и морозным узором
+    frost: `
+      <line x1="38" y1="10" x2="16" y2="44" stroke="#a0dff5" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="16" y2="44" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>
+      <path d="M30,18 L28,24 L31,24Z" fill="#c8f0ff" stroke="#70e0ff" stroke-width="0.6"/>
+      <path d="M24,28 L22,35 L25,35Z" fill="#c8f0ff" stroke="#70e0ff" stroke-width="0.6"/>
+      <path d="M20,36 L18,42 L21,42Z" fill="#c8f0ff" stroke="#70e0ff" stroke-width="0.6"/>
+      <circle cx="38" cy="10" r="7" fill="rgba(112,224,255,.25)" stroke="#70e0ff" stroke-width="1.5"/>
+      <path d="M38,4 L38,16 M33,10 L43,10 M34.5,5.5 L41.5,14.5 M41.5,5.5 L34.5,14.5" stroke="#e0faff" stroke-width="0.8" opacity=".8"/>
+      <line x1="38" y1="10" x2="46" y2="28" stroke="rgba(160,223,245,.6)" stroke-width="0.9"/>
+      <circle cx="46" cy="30" r="5" fill="#e0faff" stroke="#70e0ff" stroke-width="1.2"/>
+      <circle cx="18" cy="40" r="6" fill="rgba(10,40,60,.7)" stroke="#70e0ff" stroke-width="2"/>
+      <circle cx="18" cy="40" r="2.6" fill="#c8f0ff"/>`,
+
+    // Штормовая (storm) — грозовая туча с молнией (адаптация)
+    storm: `
+      <ellipse cx="18" cy="12" rx="10" ry="7" fill="rgba(70,50,100,.9)" stroke="#a060ff" stroke-width="1.2"/>
+      <ellipse cx="26" cy="10" rx="7" ry="5" fill="rgba(80,60,110,.9)" stroke="#a060ff" stroke-width="1"/>
+      <polygon points="26,17 18,31 24,31 14,47 32,29 24,29" fill="#f8f040" stroke="#c0b010" stroke-width="1.4"/>
+      <path d="M40,14 Q46,18 40,22" stroke="#a060ff" stroke-width="1.4" fill="none" opacity=".8"/>
+      <path d="M42,24 Q48,28 42,32" stroke="#a060ff" stroke-width="1" fill="none" opacity=".6"/>
+      <circle cx="14" cy="47" r="3" fill="#f8f040" stroke="#c0b010" stroke-width="1"/>
+      <line x1="10" y1="18" x2="8" y2="24" stroke="rgba(160,120,255,.6)" stroke-width="1"/>`,
+
+    // Удочка Феникса (phoenix) — огненное крыло-перо
+    phoenix: `
+      <line x1="36" y1="12" x2="18" y2="44" stroke="#a0540c" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M36,12 Q48,6 46,18 Q40,16 36,20 Q42,22 40,30 Q34,26 32,32 Q38,34 34,42 Q28,36 28,44" fill="none" stroke="#ff9020" stroke-width="2" stroke-linecap="round"/>
+      <path d="M36,12 Q46,8 44,17" fill="#ffb040" opacity=".7"/>
+      <path d="M34,20 Q40,18 39,24" fill="#ff9020" opacity=".6"/>
+      <path d="M31,29 Q37,27 35,33" fill="#ff7010" opacity=".6"/>
+      <circle cx="36" cy="12" r="6" fill="rgba(255,144,32,.3)" stroke="#ff9020" stroke-width="1.5"/>
+      <line x1="36" y1="12" x2="46" y2="30" stroke="rgba(255,180,80,.6)" stroke-width="0.9"/>
+      <ellipse cx="46" cy="32" rx="4" ry="6" fill="#ff9020" stroke="#a0540c" stroke-width="1"/>
+      <circle cx="18" cy="40" r="6" fill="rgba(60,25,0,.8)" stroke="#ff9020" stroke-width="2"/>
+      <circle cx="18" cy="40" r="2.6" fill="#ffd0a0"/>`,
+
+    // Бездноискатель (abyssal) — трезубец Посейдона (переработан)
+    abyssal: `
+      <line x1="26" y1="44" x2="26" y2="18" stroke="#1a3a6a" stroke-width="5" stroke-linecap="round"/>
+      <line x1="26" y1="18" x2="26" y2="8" stroke="#1a3a6a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="20" y1="20" x2="18" y2="8" stroke="#1a3a6a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="32" y1="20" x2="34" y2="8" stroke="#1a3a6a" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="26,6 24,10 28,10" fill="#1a3a6a" stroke="#0a1a3a" stroke-width="1"/>
+      <polygon points="18,6 16,10 20,10" fill="#1a3a6a" stroke="#0a1a3a" stroke-width="1"/>
+      <polygon points="34,6 32,10 36,10" fill="#1a3a6a" stroke="#0a1a3a" stroke-width="1"/>
+      <line x1="18" y1="20" x2="34" y2="20" stroke="#1a3a6a" stroke-width="2.5"/>
+      <circle cx="8" cy="16" r="2.5" fill="rgba(30,80,160,.6)" stroke="#1a3a6a" stroke-width="1"/>
+      <circle cx="44" cy="22" r="2" fill="rgba(30,120,200,.5)" stroke="#1a3a6a" stroke-width="1"/>
+      <path d="M20,30 Q26,26 32,30 Q26,34 20,30Z" fill="rgba(20,60,120,.5)" stroke="#1a3a6a" stroke-width="1"/>`,
+
+    // Звёздная (stellar) — небесный столп со звёздами (переработан)
+    stellar: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#e0d0ff" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <ellipse cx="26" cy="24" rx="14" ry="5" fill="none" stroke="#ffffff" stroke-width="1.5" opacity=".6"/>
+      <polygon points="35,14 36,17 39,17 37,19 38,22 35,20 32,22 33,19 31,17 34,17" fill="#ffffff" opacity=".9" transform="scale(0.5) translate(35,4)"/>
+      <polygon points="35,14 36,17 39,17 37,19 38,22 35,20 32,22 33,19 31,17 34,17" fill="#e0d0ff" opacity=".8" transform="scale(0.4) translate(28,28)"/>
+      <circle cx="38" cy="10" r="5" fill="rgba(255,255,255,.3)" stroke="#ffffff" stroke-width="2"/>
+      <circle cx="38" cy="10" r="2.5" fill="#ffffff" opacity=".9"/>
+      <circle cx="14" cy="40" r="7" fill="rgba(200,240,255,.2)" stroke="#ffffff" stroke-width="2"/>`,
+
+    // Удочка Забвения (oblivion) — чёрная дыра
+    oblivion: `
+      <circle cx="26" cy="26" r="20" fill="rgba(5,0,20,.95)" stroke="#8000ff" stroke-width="2.5"/>
+      <ellipse cx="26" cy="26" rx="18" ry="6" fill="none" stroke="rgba(128,0,255,.6)" stroke-width="2" opacity=".9"/>
+      <ellipse cx="26" cy="26" rx="22" ry="8" fill="none" stroke="rgba(90,0,180,.4)" stroke-width="1.5" opacity=".7"/>
+      <circle cx="8" cy="12" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="44" cy="10" r="1" fill="white" opacity=".4"/>
+      <circle cx="26" cy="26" r="8" fill="#000000"/>
+      <circle cx="26" cy="26" r="4" fill="#8000ff" opacity=".6"/>`,
+
+    // Удочка Генезис (genesis) — золотая корона (переработан)
+    genesis: `
+      <line x1="38" y1="10" x2="14" y2="42" stroke="#ffd700" stroke-width="5.5" stroke-linecap="round"/>
+      <line x1="38" y1="10" x2="14" y2="42" stroke="rgba(255,255,180,.35)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="38" cy="10" r="9" fill="rgba(200,160,0,.3)" stroke="#ffd700" stroke-width="2"/>
+      <circle cx="38" cy="10" r="5" fill="#ffd70099" stroke="#c09010" stroke-width="1"/>
+      <circle cx="36" cy="8" r="2.5" fill="rgba(255,255,220,.85)"/>
+      <circle cx="14" cy="40" r="7" fill="rgba(60,45,0,.9)" stroke="#ffd700" stroke-width="2.5"/>
+      <line x1="38" y1="10" x2="46" y2="28" stroke="rgba(255,230,80,.5)" stroke-width="1" stroke-dasharray="2,3"/>`,
+
+    // Кометная (comet) — метеор с трещинами лавы
+    comet: `
+      <ellipse cx="26" cy="26" rx="16" ry="16" fill="rgba(80,20,0,.8)" stroke="#ffd23f" stroke-width="2"/>
+      <circle cx="20" cy="22" r="4" fill="rgba(0,0,0,.4)" stroke="rgba(255,180,40,.5)" stroke-width="1"/>
+      <path d="M18,18 L22,24 L18,28 L24,30" stroke="#ffb020" stroke-width="1.5" fill="none" opacity=".9"/>
+      <path d="M28,16 L32,20 L29,26" stroke="#ffd23f" stroke-width="1.5" fill="none" opacity=".9"/>
+      <circle cx="10" cy="14" r="3" fill="#ffd23f" opacity=".7"/>
+      <circle cx="42" cy="12" r="2" fill="#ffaa00" opacity=".6"/>
+      <line x1="26" y1="42" x2="26" y2="50" stroke="#888" stroke-width="4" stroke-linecap="round"/>`,
+
+    // 🎲 Удочка D&D — деревянный шест с прикреплённым d20
+    dnd: `
+      <line x1="24" y1="10" x2="22" y2="46" stroke="#6a4020" stroke-width="5" stroke-linecap="round"/>
+      <line x1="24" y1="10" x2="22" y2="46" stroke="rgba(255,255,255,.15)" stroke-width="2" stroke-linecap="round"/>
+      <polygon points="38,4 48,10 48,20 38,26 28,20 28,10" fill="url(#dndIcoFace)" stroke="#c23b3b" stroke-width="1.5"/>
+      <defs><linearGradient id="dndIcoFace" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#e05050"/><stop offset="100%" stop-color="#7a1010"/></linearGradient></defs>
+      <polygon points="38,4 48,10 38,15 28,10" fill="rgba(255,255,255,.2)"/>
+      <text x="38" y="19" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff8e0" font-family="Georgia,serif">20</text>
+      <path d="M18,8 L22,6 L26,9" stroke="#c8a060" stroke-width="1.5" fill="none"/>
+      <line x1="18" y1="8" x2="14" y2="20" stroke="#c8a060" stroke-width="1.2"/>
+      <circle cx="18" cy="40" r="6" fill="rgba(40,20,10,.8)" stroke="#c23b3b" stroke-width="2"/>
+      <circle cx="18" cy="40" r="2.6" fill="#e0a0a0"/>`,
+
+    // 🐴 Удочка Конькобоя — коралл и ракушки, конёк на леске
+    seahorse: `
+      <line x1="34" y1="10" x2="18" y2="44" stroke="#1c8a80" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M30,10 Q36,4 40,10 Q42,16 36,16 Q38,12 34,12Z" fill="#ff9060" stroke="#c0603a" stroke-width="1"/>
+      <path d="M24,20 Q29,15 32,20 Q33,25 28,24 Q29,21 26,22Z" fill="#ffb080" stroke="#c0603a" stroke-width="0.8"/>
+      <circle cx="14" cy="14" r="3" fill="#e0f8f4" stroke="#2ec4b6" stroke-width="1"/>
+      <line x1="34" y1="10" x2="44" y2="26" stroke="rgba(46,196,182,.6)" stroke-width="0.9"/>
+      <path d="M44,22 q3,-4 6,-1 q1,4 -2,5 q1,2 3,1" stroke="#2ec4b6" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <circle cx="49" cy="21" r="1" fill="#0a4a44"/>
+      <circle cx="18" cy="38" r="6" fill="rgba(10,50,45,.7)" stroke="#2ec4b6" stroke-width="2"/>
+      <circle cx="18" cy="38" r="2.6" fill="#8fe8dc"/>`,
   };
 
   // Общий шаблон удочки с кольцами и катушкой
@@ -5250,11 +5480,11 @@ function setMap(mode) {
     renderShop();
   } else if(mode === 'easter') {
     if(easterBadge) easterBadge.style.display='block';
-    document.documentElement.style.setProperty('--sky-top','#280a1e');
-    document.documentElement.style.setProperty('--sky-bot','#180614');
-    document.documentElement.style.setProperty('--water-top','#3a0a2a');
-    document.documentElement.style.setProperty('--water-bot','#200618');
-    showToast('🐰 Карта Пасха! Лови кроликов! 50% шанс бафф Cha Cha!');
+    document.documentElement.style.setProperty('--sky-top','#050818');
+    document.documentElement.style.setProperty('--sky-bot','#0a0a20');
+    document.documentElement.style.setProperty('--water-top','#0a1030');
+    document.documentElement.style.setProperty('--water-bot','#05081c');
+    showToast('☄️ Карта Звездопада! Лови метеоритные осколки! 50% шанс яркого следа!');
     spawnEasterConfetti();
   } else {
     applyWeather(gs.weather, true);
@@ -6251,24 +6481,22 @@ async function cancelKioskListing(key) {
 // ROD VISUAL — Change rod appearance on fishing screen
 // ============================================================
 const ROD_COLORS = {
-  wood:       {color:'#8b5e2a', glow:'none'},
-  bamboo:     {color:'#6a9030', glow:'0 0 8px rgba(100,160,40,.5)'},
-  carbon:     {color:'#405868', glow:'0 0 8px rgba(60,100,120,.6)'},
-  magic:      {color:'#9040c0', glow:'0 0 16px rgba(160,50,255,.8)'},
-  golden:     {color:'#d4a020', glow:'0 0 20px rgba(255,200,30,.9)'},
-  rubberduck: {color:'#f0d020', glow:'0 0 14px rgba(255,220,0,.7)'},
-  crystal:    {color:'#a0e8ff', glow:'0 0 22px rgba(100,220,255,.9)'},
-  thunder:    {color:'#f0f040', glow:'0 0 28px rgba(255,255,50,1.0)'},
-  void:       {color:'#3010a0', glow:'0 0 30px rgba(80,0,200,.9)'},
-  shark:      {color:'#40c8e0', glow:'0 0 35px rgba(0,200,230,1.0)'},
-  meteor:     {color:'#ff6020', glow:'0 0 35px rgba(255,80,0,1.0)'},
-  dragon:     {color:'#cc2200', glow:'0 0 40px rgba(220,30,0,1.0)'},
-  poseidon:   {color:'#0060ff', glow:'0 0 45px rgba(0,100,255,1.0)'},
-  quantum:    {color:'#ff00ff', glow:'0 0 50px rgba(255,0,255,1.0)'},
-  celestial:  {color:'#ffffff', glow:'0 0 60px rgba(255,255,255,1.0)'},
-  apocalypse: {color:'#ff0000', glow:'0 0 80px rgba(255,0,0,1.0)'},
-  marble:     {color:'#c0b0e0', glow:'0 0 40px rgba(200,180,255,.9)'},
-  ghost:      {color:'#80ffcc', glow:'0 0 30px rgba(80,255,180,.8)'},
+  wood:      {color:'#8b5e2a', glow:'none'},
+  reed:      {color:'#8fae5a', glow:'none'},
+  birch:     {color:'#c8dba0', glow:'0 0 6px rgba(180,220,140,.4)'},
+  copper:    {color:'#d9843a', glow:'0 0 10px rgba(220,140,60,.5)'},
+  silver:    {color:'#d8dde2', glow:'0 0 12px rgba(220,225,230,.6)'},
+  jade:      {color:'#2ecc71', glow:'0 0 16px rgba(46,204,113,.7)'},
+  sapphire:  {color:'#3080ff', glow:'0 0 18px rgba(48,128,255,.75)'},
+  inferno:   {color:'#ff5020', glow:'0 0 26px rgba(255,80,32,.9)'},
+  frost:     {color:'#70e0ff', glow:'0 0 26px rgba(112,224,255,.9)'},
+  storm:     {color:'#a060ff', glow:'0 0 26px rgba(160,96,255,.9)'},
+  phoenix:   {color:'#ff9020', glow:'0 0 36px rgba(255,144,32,1.0)'},
+  abyssal:   {color:'#1a3a6a', glow:'0 0 36px rgba(30,80,160,1.0)'},
+  stellar:   {color:'#e0d0ff', glow:'0 0 46px rgba(224,208,255,1.0)'},
+  oblivion:  {color:'#8000ff', glow:'0 0 50px rgba(128,0,255,1.0)'},
+  genesis:   {color:'#ffd700', glow:'0 0 60px rgba(255,215,0,1.0)'},
+  comet:     {color:'#ffd23f', glow:'0 0 40px rgba(255,210,63,1.0)'},
 };
 
 // Рисуем вертикальную удочку в игре — красиво, как в магазине, но вертикально
@@ -6997,6 +7225,249 @@ function makeIngameRodSVG(rod) {
       <ellipse cx="10" cy="345" rx="3" ry="2" fill="rgba(200,255,230,.7)"/>
       <!-- Ручка -->
       <rect x="6" y="360" width="8" height="35" rx="4" fill="rgba(128,255,200,.2)" stroke="rgba(128,255,200,.5)" stroke-width="1" stroke-dasharray="4,3"/>`,
+
+    /* === переиспользуем лучший существующий арт под актуальными id === */
+    reed: `
+      <defs><linearGradient id="bmGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3a6010"/><stop offset="50%" stop-color="#7ab030"/><stop offset="100%" stop-color="#3a6010"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#bmGrad)" stroke="#4a7020" stroke-width="0.8"/>
+      <!-- Продольные волокна бамбука -->
+      <line x1="8.5" y1="0" x2="8.5" y2="360" stroke="#2a5010" stroke-width="0.6" opacity=".4"/>
+      <line x1="11.5" y1="0" x2="11.5" y2="360" stroke="#2a5010" stroke-width="0.6" opacity=".3"/>
+      <!-- Узлы бамбука — горизонтальные перемычки -->
+      ${[45,90,135,180,225,270,315].map(y=>`
+        <rect x="5" y="${y-2}" width="10" height="4" rx="1" fill="#2a5010" stroke="#1a3808" stroke-width="0.5"/>
+        <rect x="5.5" y="${y-1}" width="9" height="2" rx="0.5" fill="#4a8020" stroke="none" opacity=".5"/>
+      `).join('')}
+      <!-- Листья торчат в стороны -->
+      <path d="M13,30 Q22,22 24,32 Q18,33 13,30Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.8"/>
+      <line x1="13" y1="30" x2="21" y2="30" stroke="#2a6010" stroke-width="0.6"/>
+      <path d="M5,80 Q-4,72 -6,82 Q0,83 5,80Z" fill="#6aaa20" stroke="#3a8010" stroke-width="0.8"/>
+      <line x1="5" y1="80" x2="-3" y2="80" stroke="#2a6010" stroke-width="0.6"/>
+      <path d="M13,160 Q20,150 22,160 Q17,162 13,160Z" fill="#5a9020" stroke="#3a7010" stroke-width="0.8"/>
+      <path d="M5,240 Q-3,230 -5,240 Q0,243 5,240Z" fill="#6aaa20" stroke="#3a8010" stroke-width="0.8"/>
+      <!-- Кольца бамбуковые -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="#4a7020" stroke-width="2.5" opacity=".9"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="#8ac040" stroke-width="1" opacity=".6"/>
+      `;}).join('')}
+      ${reel('#6a9030','rgba(20,40,5,.8)')}${handle('#4a7020')}`,
+    silver: `
+      <defs>
+        <linearGradient id="crGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#60b0d888"/><stop offset="50%" stop-color="#b0ecff"/><stop offset="100%" stop-color="#60b0d888"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#crGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Внутренние грани (многогранник) -->
+      <line x1="10" y1="0" x2="10" y2="360" stroke="rgba(255,255,255,.5)" stroke-width="0.8"/>
+      <line x1="7" y1="0" x2="13" y2="60" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="13" y1="60" x2="7" y2="120" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="7" y1="120" x2="13" y2="180" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="13" y1="180" x2="7" y2="240" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <line x1="7" y1="240" x2="13" y2="300" stroke="rgba(255,255,255,.2)" stroke-width="0.6"/>
+      <!-- Радужные отблески сбоку -->
+      <line x1="3" y1="30" x2="6" y2="50" stroke="rgba(255,80,80,.7)" stroke-width="1.5"/>
+      <line x1="3" y1="55" x2="6" y2="75" stroke="rgba(255,200,50,.6)" stroke-width="1.2"/>
+      <line x1="3" y1="80" x2="6" y2="100" stroke="rgba(50,255,100,.6)" stroke-width="1.2"/>
+      <line x1="3" y1="105" x2="6" y2="125" stroke="rgba(50,150,255,.6)" stroke-width="1.2"/>
+      <line x1="3" y1="130" x2="6" y2="150" stroke="rgba(180,50,255,.6)" stroke-width="1.2"/>
+      <!-- Кристалл сверху -->
+      <polygon points="10,-5 14.5,8 10,18 5.5,8" fill="rgba(180,240,255,.6)" stroke="${c}" stroke-width="1.5"/>
+      <polygon points="10,-5 14.5,8 10,6" fill="rgba(220,250,255,.85)"/>
+      <circle cx="9" cy="1" r="2" fill="rgba(255,255,255,.8)"/>
+      <!-- Снежинки-кольца -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.05}"/>
+        <circle cx="${10+w+2}" cy="${y}" r="1.5" fill="rgba(200,245,255,.7)" stroke="${c}" stroke-width="0.5"/>
+        <circle cx="${10-w-2}" cy="${y}" r="1.5" fill="rgba(200,245,255,.7)" stroke="${c}" stroke-width="0.5"/>
+      `;}).join('')}
+      ${reel(c,'rgba(20,60,80,.85)')}${handle('#80c8e0')}`,
+    storm: `
+      <defs>
+        <linearGradient id="thGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#606010"/><stop offset="50%" stop-color="#e8e030"/><stop offset="100%" stop-color="#606010"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#thGrad)" stroke="#c0b010" stroke-width="1"/>
+      <!-- БОЛЬШАЯ МОЛНИЯ вдоль всей удочки -->
+      <polyline points="13,0 7,40 13,80 7,120 13,160 7,200 13,240 7,280 13,320 7,360" fill="none" stroke="#fffff0" stroke-width="2.5" opacity=".9"/>
+      <polyline points="13,0 7,40 13,80 7,120 13,160 7,200 13,240 7,280 13,320 7,360" fill="none" stroke="#f8f040" stroke-width="1.2"/>
+      <!-- Электрические дуги (горизонтальные) -->
+      <line x1="-2" y1="30" x2="5" y2="30" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".8"/>
+      <line x1="15" y1="70" x2="22" y2="70" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".7"/>
+      <line x1="-2" y1="110" x2="5" y2="110" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".8"/>
+      <line x1="15" y1="160" x2="22" y2="160" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".7"/>
+      <line x1="-2" y1="200" x2="5" y2="200" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".6"/>
+      <line x1="15" y1="250" x2="22" y2="250" stroke="${c}" stroke-width="1.5" stroke-dasharray="2,1.5" opacity=".6"/>
+      <!-- Грозовая туча наверху -->
+      <ellipse cx="10" cy="-8" rx="10" ry="6" fill="rgba(60,60,90,.95)" stroke="#8080a0" stroke-width="1"/>
+      <ellipse cx="5" cy="-5" rx="6" ry="4" fill="rgba(60,60,90,.95)"/>
+      <ellipse cx="15" cy="-5" rx="5" ry="3.5" fill="rgba(70,70,100,.9)"/>
+      <!-- Кольца — молниеотводы -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(50,50,10,.8)" stroke="${c}" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.5" fill="none" stroke="rgba(255,255,150,.5)" stroke-width="1"/>
+      `;}).join('')}
+      ${reel('#d0b010','rgba(40,40,0,.9)')}${handle('#b0a000')}`,
+    oblivion: `
+      <defs>
+        <linearGradient id="vdGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#080020"/><stop offset="50%" stop-color="#200080"/><stop offset="100%" stop-color="#080020"/></linearGradient>
+      </defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#vdGrad)" stroke="${c}" stroke-width="1"/>
+      <!-- Пространственные трещины -->
+      <line x1="7" y1="20" x2="13" y2="60" stroke="rgba(100,0,200,.5)" stroke-width="0.8"/>
+      <line x1="13" y1="80" x2="7" y2="130" stroke="rgba(80,0,180,.4)" stroke-width="0.8"/>
+      <line x1="7" y1="150" x2="13" y2="200" stroke="rgba(100,0,200,.5)" stroke-width="0.8"/>
+      <line x1="13" y1="220" x2="7" y2="270" stroke="rgba(80,0,180,.4)" stroke-width="0.8"/>
+      <!-- Звёзды затягиваются в ЧД -->
+      <circle cx="2" cy="40" r="1.2" fill="white" opacity=".5"/>
+      <circle cx="18" cy="80" r="1" fill="white" opacity=".4"/>
+      <circle cx="1" cy="150" r="1.5" fill="white" opacity=".5"/>
+      <circle cx="19" cy="200" r="1" fill="white" opacity=".3"/>
+      <circle cx="2" cy="270" r="1.2" fill="white" opacity=".4"/>
+      <circle cx="18" cy="320" r="1" fill="white" opacity=".3"/>
+      <!-- Мини-чёрная дыра наверху -->
+      <circle cx="10" cy="5" r="9" fill="rgba(5,0,20,.98)" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="10" cy="5" r="5" fill="rgba(40,0,120,.6)" stroke="${c}" stroke-width="1"/>
+      <circle cx="10" cy="5" r="2.5" fill="${c}" opacity=".8"/>
+      <line x1="10" y1="-4" x2="10" y2="14" stroke="${c}" stroke-width="0.8" opacity=".5"/>
+      <line x1="1" y1="5" x2="19" y2="5" stroke="${c}" stroke-width="0.8" opacity=".5"/>
+      <!-- Кольца — орбитальные -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="4" fill="none" stroke="rgba(60,0,160,.4)" stroke-width="2"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="none" stroke="${c}" stroke-width="2" opacity="${0.9-i*0.06}"/>
+      `;}).join('')}
+      ${reel(c,'rgba(5,0,30,.95)')}${handle('#150060')}`,
+    abyssal: `
+      <defs><linearGradient id="pdGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#001a60"/><stop offset="50%" stop-color="#0055e0"/><stop offset="100%" stop-color="#001a60"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#pdGrad)" stroke="#0048cc" stroke-width="1"/>
+      <!-- Волнистая текстура воды вдоль -->
+      <path d="M7,30 Q9,26 11,30 Q13,34 7,38 Q9,34 11,38" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <path d="M7,80 Q9,76 11,80 Q13,84 7,88 Q9,84 11,88" fill="none" stroke="rgba(80,160,255,.35)" stroke-width="1"/>
+      <path d="M7,130 Q9,126 11,130 Q13,134 7,138 Q9,134 11,138" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <path d="M7,180 Q9,176 11,180 Q13,184 7,188 Q9,184 11,188" fill="none" stroke="rgba(80,160,255,.35)" stroke-width="1"/>
+      <path d="M7,230 Q9,226 11,230 Q13,234 7,238 Q9,234 11,238" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <path d="M7,280 Q9,276 11,280 Q13,284 7,288 Q9,284 11,288" fill="none" stroke="rgba(80,160,255,.35)" stroke-width="1"/>
+      <path d="M7,330 Q9,326 11,330 Q13,334 7,338 Q9,334 11,338" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="1"/>
+      <!-- Пузыри воздуха -->
+      <circle cx="4" cy="60" r="2" fill="none" stroke="rgba(150,210,255,.6)" stroke-width="1"/>
+      <circle cx="16" cy="110" r="1.5" fill="none" stroke="rgba(130,200,255,.5)" stroke-width="0.8"/>
+      <circle cx="3" cy="180" r="2.5" fill="none" stroke="rgba(150,210,255,.6)" stroke-width="1"/>
+      <circle cx="17" cy="250" r="1.5" fill="none" stroke="rgba(130,200,255,.5)" stroke-width="0.8"/>
+      <circle cx="4" cy="320" r="2" fill="none" stroke="rgba(150,210,255,.6)" stroke-width="1"/>
+      <!-- ТРЕЗУБЕЦ наверху (три зубца) -->
+      <line x1="10" y1="0" x2="10" y2="25" stroke="${c}" stroke-width="4" stroke-linecap="round"/>
+      <line x1="10" y1="0" x2="10" y2="25" stroke="rgba(150,200,255,.4)" stroke-width="2"/>
+      <!-- Центральный зубец -->
+      <line x1="10" y1="-12" x2="10" y2="8" stroke="${c}" stroke-width="3.5" stroke-linecap="round"/>
+      <polygon points="10,-16 8,-8 12,-8" fill="${c}" stroke="#0030a0" stroke-width="1"/>
+      <!-- Боковые зубцы -->
+      <line x1="4" y1="-8" x2="4" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="4,-12 2,-5 6,-5" fill="${c}" stroke="#0030a0" stroke-width="1"/>
+      <line x1="16" y1="-8" x2="16" y2="8" stroke="${c}" stroke-width="3" stroke-linecap="round"/>
+      <polygon points="16,-12 14,-5 18,-5" fill="${c}" stroke="#0030a0" stroke-width="1"/>
+      <!-- Перекладина -->
+      <line x1="4" y1="8" x2="16" y2="8" stroke="${c}" stroke-width="2.5"/>
+      <circle cx="4" cy="8" r="2.5" fill="${c}"/><circle cx="16" cy="8" r="2.5" fill="${c}"/>
+      <!-- Кольца с волнами -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(0,20,70,.8)" stroke="${c}" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.2" fill="none" stroke="rgba(100,180,255,.4)" stroke-width="0.8"/>
+      `;}).join('')}
+      ${reel(c,'rgba(0,15,65,.95)')}${handle('#003090')}`,
+    stellar: `
+      <defs><linearGradient id="clGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#8090c0"/><stop offset="50%" stop-color="#ffffff"/><stop offset="100%" stop-color="#8090c0"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#clGrad)" stroke="rgba(200,220,255,.8)" stroke-width="1"/>
+      <!-- Перья вдоль тела -->
+      ${[20,60,100,140,180,220,260,300,340].map((y,i)=>`
+        <path d="M${i%2===0?6:14},${y} Q${i%2===0?-2:22},${y-4} ${i%2===0?0:20},${y+8} Q${i%2===0?4:16},${y+4} ${i%2===0?6:14},${y}Z" fill="rgba(240,245,255,.7)" stroke="rgba(180,200,255,.5)" stroke-width="0.7"/>
+        <line x1="${i%2===0?6:14}" y1="${y}" x2="${i%2===0?1:19}" y2="${y+4}" stroke="rgba(200,220,255,.4)" stroke-width="0.5"/>
+      `).join('')}
+      <!-- Нимб + крылья сверху -->
+      <ellipse cx="10" cy="-5" rx="12" ry="4" fill="none" stroke="#ffd700" stroke-width="2.5" opacity=".9"/>
+      <ellipse cx="10" cy="-5" rx="15" ry="5" fill="none" stroke="rgba(255,220,100,.4)" stroke-width="1.5"/>
+      <!-- Крылья -->
+      <path d="M4,5 Q-8,2 -10,12 Q-5,10 4,15Z" fill="rgba(240,245,255,.7)" stroke="rgba(200,220,255,.6)" stroke-width="0.8"/>
+      <path d="M16,5 Q28,2 30,12 Q25,10 16,15Z" fill="rgba(240,245,255,.7)" stroke="rgba(200,220,255,.6)" stroke-width="0.8"/>
+      <!-- Лучи света -->
+      <line x1="10" y1="-14" x2="10" y2="-10" stroke="#ffd700" stroke-width="2" opacity=".8"/>
+      ${[0,40,80,120,160,200,240,280,320].map(a=>`
+        <line x1="${10+12*Math.cos(a*Math.PI/180)}" y1="${-5+5*Math.sin(a*Math.PI/180)}" x2="${10+18*Math.cos(a*Math.PI/180)}" y2="${-5+7.5*Math.sin(a*Math.PI/180)}" stroke="rgba(255,240,180,.4)" stroke-width="0.8"/>
+      `).join('')}
+      <!-- Звёздочки вдоль -->
+      <circle cx="3" cy="50" r="1.5" fill="#ffffd0" opacity=".8"/>
+      <circle cx="17" cy="100" r="1.2" fill="#ffffd0" opacity=".7"/>
+      <circle cx="3" cy="180" r="1.5" fill="#ffffd0" opacity=".8"/>
+      <circle cx="17" cy="250" r="1.2" fill="#ffffd0" opacity=".7"/>
+      <!-- Кольца — сияющие белые -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+3}" ry="4.5" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(200,220,255,.2)" stroke="white" stroke-width="2.5" opacity="${0.95-i*0.05}"/>
+      `;}).join('')}
+      ${reel('white','rgba(160,190,255,.25)')}${handle('#b0c8ff')}`,
+    genesis: `
+      <defs>
+        <linearGradient id="gyGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#706010"/><stop offset="25%" stop-color="#fff8a0"/><stop offset="50%" stop-color="#ffd700"/><stop offset="75%" stop-color="#fff8a0"/><stop offset="100%" stop-color="#706010"/></linearGradient>
+        <linearGradient id="rainbowY" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ff0000" stop-opacity=".4"/>
+          <stop offset="16%" stop-color="#ff8800" stop-opacity=".4"/>
+          <stop offset="33%" stop-color="#ffff00" stop-opacity=".4"/>
+          <stop offset="50%" stop-color="#00ff00" stop-opacity=".4"/>
+          <stop offset="66%" stop-color="#0088ff" stop-opacity=".4"/>
+          <stop offset="83%" stop-color="#8800ff" stop-opacity=".4"/>
+          <stop offset="100%" stop-color="#ff00ff" stop-opacity=".4"/>
+        </linearGradient>
+      </defs>
+      <!-- Радужная аура -->
+      <rect x="4" y="0" width="12" height="360" rx="5" fill="url(#rainbowY)" opacity=".5"/>
+      <!-- Золотое тело -->
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#gyGrad)" stroke="#d4a020" stroke-width="1.2"/>
+      <!-- Лучи света вдоль -->
+      <line x1="10" y1="0" x2="10" y2="360" stroke="rgba(255,255,200,.3)" stroke-width="1.5"/>
+      <!-- Парящие звёзды-частицы -->
+      ${[25,70,115,160,205,250,295,340].map((y,i)=>`
+        <polygon points="10,${y-5} 11,${y-2} 14,${y-2} 11.5,${y} 12.5,${y+3} 10,${y+1} 7.5,${y+3} 8.5,${y} 6,${y-2} 9,${y-2}" fill="#ffd700" stroke="#c09010" stroke-width="0.4" opacity="${.6+.3*(i%2)}"/>
+      `).join('')}
+      <!-- Нимб на вершине -->
+      <ellipse cx="10" cy="-2" rx="13" ry="4" fill="none" stroke="#ffd700" stroke-width="2.5" opacity=".9"/>
+      <ellipse cx="10" cy="-2" rx="16" ry="5" fill="none" stroke="rgba(255,220,50,.4)" stroke-width="2"/>
+      <ellipse cx="10" cy="-2" rx="9" ry="3" fill="none" stroke="rgba(255,240,100,.6)" stroke-width="1.2"/>
+      <!-- Лучи от нимба -->
+      ${[0,45,90,135,180,225,270,315].map(a=>`
+        <line x1="${10+12*Math.cos(a*Math.PI/180)}" y1="${-2+5*Math.sin(a*Math.PI/180)}" x2="${10+18*Math.cos(a*Math.PI/180)}" y2="${-2+7.5*Math.sin(a*Math.PI/180)}" stroke="rgba(255,230,80,.5)" stroke-width="1"/>
+      `).join('')}
+      <!-- Кольца — двойные золотые -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w+2}" ry="4" fill="none" stroke="rgba(255,220,50,.3)" stroke-width="2"/>
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(60,45,0,.6)" stroke="#ffd700" stroke-width="2.5" opacity="${0.95-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-3}" ry="1.3" fill="none" stroke="rgba(255,255,200,.5)" stroke-width="0.8"/>
+      `;}).join('')}
+      ${reel('#ffd700','rgba(55,40,0,.95)')}${handle('#c09010')}`,
+    comet: `
+      <defs><linearGradient id="mtGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a1005"/><stop offset="50%" stop-color="#c04018"/><stop offset="100%" stop-color="#4a1005"/></linearGradient></defs>
+      <rect x="7" y="0" width="6" height="360" rx="3" fill="url(#mtGrad)" stroke="#aa3010" stroke-width="1"/>
+      <!-- Раскалённые трещины-лава вдоль -->
+      <path d="M8,0 Q10,40 8,80 Q10,120 8,160 Q10,200 8,240 Q10,280 8,320 Q10,350 8,360" fill="none" stroke="rgba(255,80,0,.5)" stroke-width="1.5"/>
+      <path d="M12,0 Q10,50 12,100 Q10,150 12,200 Q10,250 12,300 Q10,340 12,360" fill="none" stroke="rgba(255,120,0,.4)" stroke-width="1"/>
+      <!-- Кратеры-дырки на теле -->
+      <circle cx="9" cy="50" r="4" fill="rgba(0,0,0,.6)" stroke="rgba(255,80,0,.5)" stroke-width="0.8"/>
+      <circle cx="9" cy="50" r="2" fill="rgba(255,60,0,.3)"/>
+      <circle cx="11" cy="130" r="3" fill="rgba(0,0,0,.5)" stroke="rgba(255,100,0,.4)" stroke-width="0.7"/>
+      <circle cx="9" cy="210" r="4" fill="rgba(0,0,0,.6)" stroke="rgba(255,80,0,.5)" stroke-width="0.8"/>
+      <circle cx="11" cy="290" r="3" fill="rgba(0,0,0,.5)" stroke="rgba(255,100,0,.4)" stroke-width="0.7"/>
+      <!-- Метеорит на вершине — раскалённый булыжник -->
+      <ellipse cx="10" cy="8" rx="12" ry="12" fill="rgba(60,15,0,.92)" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="6" cy="5" r="4" fill="rgba(0,0,0,.5)" stroke="rgba(255,80,0,.5)" stroke-width="1"/>
+      <circle cx="13" cy="10" r="3" fill="rgba(0,0,0,.4)" stroke="rgba(255,100,0,.4)" stroke-width="0.8"/>
+      <path d="M4,4 L8,8 L4,12 L9,13" stroke="#ff6020" stroke-width="1.5" fill="none"/>
+      <path d="M11,3 L14,7 L12,12" stroke="#ff8040" stroke-width="1.5" fill="none"/>
+      <!-- Огненный хвост -->
+      <circle cx="-2" cy="-5" r="3" fill="#ff4000" opacity=".7"/>
+      <circle cx="22" cy="-6" r="2" fill="#ffaa00" opacity=".6"/>
+      <circle cx="-1" cy="3" r="1.5" fill="#ff6020" opacity=".5"/>
+      <!-- Кольца — металлические с огнём -->
+      ${[60,120,180,240,300].map((y,i)=>{const w=9-i*1.2; return `
+        <ellipse cx="10" cy="${y}" rx="${w}" ry="2.5" fill="rgba(50,15,0,.8)" stroke="${c}" stroke-width="2.5" opacity="${0.9-i*0.05}"/>
+        <ellipse cx="10" cy="${y}" rx="${w-2}" ry="1.3" fill="none" stroke="rgba(255,120,0,.4)" stroke-width="1"/>
+      `;}).join('')}
+      ${reel(c,'rgba(50,12,0,.95)')}${handle('#8a3010')}`,
+
   };
 
   // Используем специальный вариант если есть, иначе дефолтный
@@ -7005,9 +7476,10 @@ function makeIngameRodSVG(rod) {
     <defs><linearGradient id="dfGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="${c}80"/><stop offset="50%" stop-color="${c}"/><stop offset="100%" stop-color="${c}80"/></linearGradient></defs>
     ${rings(c)}${reel(c)}${handle(c)}`;
 
-  const anim = rod.id === 'apocalypse' ? 'animation:apocalypseShake .3s steps(3) infinite;' :
-               rod.id === 'quantum'    ? 'animation:quantumFlicker .8s steps(2) infinite;' :
-               rod.id === 'thunder'    ? 'animation:thunderZap 3s steps(1) infinite;' : '';
+  const anim = rod.id === 'genesis'  ? 'animation:apocalypseShake .3s steps(3) infinite;' :
+               rod.id === 'oblivion' ? 'animation:quantumFlicker .8s steps(2) infinite;' :
+               rod.id === 'stellar'  ? 'animation:thunderZap 3s steps(1) infinite;' :
+               rod.id === 'comet'    ? 'animation:thunderZap 2.4s steps(1) infinite;' : '';
 
   return `<svg id="rod-svg-ingame" viewBox="-15 -15 50 420"
     xmlns="http://www.w3.org/2000/svg"
@@ -7250,10 +7722,10 @@ let bossState = {
 };
 
 function checkBossFirstVisit() {
-  if(localStorage.getItem(UPDATE_KEY)) return;
-  localStorage.setItem(UPDATE_KEY, '1');
-  // Show boss intro after a short delay
-  setTimeout(startBossIntro, 1200);
+  // Бой с Гибрид Акулой отключён — раньше он перекрывал интерфейс
+  // (в т.ч. кнопку прокачки в мастерской). Функция оставлена как
+  // заглушка на случай, если её ещё где-то вызывают.
+  return;
 }
 
 function startBossIntro() {
@@ -7721,11 +8193,12 @@ function upgradeToOgIfActive(fish) {
 
 // ============================================================
 // TRIGGER BOSS ON STARTUP (first visit to this update)
+// ОТКЛЮЧЕНО: бой с Гибрид Акулой мешал интерфейсу (перекрывал
+// кнопку прокачки в мастерской), поэтому автозапуск убран.
 // ============================================================
-setTimeout(()=>{
-  // Check if boss should appear (first time seeing this update)
-  checkBossFirstVisit();
-}, 1500);
+// setTimeout(()=>{
+//   checkBossFirstVisit();
+// }, 1500);
 
 // ============================================================
 // 🔴 HARDCORE MAP DATA
@@ -7751,12 +8224,12 @@ const HOBO_FISH = [
 // 🐰 EASTER EVENT DATA
 // ============================================================
 const EASTER_RABBITS = [
-  {name:'Белый Кролик',     emoji:'🐰', pts:200, coins:300,  rar:'common', label:'🐰 Обычный'},
-  {name:'Серый Кролик',     emoji:'🐰', pts:250, coins:350,  rar:'common', label:'🐰 Обычный'},
-  {name:'Рыжий Кролик',     emoji:'🐇', pts:400, coins:400,  rar:'rare',   label:'🌟 Редкий'},
-  {name:'Пасхальный Кролик',emoji:'🥚', pts:500, coins:500,  rar:'rare',   label:'🌟 Редкий'},
-  {name:'Радужный Кролик',  emoji:'🌈', pts:700, coins:700,  rar:'epic',   label:'💜 Эпический'},
-  {name:'Золотой Кролик',   emoji:'✨', pts:1000,coins:1000, rar:'legend', label:'👑 ЛЕГЕНДА'},
+  {name:'Ледяной осколок',   emoji:'🧊', pts:200, coins:300,  rar:'common', label:'☄️ Обычный'},
+  {name:'Каменный обломок',  emoji:'🪨', pts:250, coins:350,  rar:'common', label:'☄️ Обычный'},
+  {name:'Огненный метеорит', emoji:'☄️', pts:400, coins:400,  rar:'rare',   label:'🌟 Редкий'},
+  {name:'Кристалл кометы',   emoji:'💎', pts:500, coins:500,  rar:'rare',   label:'🌟 Редкий'},
+  {name:'Осколок сверхновой',emoji:'🌠', pts:700, coins:700,  rar:'epic',   label:'💜 Эпический'},
+  {name:'Ядро звезды',       emoji:'⭐', pts:1000,coins:1000, rar:'legend', label:'👑 ЛЕГЕНДА'},
 ];
 
 // ============================================================
@@ -8047,7 +8520,7 @@ function applyPokeballBoost(boost) {
 // We hook gs.currentCatch right before it's used
 // by patching the catchFish poke boost checks inline
 const _catchFishOrigPoke = catchFish;
-window.catchFish = function() {
+window.catchFish = function(skipReel) {
   // Apply pokeball next-fish boosts
   if(gs._pokeNextOg && gs.currentCatch && !gs.currentCatch.isPokemon) {
     gs._pokeNextOg = false;
@@ -8065,7 +8538,7 @@ window.catchFish = function() {
       gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2)};
     }
   }
-  _catchFishOrigPoke();
+  _catchFishOrigPoke(skipReel);
 };
 
 // ============================================================
@@ -8196,7 +8669,7 @@ window.triggerBite = function() {
     biteEl.classList.add('visible');
     shakeScreen();
     // Instant catch
-    setTimeout(()=>{ if(gs.phase==='bite') catchFish(); }, 300);
+    setTimeout(()=>{ if(gs.phase==='bite') catchFish(true); }, 300);
     return;
   }
   if(gs.currentRod?.id === 'celestial') gs._celestialMode = true;
@@ -9788,67 +10261,6 @@ window.renderGarden = function() {
 #fw-offline-notice .fw-off-sub { font-size:12px; color:#a04040; line-height:1.5; }
 </style>
 
-<!-- UPDATE CUTSCENE -->
-<div id="update-cutscene" style="
-  position:fixed;inset:0;z-index:99999;
-  background:linear-gradient(135deg,#000a1a,#00050f);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  overflow:hidden;
-">
-  <div id="cs-marbles" style="position:absolute;inset:0;pointer-events:none;"></div>
-  <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
-    <div style="position:absolute;top:30%;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,rgba(0,200,255,.5),transparent);animation:csGlitch 0.8s ease-in-out infinite alternate;"></div>
-    <div style="position:absolute;top:65%;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,rgba(255,80,200,.4),transparent);animation:csGlitch 1.2s ease-in-out infinite alternate-reverse;"></div>
-  </div>
-  <div id="cs-text1" style="font-family:'UnifrakturMaguntia',cursive;font-size:36px;color:#00e8ff;text-shadow:0 0 30px #00e8ff,0 0 60px rgba(0,200,255,.5);text-align:center;padding:0 20px;opacity:0;transform:scale(0.5);transition:opacity 0.8s,transform 0.8s cubic-bezier(.34,1.56,.64,1);z-index:2;">Неожидал?</div>
-  <div id="cs-text2" style="font-family:'Neucha',cursive;font-size:16px;color:#a0f0ff;margin-top:16px;text-align:center;padding:0 30px;opacity:0;transform:translateY(20px);transition:opacity 0.6s,transform 0.6s ease;z-index:2;line-height:1.6;">Но тут я сделал обнову 🎣<br><span style="font-size:12px;color:#608090;">Мраморная удочка • Больше рыб • Анимации • Баги починены!</span></div>
-  <div id="cs-marbles-text" style="font-size:48px;margin-top:24px;opacity:0;transition:opacity 0.5s;z-index:2;animation:csMarblesFloat 2s ease-in-out infinite alternate;">🪨✨🎣</div>
-  <button id="cs-skip-btn" style="position:absolute;bottom:40px;font-family:'UnifrakturMaguntia',cursive;font-size:18px;background:linear-gradient(135deg,#004060,#00a0c0);border:2px solid #00e0ff;border-radius:16px;padding:12px 40px;color:#80ffff;cursor:pointer;box-shadow:0 0 20px rgba(0,200,255,.4);opacity:0;transition:opacity 0.5s;z-index:2;">🎣 Начать рыбалку!</button>
-</div>
-<style>
-@keyframes csGlitch{0%{opacity:.3;transform:scaleX(.8)}100%{opacity:.9;transform:scaleX(1.1)}}
-@keyframes csMarblesFloat{0%{transform:translateY(0) rotate(-5deg)}100%{transform:translateY(-12px) rotate(5deg)}}
-@keyframes marbleDrop{0%{transform:translateY(-100px) rotate(0deg);opacity:0}20%{opacity:1}80%{opacity:.8}100%{transform:translateY(800px) rotate(720deg);opacity:0}}
-/* Fish catch animation */
-@keyframes fishBlink{0%,100%{opacity:1}50%{opacity:0.3}}
-@keyframes finWave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}
-@keyframes fishWiggle{0%,100%{transform:rotate(-3deg) scaleX(1)}25%{transform:rotate(3deg) scaleX(1.05)}50%{transform:rotate(-2deg) scaleX(.98)}75%{transform:rotate(4deg) scaleX(1.03)}}
-@keyframes marbleSplashAnim{0%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(0.2) translateY(-40px);opacity:0}}
-</style>
-<script>
-(function(){
-  function skipCS(){
-    var cs=document.getElementById('update-cutscene');
-    if(!cs||cs._closing) return;
-    cs._closing=true;
-    cs.style.transition='opacity 0.6s';
-    cs.style.opacity='0';
-    setTimeout(function(){ if(cs.parentNode) cs.parentNode.removeChild(cs); },700);
-  }
-  window.skipUpdateCutscene=skipCS;
-
-  var mc=document.getElementById('cs-marbles');
-  for(var i=0;i<18;i++){
-    var b=document.createElement('div');
-    var sz=10+Math.random()*25;
-    var hue=Math.floor(Math.random()*60+160);
-    b.style.cssText='position:absolute;width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.8),hsl('+hue+',60%,50%),hsl('+hue+',40%,25%));box-shadow:inset -3px -3px 6px rgba(0,0,0,.4),0 0 '+(sz*.5)+'px rgba(0,200,255,.3);left:'+(Math.random()*95)+'%;top:'+(Math.random()*-50-10)+'px;animation:marbleDrop '+(2+Math.random()*3)+'s '+(Math.random()*2)+'s ease-in forwards;';
-    if(mc) mc.appendChild(b);
-  }
-
-  var btn=document.getElementById('cs-skip-btn');
-  if(btn){
-    btn.addEventListener('click', skipCS);
-    btn.addEventListener('touchend', function(e){ e.preventDefault(); skipCS(); });
-  }
-
-  setTimeout(function(){ var t=document.getElementById('cs-text1'); if(t){t.style.opacity='1';t.style.transform='scale(1)';} },400);
-  setTimeout(function(){ var t=document.getElementById('cs-text2'); if(t){t.style.opacity='1';t.style.transform='translateY(0)';} },1100);
-  setTimeout(function(){ var t=document.getElementById('cs-marbles-text'); if(t) t.style.opacity='1'; },1800);
-  setTimeout(function(){ if(btn) btn.style.opacity='1'; },2200);
-  setTimeout(skipCS, 6000);
-})();
-</script>
 
 <!-- FAREWELL HTML -->
 <div id="farewell-overlay">
@@ -10007,8 +10419,56 @@ window.renderGarden = function() {
 // ═══════════════════════════════════════════════════════
 //  🌅 FAREWELL ANIMATION CONTROLLER
 // ═══════════════════════════════════════════════════════
-(function initFarewell() {
-  // Make sure gs is loaded (might not be yet if DOMContentLoaded hasn't fired)
+(function initGrandOpening() {
+  // Немедленно убираем старый экран прощания — игра больше не закрывается
+  function hideOverlay() {
+    const ov = document.getElementById('farewell-overlay');
+    if(ov) ov.style.display = 'none';
+    const multiTab = document.getElementById('nav-multi');
+    if(multiTab) { multiTab.style.opacity = '1'; multiTab.style.pointerEvents = 'auto'; }
+  }
+  window.closeFarewellAndPlay = function() { hideOverlay(); };
+  window.showMemorial = function() { hideOverlay(); };
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hideOverlay);
+  } else {
+    hideOverlay();
+  }
+
+  // 🎉 Салют в честь открытия — один раз при заходе
+  function fireworksBurst() {
+    const colors = ['#ffd700','#ff5050','#50c8ff','#a0ff50','#ff80e0'];
+    for(let i=0;i<26;i++){
+      setTimeout(()=>{
+        const p=document.createElement('div');
+        const c=colors[Math.floor(Math.random()*colors.length)];
+        const x=20+Math.random()*320, y=80+Math.random()*200;
+        p.style.cssText=`position:fixed;left:${x}px;top:${y}px;width:6px;height:6px;border-radius:50%;background:${c};box-shadow:0 0 8px 2px ${c};z-index:99999;pointer-events:none;animation:goSpark .9s ease-out forwards;`;
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(),950);
+      }, i*35);
+    }
+  }
+  if(!document.getElementById('go-spark-style')) {
+    const st=document.createElement('style');
+    st.id='go-spark-style';
+    st.textContent='@keyframes goSpark{0%{transform:scale(0) translateY(0);opacity:1}70%{opacity:1}100%{transform:scale(1) translateY(40px);opacity:0}}';
+    document.head.appendChild(st);
+  }
+  function showOpeningToast() {
+    if(typeof showToast === 'function') showToast('🎉 ГРАНД-ОПЕНИНГ! Добро пожаловать в обновлённую игру! 🎆');
+    fireworksBurst();
+  }
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ()=> setTimeout(showOpeningToast, 900));
+  } else {
+    setTimeout(showOpeningToast, 900);
+  }
+})();
+
+(function deadFarewellCode() {
+  // Старый код прощания оставлен ниже отключённым (не выполняется) для истории.
+  return;
   function getFarewellStats() {
     try {
       const raw = localStorage.getItem('fishing_reborn_v2') || localStorage.getItem('fishing_reborn');
@@ -10181,6 +10641,1416 @@ window.renderGarden = function() {
   }
 })();
 </script>
+
+<script>
+// ============================================================
+// 🎣 РЕАЛЬНАЯ ФИЗИКА ВЫВАЖИВАНИЯ — новая механика подсечки рыбы
+// Дизайн/UI игры не тронуты — меняется только суть поимки:
+// вместо мгновенного тапа теперь мини-игра "тяни / отпускай"
+// с дистанцией до берега и натяжением лески.
+// Особые режимы (покемон/побережье/пасха/хардкор/бомжатня)
+// оставлены как есть — там своя механика.
+// ============================================================
+(function patchRealisticReelMinigame() {
+  const _finalCatchFish = window.catchFish || catchFish;
+  const SPECIAL_MODES = ['pokemon','coast','easter','hardcore','hobo'];
+
+  const RARITY_STRENGTH = {
+    common:5, rare:8, epic:12.5, legend:17, coastal_legend:17, og:24
+  };
+
+  // Реальные способности удочек — каждая меняет саму механику вываживания,
+  // а не просто описана в тексте. Все эффекты видны и ощутимы в игре.
+  const ROD_ABILITIES = {
+    reed:     {},
+    birch:    { tensionGainMult: 0.85 },                     // напряжение растёт медленнее
+    copper:   { jerkMult: 0.80 },                            // рывки рыбы слабее
+    silver:   { tensionDecayMult: 1.30 },                    // натяжение спадает быстрее при отпускании
+    jade:     { driftMult: 0.75 },                           // рыба медленнее уплывает обратно
+    sapphire: { pullBonus: 6 },                              // подсечка мощнее
+    inferno:  { jerkIntervalMult: 1.35 },                    // рывки реже
+    frost:    { jerkMult: 0.50 },                            // рывки почти обнулены
+    storm:    { stormShock: true },                          // рывок шокирует рыбу — тянет её к берегу вместо удара
+    phoenix:  { reviveOnFail: true },                        // один шанс вываживания заново
+    abyssal:  { pullBonus: 10 },                             // мощнейшая подсечка
+    stellar:  { startDistance: 50 },                         // рыба уже наполовину подтянута
+    oblivion: { startDistance: 30 },                         // рыба почти у берега с самого начала
+    genesis:  { tensionGainMult: 0.6, pullBonus: 12, jerkMult: 0.6 }, // всё лучшее сразу
+    comet:    { pullBonus: 8 },
+  };
+
+  gs.reel = { active:false, distance:100, tension:0, holding:false, raf:null, lastT:0, nextJerk:0, startT:0, _reason:'', _revived:false };
+
+  let panel, distFill, tensFill, pullBtn;
+
+  function buildPanel() {
+    if(panel) return;
+    panel = document.createElement('div');
+    panel.id = 'reel-panel';
+    panel.style.cssText = `
+      position:absolute; left:50%; bottom:150px; transform:translateX(-50%);
+      width:270px; padding:10px 14px 12px; z-index:120; display:none;
+      background:linear-gradient(to bottom,#5a3010,#2a1605);
+      border:3px solid #d4a030; border-radius:14px;
+      box-shadow:0 6px 20px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,220,150,.15);
+      font-family:Neucha,cursive; text-align:center; color:#f0d8a0;
+      touch-action:none;
+    `;
+    panel.innerHTML = `
+      <div style="font-size:14px;font-weight:bold;color:#ffdd88;margin-bottom:6px;text-shadow:0 1px 2px #000;">🎣 ВЫВАЖИВАЙ РЫБУ!</div>
+      <div style="font-size:11px;color:#e8c890;margin-bottom:2px;text-align:left;">До берега</div>
+      <div style="position:relative;height:14px;border-radius:7px;background:rgba(0,0,0,.5);border:1px solid #7a4e20;overflow:hidden;margin-bottom:8px;">
+        <div id="reel-dist-fill" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#4a8020,#8ac040);"></div>
+      </div>
+      <div style="font-size:11px;color:#e8c890;margin-bottom:2px;text-align:left;">Натяжение лески</div>
+      <div style="position:relative;height:14px;border-radius:7px;background:rgba(0,0,0,.5);border:1px solid #7a4e20;overflow:hidden;margin-bottom:10px;">
+        <div id="reel-tens-fill" style="position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,#c08010,#ff3020);"></div>
+      </div>
+      <button id="reel-pull-btn" style="
+        width:100%; padding:12px 0; border-radius:10px; border:2px solid #ffdd88;
+        background:linear-gradient(to bottom,#e8b830,#a06010); color:#2a1605;
+        font-family:Neucha,cursive; font-weight:bold; font-size:16px; cursor:pointer;
+        box-shadow:0 3px 0 #5a3010; user-select:none; -webkit-user-select:none;
+      ">💪 ДЕРЖИ И ТЯНИ!</button>
+    `;
+    document.getElementById('fishing-screen').appendChild(panel);
+    distFill = panel.querySelector('#reel-dist-fill');
+    tensFill = panel.querySelector('#reel-tens-fill');
+    pullBtn  = panel.querySelector('#reel-pull-btn');
+
+    const setHold = (v)=>{ gs.reel.holding = v; pullBtn.style.transform = v?'scale(.96)':'scale(1)'; };
+    pullBtn.addEventListener('pointerdown', e=>{ e.preventDefault(); e.stopPropagation(); setHold(true); });
+    pullBtn.addEventListener('pointerup',   e=>{ e.stopPropagation(); setHold(false); });
+    pullBtn.addEventListener('pointerleave',e=>{ setHold(false); });
+    pullBtn.addEventListener('pointercancel',e=>{ setHold(false); });
+    panel.addEventListener('click', e=>e.stopPropagation());
+  }
+
+  function flashDanger() {
+    if(!panel) return;
+    panel.style.borderColor = '#ff4020';
+    if(navigator.vibrate) navigator.vibrate(35);
+    setTimeout(()=>{ if(panel) panel.style.borderColor = '#d4a030'; }, 180);
+  }
+
+  function endReel(success) {
+    const rod = gs.currentRod || {};
+    const ab = ROD_ABILITIES[rod.id] || {};
+    if(!success && ab.reviveOnFail && !gs.reel._revived) {
+      // Феникс: один раз возрождает вываживание из пепла неудачи
+      gs.reel._revived = true;
+      gs.reel.distance = Math.min(gs.reel.distance, 60);
+      gs.reel.tension = 20;
+      gs.reel._reason = '';
+      if(typeof showToast === 'function') showToast('🪽 Феникс возрождает вываживание из пепла!');
+      gs.reel.lastT = performance.now();
+      gs.reel.nextJerk = gs.reel.lastT + 1500 + Math.random()*1500;
+      gs.reel.raf = requestAnimationFrame(reelLoop);
+      return;
+    }
+    gs.reel.active = false;
+    if(gs.reel.raf) cancelAnimationFrame(gs.reel.raf);
+    gs.reel.raf = null;
+    if(panel) panel.style.display = 'none';
+    if(success) {
+      _finalCatchFish(true);
+    } else {
+      if(typeof showToast === 'function') {
+        showToast(gs.reel._reason === 'snap' ? '💥 Леска не выдержала!' : '🐟 Рыба сорвалась и уплыла...');
+      }
+      miss();
+    }
+  }
+
+  function reelLoop(t) {
+    if(!gs.reel.active) return;
+    const dt = Math.min(0.05, (t - gs.reel.lastT) / 1000 || 0);
+    gs.reel.lastT = t;
+    const strength = RARITY_STRENGTH[gs.currentCatch?.rar] || 8;
+    const rod = gs.currentRod || {};
+    const ab = ROD_ABILITIES[rod.id] || {};
+    const pullPower = 24 + Math.min(rod.catchMult || 1, 10) * 1.6 + (ab.pullBonus || 0);
+
+    if(gs.reel.holding) {
+      gs.reel.distance -= pullPower * dt;
+      gs.reel.tension  += 42 * dt * (ab.tensionGainMult ?? 1);
+    } else {
+      gs.reel.distance += strength * 0.65 * dt * (ab.driftMult ?? 1);
+      gs.reel.tension  -= 58 * dt * (ab.tensionDecayMult ?? 1);
+    }
+
+    if(t >= gs.reel.nextJerk) {
+      if(ab.stormShock && Math.random() < 0.4) {
+        // Шторм: разряд шокирует рыбу вместо удара по игроку — тянет её к берегу
+        gs.reel.distance -= 10;
+        if(typeof showToast === 'function') showToast('⚡ Разряд шокировал рыбу!');
+      } else {
+        gs.reel.distance += (6 + strength * 0.5) * (ab.jerkMult ?? 1);
+        gs.reel.tension  += 8 * (ab.jerkMult ?? 1);
+      }
+      flashDanger();
+      gs.reel.nextJerk = t + (1300 + Math.random() * 1300) * (ab.jerkIntervalMult ?? 1);
+    }
+
+    gs.reel.distance = Math.max(0, Math.min(100, gs.reel.distance));
+    gs.reel.tension  = Math.max(0, Math.min(100, gs.reel.tension));
+
+    if(distFill) distFill.style.width = (100 - gs.reel.distance) + '%';
+    if(tensFill) tensFill.style.width = gs.reel.tension + '%';
+
+    if(gs.reel.distance <= 0) { endReel(true); return; }
+    if(gs.reel.tension >= 100) { gs.reel._reason='snap'; endReel(false); return; }
+    if(t - gs.reel.startT > 16000) { gs.reel._reason='timeout'; endReel(false); return; }
+
+    gs.reel.raf = requestAnimationFrame(reelLoop);
+  }
+
+  function startReel() {
+    buildPanel();
+    biteEl.classList.remove('visible');
+    hint.style.display = 'none';
+    const rod = gs.currentRod || {};
+    const ab = ROD_ABILITIES[rod.id] || {};
+    gs.reel.active = true;
+    gs.reel.distance = ab.startDistance ?? 100;
+    gs.reel.tension = 0;
+    gs.reel.holding = false;
+    gs.reel._reason = '';
+    gs.reel._revived = false;
+    gs.reel.startT = performance.now();
+    gs.reel.nextJerk = gs.reel.startT + 1500 + Math.random()*1500;
+    gs.reel.lastT = gs.reel.startT;
+    panel.style.display = 'block';
+    panel.style.borderColor = '#d4a030';
+    if(distFill) distFill.style.width = (100 - gs.reel.distance) + '%';
+    if(tensFill) tensFill.style.width = '0%';
+    gs.reel.raf = requestAnimationFrame(reelLoop);
+  }
+
+  // Мини-игра вываживания — теперь редкое, эффектное событие:
+  // выпадает только на очень редких рыбах и лишь в 1% случаев,
+  // чтобы не мешать обычной рыбалке.
+  const VERY_RARE_RARITIES = ['legend','coastal_legend','og','flower'];
+  const REEL_CHANCE = 0.01;
+
+  window.catchFish = function(skipReel) {
+    if(gs.reel.active) return; // мини-игра уже идёт, игнорируем повторные тапы
+    const rar = gs.currentCatch?.rar;
+    const eligible = VERY_RARE_RARITIES.includes(rar);
+    if(!skipReel && eligible && gs.phase === 'bite' && !SPECIAL_MODES.includes(gs.mapMode) && Math.random() < REEL_CHANCE) {
+      clearTimeout(gs.biteTimeout);
+      startReel();
+      return;
+    }
+    return _finalCatchFish(skipReel);
+  };
+})();
+</script>
+
+<script>
+// ============================================================
+// 🛠️ БОЛЬШОЙ РЕМЕЙК — часть 2
+// Сад → Мастерская удочек, Успехи удалены, Топ улучшен,
+// Ивент → Гранд-Звездопад, карты и лавка переосмыслены,
+// онлайн открыт полностью, добавлен "шейдерный" оверлей.
+// ============================================================
+
+// ---------- 1. МАСТЕРСКАЯ УДОЧЕК (вместо сада) ----------
+(function patchRodWorkshop() {
+  RODS.forEach(r=>{ if(r._baseBite===undefined){ r._baseBite=r.biteChance; r._baseCatch=r.catchMult; } });
+
+  try {
+    const raw = localStorage.getItem('fishing_reborn_workshop');
+    gs.rodUpgrades = raw ? (JSON.parse(raw).rodUpgrades || {}) : {};
+  } catch(e) { gs.rodUpgrades = {}; }
+
+  function applyRodUpgrades() {
+    RODS.forEach(r=>{
+      const lvl = gs.rodUpgrades[r.id] || 0;
+      const mult = 1 + lvl * 0.04;
+      r.catchMult  = +(r._baseCatch * mult).toFixed(2);
+      r.biteChance = +(r._baseBite  * mult).toFixed(2);
+    });
+  }
+  applyRodUpgrades();
+
+  const _saveGameOrig = window.saveGame || saveGame;
+  window.saveGame = function() {
+    _saveGameOrig();
+    try { localStorage.setItem('fishing_reborn_workshop', JSON.stringify({rodUpgrades: gs.rodUpgrades})); } catch(e){}
+  };
+
+  function upgradeCost(rod, lvl) {
+    const base = 80 + (rod ? rod.price * 0.02 : 0);
+    return Math.round(base * Math.pow(1.5, lvl));
+  }
+
+  window.upgradeCurrentRod = function() {
+    const rod = gs.currentRod;
+    if(!rod) return;
+    const lvl = gs.rodUpgrades[rod.id] || 0;
+    const cost = upgradeCost(rod, lvl);
+    if(gs.coins < cost) { showToast('❌ Не хватает монет! Нужно ' + cost + '🪙'); return; }
+    gs.coins -= cost;
+    gs.rodUpgrades[rod.id] = lvl + 1;
+    applyRodUpgrades();
+    updateCoins();
+    renderWorkshop();
+    if(typeof coinBurst === 'function') coinBurst(180, 300);
+    showToast('⚒️ ' + rod.name + ' улучшена до +' + (lvl + 1) + '!');
+    saveGame();
+  };
+
+  window.renderWorkshop = function() {
+    const root = document.getElementById('workshop-root');
+    if(!root) return;
+    // Раньше здесь могла оставаться видимой "дорога" (со своей кнопкой
+    // "Рынок игроков" и деревянной текстурой), перекрывая кнопку прокачки.
+    // Мастерская — самостоятельный экран, поэтому дорогу всегда прячем.
+    const roadScene = document.getElementById('gscene-road');
+    if(roadScene) roadScene.style.display = 'none';
+    const gardenScene = document.getElementById('gscene-garden');
+    if(gardenScene) gardenScene.style.display = 'block';
+    const rod = gs.currentRod || RODS[0];
+    const lvl = gs.rodUpgrades[rod.id] || 0;
+    const cost = upgradeCost(rod, lvl);
+    const canAfford = gs.coins >= cost;
+    const basePct = rod._baseBite ? Math.round((rod.biteChance / rod._baseBite - 1) * 100) : 0;
+    root.innerHTML = `
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:22px;color:#f0c840;text-shadow:0 0 10px rgba(240,200,60,.4);">⚒️ Мастерская удочек</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#c0a070;margin-top:3px;">Вкладывай монеты — улучшай снаряжение навсегда</div>
+      </div>
+      <div style="background:rgba(0,0,0,.35);border:2px solid #c0902f;border-radius:16px;padding:16px;text-align:center;margin-bottom:14px;">
+        <div style="font-size:46px;margin-bottom:4px;filter:drop-shadow(0 0 10px rgba(240,200,60,.5));">${rod.icon || '🎣'}</div>
+        <div style="font-family:'Neucha',cursive;font-size:16px;color:#f5e0a0;">${rod.name}</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#a08050;margin-bottom:8px;">Уровень улучшения: +${lvl}${basePct?` (клёв и улов +${basePct}%)`:''}</div>
+        <button onclick="upgradeCurrentRod()" style="
+          width:100%;padding:12px 0;border-radius:12px;border:2px solid #ffdd88;
+          background:${canAfford ? 'linear-gradient(to bottom,#e8b830,#a06010)' : 'linear-gradient(to bottom,#555,#333)'};
+          color:${canAfford ? '#2a1605' : '#999'};font-family:Neucha,cursive;font-weight:bold;font-size:15px;
+          cursor:${canAfford ? 'pointer' : 'not-allowed'};box-shadow:0 3px 0 #5a3010;">
+          🔧 Улучшить за ${cost}🪙
+        </button>
+      </div>
+      <div style="font-family:'Neucha',cursive;font-size:11px;color:#8a7050;text-align:center;padding:0 14px;">
+        Улучшение действует на текущую надетую удочку. Смени удочку в Лавке, чтобы прокачать другую.
+      </div>
+    `;
+  };
+
+  window.renderGarden = function() { renderWorkshop(); };
+  window.gardenGrowInterval = function() {};
+  window.harvestAll = function() { showToast('⚒️ Теперь тут Мастерская — прокачивай удочки!'); };
+
+  // Дорога из мастерской теперь ведёт только на онлайн-рынок игроков
+  window.enterShop = function() { enterKiosk(); };
+  window.enterShopFromRoad = function() { enterKiosk(); };
+  window.leaveShop = function() { leaveKiosk(); };
+  window.walkToShop = function() {
+    fadeScene(()=>{
+      showGardenScene('road');
+      document.getElementById('road-hint').textContent = 'Идём на рынок...';
+      const walker = document.getElementById('walker');
+      walker.className = 'walker to-shop';
+      walker.style.bottom = '200px';
+      updatePlayerLocation('garden-road');
+      setTimeout(()=>{
+        document.getElementById('road-hint').textContent = 'Пришли! Заходим?';
+        const door = document.getElementById('shop-door');
+        door.classList.add('open');
+        setTimeout(()=>{
+          door.classList.remove('open');
+          fadeScene(()=>{ enterKiosk(); });
+        }, 800);
+      }, 2500);
+    });
+  };
+})();
+
+// ---------- 2. УДАЛЕНИЕ ДОСТИЖЕНИЙ ----------
+(function patchRemoveAchievements() {
+  window.checkAchievements = function(){};
+  window.showAchievementToast = function(){};
+  window.showAchievements = function(){
+    const popup = document.getElementById('achieve-popup');
+    if(popup) popup.style.display = 'none';
+  };
+  window.renderAchievementsScreen = function(){ switchScreen('fishing'); };
+})();
+
+// ---------- 3. УЛУЧШЕННЫЙ ТОП ----------
+(function patchLeaderboardImprove() {
+  const _renderLeaderboardOrig = window.renderLeaderboard || renderLeaderboard;
+  let lbTimer = null;
+
+  window.renderLeaderboard = async function() {
+    await _renderLeaderboardOrig();
+    const list = document.getElementById('lb-list');
+    if(!list) return;
+    let myRank = null;
+    list.querySelectorAll('.lb-row').forEach((r,i)=>{ if(r.classList.contains('lb-me')) myRank = i+1; });
+    let bar = document.getElementById('lb-my-rank-bar');
+    if(!bar) {
+      bar = document.createElement('div');
+      bar.id = 'lb-my-rank-bar';
+      bar.style.cssText = 'font-family:Neucha,cursive;font-size:12px;color:#ffd23f;text-align:center;padding:6px 0;background:rgba(255,210,63,.08);border-radius:10px;margin:0 8px 8px;';
+      list.parentNode.insertBefore(bar, list);
+    }
+    bar.textContent = myRank ? `📍 Твоё место: #${myRank}` : '📍 Лови рыбу, чтобы попасть в топ!';
+  };
+
+  const _switchScreenOrig = window.switchScreen || switchScreen;
+  window.switchScreen = function(name) {
+    _switchScreenOrig(name);
+    if(lbTimer) { clearInterval(lbTimer); lbTimer = null; }
+    if(name === 'leaderboard') {
+      lbTimer = setInterval(()=>{ if(gs.currentScreen==='leaderboard') renderLeaderboard(); }, 12000);
+    }
+  };
+})();
+
+// ---------- 4. ГРАНД-ОПЕНИНГ (вместо Пасхального ивента) ----------
+(function patchMeteorShowerEvent() {
+  window.catchEasterRabbit = function(frag) {
+    gs.phase = 'idle';
+    clearTimeout(gs.biteTimeout);
+    biteEl.classList.remove('visible');
+    bobWrap.style.display = 'none';
+    bobWrap.style.animation = '';
+
+    gs.meteorProgress = (gs.meteorProgress || 0);
+    if(frag.hasChacha) gs.meteorProgress++;
+
+    const coins = frag.coins;
+    gs.coins += coins;
+    updateCoins();
+    gs.score += frag.pts;
+    gs.fishCount++;
+    document.getElementById('fish-count').textContent = gs.fishCount;
+    document.getElementById('score-val').textContent = gs.score;
+
+    document.getElementById('catch-header').textContent = frag.hasChacha ? '🌠 Яркий метеорит!' : '☄️ Осколок пойман!';
+    const popupSvg = document.getElementById('catch-fish-svg');
+    if(popupSvg) popupSvg.style.display = 'none';
+    const emojiEl = document.getElementById('catch-pokemon-emoji');
+    if(emojiEl) { emojiEl.style.display='block'; emojiEl.textContent = frag.emoji; }
+    document.getElementById('catch-name-txt').textContent = frag.name;
+    document.getElementById('catch-weight-txt').textContent = `${frag.weight||0} кг • +${frag.pts} ★ • +${coins}🪙`;
+    const rarEl = document.getElementById('catch-rarity');
+    rarEl.textContent = frag.hasChacha ? '🌠 Яркий след! (+1 к прогрессу)' : frag.label;
+    rarEl.className = frag.rar === 'legend' ? 'rarity-legend' : frag.rar === 'epic' ? 'rarity-epic' : frag.rar === 'rare' ? 'rarity-rare' : 'rarity-common';
+    rarEl.style.color = frag.hasChacha ? '#ffd23f' : '';
+
+    document.getElementById('catch-sell-btn').style.display = 'none';
+    document.getElementById('easter-rabbit-bonus').style.display = 'none';
+    document.getElementById('catch-popup').classList.add('show');
+    showScorePop('+'+frag.pts, gs.bobX, gs.bobY);
+    makeRipple(gs.bobX, gs.bobY, 65);
+
+    if(frag.hasChacha) {
+      spawnEasterConfetti();
+      showToast(`🌠 Яркий след! ${gs.meteorProgress}/30 осколков!`);
+      if(gs.meteorProgress >= 30 && !gs.meteorRodUnlocked) {
+        gs.meteorRodUnlocked = true;
+        const cometRod = RODS.find(r=>r.id==='comet');
+        if(cometRod && !cometRod.owned) {
+          setTimeout(()=>{
+            cometRod.owned = true;
+            showToast('☄️🎉 КОМЕТНАЯ УДОЧКА РАЗБЛОКИРОВАНА! Надевай в лавке!');
+            spawnEasterConfetti(); spawnEasterConfetti();
+          }, 1000);
+        }
+      }
+    } else {
+      showToast(`☄️ ${frag.name} пойман! (${gs.meteorProgress}/30)`);
+    }
+
+    gs.catchStreak = (gs.catchStreak||0)+1;
+    updateStreakUI();
+    saveGame();
+  };
+
+  window.craftEasterRod = function() {
+    const rod = RODS.find(r=>r.id==='comet');
+    if(!rod) return;
+    if(rod.owned) { showToast('☄️ Кометная удочка уже есть!'); return; }
+    if((gs.meteorProgress||0) < 30) {
+      showToast(`☄️ Нужно 30 ярких осколков! (есть: ${gs.meteorProgress||0})`);
+      return;
+    }
+    rod.owned = true;
+    gs.meteorRodUnlocked = true;
+    showToast('☄️🎉 КОМЕТНАЯ УДОЧКА СОЗДАНА! Надевай в лавке!');
+    spawnEasterConfetti(); spawnEasterConfetti();
+    saveGame();
+    renderShop();
+  };
+
+  window.renderEasterEventScreen = function() {
+    const content = document.getElementById('easter-event-content');
+    if(!content) return;
+    const progress = Math.min(gs.meteorProgress||0, 30);
+    const pct = Math.round(progress/30*100);
+    const rod = RODS.find(r=>r.id==='comet');
+    const rodOwned = rod && rod.owned;
+    const canCraft = progress >= 30 && !rodOwned;
+
+    content.innerHTML = `
+      <div style="background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.3);border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="font-family:'Neucha',cursive;font-size:14px;color:#ffd23f;margin-bottom:6px;">🎯 Прогресс: Яркие осколки</div>
+        <div style="font-family:'Neucha',cursive;font-size:22px;color:#fff;text-align:center;margin:4px 0;">${progress} / 30</div>
+        <div class="easter-progress-bar-outer"><div class="easter-progress-bar-inner" style="width:${pct}%;background:linear-gradient(90deg,#ffd23f,#ff9f1c);"></div></div>
+        <div style="font-family:'Neucha',cursive;font-size:11px;color:#d0b070;text-align:center;">${pct}% завершено</div>
+      </div>
+      <div style="background:rgba(255,210,63,.08);border:1px solid ${rodOwned?'#ffd23f':'rgba(255,210,63,.2)'};border-radius:12px;padding:12px;margin-bottom:10px;">
+        <div style="font-family:'Neucha',cursive;font-size:14px;color:${rodOwned?'#ffd23f':'#888'};margin-bottom:6px;">☄️ Кометная удочка</div>
+        <div style="font-family:'Neucha',cursive;font-size:11px;color:#d0b070;margin-bottom:8px;">Собери 30 ярких осколков, чтобы выковать удочку из чистого звёздного металла!</div>
+        ${rodOwned
+          ? `<div style="color:#ffd23f;font-family:'Neucha',cursive;font-size:13px;text-align:center;">✅ Получена! Надевай в Лавке → Удочки</div>`
+          : `<button class="craft-easter-btn" onclick="craftEasterRod()" ${canCraft?'':'disabled'} style="background:linear-gradient(135deg,#8a6000,#ffd23f);">
+               ${canCraft ? '☄️ Создать Кометную удочку!' : `🔒 Нужно 30 ярких осколков (есть: ${progress})`}
+             </button>`
+        }
+      </div>
+      <div style="font-family:'Neucha',cursive;font-size:13px;color:#ffd23f;margin-bottom:6px;">☄️ Осколки на Карте Звездопада:</div>
+      ${EASTER_RABBITS.map(r=>`
+        <div class="easter-rabbit-card">
+          <div style="font-size:24px">${r.emoji}</div>
+          <div style="flex:1">
+            <div style="font-family:'Neucha',cursive;font-size:13px;color:#f5e0a0;">${r.name}</div>
+            <div style="font-family:'Neucha',cursive;font-size:10px;color:#d0b070;">${r.label} • +${r.coins}🪙 • 50% 🌠 Яркий след</div>
+          </div>
+        </div>`).join('')}
+      <button class="easter-map-btn" onclick="setMap('easter');switchScreen('fishing');" style="background:linear-gradient(135deg,#8a6000,#ffd23f);border-color:#ffd23f;">
+        ☄️ Перейти на Карту Звездопада
+      </button>
+    `;
+  };
+})();
+
+// ---------- 5. РЕДИЗАЙН КАРТ (новые названия/тосты) ----------
+(function patchMapRetheme() {
+
+  const _setMapOrig = window.setMap || setMap;
+  const renamed = {
+    pokemon:  '🔮 Зона Аномалии! Лови загадочных существ за ПикаКоины!',
+    coast:    '🌅 Бухта Легенд! Только ЛЕГЕНДАРНЫЕ рыбы! Жми много раз для подсечки!',
+    hardcore: '☠️ БЕЗДНА! Боссы и хищники! Осторожно!',
+    hobo:     '🏚️ Трущобы! Только гнилая рыба... Накопи 1000🪙 чтобы уйти!',
+    easter:   '☄️ Карта Звездопада! Лови метеоритные осколки! 50% шанс яркого следа!',
+  };
+  window.setMap = function(mode) {
+    _setMapOrig(mode);
+    if(renamed[mode]) setTimeout(()=>{ if(typeof showToast==='function') showToast(renamed[mode]); }, 40);
+  };
+})();
+
+// ---------- 6. РЕДИЗАЙН ЛАВКИ (анимация/свечение удочек) ----------
+(function patchShopRedesign() {
+  if(!document.getElementById('shop-redesign-style')) {
+    const st = document.createElement('style');
+    st.id = 'shop-redesign-style';
+    st.textContent = `
+      .shop-item { position:relative; overflow:visible; }
+      .shop-item.tier-glow::before,
+      .shop-item.tier-epic::before,
+      .shop-item.tier-mythic::before {
+        content:''; position:absolute; inset:-2px; border-radius:14px;
+        background-size:200% 100%; animation:shopShine 2.6s linear infinite;
+        pointer-events:none; z-index:0;
+      }
+      .shop-item.tier-glow::before   { background:linear-gradient(120deg, transparent, rgba(255,210,63,.30), transparent); }
+      .shop-item.tier-epic::before   { background:linear-gradient(120deg, transparent, rgba(160,50,255,.32), transparent); }
+      .shop-item.tier-mythic::before { background:linear-gradient(120deg, transparent, rgba(255,80,0,.38), transparent); }
+      @keyframes shopShine { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+      #shop-open-banner {
+        text-align:center; font-family:'Neucha',cursive; font-size:12px; color:#ffd23f;
+        background:rgba(255,210,63,.1); border:1px solid rgba(255,210,63,.3);
+        border-radius:10px; padding:6px 10px; margin:6px 8px 10px;
+      }
+    `;
+    document.head.appendChild(st);
+  }
+
+  const _renderRodsOrig = window.renderRods || renderRods;
+  window.renderRods = function(body) {
+    _renderRodsOrig(body);
+    if(!document.getElementById('shop-open-banner') && body.parentNode) {
+      const banner = document.createElement('div');
+      banner.id = 'shop-open-banner';
+      banner.textContent = '🆕 Новое поколение удочек! Прокачивай их в Мастерской ⚒️';
+      body.parentNode.insertBefore(banner, body);
+    }
+    const items = body.querySelectorAll('.shop-item');
+    RODS.forEach((rod,i)=>{
+      const el = items[i];
+      if(!el) return;
+      el.classList.remove('tier-glow','tier-epic','tier-mythic');
+      if(rod.price >= 100000) el.classList.add('tier-mythic');
+      else if(rod.price >= 10000) el.classList.add('tier-epic');
+      else if(rod.price >= 1000) el.classList.add('tier-glow');
+    });
+  };
+})();
+
+// ---------- 7. "ШЕЙДЕРНЫЙ" ОВЕРЛЕЙ ----------
+(function patchShaderOverlay() {
+  if(document.getElementById('shader-overlay')) return;
+  if(!document.getElementById('shader-style')) {
+    const st = document.createElement('style');
+    st.id = 'shader-style';
+    st.textContent = '@keyframes shaderDrift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(-2%,1.5%) scale(1.03);}}';
+    document.head.appendChild(st);
+  }
+  const ov = document.createElement('div');
+  ov.id = 'shader-overlay';
+  ov.style.cssText = `
+    position:fixed; inset:0; z-index:9998; pointer-events:none;
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 60px),
+      radial-gradient(circle at 30% 20%, rgba(120,200,255,.05), transparent 60%),
+      radial-gradient(circle at 80% 80%, rgba(255,210,120,.04), transparent 55%);
+    mix-blend-mode: overlay;
+    animation: shaderDrift 14s ease-in-out infinite alternate;
+  `;
+  document.body.appendChild(ov);
+})();
+</script>
+
+<script>
+// ============================================================
+// 🎣 НОВЫЕ УДОЧКИ — полностью с нуля, с анимированными иконками
+// ============================================================
+(function patchNewRodsRender() {
+  if(!document.getElementById('rod-tier-anim-style')) {
+    const st = document.createElement('style');
+    st.id = 'rod-tier-anim-style';
+    st.textContent = `
+      .rod-icon-wrap { position:relative; width:52px; height:52px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+      .rod-icon-emoji { font-size:30px; z-index:2; filter:drop-shadow(0 2px 4px rgba(0,0,0,.5)); }
+      .rod-icon-ring { position:absolute; inset:2px; border-radius:50%; border:2px solid transparent; }
+      .rod-icon-sparkle { position:absolute; font-size:10px; color:#ffd23f; top:-4px; right:-2px; animation:rodSparkle 1.6s ease-in-out infinite; z-index:3; }
+      .rod-icon-sparkle.s2 { top:auto; bottom:-2px; left:-2px; animation-delay:.6s; }
+
+      .tier-common .rod-icon-emoji { animation:rodBob 3s ease-in-out infinite; }
+      .tier-uncommon .rod-icon-ring { border-color:rgba(216,221,226,.5); animation:rodPulseRing 2.2s ease-in-out infinite; }
+      .tier-uncommon .rod-icon-emoji { animation:rodBob 2.6s ease-in-out infinite; }
+      .tier-rare .rod-icon-ring { border-color:rgba(46,204,113,.6); animation:rodSpinRing 4s linear infinite; }
+      .tier-rare .rod-icon-emoji { animation:rodPulseScale 1.8s ease-in-out infinite; }
+      .tier-epic .rod-icon-ring { border-color:rgba(160,96,255,.7); border-style:dashed; animation:rodSpinRing 3s linear infinite; box-shadow:0 0 12px rgba(160,96,255,.5); }
+      .tier-epic .rod-icon-emoji { animation:rodPulseScale 1.4s ease-in-out infinite; filter:drop-shadow(0 0 6px rgba(160,96,255,.6)); }
+      .tier-legendary .rod-icon-ring { border-color:rgba(255,180,40,.8); animation:rodSpinRing 2.2s linear infinite; box-shadow:0 0 18px rgba(255,180,40,.7); }
+      .tier-legendary .rod-icon-emoji { animation:rodPulseScale 1.1s ease-in-out infinite; filter:drop-shadow(0 0 8px rgba(255,180,40,.8)); }
+      .tier-mythic .rod-icon-ring { border:2px solid #fff; animation:rodSpinRing 1.6s linear infinite, rodRainbow 3s linear infinite; box-shadow:0 0 24px rgba(255,255,255,.6); }
+      .tier-mythic .rod-icon-emoji { animation:rodPulseScale .9s ease-in-out infinite; filter:drop-shadow(0 0 12px #fff); }
+
+      @keyframes rodBob { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+      @keyframes rodPulseScale { 0%,100%{transform:scale(1);} 50%{transform:scale(1.12);} }
+      @keyframes rodPulseRing { 0%,100%{opacity:.35;} 50%{opacity:1;} }
+      @keyframes rodSpinRing { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+      @keyframes rodRainbow { 0%{border-color:#ff5050;} 20%{border-color:#ffd23f;} 40%{border-color:#50ff90;} 60%{border-color:#50c8ff;} 80%{border-color:#c060ff;} 100%{border-color:#ff5050;} }
+      @keyframes rodSparkle { 0%,100%{opacity:0; transform:scale(.5);} 50%{opacity:1; transform:scale(1.25);} }
+      #shop-open-banner { text-align:center; font-family:'Neucha',cursive; font-size:12px; color:#ffd23f; background:rgba(255,210,63,.1); border:1px solid rgba(255,210,63,.3); border-radius:10px; padding:6px 10px; margin:6px 8px 10px; }
+    `;
+    document.head.appendChild(st);
+  }
+
+  RODS.forEach(r=>{ if(!r.stats) r.stats = 'Клёв: x'+r.biteChance+' • Улов: x'+r.catchMult; });
+
+  window.renderRods = function(body) {
+    body.innerHTML = '';
+    if(!document.getElementById('shop-open-banner') && body.parentNode) {
+      const banner = document.createElement('div');
+      banner.id = 'shop-open-banner';
+      banner.textContent = '🆕 Новый флот удочек! Прокачивай их в Мастерской ⚒️';
+      body.parentNode.insertBefore(banner, body);
+    }
+    RODS.forEach(rod=>{
+      const owned = rod.owned || false;
+      const equipped = rod.equipped || false;
+      let btnHtml;
+      if(rod.craftable && !owned) {
+        const progress = Math.min(gs.meteorProgress||0, 30);
+        const canCraft = progress >= 30;
+        btnHtml = `<button class="craft-easter-btn" onclick="craftEasterRod()"${canCraft?'':' disabled'} title="Нужно 30 ярких осколков в ивенте Звездопад">☄️ Крафт<br><span style="font-size:9px">${progress}/30</span></button>`;
+      } else if(equipped) {
+        btnHtml = `<button class="shop-item-btn btn-equipped-shop">✓ Надета</button>`;
+      } else if(owned) {
+        btnHtml = `<button class="shop-item-btn btn-equip-shop" onclick="equipRod('${rod.id}')">Надеть</button>`;
+      } else {
+        const canBuy = gs.coins >= (rod.price||0);
+        btnHtml = `<button class="shop-item-btn btn-buy-shop" onclick="buyRod('${rod.id}')"${canBuy?'':' style="opacity:.5"'}>Купить</button>`;
+      }
+
+      const sparkles = (rod.tier==='legendary'||rod.tier==='mythic') ? `<div class="rod-icon-sparkle">✦</div><div class="rod-icon-sparkle s2">✦</div>` : '';
+      const iconHtml = `<div class="rod-icon-wrap tier-${rod.tier}"><div class="rod-icon-ring"></div><div class="rod-icon-emoji">${rod.icon||'🎣'}</div>${sparkles}</div>`;
+      let nameHtml = rod.name;
+      if(rod.detail) nameHtml += `<span class="rod-detail-badge">${rod.detail}</span>`;
+      const cls = equipped?'equipped':owned?'owned':'';
+      const el = makeShopItem(iconHtml, nameHtml, rod.desc, rod.stats, (owned||rod.craftable)?'':rod.price, btnHtml, cls);
+      const RC = ROD_COLORS[rod.id] || {color:'#ffd700'};
+      if(equipped) { el.style.borderColor = RC.color; el.style.boxShadow = `0 0 16px ${RC.color}66`; }
+      body.appendChild(el);
+    });
+  };
+
+  // Гарантируем корректную текущую удочку после полной замены ростера
+  RODS.forEach(r=>{ if(r.id!=='reed'){ r.owned = r.owned||false; r.equipped=false; } });
+  if(!RODS.some(r=>r.equipped)) { RODS[0].owned = true; RODS[0].equipped = true; }
+  gs.currentRod = RODS.find(r=>r.equipped) || RODS[0];
+  if(typeof updateRodVisual === 'function') updateRodVisual();
+  if(gs.currentScreen === 'shop') renderShop();
+})();
+</script>
+
+<script>
+// ============================================================
+// 🗺️ НОВЫЕ ФИЧИ КАРТ
+// Аномалия — комбо-множитель, Бухта Легенд — прилив,
+// Бездна — ярость, Трущобы — случайный клад
+// ============================================================
+(function patchMapFeatures() {
+  let comboCount = 0, comboLastT = 0;
+  let ragePct = 0;
+
+  function badge(id, color, borderColor) {
+    let b = document.getElementById(id);
+    if(!b) {
+      b = document.createElement('div');
+      b.id = id;
+      b.style.cssText = `position:absolute;top:96px;left:50%;transform:translateX(-50%);background:${color};border:2px solid ${borderColor};border-radius:20px;padding:4px 14px;font-family:Neucha,cursive;font-weight:bold;color:#fff;z-index:60;display:none;box-shadow:0 0 14px ${borderColor}88;white-space:nowrap;`;
+      const fs = document.getElementById('fishing-screen');
+      if(fs) fs.appendChild(b);
+    }
+    return b;
+  }
+
+  function updateComboBadge() {
+    const b = badge('combo-badge','rgba(160,50,255,.85)','#c060ff');
+    if(gs.mapMode==='pokemon' && comboCount>1) { b.textContent = `🔥 КОМБО x${comboCount}`; b.style.display='block'; }
+    else b.style.display='none';
+  }
+
+  function updateRageBadge() {
+    const b = badge('rage-badge','rgba(220,20,20,.85)','#ff4040');
+    if(gs.mapMode==='hardcore') {
+      b.textContent = ragePct>=100 ? '💢 ЯРОСТЬ ГОТОВА! Следующий улов x2' : `💢 Ярость: ${Math.round(ragePct)}%`;
+      b.style.display='block';
+    } else b.style.display='none';
+  }
+
+  function tideLoop() {
+    const b = badge('tide-badge','rgba(32,128,192,.85)','#60c0ff');
+    if(gs.mapMode!=='coast') { b.style.display='none'; return; }
+    const cycle=35000, windowLen=9000;
+    const t = Date.now()%cycle;
+    const active = t < windowLen;
+    if(active) { b.textContent = '🌊 ПРИЛИВ! Двойные монеты!'; b.style.display='block'; }
+    else b.style.display='none';
+    window.__tideActive = active;
+  }
+  setInterval(tideLoop, 500);
+
+  const _cf = window.catchFish;
+  window.catchFish = function(skipReel) {
+    const mode = gs.mapMode;
+    const phaseBefore = gs.phase;
+    const coinsBefore = gs.coins;
+    const ret = _cf(skipReel);
+
+    if(phaseBefore === 'bite' && gs.coins > coinsBefore) {
+      const gained = gs.coins - coinsBefore;
+
+      if(mode === 'pokemon') {
+        const now = Date.now();
+        comboCount = (now - comboLastT < 8000) ? Math.min(comboCount+1, 4) : 1;
+        comboLastT = now;
+        if(comboCount > 1) {
+          const bonus = Math.round(gained * (comboCount-1) * 0.5);
+          if(bonus > 0) { gs.coins += bonus; updateCoins(); showToast(`🔥 Комбо x${comboCount}! Бонус +${bonus}🪙`); }
+        }
+        updateComboBadge();
+      } else if(mode === 'coast' && window.__tideActive) {
+        gs.coins += gained; updateCoins();
+        showToast(`🌊 Прилив! Двойная награда +${gained}🪙`);
+      } else if(mode === 'hardcore') {
+        if(ragePct >= 100) {
+          gs.coins += gained; updateCoins();
+          showToast(`💢 ЯРОСТЬ! Двойная награда +${gained}🪙`);
+          ragePct = 0;
+        } else {
+          ragePct = Math.min(100, ragePct + 20);
+        }
+        updateRageBadge();
+      } else if(mode === 'hobo') {
+        if(Math.random() < 0.15) {
+          const treasure = 200 + Math.floor(Math.random()*800);
+          gs.coins += treasure; updateCoins();
+          showToast(`🗑️✨ Мусорный клад! +${treasure}🪙`);
+        }
+      }
+    }
+    return ret;
+  };
+
+  const _setMapForFeatures = window.setMap;
+  window.setMap = function(mode) {
+    _setMapForFeatures(mode);
+    comboCount = 0; ragePct = 0;
+    updateComboBadge(); updateRageBadge();
+  };
+})();
+</script>
+
+<!-- ===== ACCOUNT RECOVERY / ADMIN MODAL ===== -->
+<div id="acc-modal-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.78);align-items:center;justify-content:center;">
+  <div id="acc-modal-box" style="width:88%;max-width:320px;max-height:82vh;overflow-y:auto;background:linear-gradient(160deg,#2a1605,#1a0f03);border:3px solid #7a4e20;border-radius:16px;padding:18px;position:relative;box-shadow:0 0 40px rgba(0,0,0,.8);">
+    <div id="acc-modal-close" onclick="closeAccountModal()" style="position:absolute;top:6px;right:12px;font-size:22px;color:#a08050;cursor:pointer;">✕</div>
+    <div id="acc-modal-body" style="font-family:'Neucha',cursive;"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ACCOUNT RECOVERY / RENAME / SECRET ADMIN PANEL
+// ============================================================
+(function(){
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function genCode(){ return String(10 + Math.floor(Math.random()*90)); }
+
+function showAccountModal(html, blocking){
+  const body = document.getElementById('acc-modal-body');
+  const closeBtn = document.getElementById('acc-modal-close');
+  if(!body) return;
+  body.innerHTML = html;
+  if(closeBtn) closeBtn.style.display = blocking ? 'none' : 'block';
+  document.getElementById('acc-modal-overlay').style.display = 'flex';
+}
+window.showAccountModal = showAccountModal;
+window.closeAccountModal = function(){
+  const ov = document.getElementById('acc-modal-overlay');
+  if(ov) ov.style.display = 'none';
+};
+
+// ---- persistent device id (this browser/device) ----
+function getDeviceId(){
+  let id = localStorage.getItem('fishing_device_id');
+  if(!id){
+    id = 'dev_'+Date.now().toString(36)+'_'+Math.random().toString(36).substr(2,9);
+    localStorage.setItem('fishing_device_id', id);
+  }
+  return id;
+}
+const myDeviceId = getDeviceId();
+
+// If this device was already approved for a restored account in a previous
+// session, take on that identity immediately (before anything syncs online).
+const boundId = localStorage.getItem('fishing_bound_player_id');
+if(boundId){
+  myPlayerId = boundId;
+  myPlayerName = localStorage.getItem('fishing_bound_player_name') || myPlayerName;
+}
+
+// ---- piggy-back a full save snapshot onto the existing leaderboard sync ----
+// (needed so "restore account" can bring back coins/inventory/garden, not just
+// the few summary numbers shown on the leaderboard)
+const _origSyncLeaderboard = window.syncLeaderboard;
+window.syncLeaderboard = async function(){
+  if(typeof _origSyncLeaderboard === 'function') await _origSyncLeaderboard();
+  if(!firebaseDB) return;
+  try{
+    fb.upd(`account_saves/${myPlayerId}`, {
+      main:   localStorage.getItem(SAVE_KEY) || '',
+      extra:  localStorage.getItem('fishing_reborn_extra') || '',
+      garden: localStorage.getItem('garden') || '',
+      updatedAt: Date.now()
+    }).catch(()=>{});
+  }catch(e){}
+};
+
+// The line above only fires from the couple of places that call
+// syncLeaderboard() directly (e.g. after a catch) — too rare to guarantee a
+// restore snapshot actually exists. saveGame() is called constantly instead
+// (the 15s autosave interval, plus after nearly every state change), so hook
+// the Firebase push there too — that's what actually keeps account_saves
+// fresh for "Вернуть аккаунт" to pull from.
+const _origSaveGameForSync = window.saveGame;
+window.saveGame = function(){
+  if(typeof _origSaveGameForSync === 'function') _origSaveGameForSync();
+  if(!firebaseDB || !myPlayerId) return;
+  try{
+    fb.upd(`account_saves/${myPlayerId}`, {
+      main:   localStorage.getItem(SAVE_KEY) || '',
+      extra:  localStorage.getItem('fishing_reborn_extra') || '',
+      garden: localStorage.getItem('garden') || '',
+      updatedAt: Date.now()
+    }).catch(()=>{});
+    fb.upd(`leaderboard/${myPlayerId}`, {
+      name: myPlayerName,
+      fishCount: gs.fishCount,
+      pikaCount: gs.pikaCatchCount,
+      coins: gs.coins
+    }).catch(()=>{});
+  }catch(e){}
+};
+
+async function applyAccountData(targetId, lb, saveBlob){
+  // If there's no real save snapshot yet, do NOT switch identity and do NOT
+  // touch localStorage/leaderboard at all. Previously this proceeded anyway
+  // and then force-saved — which pushed the CURRENT device's stale coins/
+  // fish count to leaderboard/{targetId}, overwriting that account's real
+  // numbers with garbage. That's what caused "name changed but nothing else
+  // did, and the target dropped in the rating".
+  if(!saveBlob){ return false; }
+
+  myPlayerId = targetId;
+  myPlayerName = (lb && lb.name) || myPlayerName;
+  try{
+    if(saveBlob.main)   localStorage.setItem(SAVE_KEY, saveBlob.main);
+    if(saveBlob.extra)  localStorage.setItem('fishing_reborn_extra', saveBlob.extra);
+    if(saveBlob.garden) localStorage.setItem('garden', saveBlob.garden);
+  }catch(e){}
+  // Pull the just-written localStorage data straight back into the live game
+  // state. Without this, gs/RODS/BAITS/etc keep their old (pre-restore)
+  // values in memory, and the game's own autosave (every 15s, or on the next
+  // coin/catch event) would overwrite our restored save with those stale
+  // values before the player even reloads.
+  try{
+    if(typeof loadGame === 'function') loadGame();
+    if(typeof updateCoins === 'function') updateCoins();
+    if(typeof renderInventory === 'function') renderInventory();
+    if(typeof renderShop === 'function') renderShop();
+    if(typeof saveGame === 'function') saveGame(); // re-persist immediately so it "sticks"
+  }catch(e){}
+  return true;
+}
+
+async function finalizeRestore(targetId){
+  const ok = await initFirebase(); if(!ok) return {ok:false};
+  const [lbSnap, saveSnap] = await Promise.all([
+    fb.get(`leaderboard/${targetId}`).catch(()=>null),
+    fb.get(`account_saves/${targetId}`).catch(()=>null)
+  ]);
+  if(!lbSnap || !lbSnap.exists()){ showToast('❌ Аккаунт не найден'); return {ok:false}; }
+
+  let saveBlob = (saveSnap && saveSnap.exists()) ? saveSnap.val() : null;
+  let partial = false;
+
+  if(!saveBlob){
+    // No full snapshot (account predates this feature, or hasn't logged in
+    // since it was added). Fall back to a partial restore built from the
+    // lightweight leaderboard record — coins/fish/pikachu count only, no
+    // rods/bait/inventory/garden, since that data was simply never saved
+    // anywhere for this account.
+    const lb = lbSnap.val();
+    saveBlob = {
+      main: JSON.stringify({
+        coins: lb.coins || 0,
+        score: 0,
+        fishCount: lb.fishCount || 0,
+        energy: 65,
+        inventory: [],
+        maxInv: 20,
+        currentRodId: 'wood',
+        rods: [], baits: [], lures: [], upgrades: []
+      }),
+      extra: JSON.stringify({ pikaCatchCount: lb.pikaCount || 0 }),
+      garden: ''
+    };
+    partial = true;
+  }
+
+  const applied = await applyAccountData(targetId, lbSnap.val(), saveBlob);
+  if(!applied) return {ok:false};
+  localStorage.setItem('fishing_bound_player_id', myPlayerId);
+  localStorage.setItem('fishing_bound_player_name', myPlayerName);
+  localStorage.removeItem('fishing_pending_request');
+  return {ok:true, partial};
+}
+
+// ---- listen for admin's decision on a specific request ----
+function listenRequest(reqId, type){
+  const ref = fb.r(`recovery_requests/${reqId}`);
+  ref.on('value', async snap=>{
+    if(!snap || !snap.exists()) return;
+    const req = snap.val();
+    if(req.status === 'approved'){
+      ref.off();
+      if(type === 'restore'){
+        const res = await finalizeRestore(req.targetId);
+        if(res.ok){
+          showAccountModal(`
+            <div style="font-size:40px;text-align:center;">✅</div>
+            <div style="font-family:'UnifrakturMaguntia',cursive;font-size:18px;color:#f0c840;text-align:center;margin-top:6px;">Восстановление подтверждено!</div>
+            <div style="font-size:13px;color:#c0d0e0;text-align:center;margin-top:8px;">Аккаунт «${escapeHtml(myPlayerName)}» теперь навсегда закреплён за этим устройством.${res.partial ? '<br><br>⚠️ У аккаунта не было полного сохранения — восстановлены только монеты и счётчики уловов, без инвентаря/удочек/сада.' : ''}</div>
+            <button class="multi-btn" style="width:100%;margin-top:14px;" onclick="location.reload()">Перезайти в игру</button>
+          `);
+        } else {
+          showAccountModal(`
+            <div style="font-size:36px;text-align:center;">❌</div>
+            <div style="font-family:'UnifrakturMaguntia',cursive;font-size:16px;color:#f0c840;text-align:center;margin-top:6px;">Не удалось восстановить</div>
+            <div style="font-size:13px;color:#c0d0e0;text-align:center;margin-top:8px;">Аккаунт не найден в базе.</div>
+          `);
+        }
+      } else if(type === 'rename'){
+        myPlayerName = req.newName || myPlayerName;
+        if(boundId) localStorage.setItem('fishing_bound_player_name', myPlayerName);
+        localStorage.removeItem('fishing_pending_request');
+        if(typeof syncLeaderboard === 'function') syncLeaderboard();
+        showAccountModal(`
+          <div style="font-size:40px;text-align:center;">✅</div>
+          <div style="font-family:'UnifrakturMaguntia',cursive;font-size:18px;color:#f0c840;text-align:center;margin-top:6px;">Имя изменено!</div>
+          <div style="font-size:13px;color:#c0d0e0;text-align:center;margin-top:8px;">Новое имя: «${escapeHtml(myPlayerName)}»</div>
+        `);
+      }
+    } else if(req.status === 'denied'){
+      ref.off();
+      localStorage.removeItem('fishing_pending_request');
+      showToast('❌ Заявка отклонена администратором');
+    }
+  });
+}
+
+
+// ---- entry modal: ask for account name / new name (or secret trigger) ----
+window.openRecoveryModal = function(type){
+  const title = type === 'restore' ? '🔄 Вернуть аккаунт' : '✏️ Сменить имя';
+  const placeholder = type === 'restore' ? 'Имя аккаунта (см. лидерборд)' : 'Новое имя';
+  showAccountModal(`
+    <div style="font-family:'UnifrakturMaguntia',cursive;font-size:17px;color:#f0c840;text-align:center;margin-bottom:10px;">${title}</div>
+    <input id="acc-name-input" placeholder="${placeholder}" maxlength="24"
+      style="width:100%;padding:10px;border-radius:8px;border:2px solid #7a4e20;background:#0d0905;color:#e8d0a0;font-family:'Neucha',cursive;font-size:14px;margin-bottom:10px;box-sizing:border-box;"/>
+    <button class="multi-btn" style="width:100%;" onclick="submitAccountName('${type}')">Продолжить</button>
+  `);
+  setTimeout(()=>{ const el=document.getElementById('acc-name-input'); if(el) el.focus(); }, 50);
+};
+
+window.submitAccountName = async function(type){
+  const input = document.getElementById('acc-name-input');
+  const val = (input && input.value || '').trim();
+  if(!val){ showToast('Введите имя'); return; }
+
+  // secret admin trigger — checked before anything else, silently
+  if(val.toLowerCase() === 'tochaadmin'){
+    openAdminPanel();
+    return;
+  }
+
+  if(type === 'rename'){
+    if(val.length < 2){ showToast('Слишком короткое имя'); return; }
+    startRecoveryRequest('rename', myPlayerId, myPlayerName, val);
+    return;
+  }
+
+  // restore: search leaderboard by exact name match
+  const ok = await initFirebase(); if(!ok) return;
+  const snap = await fb.get('leaderboard').catch(()=>null);
+  if(!snap || !snap.exists()){ showToast('❌ Нет данных лидерборда'); return; }
+  const data = snap.val();
+  const matches = Object.entries(data).filter(([id,d])=>(d.name||'').toLowerCase()===val.toLowerCase());
+  if(!matches.length){ showToast('❌ Аккаунт с таким именем не найден'); return; }
+
+  const [targetId, d] = matches[0];
+  showAccountModal(`
+    <div style="font-family:'UnifrakturMaguntia',cursive;font-size:16px;color:#f0c840;text-align:center;margin-bottom:8px;">Это ваш аккаунт?</div>
+    <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:10px;margin-bottom:12px;font-size:13px;color:#c0d0e0;line-height:1.7;">
+      <div>👤 Имя: <b>${escapeHtml(d.name||'')}</b></div>
+      <div>🪙 Монеты: ${d.coins||0}</div>
+      <div>🐟 Рыб поймано: ${d.fishCount||0}</div>
+      <div>⚡ Пикачу: ${d.pikaCount||0}</div>
+    </div>
+    <button class="multi-btn" style="width:100%;margin-bottom:6px;" onclick="startRecoveryRequest('restore','${targetId}','${escapeHtml(d.name||'')}')">✅ Да, это мой аккаунт</button>
+    <button class="multi-btn" style="width:100%;border-color:#703030;color:#c06060;" onclick="openRecoveryModal('restore')">Отмена</button>
+  `);
+};
+
+window.startRecoveryRequest = async function(type, targetId, targetName, newName){
+  const ok = await initFirebase(); if(!ok) return;
+  const code = genCode();
+  const reqData = {
+    code, type, deviceId: myDeviceId,
+    targetId: targetId || myPlayerId,
+    targetName: targetName || myPlayerName,
+    status: 'pending', createdAt: Date.now()
+  };
+  if(type === 'rename') reqData.newName = newName;
+
+  const pushRef = fb.r('recovery_requests').push();
+  await pushRef.set(reqData);
+  const reqId = pushRef.key;
+
+  localStorage.setItem('fishing_pending_request', JSON.stringify({reqId, type}));
+  listenRequest(reqId, type);
+
+  showAccountModal(`
+    <div style="font-family:'UnifrakturMaguntia',cursive;font-size:16px;color:#f0c840;text-align:center;margin-bottom:8px;">🎫 Ваш талон</div>
+    <div style="font-size:40px;text-align:center;color:#e8b830;font-weight:bold;margin-bottom:10px;">${code}</div>
+    <div style="font-size:13px;color:#c0d0e0;text-align:center;">Отправьте это число администратору в WhatsApp. Как только заявку примут, окно обновится само.</div>
+  `);
+};
+
+// ---- startup: ban check + resume pending request + apply device binding ----
+async function checkAccountStatus(){
+  const ok = await initFirebase(); if(!ok) return;
+
+  const banSnap = await fb.get(`banned/${myPlayerId}`).catch(()=>null);
+  if(banSnap && banSnap.exists() && banSnap.val()){
+    showAccountModal(`
+      <div style="font-size:40px;text-align:center;">⛔</div>
+      <div style="font-family:'UnifrakturMaguntia',cursive;font-size:18px;color:#ff6060;text-align:center;margin-top:6px;">Аккаунт заблокирован</div>
+      <div style="font-size:13px;color:#c0a0a0;text-align:center;margin-top:8px;">Обратитесь к администратору.</div>
+    `, true);
+    return;
+  }
+
+  // Push a save snapshot to Firebase right now, the moment we're online —
+  // don't wait for the 15s autosave timer. This is what makes "Вернуть
+  // аккаунт" actually work for a genuinely lost account later: as long as
+  // this device was online for even a few seconds at some point while
+  // playing, a restorable snapshot already exists in the cloud.
+  try{ if(typeof saveGame === 'function') saveGame(); }catch(e){}
+
+  const pending = JSON.parse(localStorage.getItem('fishing_pending_request') || 'null');
+  if(pending && pending.reqId) listenRequest(pending.reqId, pending.type);
+
+  const bindSnap = await fb.get(`device_bindings/${myDeviceId}`).catch(()=>null);
+  if(bindSnap && bindSnap.exists()){
+    const bind = bindSnap.val();
+    if(bind.playerId && bind.playerId !== boundId){
+      const res = await finalizeRestore(bind.playerId);
+      if(res.ok){
+        showAccountModal(`
+          <div style="font-size:40px;text-align:center;">✅</div>
+          <div style="font-family:'UnifrakturMaguntia',cursive;font-size:18px;color:#f0c840;text-align:center;margin-top:6px;">Восстановление разрешено!</div>
+          <div style="font-size:13px;color:#c0d0e0;text-align:center;margin-top:8px;">Аккаунт «${escapeHtml(myPlayerName)}» теперь навсегда ваш.${res.partial ? '<br><br>⚠️ Восстановлены только монеты и счётчики уловов — полного сохранения у этого аккаунта не было.' : ''}</div>
+          <button class="multi-btn" style="width:100%;margin-top:14px;" onclick="location.reload()">Перезайти в игру</button>
+        `);
+      }
+    } else if(bind.playerId){
+      showToast('✅ Аккаунт восстановлен: ' + myPlayerName);
+    }
+  }
+}
+window.addEventListener('load', ()=>setTimeout(checkAccountStatus, 1500));
+
+// ============================================================
+// SECRET ADMIN PANEL (name === "tochaadmin")
+// ============================================================
+window.openAdminPanel = function(){
+  showAccountModal(`
+    <div style="font-family:'UnifrakturMaguntia',cursive;font-size:17px;color:#ff6060;text-align:center;margin-bottom:10px;">🛠 Секретная панель</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button class="multi-btn" style="flex:1;" onclick="adminShowRequests()">🎫 Заявки</button>
+      <button class="multi-btn" style="flex:1;" onclick="adminShowUserSearch()">👤 Пользователи</button>
+    </div>
+    <div id="admin-panel-body"></div>
+  `);
+  adminShowRequests();
+};
+
+window.adminShowRequests = async function(){
+  const body = document.getElementById('admin-panel-body');
+  if(!body) return;
+  body.innerHTML = '<div style="text-align:center;font-size:12px;color:#8080a0;">⏳ Загрузка...</div>';
+  const ok = await initFirebase(); if(!ok) return;
+  const snap = await fb.get('recovery_requests').catch(()=>null);
+  if(!snap || !snap.exists()){ body.innerHTML = '<div style="text-align:center;font-size:12px;color:#8080a0;">Нет заявок</div>'; return; }
+  const data = snap.val();
+  const pending = Object.entries(data)
+    .filter(([id,r])=>r.status==='pending')
+    .sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  if(!pending.length){ body.innerHTML = '<div style="text-align:center;font-size:12px;color:#8080a0;">Нет активных заявок</div>'; return; }
+
+  body.innerHTML = pending.map(([id,r])=>`
+    <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:12px;color:#d0d0e0;">
+      <div>🔑 Талон: <b style="color:#e8b830;font-size:17px;">${escapeHtml(r.code)}</b></div>
+      <div>${r.type==='restore' ? '🔄 Восстановление' : '✏️ Смена имени'}: <b>${escapeHtml(r.targetName||'')}</b>${r.type==='rename' ? ' → <b>'+escapeHtml(r.newName||'')+'</b>' : ''}</div>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="multi-btn" style="flex:1;padding:6px;font-size:12px;" onclick="adminApproveRequest('${id}')">✅ Принять</button>
+        <button class="multi-btn" style="flex:1;padding:6px;font-size:12px;border-color:#703030;color:#c06060;" onclick="adminDenyRequest('${id}')">❌ Отклонить</button>
+      </div>
+    </div>
+  `).join('');
+};
+
+window.adminApproveRequest = async function(reqId){
+  const ok = await initFirebase(); if(!ok) return;
+  const snap = await fb.get(`recovery_requests/${reqId}`).catch(()=>null);
+  if(!snap || !snap.exists()) return;
+  const req = snap.val();
+  if(req.type === 'restore'){
+    await fb.set(`device_bindings/${req.deviceId}`, {playerId: req.targetId, boundAt: Date.now()}).catch(()=>{});
+  }
+  await fb.upd(`recovery_requests/${reqId}`, {status:'approved'}).catch(()=>{});
+  showToast('✅ Заявка принята');
+  adminShowRequests();
+};
+
+window.adminDenyRequest = async function(reqId){
+  const ok = await initFirebase(); if(!ok) return;
+  await fb.upd(`recovery_requests/${reqId}`, {status:'denied'}).catch(()=>{});
+  showToast('❌ Заявка отклонена');
+  adminShowRequests();
+};
+
+window.adminShowUserSearch = function(){
+  const body = document.getElementById('admin-panel-body');
+  if(!body) return;
+  body.innerHTML = `
+    <input id="admin-search-input" placeholder="Имя пользователя"
+      style="width:100%;padding:8px;border-radius:8px;border:2px solid #7a4e20;background:#0d0905;color:#e8d0a0;font-size:13px;margin-bottom:8px;box-sizing:border-box;"/>
+    <button class="multi-btn" style="width:100%;margin-bottom:8px;" onclick="adminSearchUser()">🔎 Найти</button>
+    <div id="admin-search-results"></div>
+  `;
+};
+
+window.adminSearchUser = async function(){
+  const inputEl = document.getElementById('admin-search-input');
+  const val = (inputEl && inputEl.value || '').trim().toLowerCase();
+  const results = document.getElementById('admin-search-results');
+  if(!results) return;
+  if(!val){ results.innerHTML=''; return; }
+
+  const ok = await initFirebase(); if(!ok) return;
+  const [lbSnap, banSnap] = await Promise.all([
+    fb.get('leaderboard').catch(()=>null),
+    fb.get('banned').catch(()=>null)
+  ]);
+  if(!lbSnap || !lbSnap.exists()){ results.innerHTML = '<div style="font-size:12px;color:#8080a0;">Нет данных</div>'; return; }
+  const data = lbSnap.val();
+  const banned = (banSnap && banSnap.exists()) ? banSnap.val() : {};
+  const matches = Object.entries(data).filter(([id,d])=>(d.name||'').toLowerCase().includes(val));
+  if(!matches.length){ results.innerHTML = '<div style="font-size:12px;color:#8080a0;">Не найдено</div>'; return; }
+
+  results.innerHTML = matches.slice(0,15).map(([id,d])=>{
+    const isBanned = !!banned[id];
+    return `
+    <div style="background:rgba(0,0,0,.3);border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:12px;color:#d0d0e0;">
+      <div>👤 <b>${escapeHtml(d.name||'')}</b> — 🪙${d.coins||0} 🐟${d.fishCount||0}${isBanned?' ⛔ЗАБАНЕН':''}</div>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="multi-btn" style="flex:1;padding:6px;font-size:12px;" onclick="adminImpersonate('${id}')">👤 Войти</button>
+        <button class="multi-btn" style="flex:1;padding:6px;font-size:12px;border-color:${isBanned?'#308050':'#703030'};color:${isBanned?'#60c090':'#c06060'};" onclick="adminSetBan('${id}',${!isBanned})">${isBanned?'✅ Разбанить':'⛔ Забанить'}</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.adminImpersonate = async function(pid){
+  const ok = await initFirebase(); if(!ok) return;
+  const [lbSnap, saveSnap] = await Promise.all([
+    fb.get(`leaderboard/${pid}`).catch(()=>null),
+    fb.get(`account_saves/${pid}`).catch(()=>null)
+  ]);
+  if(!lbSnap || !lbSnap.exists()){ showToast('❌ Пользователь не найден'); return; }
+  const applied = await applyAccountData(pid, lbSnap.val(), (saveSnap && saveSnap.exists()) ? saveSnap.val() : null);
+  if(!applied){ showToast('⏳ У этого пользователя ещё нет сохранённых данных, вход невозможен'); return; }
+  showToast('👤 Вход выполнен: ' + myPlayerName);
+  closeAccountModal();
+  setTimeout(()=>location.reload(), 700);
+};
+
+window.adminSetBan = async function(pid, banned){
+  const ok = await initFirebase(); if(!ok) return;
+  await fb.set(`banned/${pid}`, banned ? Date.now() : null).catch(()=>{});
+  showToast(banned ? '⛔ Пользователь забанен' : '✅ Разбанен');
+  adminSearchUser();
+};
+
+})();
+</script>
+
+<script>
+// ============================================================
+// 🎲 УДОЧКА D&D — катсцена с броском d20 при вываживании.
+// Прокачка в мастерской добавляет ДОПОЛНИТЕЛЬНЫЙ кубик к броску
+// (берётся лучший результат) — то есть качается ШАНС на большое
+// число, а не сила подсечки/клёв.
+// ============================================================
+(function setupDndRod() {
+  // Цвета для новых удочек (если ROD_COLORS уже объявлен глобально)
+  if(typeof ROD_COLORS !== 'undefined') {
+    ROD_COLORS.dnd      = {color:'#c23b3b', glow:'0 0 30px rgba(194,59,59,.85)'};
+    ROD_COLORS.seahorse = {color:'#2ec4b6', glow:'0 0 22px rgba(46,196,182,.65)'};
+  }
+
+  function dndLevel() {
+    return (window.gs && gs.rodUpgrades && gs.rodUpgrades.dnd) || 0;
+  }
+
+  function rollBestD20() {
+    const extra = Math.min(dndLevel(), 6);
+    let best = 0;
+    for(let i=0; i<=extra; i++) best = Math.max(best, 1 + Math.floor(Math.random()*20));
+    return best;
+  }
+
+  function tierForRoll(roll) {
+    if(roll >= 20) return 'mythic';
+    if(roll >= 17) return 'legendary';
+    if(roll >= 13) return 'epic';
+    if(roll >= 9)  return 'rare';
+    if(roll >= 4)  return 'uncommon';
+    return 'common';
+  }
+
+  function rollLabel(roll) {
+    if(roll >= 20) return {text:'🌟 НАТУРАЛЬНАЯ 20! КРИТИЧЕСКИЙ УЛОВ!', color:'#ffd700'};
+    if(roll >= 17) return {text:'👑 Отличный бросок!', color:'#ff9020'};
+    if(roll >= 13) return {text:'💜 Хороший бросок', color:'#c060ff'};
+    if(roll >= 9)  return {text:'💙 Неплохо', color:'#3080ff'};
+    if(roll >= 4)  return {text:'😐 Так себе...', color:'#a8b8a0'};
+    return {text:'💀 ПРОВАЛ...', color:'#ff4040'};
+  }
+
+  function ensureDiceOverlay() {
+    let ov = document.getElementById('dnd-dice-overlay');
+    if(ov) return ov;
+    ov = document.createElement('div');
+    ov.id = 'dnd-dice-overlay';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(5,0,10,.82);backdrop-filter:blur(2px);';
+    ov.innerHTML = `
+      <div style="text-align:center;">
+        <div id="dnd-die-shape" style="width:130px;height:130px;margin:0 auto;position:relative;">
+          <svg viewBox="0 0 100 100" style="width:100%;height:100%;filter:drop-shadow(0 0 18px rgba(194,59,59,.8));">
+            <polygon points="50,4 92,28 92,72 50,96 8,72 8,28" fill="url(#dndFace)" stroke="#c23b3b" stroke-width="3"/>
+            <polygon points="50,4 92,28 50,50 8,28" fill="rgba(255,255,255,.12)"/>
+            <polygon points="50,50 92,28 92,72 50,96" fill="rgba(0,0,0,.18)"/>
+            <line x1="50" y1="4" x2="50" y2="96" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+            <line x1="8" y1="28" x2="92" y2="72" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <line x1="92" y1="28" x2="8" y2="72" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <defs><linearGradient id="dndFace" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7a1010"/><stop offset="50%" stop-color="#c23b3b"/><stop offset="100%" stop-color="#5a0808"/>
+            </linearGradient></defs>
+            <text id="dnd-die-number" x="50" y="63" text-anchor="middle" font-size="38" font-weight="bold" fill="#fff8e0" font-family="Georgia,serif">20</text>
+          </svg>
+        </div>
+        <div id="dnd-die-label" style="font-family:'Neucha',cursive;color:#ffd700;font-size:17px;margin-top:16px;min-height:24px;"></div>
+        <div style="font-family:'Neucha',cursive;color:#c090a0;font-size:11px;margin-top:4px;">🎲 Бросок кубика судьбы</div>
+      </div>`;
+    document.body.appendChild(ov);
+    return ov;
+  }
+
+  function playDiceCutscene(callback) {
+    const ov = ensureDiceOverlay();
+    const numEl = ov.querySelector('#dnd-die-number');
+    const labelEl = ov.querySelector('#dnd-die-label');
+    const shapeEl = ov.querySelector('#dnd-die-shape');
+    labelEl.textContent = '';
+    labelEl.style.color = '#ffd700';
+    shapeEl.style.animation = 'dndSpin .12s linear infinite';
+    ov.style.display = 'flex';
+    let ticks = 0;
+    const maxTicks = 14;
+    const spin = setInterval(()=>{
+      ticks++;
+      numEl.textContent = 1 + Math.floor(Math.random()*20);
+      if(ticks >= maxTicks) {
+        clearInterval(spin);
+        shapeEl.style.animation = 'none';
+        const finalRoll = rollBestD20();
+        numEl.textContent = finalRoll;
+        const info = rollLabel(finalRoll);
+        labelEl.textContent = info.text;
+        labelEl.style.color = info.color;
+        if(navigator.vibrate) navigator.vibrate(finalRoll>=20 ? [100,50,100,50,150] : [60]);
+        setTimeout(()=>{
+          ov.style.display = 'none';
+          callback(finalRoll);
+        }, 850);
+      }
+    }, 80);
+  }
+
+  if(!document.getElementById('dnd-dice-style')) {
+    const st = document.createElement('style');
+    st.id = 'dnd-dice-style';
+    st.textContent = `@keyframes dndSpin{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.08)}100%{transform:rotate(360deg) scale(1)}}`;
+    document.head.appendChild(st);
+  }
+
+  function pickFishForRoll(roll) {
+    const tier = tierForRoll(roll);
+    const rw = ROD_RARITY_WEIGHTS[tier] || ROD_RARITY_WEIGHTS.common;
+    const pool = FISH_DATA.filter(f=>!f.coastal && !f.seahorse);
+    return pickWeightedFish(pool, f => rw[f.rar] ?? 2);
+  }
+
+  const _origCatchFishRef = function(...a){ return window.catchFish.apply(this, a); };
+  const _catchFishBeforeDnd = window.catchFish;
+  window.catchFish = function(skipReel) {
+    if(gs._dndRolling) return; // ждём окончания катсцены с кубиком
+    if(gs.currentRod && gs.currentRod.id === 'dnd' && gs.phase === 'bite') {
+      gs._dndRolling = true;
+      clearTimeout(gs.biteTimeout);
+      playDiceCutscene(function(roll){
+        gs._dndRolling = false;
+        const f = pickFishForRoll(roll);
+        gs.fish = f;
+        gs.currentCatch = {...f, weight:(f.w[0]+Math.random()*(f.w[1]-f.w[0])).toFixed(2), dndRoll:roll};
+        _catchFishBeforeDnd(skipReel);
+      });
+      return;
+    }
+    return _catchFishBeforeDnd(skipReel);
+  };
+
+  // Показываем результат броска в попапе улова, если это была удочка D&D
+  const _updateCatchPopupRef = window.updateCatchPopupFish;
+  if(typeof _updateCatchPopupRef === 'function') {
+    window.updateCatchPopupFish = function(f) {
+      _updateCatchPopupRef(f);
+      if(f && f.dndRoll) {
+        const nameEl = document.getElementById('catch-name-txt');
+        if(nameEl) nameEl.textContent = `${f.name} (🎲${f.dndRoll})`;
+      }
+    };
+  }
+
+  // Спец-текст мастерской для удочки D&D: качаем удачу, а не силу
+  const _origRenderWorkshopRef = window.renderWorkshop;
+  window.renderWorkshop = function() {
+    const rod = gs.currentRod || RODS[0];
+    if(rod.id !== 'dnd') { if(_origRenderWorkshopRef) return _origRenderWorkshopRef(); return; }
+    const root = document.getElementById('workshop-root');
+    if(!root) return;
+    const roadScene = document.getElementById('gscene-road'); if(roadScene) roadScene.style.display='none';
+    const gardenScene = document.getElementById('gscene-garden'); if(gardenScene) gardenScene.style.display='block';
+    const lvl = gs.rodUpgrades.dnd || 0;
+    const cost = Math.round((80 + rod.price*0.02) * Math.pow(1.5, lvl));
+    const canAfford = gs.coins >= cost;
+    const extraDice = Math.min(lvl, 6);
+    root.innerHTML = `
+      <div style="text-align:center;margin-bottom:14px;">
+        <div style="font-family:'UnifrakturMaguntia',cursive;font-size:22px;color:#f0c840;">⚒️ Мастерская удочек</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#c0a070;margin-top:3px;">🎲 Эта удочка качает УДАЧУ, а не силу вываживания</div>
+      </div>
+      <div style="background:rgba(30,8,8,.4);border:2px solid #c23b3b;border-radius:16px;padding:16px;text-align:center;margin-bottom:14px;">
+        <div style="font-size:46px;margin-bottom:4px;filter:drop-shadow(0 0 10px rgba(194,59,59,.6));">🎲</div>
+        <div style="font-family:'Neucha',cursive;font-size:16px;color:#ffcfcf;">${rod.name}</div>
+        <div style="font-family:'Neucha',cursive;font-size:12px;color:#e0a0a0;margin-bottom:8px;">
+          Уровень удачи: +${lvl}<br>
+          Бросается ${1+extraDice} кубик${extraDice? '(а/ов), берётся ЛУЧШИЙ результат' : ''}
+        </div>
+        <button onclick="upgradeCurrentRod()" style="
+          width:100%;padding:12px 0;border-radius:12px;border:2px solid #ff9090;
+          background:${canAfford ? 'linear-gradient(to bottom,#e05050,#801010)' : 'linear-gradient(to bottom,#555,#333)'};
+          color:${canAfford ? '#fff' : '#999'};font-family:Neucha,cursive;font-weight:bold;font-size:15px;
+          cursor:${canAfford ? 'pointer' : 'not-allowed'};box-shadow:0 3px 0 #5a1010;">
+          🎲 Прокачать удачу за ${cost}🪙
+        </button>
+      </div>
+      <div style="font-family:'Neucha',cursive;font-size:11px;color:#8a7050;text-align:center;padding:0 14px;">
+        Каждый уровень добавляет ещё один кубик к броску d20 — итог всегда берётся лучший из всех брошенных костей.
+      </div>`;
+  };
+})();
+</script>
+
 
 </body>
 </html>
