@@ -2070,6 +2070,8 @@ body {
 
     <!-- Fortune Wheel button -->
     <div id="fortune-btn" onclick="openFortune()" title="Колесо Фортуны">🎡</div>
+    <!-- Music toggle button -->
+    <div id="bgm-btn" onclick="toggleBgm()" title="Музыка" style="position:absolute;bottom:310px;right:10px;background:linear-gradient(135deg,#1a2a10,#0a1808);border:2px solid #60c040;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 2px 10px rgba(60,180,40,.4);z-index:30;">🎵</div>
     <!-- Quest button -->
     <div id="quest-btn" onclick="toggleQuestPanel()" title="Задания дня" style="position:absolute;bottom:310px;left:10px;background:linear-gradient(135deg,#1a2a10,#0a1808);border:2px solid #60c040;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 2px 10px rgba(60,180,40,.4);z-index:30;">📋</div>
     <!-- Quest panel -->
@@ -2690,13 +2692,20 @@ const FISH_DATA = [
 // Насколько удочка влияет на РЕДКОСТЬ улова (не только на клёв/вываживание).
 // Раньше удочки почти не влияли на то, какая рыба попадётся — теперь дорогая
 // удочка реально даёт куда больше редкой/эпической/легендарной рыбы.
+// Веса теперь означают ДОЛЮ (в %) улова, приходящуюся на каждую редкость
+// целиком — а не вес одной рыбы. Раньше вес назначался КАЖДОЙ рыбе в
+// категории по отдельности, поэтому категория с бОльшим числом видов
+// (например 'common' или 'rare', где рыб больше всего) получала суммарно
+// куда больше шансов, чем задумано — вот почему дорогие удочки всё равно
+// сыпали копеечной рыбой. Теперь pickFishByTier ниже делит вес категории
+// на число рыб в ней, так что итоговые проценты соответствуют таблице.
 const ROD_RARITY_WEIGHTS = {
-  common:    {common:60, rare:16, epic:3,  legend:0.4, og:0.02},
-  uncommon:  {common:48, rare:26, epic:7,  legend:1,   og:0.05},
-  rare:      {common:34, rare:32, epic:14, legend:2.5, og:0.15},
-  epic:      {common:20, rare:32, epic:24, legend:6,   og:0.6},
-  legendary: {common:9,  rare:26, epic:30, legend:16,  og:2.5},
-  mythic:    {common:3,  rare:16, epic:28, legend:30,  og:8},
+  common:    {common:70, rare:22, epic:6,  legend:1.5, og:0.1},
+  uncommon:  {common:50, rare:32, epic:13, legend:4,   og:0.5},
+  rare:      {common:30, rare:34, epic:24, legend:10,  og:2},
+  epic:      {common:14, rare:26, epic:34, legend:20,  og:6},
+  legendary: {common:5,  rare:16, epic:32, legend:35,  og:12},
+  mythic:    {common:1,  rare:6,  epic:22, legend:44,  og:27},
 };
 function pickWeightedFish(list, weightFn) {
   let total = 0;
@@ -2705,6 +2714,18 @@ function pickWeightedFish(list, weightFn) {
   let r = Math.random() * total;
   for(let i=0;i<list.length;i++){ r -= weights[i]; if(r <= 0) return list[i]; }
   return list[list.length-1];
+}
+// Правильный выбор рыбы по таблице редкости удочки: делим вес категории
+// на количество рыб этой редкости в пуле, чтобы категория целиком имела
+// именно ту долю шанса, что указана в ROD_RARITY_WEIGHTS — независимо от
+// того, сколько конкретных видов рыб в неё входит.
+function pickFishByTier(pool, tierWeights, extraMods) {
+  const counts = {};
+  pool.forEach(f=>{ counts[f.rar] = (counts[f.rar]||0) + 1; });
+  return pickWeightedFish(pool, f=>{
+    const base = (tierWeights[f.rar] ?? 0.3) / (counts[f.rar] || 1);
+    return extraMods ? extraMods(f, base) : base;
+  });
 }
 
 const RODS = [
@@ -3442,8 +3463,7 @@ function triggerBite() {
   if(isSeahorse) {
     const shPool = FISH_DATA.filter(f=>f.seahorse);
     const shRw = ROD_RARITY_WEIGHTS[gs.currentRod.tier || 'epic'] || ROD_RARITY_WEIGHTS.epic;
-    gs.fish = pickWeightedFish(shPool, f=>{
-      let w = shRw[f.rar] ?? 2;
+    gs.fish = pickFishByTier(shPool, shRw, (f, w)=>{
       if(f.rar==='legend' && hasLucky) w*=1.5;
       if(f.rar!=='common') w *= (1+lureBonus);
       return w;
@@ -3461,8 +3481,7 @@ function triggerBite() {
   // легендарных рыб — вместо фиксированной таблицы для всех удочек разом.
   const rodTierW = ROD_RARITY_WEIGHTS[gs.currentRod.tier || 'common'] || ROD_RARITY_WEIGHTS.common;
   const biteablePool = FISH_DATA.filter(f=>!f.coastal && !f.seahorse);
-  gs.fish = pickWeightedFish(biteablePool, f=>{
-    let w = rodTierW[f.rar] ?? 2;
+  gs.fish = pickFishByTier(biteablePool, rodTierW, (f, w)=>{
     if(isDuck && (f.rar==='common'||f.rar==='rare')) w=0; // утка — только эпики+
     if(legendOnly && f.rar!=='legend'&&f.rar!=='og') w=0; // событие легенд
     if(isVoid && f.rar!=='legend'&&f.rar!=='og') w=0; // бездна — только легенды
@@ -10677,6 +10696,8 @@ window.renderGarden = function() {
     oblivion: { startDistance: 30 },                         // рыба почти у берега с самого начала
     genesis:  { tensionGainMult: 0.6, pullBonus: 12, jerkMult: 0.6 }, // всё лучшее сразу
     comet:    { pullBonus: 8 },
+    dnd:      { pullBonus: 9, tensionGainMult: 0.8 },         // удача судьбы помогает и на вываживании
+    seahorse: { driftMult: 0.7, jerkMult: 0.7 },              // цепкая хватка охотника за коньками
   };
 
   gs.reel = { active:false, distance:100, tension:0, holding:false, raf:null, lastT:0, nextJerk:0, startT:0, _reason:'', _revived:false };
@@ -10827,17 +10848,25 @@ window.renderGarden = function() {
     gs.reel.raf = requestAnimationFrame(reelLoop);
   }
 
-  // Мини-игра вываживания — теперь редкое, эффектное событие:
-  // выпадает только на очень редких рыбах и лишь в 1% случаев,
-  // чтобы не мешать обычной рыбалке.
-  const VERY_RARE_RARITIES = ['legend','coastal_legend','og','flower'];
-  const REEL_CHANCE = 0.01;
+  // Мини-игра вываживания — раньше выпадала лишь в 1% случаев даже на
+  // самой редкой рыбе, из-за чего способности удочек (натяжение, рывки,
+  // сила подсечки) почти никогда не проявлялись в игре и были чисто
+  // текстом в описании. Теперь шанс зависит от редкости улова и реально
+  // ощутим — способности удочек регулярно решают исход вываживания.
+  const REEL_CHANCE_BY_RAR = {
+    rare: 0.06,
+    epic: 0.18,
+    legend: 0.55,
+    coastal_legend: 0.55,
+    flower: 0.35,
+    og: 0.9,
+  };
 
   window.catchFish = function(skipReel) {
     if(gs.reel.active) return; // мини-игра уже идёт, игнорируем повторные тапы
     const rar = gs.currentCatch?.rar;
-    const eligible = VERY_RARE_RARITIES.includes(rar);
-    if(!skipReel && eligible && gs.phase === 'bite' && !SPECIAL_MODES.includes(gs.mapMode) && Math.random() < REEL_CHANCE) {
+    const chance = REEL_CHANCE_BY_RAR[rar] || 0;
+    if(!skipReel && chance > 0 && gs.phase === 'bite' && !SPECIAL_MODES.includes(gs.mapMode) && Math.random() < chance) {
       clearTimeout(gs.biteTimeout);
       startReel();
       return;
@@ -11977,7 +12006,7 @@ window.adminSetBan = async function(pid, banned){
     const tier = tierForRoll(roll);
     const rw = ROD_RARITY_WEIGHTS[tier] || ROD_RARITY_WEIGHTS.common;
     const pool = FISH_DATA.filter(f=>!f.coastal && !f.seahorse);
-    return pickWeightedFish(pool, f => rw[f.rar] ?? 2);
+    return pickFishByTier(pool, rw);
   }
 
   const _origCatchFishRef = function(...a){ return window.catchFish.apply(this, a); };
@@ -12051,6 +12080,226 @@ window.adminSetBan = async function(pid, banned){
 })();
 </script>
 
+
+<script>
+// ============================================================
+// 🎵 ФОНОВАЯ МУЗЫКА — плейлист из треков, играют по кругу вразнобой
+// ============================================================
+(function setupBgm() {
+  const BGM_TRACKS = [
+    'https://files.catbox.moe/44z2a8.mp3',
+    'https://files.catbox.moe/foifgs.mp3',
+  ];
+
+  const player = document.createElement('audio');
+  player.id = 'bgm-player';
+  player.preload = 'auto';
+  player.volume = 0.45;
+  document.body.appendChild(player);
+
+  let queue = [];
+  let enabled = (localStorage.getItem('fishing_bgm_enabled') ?? '1') === '1';
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+
+  function playNext() {
+    if(!enabled) return;
+    if(!queue.length) queue = shuffle(BGM_TRACKS);
+    const url = queue.shift();
+    player.src = url;
+    player.play().catch(()=>{}); // может быть заблокировано автоплеем до первого тапа
+  }
+
+  player.addEventListener('ended', playNext);
+
+  window.toggleBgm = function() {
+    enabled = !enabled;
+    localStorage.setItem('fishing_bgm_enabled', enabled ? '1' : '0');
+    const btn = document.getElementById('bgm-btn');
+    if(btn) btn.style.opacity = enabled ? '1' : '.45';
+    if(enabled) {
+      if(!player.src) playNext(); else player.play().catch(()=>{});
+    } else {
+      player.pause();
+    }
+  };
+
+  function tryStart() {
+    if(enabled && !player.src) playNext();
+    document.removeEventListener('pointerdown', tryStart);
+  }
+  // Браузеры блокируют автоплей со звуком до первого касания экрана —
+  // запускаем плейлист при первом же тапе игрока.
+  document.addEventListener('pointerdown', tryStart);
+
+  const btn0 = document.getElementById('bgm-btn');
+  if(btn0) btn0.style.opacity = enabled ? '1' : '.45';
+})();
+</script>
+
+<script>
+// ============================================================
+// 👥 РЕАЛЬНЫЙ 2-Й ИГРОК В ПОЛНОМ МУЛЬТИПЛЕЕРЕ
+// Раньше "напарник" был случайной симуляцией (simulatePartner2) —
+// вторая удочка дёргалась сама по себе и не имела отношения к
+// настоящему второму игроку в комнате. Теперь заброс/поклёвка/улов
+// настоящего партнёра синхронизируются через Firebase и реально
+// анимируются на второй удочке, со своим забросом.
+// ============================================================
+(function setupRealPartnerRod() {
+  const CANVAS_W = 360, CANVAS_H = 700;
+  const ROD2_TIP = { x: 30, y: 90 };
+
+  let lastSentKey = '';
+  let lastSeenKey = '';
+  let partnerAnimRaf = null;
+
+  function lc2() {
+    const el = document.getElementById('linecanvas2');
+    if(!el) return null;
+    if(el.width !== CANVAS_W || el.height !== CANVAS_H) { el.width = CANVAS_W; el.height = CANVAS_H; }
+    return el.getContext('2d');
+  }
+
+  function drawPartnerLine(ctx, x, y) {
+    ctx.beginPath();
+    ctx.moveTo(ROD2_TIP.x, ROD2_TIP.y);
+    ctx.quadraticCurveTo((ROD2_TIP.x+x)/2, Math.min(ROD2_TIP.y,y)-60, x, y);
+    ctx.strokeStyle = 'rgba(180,170,140,.7)';
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+  }
+
+  function drawPartnerBobber(ctx, x, y, bite) {
+    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2);
+    ctx.fillStyle = bite ? '#ffdd00' : '#e04030';
+    ctx.fill(); ctx.strokeStyle = '#801010'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  // Реальный заброс напарника — та же дуга/тайминг (580мс), что и у нас,
+  // но зеркально от второй удочки слева.
+  function animatePartnerCast(targetX, targetY, onDone) {
+    const ctx = lc2(); if(!ctx) return;
+    if(partnerAnimRaf) cancelAnimationFrame(partnerAnimRaf);
+    const dur = 580, start = Date.now();
+    function fly() {
+      const t = Math.min(1, (Date.now()-start)/dur);
+      const ease = t<.5 ? 2*t*t : -1+(4-2*t)*t;
+      const cpX = (ROD2_TIP.x+targetX)/2, cpY = Math.min(ROD2_TIP.y,targetY)-90;
+      const bx = (1-ease)*(1-ease)*ROD2_TIP.x + 2*(1-ease)*ease*cpX + ease*ease*targetX;
+      const by = (1-ease)*(1-ease)*ROD2_TIP.y + 2*(1-ease)*ease*cpY + ease*ease*targetY;
+      ctx.clearRect(0,0,CANVAS_W,CANVAS_H);
+      drawPartnerLine(ctx, bx, by);
+      drawPartnerBobber(ctx, bx, by, false);
+      if(t<1) { partnerAnimRaf = requestAnimationFrame(fly); }
+      else { partnerAnimRaf = null; if(onDone) onDone(); }
+    }
+    partnerAnimRaf = requestAnimationFrame(fly);
+  }
+
+  function renderPartnerState(f) {
+    const ctx = lc2(); if(!ctx) return;
+    const rodBody2 = document.getElementById('rod-body2');
+    if(!f || f.phase === 'idle') {
+      ctx.clearRect(0,0,CANVAS_W,CANVAS_H);
+      if(rodBody2) rodBody2.style.filter = '';
+      return;
+    }
+    const x = f.bobX || 180, y = f.bobY || 380;
+    if(f.phase === 'casting') {
+      animatePartnerCast(x, y, ()=>{ drawPartnerLine(ctx, x, y); drawPartnerBobber(ctx, x, y, false); });
+      return;
+    }
+    if(f.phase === 'waiting') {
+      ctx.clearRect(0,0,CANVAS_W,CANVAS_H);
+      drawPartnerLine(ctx, x, y);
+      drawPartnerBobber(ctx, x, y, false);
+      if(rodBody2) rodBody2.style.filter = '';
+      return;
+    }
+    if(f.phase === 'bite') {
+      ctx.clearRect(0,0,CANVAS_W,CANVAS_H);
+      drawPartnerLine(ctx, x, y);
+      drawPartnerBobber(ctx, x, y, true);
+      if(rodBody2) rodBody2.style.filter = 'brightness(2)';
+    }
+  }
+
+  // Опрашиваем актуальное состояние настоящего напарника из playersData
+  // (она уже обновляется существующим realtime-слушателем комнаты) и
+  // перерисовываем только когда что-то реально изменилось.
+  function pollPartner() {
+    if(typeof gs !== 'undefined' && gs.fullMultiMode && typeof currentRoomId !== 'undefined' && currentRoomId && typeof playersData !== 'undefined') {
+      const others = Object.entries(playersData).filter(([pid])=>pid !== myPlayerId);
+      const partner = others.find(([,p])=>p && p.fishing) || others[0];
+      const f = partner && partner[1] ? partner[1].fishing : null;
+      const key = f ? (f.phase + '|' + f.bobX + '|' + f.bobY + '|' + f.ts) : 'none';
+      if(key !== lastSeenKey) {
+        lastSeenKey = key;
+        renderPartnerState(f);
+      }
+    } else {
+      lastSeenKey = 'none';
+    }
+  }
+  setInterval(pollPartner, 350);
+
+  // Публикуем СВОЁ настоящее состояние заброса, чтобы напарник увидел
+  // именно то, что реально происходит у нас, а не случайную анимацию.
+  function publishMyFishingState(phase, x, y) {
+    if(!(typeof gs !== 'undefined' && gs.fullMultiMode && typeof currentRoomId !== 'undefined' && currentRoomId && typeof firebaseDB !== 'undefined' && firebaseDB)) return;
+    const key = phase + '|' + Math.round(x||0) + '|' + Math.round(y||0);
+    if(key === lastSentKey && phase !== 'bite') return; // не спамим одинаковыми апдейтами
+    lastSentKey = key;
+    fb.upd(`rooms/${currentRoomId}/players/${myPlayerId}`, {
+      fishing: { phase, bobX: Math.round(x||0), bobY: Math.round(y||0), ts: Date.now() }
+    }).catch(()=>{});
+  }
+  window._publishMyFishingState = publishMyFishingState;
+
+  // Отключаем старую случайную симуляцию напарника (если она где-то ещё вызывается).
+  window.simulatePartner2 = function() {};
+
+  // ---- Реальные хуки в игровой цикл заброса/поклёвки/улова ----
+  const _origCastTo = window.castTo;
+  window.castTo = function(x, y) {
+    publishMyFishingState('casting', x, y);
+    const ret = _origCastTo.apply(this, arguments);
+    // waiting наступает через ~580мс (та же длительность анимации заброса)
+    setTimeout(()=>{ publishMyFishingState('waiting', x, y); }, 600);
+    return ret;
+  };
+
+  const _origTriggerBite = window.triggerBite;
+  window.triggerBite = function() {
+    const ret = _origTriggerBite.apply(this, arguments);
+    if(gs.phase === 'bite') publishMyFishingState('bite', gs.bobX, gs.bobY);
+    return ret;
+  };
+
+  const _origMiss = window.miss;
+  window.miss = function() {
+    const ret = _origMiss.apply(this, arguments);
+    publishMyFishingState('idle', 0, 0);
+    return ret;
+  };
+
+  // catchFish уже несколько раз обёрнута (мини-игра вываживания, D&D) —
+  // добавляем ещё один финальный слой, чтобы после реального улова
+  // состояние тоже сбрасывалось в idle у напарника.
+  const _origCatchFishForSync = window.catchFish;
+  window.catchFish = function(skipReel) {
+    const wasBiting = gs.phase === 'bite';
+    const ret = _origCatchFishForSync.apply(this, arguments);
+    if(wasBiting && gs.phase === 'idle') publishMyFishingState('idle', 0, 0);
+    return ret;
+  };
+})();
+</script>
 
 </body>
 </html>
